@@ -173,9 +173,9 @@ export default function LetterBuilder({ office }: { office: Office }) {
           {shown ? (
             <LetterView letter={shown} />
           ) : (
-            <div className="ll">
+            <div className="brief theme-navy">
               <div className="wrap">
-                <div className="card">주기와 세그먼트를 고르고 '초안 만들기'를 누르면 고객이 받게 될 레터가 여기에 나타납니다.</div>
+                <div className="card empty">주기와 세그먼트를 고르고 '초안 만들기'를 누르면 고객이 받게 될 레터가 여기에 나타납니다.</div>
               </div>
             </div>
           )}

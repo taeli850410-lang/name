@@ -25,8 +25,8 @@ export default async function LetterPage({ params }: Props) {
   const letter = await getLetter(id);
   if (!letter || letter.status !== "published") notFound();
   return (
-    <main style={{ background: "#e9ecf6", minHeight: "100vh", padding: "16px 0" }}>
-      <div style={{ maxWidth: 640, margin: "0 auto", borderRadius: 18, overflow: "hidden", boxShadow: "0 24px 60px -20px rgba(15,23,42,0.35)" }}>
+    <main className="brief-stage page">
+      <div className="brief-device">
         <LetterView letter={letter} />
       </div>
     </main>

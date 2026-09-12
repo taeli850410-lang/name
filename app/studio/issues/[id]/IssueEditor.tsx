@@ -338,7 +338,7 @@ export default function IssueEditor({ issue: initial, llm }: { issue: Issue; llm
                   : "검수 완료 후 이 세그먼트 영향도가 3 이상이면 본문에 실립니다."}
           </p>
         </div>
-        <div className="ll" style={{ borderRadius: 14, padding: 12 }}>
+        <div className="brief theme-navy compact">
           <div className="wrap">
             <LetterIssueCard item={preview} index={0} />
           </div>

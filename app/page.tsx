@@ -16,15 +16,15 @@ export default async function Home() {
         선택·검수하며, 고객은 세그먼트별로 3~8개 이슈만 쉬운 말로 받아 봅니다.
       </p>
       <div className="doors">
-        <Link href="/studio" className="door b">
-          <span className="chip chip-b">중개사용</span>
-          <h2 style={{ marginTop: 10 }}>STUDIO</h2>
-          <p>인박스 · 이슈 검수 · 레터 빌더 · 우리 동네 숫자 · 사무소 설정</p>
+        <Link href="/studio/brief" className="door b">
+          <span className="chip chip-b">중개사용 · 그린</span>
+          <h2 style={{ marginTop: 10 }}>STUDIO 브리핑</h2>
+          <p>팩트·상담 포인트·실무 체크가 담긴 중개사용 브리핑. 인박스 검수 · 레터 빌더 · 우리 동네 숫자 · 설정.</p>
         </Link>
         <Link href="/l/demo" className="door c">
-          <span className="chip chip-c">고객용</span>
+          <span className="chip chip-c">고객용 · 남색</span>
           <h2 style={{ marginTop: 10 }}>LETTER</h2>
-          <p>발행된 읽기 전용 브리핑. 샘플 레터(MONTHLY · 내집마련)를 열어 봅니다.</p>
+          <p>같은 구조를 고객 눈높이로 줄인 읽기 전용 브리핑. 샘플 레터(MONTHLY · 내집마련)를 열어 봅니다.</p>
         </Link>
       </div>
       {letters.length > 0 && (

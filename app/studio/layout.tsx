@@ -21,6 +21,7 @@ export default async function StudioLayout({ children }: { children: ReactNode }
             LAND LANGUAGE<small>STUDIO · 중개사용</small>
           </Link>
           <nav className="studio-nav" aria-label="스튜디오 메뉴">
+            <Link href="/studio/brief">브리핑</Link>
             <Link href="/studio">인박스</Link>
             <Link href="/studio/letters">레터 빌더</Link>
             <Link href="/studio/data">우리 동네 숫자</Link>
