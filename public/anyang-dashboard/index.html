@@ -1,0 +1,822 @@
+<title>안양 아파트 시장 대시보드</title>
+<style>
+  :root {
+    --bg: #f4f6f3;
+    --surface: #ffffff;
+    --surface-2: #eef1ec;
+    --ink: #17211c;
+    --muted: #5c6a62;
+    --faint: #8a978e;
+    --line: #dde3d9;
+    --accent: #0d6e4f;
+    --accent-ink: #ffffff;
+    --accent-soft: #e2f0e9;
+    --rise: #c0392b;
+    --fall: #2461c9;
+    --gold: #a6791f;
+    --gold-soft: #f5ecd8;
+    --radius: 14px;
+    --font-display: "Pretendard", "Apple SD Gothic Neo", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
+    --font-body: "Pretendard", "Apple SD Gothic Neo", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
+    --font-mono: "SF Mono", "Roboto Mono", ui-monospace, "Malgun Gothic", monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101512;
+      --surface: #171e19;
+      --surface-2: #1d2620;
+      --ink: #e9efe9;
+      --muted: #9baa9f;
+      --faint: #63756a;
+      --line: #2a352c;
+      --accent: #4fbf8f;
+      --accent-ink: #0b1310;
+      --accent-soft: #1c3128;
+      --rise: #e0685b;
+      --fall: #6fa0ec;
+      --gold: #d9b25c;
+      --gold-soft: #2c2716;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #101512;
+    --surface: #171e19;
+    --surface-2: #1d2620;
+    --ink: #e9efe9;
+    --muted: #9baa9f;
+    --faint: #63756a;
+    --line: #2a352c;
+    --accent: #4fbf8f;
+    --accent-ink: #0b1310;
+    --accent-soft: #1c3128;
+    --rise: #e0685b;
+    --fall: #6fa0ec;
+    --gold: #d9b25c;
+    --gold-soft: #2c2716;
+  }
+  :root[data-theme="light"] {
+    --bg: #f4f6f3;
+    --surface: #ffffff;
+    --surface-2: #eef1ec;
+    --ink: #17211c;
+    --muted: #5c6a62;
+    --faint: #8a978e;
+    --line: #dde3d9;
+    --accent: #0d6e4f;
+    --accent-ink: #ffffff;
+    --accent-soft: #e2f0e9;
+    --rise: #c0392b;
+    --fall: #2461c9;
+    --gold: #a6791f;
+    --gold-soft: #f5ecd8;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--accent-soft); }
+
+  a { color: inherit; }
+  button { font-family: inherit; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px 96px; }
+
+  /* ---------- Header ---------- */
+  .hero {
+    padding: 56px 24px 40px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--surface-2), var(--bg));
+  }
+  .hero-inner { max-width: 1120px; margin: 0 auto; }
+  .eyebrow {
+    font-size: 12.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.15;
+    margin: 10px 0 8px;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  .sub { color: var(--muted); font-size: 15.5px; max-width: 62ch; }
+  .meta-row {
+    margin-top: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .meta-chip {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    gap: 6px;
+    align-items: baseline;
+  }
+  .meta-chip b { color: var(--ink); font-weight: 700; }
+
+  nav.jump {
+    margin-top: 26px;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+  }
+  nav.jump a {
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 8px 14px;
+    border-radius: 999px;
+    transition: background .15s, color .15s;
+  }
+  nav.jump a:hover, nav.jump a:focus-visible { background: var(--accent-soft); color: var(--accent); outline: none; }
+
+  /* ---------- Sections ---------- */
+  section.panel { padding-top: 64px; scroll-margin-top: 20px; }
+  .panel-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
+  .panel-num { font-family: var(--font-mono); font-size: 13px; color: var(--faint); letter-spacing: .04em; }
+  h2 {
+    font-family: var(--font-display);
+    font-size: clamp(22px, 3vw, 27px);
+    margin: 2px 0 6px;
+    letter-spacing: -0.01em;
+  }
+  .panel-desc { color: var(--muted); font-size: 14.5px; max-width: 60ch; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 26px;
+  }
+
+  /* ---------- Index chart ---------- */
+  .index-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; }
+  @media (max-width: 820px) { .index-grid { grid-template-columns: 1fr; } }
+
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; justify-content: space-between; }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 600; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+  .legend-left { display: flex; gap: 18px; flex-wrap: wrap; }
+
+  .period-toggle { display: inline-flex; gap: 3px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 3px; flex-shrink: 0; }
+  .period-toggle button {
+    border: none; background: transparent; cursor: pointer;
+    padding: 6px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 700;
+    color: var(--muted); transition: background .15s, color .15s;
+  }
+  .period-toggle button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+  .period-toggle button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .index-controls {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--line);
+  }
+  .date-field { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--muted); }
+  .date-field input[type="date"] {
+    font-family: var(--font-mono); font-size: 13.5px; color: var(--ink);
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px;
+    padding: 7px 10px;
+  }
+  .date-field input[type="date"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .range-hint { font-size: 12px; color: var(--faint); }
+  .window-label { font-size: 12.5px; color: var(--faint); font-weight: 600; }
+
+  .stat-list { display: flex; flex-direction: column; gap: 12px; }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    background: var(--surface-2);
+  }
+  .stat-label { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; }
+  .stat-val { text-align: right; }
+  .stat-val .idx { font-family: var(--font-mono); font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat-val .delta { font-size: 12.5px; font-weight: 700; display: block; margin-top: 2px; }
+  .delta.up { color: var(--rise); }
+  .delta.down { color: var(--fall); }
+  .note { font-size: 12.5px; color: var(--faint); margin-top: 16px; line-height: 1.6; }
+
+  /* ---------- Tabs ---------- */
+  .tabbar { display: inline-flex; gap: 4px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 4px; margin-bottom: 20px; }
+  .tabbar button {
+    border: none; background: transparent; cursor: pointer;
+    padding: 8px 18px; border-radius: 999px; font-size: 13.5px; font-weight: 700;
+    color: var(--muted); transition: background .15s, color .15s;
+  }
+  .tabbar button[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+  .tabbar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .tabpanel { display: none; }
+  .tabpanel.active { display: block; }
+
+  table.rank { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.rank th {
+    text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--faint); font-weight: 700; padding: 0 12px 10px; border-bottom: 1px solid var(--line);
+  }
+  table.rank td { padding: 13px 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  table.rank tr:last-child td { border-bottom: none; }
+  table.rank td.num, table.rank th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .rank-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 8px;
+    font-family: var(--font-mono); font-weight: 700; font-size: 12.5px;
+    background: var(--surface-2); color: var(--muted);
+  }
+  tr:nth-child(1) .rank-badge, tr:nth-child(2) .rank-badge, tr:nth-child(3) .rank-badge {
+    background: var(--gold-soft); color: var(--gold);
+  }
+  .apt-name { font-weight: 700; }
+  .apt-dong { color: var(--muted); font-size: 12.5px; }
+  .price-strong { font-family: var(--font-mono); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .table-scroll { overflow-x: auto; }
+  .table-scroll table { min-width: 640px; }
+
+  /* ---------- Location cards ---------- */
+  .loc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
+  .loc-card {
+    text-align: left; cursor: pointer; width: 100%;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 18px; display: flex; flex-direction: column; gap: 8px;
+    transition: border-color .15s, transform .1s;
+  }
+  .loc-card:hover { border-color: var(--accent); }
+  .loc-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .loc-card[aria-expanded="true"] { border-color: var(--accent); background: var(--accent-soft); }
+  .loc-icon { font-size: 22px; }
+  .loc-title { font-weight: 800; font-size: 15.5px; display: flex; justify-content: space-between; align-items: center; }
+  .loc-caption { font-size: 12.5px; color: var(--muted); }
+  .loc-chevron { font-size: 12px; color: var(--faint); transition: transform .18s; }
+  .loc-card[aria-expanded="true"] .loc-chevron { transform: rotate(180deg); }
+
+  .loc-detail {
+    grid-column: 1 / -1;
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 24px 26px;
+    font-size: 14.5px;
+    color: var(--ink);
+  }
+  .loc-detail.open { display: block; animation: reveal .25s ease; }
+  @media (prefers-reduced-motion: reduce) { .loc-detail.open { animation: none; } }
+  @keyframes reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+  .loc-detail h3 { font-family: var(--font-display); margin: 0 0 10px; font-size: 17px; }
+  .loc-detail p { margin: 0 0 12px; color: var(--muted); }
+  .loc-detail ul { margin: 0 0 12px; padding-left: 20px; color: var(--muted); }
+  .loc-detail li { margin-bottom: 6px; }
+  .loc-detail li b { color: var(--ink); }
+  .loc-tag { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); margin: 0 6px 6px 0; }
+
+  footer {
+    max-width: 1120px; margin: 0 auto; padding: 40px 24px 0;
+    color: var(--faint); font-size: 12px; border-top: 1px solid var(--line); margin-top: 64px;
+  }
+</style>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Anyang Apartment Market</div>
+    <h1>안양시 아파트 시장 대시보드</h1>
+    <p class="sub">국토교통부 실거래가 공개시스템(공공데이터포털) 전수 데이터 기준, 만안구·동안구 아파트 매매·전세·월세 거래를 집계했습니다. 2025년 1월&ndash;2026년 7월, 매매 13,578건 · 전월세 22,867건.</p>
+    <div class="meta-row">
+      <span class="meta-chip">데이터 범위 <b>2025.01 &ndash; 2026.07</b></span>
+      <span class="meta-chip">2026년 6월 매매 중위가 <b>7.2억</b></span>
+      <span class="meta-chip">매매 전수 <b>13,578건</b></span>
+      <span class="meta-chip">전월세 전수 <b>22,867건</b></span>
+    </div>
+    <nav class="jump">
+      <a href="#index">가격지수</a>
+      <a href="#top10-price">실거래가 TOP10</a>
+      <a href="#top10-psf">평당가격 TOP10</a>
+      <a href="#location">입지분석</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- 1. PRICE INDEX -->
+  <section class="panel" id="index">
+    <div class="panel-head">
+      <div>
+        <div class="panel-num">01 — 가격지수</div>
+        <h2>매매 · 전세 · 월세 가격지수 추이</h2>
+        <p class="panel-desc" id="indexDesc">전체 기간 첫 구간을 100으로 두고, 만안구·동안구 실거래 전수의 구간별 중위값(매매·전세 보증금) 및 평균 월세를 지수화했습니다.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="index-controls">
+        <div class="period-toggle" role="group" aria-label="조회 기준 단위">
+          <button type="button" data-unit="week" aria-pressed="true">주간 단위</button>
+          <button type="button" data-unit="month" aria-pressed="false">월간 단위</button>
+        </div>
+        <label class="date-field">
+          <span>기준일</span>
+          <input type="date" id="refDate" />
+        </label>
+        <span class="range-hint" id="rangeHint"></span>
+      </div>
+      <div class="index-grid">
+        <div>
+          <div class="legend">
+            <div class="legend-left">
+              <span class="legend-item"><span class="legend-dot" style="background:#0d6e4f"></span>매매</span>
+              <span class="legend-item"><span class="legend-dot" style="background:#c0392b"></span>전세</span>
+              <span class="legend-item"><span class="legend-dot" style="background:#2461c9"></span>월세</span>
+            </div>
+            <span class="window-label" id="windowLabel"></span>
+          </div>
+          <svg id="chart" viewBox="0 0 640 300" width="100%" role="img" aria-label="매매, 전세, 월세 가격지수 추이 선 그래프"></svg>
+        </div>
+        <div>
+          <div class="stat-list" id="statList">
+            <div class="stat-row">
+              <span class="stat-label">🏠 매매지수</span>
+              <span class="stat-val"><span class="idx" id="statSaleIdx">&ndash;</span><span class="delta" id="statSaleDelta"></span></span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">📄 전세지수</span>
+              <span class="stat-val"><span class="idx" id="statJeonseIdx">&ndash;</span><span class="delta" id="statJeonseDelta"></span></span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">💴 월세지수</span>
+              <span class="stat-val"><span class="idx" id="statWolseIdx">&ndash;</span><span class="delta" id="statWolseDelta"></span></span>
+            </div>
+          </div>
+          <p class="note" id="indexNote"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. TOP 10 TRANSACTIONS -->
+  <section class="panel" id="top10-price">
+    <div class="panel-head">
+      <div>
+        <div class="panel-num">02 — 실거래가</div>
+        <h2>거래유형별 실거래가 TOP 10</h2>
+        <p class="panel-desc">2026년 상반기(1&ndash;6월) 전수 데이터 기준, 거래금액(매매가·전세 보증금·월세) 최고가 순위입니다.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="tabbar" role="tablist" aria-label="실거래가 유형">
+        <button role="tab" aria-selected="true" data-tab="p-sale">매매</button>
+        <button role="tab" aria-selected="false" data-tab="p-jeonse">전세</button>
+        <button role="tab" aria-selected="false" data-tab="p-wolse">월세</button>
+      </div>
+
+      <div class="tabpanel active" id="p-sale">
+        <div class="table-scroll"><table class="rank">
+          <thead><tr><th>순위</th><th>단지명</th><th>전용면적</th><th class="num">거래가</th><th>거래일</th></tr></thead>
+          <tbody>
+            <tr><td><span class="rank-badge">1</span></td><td><div class="apt-name">목련두산</div><div class="apt-dong">호계동</div></td><td>131.8㎡ (39.9평)</td><td class="num price-strong">19억 1,000</td><td>26.03.14</td></tr>
+            <tr><td><span class="rank-badge">2</span></td><td><div class="apt-name">목련우성7</div><div class="apt-dong">호계동</div></td><td>158.9㎡ (48.1평)</td><td class="num price-strong">18억 8,500</td><td>26.01.14</td></tr>
+            <tr><td><span class="rank-badge">3</span></td><td><div class="apt-name">목련아파트</div><div class="apt-dong">호계동</div></td><td>150.2㎡ (45.4평)</td><td class="num price-strong">18억 8,000</td><td>26.03.24</td></tr>
+            <tr><td><span class="rank-badge">4</span></td><td><div class="apt-name">목련우성7</div><div class="apt-dong">호계동</div></td><td>158.9㎡ (48.1평)</td><td class="num price-strong">18억 5,000</td><td>26.01.19</td></tr>
+            <tr><td><span class="rank-badge">5</span></td><td><div class="apt-name">목련아파트</div><div class="apt-dong">호계동</div></td><td>150.2㎡ (45.4평)</td><td class="num price-strong">18억 5,000</td><td>26.05.15</td></tr>
+            <tr><td><span class="rank-badge">6</span></td><td><div class="apt-name">목련우성7</div><div class="apt-dong">호계동</div></td><td>158.9㎡ (48.1평)</td><td class="num price-strong">18억 3,750</td><td>26.01.21</td></tr>
+            <tr><td><span class="rank-badge">7</span></td><td><div class="apt-name">목련우성7</div><div class="apt-dong">호계동</div></td><td>133.7㎡ (40.5평)</td><td class="num price-strong">18억 3,000</td><td>26.05.23</td></tr>
+            <tr><td><span class="rank-badge">8</span></td><td><div class="apt-name">목련선경</div><div class="apt-dong">호계동</div></td><td>134.6㎡ (40.7평)</td><td class="num price-strong">18억</td><td>26.06.27</td></tr>
+            <tr><td><span class="rank-badge">9</span></td><td><div class="apt-name">꿈마을금호</div><div class="apt-dong">평촌동</div></td><td>133.6㎡ (40.4평)</td><td class="num price-strong">17억 9,000</td><td>26.06.10</td></tr>
+            <tr><td><span class="rank-badge">10</span></td><td><div class="apt-name">꿈마을라이프</div><div class="apt-dong">평촌동</div></td><td>154.2㎡ (46.6평)</td><td class="num price-strong">17억 8,000</td><td>26.03.16</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="tabpanel" id="p-jeonse">
+        <div class="table-scroll"><table class="rank">
+          <thead><tr><th>순위</th><th>단지명</th><th>전용면적</th><th class="num">보증금</th><th>거래일</th></tr></thead>
+          <tbody>
+            <tr><td><span class="rank-badge">1</span></td><td><div class="apt-name">목련우성7</div><div class="apt-dong">호계동</div></td><td>133.7㎡ (40.5평)</td><td class="num price-strong">11억 5,000</td><td>26.04.07</td></tr>
+            <tr><td><span class="rank-badge">2</span></td><td><div class="apt-name">평촌엘프라우드</div><div class="apt-dong">비산동</div></td><td>84.9㎡ (25.7평)</td><td class="num price-strong">11억 4,500</td><td>26.03.03</td></tr>
+            <tr><td><span class="rank-badge">3</span></td><td><div class="apt-name">꿈마을동아</div><div class="apt-dong">평촌동</div></td><td>102.0㎡ (30.9평)</td><td class="num price-strong">11억</td><td>26.03.26</td></tr>
+            <tr><td><span class="rank-badge">4</span></td><td><div class="apt-name">목련우성7</div><div class="apt-dong">호계동</div></td><td>133.7㎡ (40.5평)</td><td class="num price-strong">10억 8,000</td><td>26.02.12</td></tr>
+            <tr><td><span class="rank-badge">5</span></td><td><div class="apt-name">목련아파트</div><div class="apt-dong">호계동</div></td><td>150.2㎡ (45.4평)</td><td class="num price-strong">10억 5,000</td><td>26.05.12</td></tr>
+            <tr><td><span class="rank-badge">6</span></td><td><div class="apt-name">목련아파트</div><div class="apt-dong">호계동</div></td><td>150.2㎡ (45.4평)</td><td class="num price-strong">10억 5,000</td><td>26.05.12</td></tr>
+            <tr><td><span class="rank-badge">7</span></td><td><div class="apt-name">목련아파트</div><div class="apt-dong">호계동</div></td><td>150.2㎡ (45.4평)</td><td class="num price-strong">10억 5,000</td><td>26.05.12</td></tr>
+            <tr><td><span class="rank-badge">8</span></td><td><div class="apt-name">평촌엘프라우드</div><div class="apt-dong">비산동</div></td><td>110.4㎡ (33.4평)</td><td class="num price-strong">10억</td><td>26.01.10</td></tr>
+            <tr><td><span class="rank-badge">9</span></td><td><div class="apt-name">목련경남</div><div class="apt-dong">호계동</div></td><td>127.3㎡ (38.5평)</td><td class="num price-strong">10억</td><td>26.03.12</td></tr>
+            <tr><td><span class="rank-badge">10</span></td><td><div class="apt-name">목련경남</div><div class="apt-dong">호계동</div></td><td>127.3㎡ (38.5평)</td><td class="num price-strong">10억</td><td>26.04.25</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="tabpanel" id="p-wolse">
+        <div class="table-scroll"><table class="rank">
+          <thead><tr><th>순위</th><th>단지명</th><th>전용면적</th><th class="num">보증금 / 월세</th><th>거래일</th></tr></thead>
+          <tbody>
+            <tr><td><span class="rank-badge">1</span></td><td><div class="apt-name">목련우성7</div><div class="apt-dong">호계동</div></td><td>133.7㎡ (40.5평)</td><td class="num price-strong">10,000 / 390</td><td>26.01.02</td></tr>
+            <tr><td><span class="rank-badge">2</span></td><td><div class="apt-name">꿈마을금호</div><div class="apt-dong">평촌동</div></td><td>133.6㎡ (40.4평)</td><td class="num price-strong">30,000 / 320</td><td>26.04.12</td></tr>
+            <tr><td><span class="rank-badge">3</span></td><td><div class="apt-name">꿈마을한신</div><div class="apt-dong">평촌동</div></td><td>117.0㎡ (35.4평)</td><td class="num price-strong">20,000 / 300</td><td>26.04.01</td></tr>
+            <tr><td><span class="rank-badge">4</span></td><td><div class="apt-name">꿈마을우성</div><div class="apt-dong">평촌동</div></td><td>158.2㎡ (47.9평)</td><td class="num price-strong">20,000 / 260</td><td>26.03.18</td></tr>
+            <tr><td><span class="rank-badge">5</span></td><td><div class="apt-name">평촌더샵아이파크</div><div class="apt-dong">호계동</div></td><td>85.0㎡ (25.7평)</td><td class="num price-strong">15,000 / 250</td><td>26.01.16</td></tr>
+            <tr><td><span class="rank-badge">6</span></td><td><div class="apt-name">귀인마을현대홈타운</div><div class="apt-dong">평촌동</div></td><td>80.4㎡ (24.3평)</td><td class="num price-strong">25,000 / 250</td><td>26.02.13</td></tr>
+            <tr><td><span class="rank-badge">7</span></td><td><div class="apt-name">평촌엘프라우드</div><div class="apt-dong">비산동</div></td><td>85.0㎡ (25.7평)</td><td class="num price-strong">5,000 / 250</td><td>26.03.06</td></tr>
+            <tr><td><span class="rank-badge">8</span></td><td><div class="apt-name">평촌어바인퍼스트</div><div class="apt-dong">호계동</div></td><td>84.1㎡ (25.4평)</td><td class="num price-strong">20,000 / 250</td><td>26.03.21</td></tr>
+            <tr><td><span class="rank-badge">9</span></td><td><div class="apt-name">평촌엘프라우드</div><div class="apt-dong">비산동</div></td><td>85.0㎡ (25.7평)</td><td class="num price-strong">5,000 / 250</td><td>26.03.06</td></tr>
+            <tr><td><span class="rank-badge">10</span></td><td><div class="apt-name">귀인마을현대홈타운</div><div class="apt-dong">평촌동</div></td><td>80.4㎡ (24.3평)</td><td class="num price-strong">25,000 / 250</td><td>26.04.28</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <p class="note">단위: 만원. 보증금/월세 표기는 &ldquo;보증금 / 월세&rdquo; 순.</p>
+    </div>
+  </section>
+
+  <!-- 3. TOP 10 PSF -->
+  <section class="panel" id="top10-psf">
+    <div class="panel-head">
+      <div>
+        <div class="panel-num">03 — 평당가격</div>
+        <h2>거래유형별 평당가격 TOP 10</h2>
+        <p class="panel-desc">2026년 상반기 전수 데이터, 전용면적 40&#13217; 이상 기준 3.3&#13217;(1평)당 환산가입니다. 준신축 소형 평형이 상위권을 형성하는 경향이 있습니다.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="tabbar" role="tablist" aria-label="평당가격 유형">
+        <button role="tab" aria-selected="true" data-tab="s-sale">매매</button>
+        <button role="tab" aria-selected="false" data-tab="s-jeonse">전세</button>
+        <button role="tab" aria-selected="false" data-tab="s-wolse">월세</button>
+      </div>
+
+      <div class="tabpanel active" id="s-sale">
+        <div class="table-scroll"><table class="rank">
+          <thead><tr><th>순위</th><th>단지명</th><th>전용면적</th><th class="num">거래가</th><th class="num">평당가</th></tr></thead>
+          <tbody>
+            <tr><td><span class="rank-badge">1</span></td><td><div class="apt-name">평촌더샵센트럴시티</div><div class="apt-dong">관양동</div></td><td>60.0㎡ (18.1평)</td><td class="num">12억 5,800</td><td class="num price-strong">6,933만</td></tr>
+            <tr><td><span class="rank-badge">2</span></td><td><div class="apt-name">귀인마을현대홈타운</div><div class="apt-dong">평촌동</div></td><td>56.1㎡ (17.0평)</td><td class="num">11억 7,000</td><td class="num price-strong">6,899만</td></tr>
+            <tr><td><span class="rank-badge">3</span></td><td><div class="apt-name">평촌더샵센트럴시티</div><div class="apt-dong">관양동</div></td><td>60.0㎡ (18.1평)</td><td class="num">12억 4,800</td><td class="num price-strong">6,876만</td></tr>
+            <tr><td><span class="rank-badge">4</span></td><td><div class="apt-name">평촌더샵센트럴시티</div><div class="apt-dong">관양동</div></td><td>60.0㎡ (18.1평)</td><td class="num">12억 4,200</td><td class="num price-strong">6,845만</td></tr>
+            <tr><td><span class="rank-badge">5</span></td><td><div class="apt-name">평촌더샵센트럴시티</div><div class="apt-dong">관양동</div></td><td>60.0㎡ (18.1평)</td><td class="num">12억 4,000</td><td class="num price-strong">6,834만</td></tr>
+            <tr><td><span class="rank-badge">6</span></td><td><div class="apt-name">인덕원마을(삼성)</div><div class="apt-dong">관양동</div></td><td>59.9㎡ (18.1평)</td><td class="num">12억 3,500</td><td class="num price-strong">6,817만</td></tr>
+            <tr><td><span class="rank-badge">7</span></td><td><div class="apt-name">귀인마을현대홈타운</div><div class="apt-dong">평촌동</div></td><td>56.1㎡ (17.0평)</td><td class="num">11억 5,000</td><td class="num price-strong">6,781만</td></tr>
+            <tr><td><span class="rank-badge">8</span></td><td><div class="apt-name">귀인마을현대홈타운</div><div class="apt-dong">평촌동</div></td><td>56.1㎡ (17.0평)</td><td class="num">11억 5,000</td><td class="num price-strong">6,781만</td></tr>
+            <tr><td><span class="rank-badge">9</span></td><td><div class="apt-name">평촌더샵센트럴시티</div><div class="apt-dong">관양동</div></td><td>60.0㎡ (18.1평)</td><td class="num">12억 3,000</td><td class="num price-strong">6,777만</td></tr>
+            <tr><td><span class="rank-badge">10</span></td><td><div class="apt-name">평촌더샵센트럴시티</div><div class="apt-dong">관양동</div></td><td>60.0㎡ (18.1평)</td><td class="num">12억 3,000</td><td class="num price-strong">6,777만</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="tabpanel" id="s-jeonse">
+        <div class="table-scroll"><table class="rank">
+          <thead><tr><th>순위</th><th>단지명</th><th>전용면적</th><th class="num">보증금</th><th class="num">평당가</th></tr></thead>
+          <tbody>
+            <tr><td><span class="rank-badge">1</span></td><td><div class="apt-name">평촌엘프라우드</div><div class="apt-dong">비산동</div></td><td>84.9㎡ (25.7평)</td><td class="num">11억 4,500</td><td class="num price-strong">4,457만</td></tr>
+            <tr><td><span class="rank-badge">2</span></td><td><div class="apt-name">평촌센텀퍼스트</div><div class="apt-dong">호계동</div></td><td>59.8㎡ (18.1평)</td><td class="num">6억 8,000</td><td class="num price-strong">3,759만</td></tr>
+            <tr><td><span class="rank-badge">3</span></td><td><div class="apt-name">평촌센텀퍼스트</div><div class="apt-dong">호계동</div></td><td>59.8㎡ (18.1평)</td><td class="num">6억 8,000</td><td class="num price-strong">3,756만</td></tr>
+            <tr><td><span class="rank-badge">4</span></td><td><div class="apt-name">평촌더샵센트럴시티</div><div class="apt-dong">관양동</div></td><td>60.0㎡ (18.1평)</td><td class="num">6억 6,000</td><td class="num price-strong">3,637만</td></tr>
+            <tr><td><span class="rank-badge">5</span></td><td><div class="apt-name">평촌센텀퍼스트</div><div class="apt-dong">호계동</div></td><td>73.0㎡ (22.1평)</td><td class="num">8억</td><td class="num price-strong">3,624만</td></tr>
+            <tr><td><span class="rank-badge">6</span></td><td><div class="apt-name">귀인마을현대홈타운</div><div class="apt-dong">평촌동</div></td><td>65.3㎡ (19.8평)</td><td class="num">7억 1,500</td><td class="num price-strong">3,619만</td></tr>
+            <tr><td><span class="rank-badge">7</span></td><td><div class="apt-name">귀인마을현대홈타운</div><div class="apt-dong">평촌동</div></td><td>65.3㎡ (19.8평)</td><td class="num">7억 1,500</td><td class="num price-strong">3,619만</td></tr>
+            <tr><td><span class="rank-badge">8</span></td><td><div class="apt-name">평촌엘프라우드</div><div class="apt-dong">비산동</div></td><td>59.8㎡ (18.1평)</td><td class="num">6억 5,000</td><td class="num price-strong">3,596만</td></tr>
+            <tr><td><span class="rank-badge">9</span></td><td><div class="apt-name">평촌센텀퍼스트</div><div class="apt-dong">호계동</div></td><td>59.8㎡ (18.1평)</td><td class="num">6억 5,000</td><td class="num price-strong">3,593만</td></tr>
+            <tr><td><span class="rank-badge">10</span></td><td><div class="apt-name">평촌더샵센트럴시티</div><div class="apt-dong">관양동</div></td><td>60.0㎡ (18.1평)</td><td class="num">6억 5,000</td><td class="num price-strong">3,582만</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="tabpanel" id="s-wolse">
+        <div class="table-scroll"><table class="rank">
+          <thead><tr><th>순위</th><th>단지명</th><th>전용면적</th><th class="num">보증금 / 월세</th><th class="num">평당 월세</th></tr></thead>
+          <tbody>
+            <tr><td><span class="rank-badge">1</span></td><td><div class="apt-name">평촌센텀퍼스트</div><div class="apt-dong">호계동</div></td><td>60.0㎡ (18.1평)</td><td class="num">5,000 / 220</td><td class="num price-strong">12.1만</td></tr>
+            <tr><td><span class="rank-badge">2</span></td><td><div class="apt-name">목련우성5</div><div class="apt-dong">호계동</div></td><td>41.9㎡ (12.7평)</td><td class="num">600 / 150</td><td class="num price-strong">11.8만</td></tr>
+            <tr><td><span class="rank-badge">3</span></td><td><div class="apt-name">평촌트리지아</div><div class="apt-dong">호계동</div></td><td>60.0㎡ (18.1평)</td><td class="num">5,000 / 205</td><td class="num price-strong">11.3만</td></tr>
+            <tr><td><span class="rank-badge">4</span></td><td><div class="apt-name">평촌어바인퍼스트</div><div class="apt-dong">호계동</div></td><td>46.9㎡ (14.2평)</td><td class="num">5,000 / 160</td><td class="num price-strong">11.3만</td></tr>
+            <tr><td><span class="rank-badge">5</span></td><td><div class="apt-name">평촌자이아이파크</div><div class="apt-dong">비산동</div></td><td>50.0㎡ (15.1평)</td><td class="num">5,000 / 170</td><td class="num price-strong">11.2만</td></tr>
+            <tr><td><span class="rank-badge">6</span></td><td><div class="apt-name">귀인마을현대홈타운</div><div class="apt-dong">평촌동</div></td><td>56.1㎡ (17.0평)</td><td class="num">10,000 / 190</td><td class="num price-strong">11.2만</td></tr>
+            <tr><td><span class="rank-badge">7</span></td><td><div class="apt-name">평촌어바인퍼스트</div><div class="apt-dong">호계동</div></td><td>59.5㎡ (18.0평)</td><td class="num">5,000 / 200</td><td class="num price-strong">11.1만</td></tr>
+            <tr><td><span class="rank-badge">8</span></td><td><div class="apt-name">향촌롯데</div><div class="apt-dong">평촌동</div></td><td>59.8㎡ (18.1평)</td><td class="num">5,000 / 200</td><td class="num price-strong">11.1만</td></tr>
+            <tr><td><span class="rank-badge">9</span></td><td><div class="apt-name">향촌마을현대5차</div><div class="apt-dong">평촌동</div></td><td>59.8㎡ (18.1평)</td><td class="num">5,000 / 200</td><td class="num price-strong">11.1만</td></tr>
+            <tr><td><span class="rank-badge">10</span></td><td><div class="apt-name">평촌엘프라우드</div><div class="apt-dong">비산동</div></td><td>59.8㎡ (18.1평)</td><td class="num">10,000 / 200</td><td class="num price-strong">11.1만</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <p class="note">평당가 = 거래금액 ÷ (전용면적/3.3058). 단위: 만원.</p>
+    </div>
+  </section>
+
+  <!-- 4. LOCATION ANALYSIS -->
+  <section class="panel" id="location">
+    <div class="panel-head">
+      <div>
+        <div class="panel-num">04 — 입지분석</div>
+        <h2>학군 · 교통 · 지하철 · KTX · GTX</h2>
+        <p class="panel-desc">카드를 클릭하면 해당 항목의 상세 분석이 펼쳐집니다.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="loc-grid" id="locGrid"></div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  데이터 출처: 공공데이터포털 — 국토교통부 아파트 매매·전월세 실거래가 전수 데이터 (2025.01&ndash;2026.07, 만안구·동안구, 매매 13,578건 · 전월세 22,867건). 입지분석은 노선 계획 및 공개 정보를 바탕으로 한 참고 자료이며 사업 진행 상황에 따라 변경될 수 있습니다.
+</footer>
+
+<script>
+const WEEKLY_DATA = [{"k":"2024-12-30","sale":66750,"saleN":36,"saleIdx":100,"jeonse":37000,"jeonseN":128,"jeonseIdx":100,"wolse":87.6,"wolseN":57,"wolseIdx":100},{"k":"2025-01-06","sale":61000,"saleN":99,"saleIdx":91.4,"jeonse":34500,"jeonseN":302,"jeonseIdx":93.2,"wolse":77.6,"wolseN":130,"wolseIdx":88.5},{"k":"2025-01-13","sale":62700,"saleN":105,"saleIdx":93.9,"jeonse":36000,"jeonseN":241,"jeonseIdx":97.3,"wolse":74.7,"wolseN":101,"wolseIdx":85.3},{"k":"2025-01-20","sale":60000,"saleN":93,"saleIdx":89.9,"jeonse":36750,"jeonseN":239,"jeonseIdx":99.3,"wolse":85.7,"wolseN":107,"wolseIdx":97.8},{"k":"2025-01-27","sale":63500,"saleN":41,"saleIdx":95.1,"jeonse":36000,"jeonseN":61,"jeonseIdx":97.3,"wolse":86.8,"wolseN":39,"wolseIdx":99},{"k":"2025-02-03","sale":61000,"saleN":125,"saleIdx":91.4,"jeonse":38000,"jeonseN":356,"jeonseIdx":102.7,"wolse":88.7,"wolseN":136,"wolseIdx":101.2},{"k":"2025-02-10","sale":62500,"saleN":133,"saleIdx":93.6,"jeonse":33600,"jeonseN":383,"jeonseIdx":90.8,"wolse":79.5,"wolseN":119,"wolseIdx":90.7},{"k":"2025-02-17","sale":62500,"saleN":161,"saleIdx":93.6,"jeonse":35100,"jeonseN":382,"jeonseIdx":94.9,"wolse":88.5,"wolseN":127,"wolseIdx":101},{"k":"2025-02-24","sale":63150,"saleN":138,"saleIdx":94.6,"jeonse":35000,"jeonseN":266,"jeonseIdx":94.6,"wolse":79.3,"wolseN":94,"wolseIdx":90.5},{"k":"2025-03-03","sale":64850,"saleN":200,"saleIdx":97.2,"jeonse":36000,"jeonseN":308,"jeonseIdx":97.3,"wolse":97.5,"wolseN":122,"wolseIdx":111.3},{"k":"2025-03-10","sale":64150,"saleN":172,"saleIdx":96.1,"jeonse":36000,"jeonseN":308,"jeonseIdx":97.3,"wolse":91.9,"wolseN":114,"wolseIdx":104.9},{"k":"2025-03-17","sale":64400,"saleN":178,"saleIdx":96.5,"jeonse":35000,"jeonseN":261,"jeonseIdx":94.6,"wolse":86.8,"wolseN":106,"wolseIdx":99.1},{"k":"2025-03-24","sale":61700,"saleN":187,"saleIdx":92.4,"jeonse":36000,"jeonseN":260,"jeonseIdx":97.3,"wolse":88.4,"wolseN":94,"wolseIdx":100.9},{"k":"2025-03-31","sale":61000,"saleN":131,"saleIdx":91.4,"jeonse":39250,"jeonseN":208,"jeonseIdx":106.1,"wolse":86.6,"wolseN":75,"wolseIdx":98.8},{"k":"2025-04-07","sale":59500,"saleN":187,"saleIdx":89.1,"jeonse":35000,"jeonseN":249,"jeonseIdx":94.6,"wolse":90,"wolseN":108,"wolseIdx":102.7},{"k":"2025-04-14","sale":62000,"saleN":160,"saleIdx":92.9,"jeonse":36500,"jeonseN":215,"jeonseIdx":98.6,"wolse":86.4,"wolseN":79,"wolseIdx":98.5},{"k":"2025-04-21","sale":66500,"saleN":142,"saleIdx":99.6,"jeonse":36250,"jeonseN":206,"jeonseIdx":98,"wolse":85.5,"wolseN":91,"wolseIdx":97.6},{"k":"2025-04-28","sale":60400,"saleN":152,"saleIdx":90.5,"jeonse":39000,"jeonseN":193,"jeonseIdx":105.4,"wolse":71.4,"wolseN":99,"wolseIdx":81.4},{"k":"2025-05-05","sale":63150,"saleN":180,"saleIdx":94.6,"jeonse":35000,"jeonseN":208,"jeonseIdx":94.6,"wolse":82.5,"wolseN":76,"wolseIdx":94.1},{"k":"2025-05-12","sale":67000,"saleN":189,"saleIdx":100.4,"jeonse":35175,"jeonseN":198,"jeonseIdx":95.1,"wolse":90.4,"wolseN":86,"wolseIdx":103.2},{"k":"2025-05-19","sale":62750,"saleN":243,"saleIdx":94,"jeonse":36000,"jeonseN":209,"jeonseIdx":97.3,"wolse":95.8,"wolseN":93,"wolseIdx":109.3},{"k":"2025-05-26","sale":67000,"saleN":203,"saleIdx":100.4,"jeonse":37000,"jeonseN":221,"jeonseIdx":100,"wolse":83.3,"wolseN":83,"wolseIdx":95},{"k":"2025-06-02","sale":65000,"saleN":246,"saleIdx":97.4,"jeonse":37900,"jeonseN":184,"jeonseIdx":102.4,"wolse":90.1,"wolseN":70,"wolseIdx":102.8},{"k":"2025-06-09","sale":68500,"saleN":306,"saleIdx":102.6,"jeonse":40000,"jeonseN":220,"jeonseIdx":108.1,"wolse":92.1,"wolseN":111,"wolseIdx":105},{"k":"2025-06-16","sale":65000,"saleN":285,"saleIdx":97.4,"jeonse":35700,"jeonseN":213,"jeonseIdx":96.5,"wolse":87.7,"wolseN":96,"wolseIdx":100},{"k":"2025-06-23","sale":64250,"saleN":302,"saleIdx":96.3,"jeonse":33500,"jeonseN":214,"jeonseIdx":90.5,"wolse":86.2,"wolseN":95,"wolseIdx":98.3},{"k":"2025-06-30","sale":60000,"saleN":125,"saleIdx":89.9,"jeonse":37000,"jeonseN":168,"jeonseIdx":100,"wolse":93.3,"wolseN":85,"wolseIdx":106.4},{"k":"2025-07-07","sale":63150,"saleN":134,"saleIdx":94.6,"jeonse":33600,"jeonseN":207,"jeonseIdx":90.8,"wolse":90.7,"wolseN":96,"wolseIdx":103.5},{"k":"2025-07-14","sale":56500,"saleN":113,"saleIdx":84.6,"jeonse":35000,"jeonseN":175,"jeonseIdx":94.6,"wolse":78.1,"wolseN":75,"wolseIdx":89.1},{"k":"2025-07-21","sale":55250,"saleN":94,"saleIdx":82.8,"jeonse":36000,"jeonseN":198,"jeonseIdx":97.3,"wolse":87.9,"wolseN":72,"wolseIdx":100.2},{"k":"2025-07-28","sale":59000,"saleN":82,"saleIdx":88.4,"jeonse":32000,"jeonseN":135,"jeonseIdx":86.5,"wolse":85.8,"wolseN":67,"wolseIdx":97.9},{"k":"2025-08-04","sale":59950,"saleN":80,"saleIdx":89.8,"jeonse":38000,"jeonseN":161,"jeonseIdx":102.7,"wolse":81.2,"wolseN":69,"wolseIdx":92.6},{"k":"2025-08-11","sale":65800,"saleN":131,"saleIdx":98.6,"jeonse":35000,"jeonseN":155,"jeonseIdx":94.6,"wolse":78.9,"wolseN":84,"wolseIdx":90},{"k":"2025-08-18","sale":57500,"saleN":127,"saleIdx":86.1,"jeonse":40370,"jeonseN":154,"jeonseIdx":109.1,"wolse":91,"wolseN":80,"wolseIdx":103.8},{"k":"2025-08-25","sale":64000,"saleN":135,"saleIdx":95.9,"jeonse":40000,"jeonseN":173,"jeonseIdx":108.1,"wolse":83.3,"wolseN":98,"wolseIdx":95.1},{"k":"2025-09-01","sale":61500,"saleN":166,"saleIdx":92.1,"jeonse":35250,"jeonseN":160,"jeonseIdx":95.3,"wolse":84.2,"wolseN":77,"wolseIdx":96.1},{"k":"2025-09-08","sale":61500,"saleN":185,"saleIdx":92.1,"jeonse":34000,"jeonseN":192,"jeonseIdx":91.9,"wolse":89.2,"wolseN":89,"wolseIdx":101.8},{"k":"2025-09-15","sale":68250,"saleN":214,"saleIdx":102.2,"jeonse":40000,"jeonseN":175,"jeonseIdx":108.1,"wolse":88.1,"wolseN":77,"wolseIdx":100.5},{"k":"2025-09-22","sale":68025,"saleN":260,"saleIdx":101.9,"jeonse":38500,"jeonseN":183,"jeonseIdx":104.1,"wolse":89.3,"wolseN":92,"wolseIdx":101.9},{"k":"2025-09-29","sale":73200,"saleN":261,"saleIdx":109.7,"jeonse":42000,"jeonseN":147,"jeonseIdx":113.5,"wolse":81.5,"wolseN":60,"wolseIdx":93},{"k":"2025-10-06","sale":66300,"saleN":150,"saleIdx":99.3,"jeonse":43500,"jeonseN":73,"jeonseIdx":117.6,"wolse":87.8,"wolseN":38,"wolseIdx":100.2},{"k":"2025-10-13","sale":65650,"saleN":548,"saleIdx":98.4,"jeonse":40000,"jeonseN":228,"jeonseIdx":108.1,"wolse":93.4,"wolseN":117,"wolseIdx":106.6},{"k":"2025-10-20","sale":59000,"saleN":73,"saleIdx":88.4,"jeonse":40000,"jeonseN":243,"jeonseIdx":108.1,"wolse":85.4,"wolseN":136,"wolseIdx":97.4},{"k":"2025-10-27","sale":54750,"saleN":84,"saleIdx":82,"jeonse":43000,"jeonseN":237,"jeonseIdx":116.2,"wolse":98.7,"wolseN":87,"wolseIdx":112.6},{"k":"2025-11-03","sale":57000,"saleN":83,"saleIdx":85.4,"jeonse":43750,"jeonseN":238,"jeonseIdx":118.2,"wolse":90,"wolseN":118,"wolseIdx":102.7},{"k":"2025-11-10","sale":64750,"saleN":74,"saleIdx":97,"jeonse":42000,"jeonseN":187,"jeonseIdx":113.5,"wolse":105.2,"wolseN":99,"wolseIdx":120},{"k":"2025-11-17","sale":69400,"saleN":106,"saleIdx":104,"jeonse":40250,"jeonseN":220,"jeonseIdx":108.8,"wolse":88.2,"wolseN":102,"wolseIdx":100.6},{"k":"2025-11-24","sale":60000,"saleN":139,"saleIdx":89.9,"jeonse":40000,"jeonseN":209,"jeonseIdx":108.1,"wolse":83.4,"wolseN":119,"wolseIdx":95.1},{"k":"2025-12-01","sale":68450,"saleN":156,"saleIdx":102.5,"jeonse":40500,"jeonseN":173,"jeonseIdx":109.5,"wolse":92.4,"wolseN":80,"wolseIdx":105.4},{"k":"2025-12-08","sale":71250,"saleN":154,"saleIdx":106.7,"jeonse":41000,"jeonseN":232,"jeonseIdx":110.8,"wolse":98.4,"wolseN":94,"wolseIdx":112.2},{"k":"2025-12-15","sale":73250,"saleN":146,"saleIdx":109.7,"jeonse":43000,"jeonseN":200,"jeonseIdx":116.2,"wolse":83,"wolseN":90,"wolseIdx":94.7},{"k":"2025-12-22","sale":64000,"saleN":137,"saleIdx":95.9,"jeonse":42000,"jeonseN":192,"jeonseIdx":113.5,"wolse":89.6,"wolseN":103,"wolseIdx":102.3},{"k":"2025-12-29","sale":66000,"saleN":140,"saleIdx":98.9,"jeonse":41000,"jeonseN":131,"jeonseIdx":110.8,"wolse":90.8,"wolseN":76,"wolseIdx":103.6},{"k":"2026-01-05","sale":66000,"saleN":193,"saleIdx":98.9,"jeonse":40462.5,"jeonseN":216,"jeonseIdx":109.4,"wolse":89.6,"wolseN":108,"wolseIdx":102.2},{"k":"2026-01-12","sale":61900,"saleN":170,"saleIdx":92.7,"jeonse":38850,"jeonseN":197,"jeonseIdx":105,"wolse":81.2,"wolseN":120,"wolseIdx":92.6},{"k":"2026-01-19","sale":65900,"saleN":204,"saleIdx":98.7,"jeonse":40000,"jeonseN":200,"jeonseIdx":108.1,"wolse":85.2,"wolseN":109,"wolseIdx":97.2},{"k":"2026-01-26","sale":68000,"saleN":183,"saleIdx":101.9,"jeonse":39500,"jeonseN":211,"jeonseIdx":106.8,"wolse":80.6,"wolseN":114,"wolseIdx":91.9},{"k":"2026-02-02","sale":66900,"saleN":209,"saleIdx":100.2,"jeonse":40000,"jeonseN":186,"jeonseIdx":108.1,"wolse":90.3,"wolseN":118,"wolseIdx":103},{"k":"2026-02-09","sale":70500,"saleN":185,"saleIdx":105.6,"jeonse":37900,"jeonseN":184,"jeonseIdx":102.4,"wolse":84,"wolseN":108,"wolseIdx":95.8},{"k":"2026-02-16","sale":67750,"saleN":88,"saleIdx":101.5,"jeonse":38000,"jeonseN":105,"jeonseIdx":102.7,"wolse":89.5,"wolseN":46,"wolseIdx":102.1},{"k":"2026-02-23","sale":67000,"saleN":218,"saleIdx":100.4,"jeonse":37000,"jeonseN":201,"jeonseIdx":100,"wolse":88.1,"wolseN":94,"wolseIdx":100.5},{"k":"2026-03-02","sale":67000,"saleN":183,"saleIdx":100.4,"jeonse":36500,"jeonseN":170,"jeonseIdx":98.6,"wolse":100.2,"wolseN":81,"wolseIdx":114.3},{"k":"2026-03-09","sale":70500,"saleN":200,"saleIdx":105.6,"jeonse":38000,"jeonseN":241,"jeonseIdx":102.7,"wolse":87.7,"wolseN":106,"wolseIdx":100.1},{"k":"2026-03-16","sale":69000,"saleN":155,"saleIdx":103.4,"jeonse":40000,"jeonseN":166,"jeonseIdx":108.1,"wolse":96.6,"wolseN":90,"wolseIdx":110.3},{"k":"2026-03-23","sale":66500,"saleN":213,"saleIdx":99.6,"jeonse":38000,"jeonseN":179,"jeonseIdx":102.7,"wolse":89.7,"wolseN":98,"wolseIdx":102.3},{"k":"2026-03-30","sale":63000,"saleN":172,"saleIdx":94.4,"jeonse":36000,"jeonseN":163,"jeonseIdx":97.3,"wolse":96.8,"wolseN":75,"wolseIdx":110.5},{"k":"2026-04-06","sale":69600,"saleN":238,"saleIdx":104.3,"jeonse":34500,"jeonseN":186,"jeonseIdx":93.2,"wolse":77.4,"wolseN":91,"wolseIdx":88.3},{"k":"2026-04-13","sale":70000,"saleN":253,"saleIdx":104.9,"jeonse":42000,"jeonseN":136,"jeonseIdx":113.5,"wolse":85.2,"wolseN":92,"wolseIdx":97.2},{"k":"2026-04-20","sale":67500,"saleN":244,"saleIdx":101.1,"jeonse":33000,"jeonseN":150,"jeonseIdx":89.2,"wolse":83.9,"wolseN":73,"wolseIdx":95.8},{"k":"2026-04-27","sale":67300,"saleN":219,"saleIdx":100.8,"jeonse":35000,"jeonseN":139,"jeonseIdx":94.6,"wolse":99.1,"wolseN":83,"wolseIdx":113.1},{"k":"2026-05-04","sale":68000,"saleN":256,"saleIdx":101.9,"jeonse":39900,"jeonseN":161,"jeonseIdx":107.8,"wolse":89.2,"wolseN":76,"wolseIdx":101.7},{"k":"2026-05-11","sale":66000,"saleN":176,"saleIdx":98.9,"jeonse":38250,"jeonseN":146,"jeonseIdx":103.4,"wolse":96.1,"wolseN":81,"wolseIdx":109.6},{"k":"2026-05-18","sale":65000,"saleN":219,"saleIdx":97.4,"jeonse":38000,"jeonseN":145,"jeonseIdx":102.7,"wolse":89.3,"wolseN":76,"wolseIdx":101.9},{"k":"2026-05-25","sale":69000,"saleN":243,"saleIdx":103.4,"jeonse":41000,"jeonseN":127,"jeonseIdx":110.8,"wolse":89.5,"wolseN":73,"wolseIdx":102.1},{"k":"2026-06-01","sale":74750,"saleN":204,"saleIdx":112,"jeonse":40000,"jeonseN":139,"jeonseIdx":108.1,"wolse":77,"wolseN":80,"wolseIdx":87.9},{"k":"2026-06-08","sale":73000,"saleN":177,"saleIdx":109.4,"jeonse":38000,"jeonseN":160,"jeonseIdx":102.7,"wolse":95.2,"wolseN":94,"wolseIdx":108.7},{"k":"2026-06-15","sale":69000,"saleN":151,"saleIdx":103.4,"jeonse":38000,"jeonseN":141,"jeonseIdx":102.7,"wolse":78,"wolseN":69,"wolseIdx":89},{"k":"2026-06-22","sale":67000,"saleN":153,"saleIdx":100.4,"jeonse":40975,"jeonseN":138,"jeonseIdx":110.7,"wolse":76.4,"wolseN":70,"wolseIdx":87.2},{"k":"2026-06-29","sale":64500,"saleN":116,"saleIdx":96.6,"jeonse":42000,"jeonseN":153,"jeonseIdx":113.5,"wolse":75.8,"wolseN":59,"wolseIdx":86.5},{"k":"2026-07-06","sale":70000,"saleN":65,"saleIdx":104.9,"jeonse":36750,"jeonseN":119,"jeonseIdx":99.3,"wolse":62.9,"wolseN":46,"wolseIdx":71.7},{"k":"2026-07-13","sale":null,"saleN":0,"saleIdx":null,"jeonse":30000,"jeonseN":6,"jeonseIdx":81.1,"wolse":69.4,"wolseN":5,"wolseIdx":79.2}];
+const MONTHLY_DATA = [{"k":"2025-01","sale":62000,"saleN":354,"saleIdx":100,"jeonse":35190,"jeonseN":938,"jeonseIdx":100,"wolse":80.8,"wolseN":417,"wolseIdx":100},{"k":"2025-02","sale":62800,"saleN":555,"saleIdx":101.3,"jeonse":35650,"jeonseN":1378,"jeonseIdx":101.3,"wolse":84.5,"wolseN":478,"wolseIdx":104.5},{"k":"2025-03","sale":63650,"saleN":782,"saleIdx":102.7,"jeonse":35600,"jeonseN":1218,"jeonseIdx":101.2,"wolse":91.6,"wolseN":463,"wolseIdx":113.3},{"k":"2025-04","sale":61800,"saleN":667,"saleIdx":99.7,"jeonse":36750,"jeonseN":933,"jeonseIdx":104.4,"wolse":84.6,"wolseN":400,"wolseIdx":104.6},{"k":"2025-05","sale":63500,"saleN":890,"saleIdx":102.4,"jeonse":35500,"jeonseN":932,"jeonseIdx":100.9,"wolse":86.3,"wolseN":375,"wolseIdx":106.8},{"k":"2025-06","sale":65000,"saleN":1172,"saleIdx":104.8,"jeonse":36750,"jeonseN":869,"jeonseIdx":104.4,"wolse":88.4,"wolseN":396,"wolseIdx":109.3},{"k":"2025-07","sale":58500,"saleN":499,"saleIdx":94.4,"jeonse":35000,"jeonseN":817,"jeonseIdx":99.5,"wolse":88.7,"wolseN":356,"wolseIdx":109.7},{"k":"2025-08","sale":61500,"saleN":496,"saleIdx":99.2,"jeonse":37900,"jeonseN":674,"jeonseIdx":107.7,"wolse":83.4,"wolseN":349,"wolseIdx":103.2},{"k":"2025-09","sale":65300,"saleN":915,"saleIdx":105.3,"jeonse":37000,"jeonseN":765,"jeonseIdx":105.1,"wolse":87.8,"wolseN":364,"wolseIdx":108.7},{"k":"2025-10","sale":66000,"saleN":1013,"saleIdx":106.5,"jeonse":40240,"jeonseN":822,"jeonseIdx":114.4,"wolse":88.7,"wolseN":394,"wolseIdx":109.8},{"k":"2025-11","sale":60500,"saleN":415,"saleIdx":97.6,"jeonse":41475,"jeonseN":905,"jeonseIdx":117.9,"wolse":92.3,"wolseN":453,"wolseIdx":114.1},{"k":"2025-12","sale":69800,"saleN":679,"saleIdx":112.6,"jeonse":42000,"jeonseN":874,"jeonseIdx":119.4,"wolse":90.3,"wolseN":407,"wolseIdx":111.7},{"k":"2026-01","sale":65500,"saleN":794,"saleIdx":105.6,"jeonse":40000,"jeonseN":873,"jeonseIdx":113.7,"wolse":84.9,"wolseN":486,"wolseIdx":105.1},{"k":"2026-02","sale":68000,"saleN":701,"saleIdx":109.7,"jeonse":38000,"jeonseN":678,"jeonseIdx":108,"wolse":87.7,"wolseN":362,"wolseIdx":108.5},{"k":"2026-03","sale":67700,"saleN":806,"saleIdx":109.2,"jeonse":38000,"jeonseN":813,"jeonseIdx":108,"wolse":93.1,"wolseN":404,"wolseIdx":115.1},{"k":"2026-04","sale":68500,"saleN":1017,"saleIdx":110.5,"jeonse":36000,"jeonseN":667,"jeonseIdx":102.3,"wolse":86.8,"wolseN":365,"wolseIdx":107.4},{"k":"2026-05","sale":67500,"saleN":957,"saleIdx":108.9,"jeonse":39375,"jeonseN":632,"jeonseIdx":111.9,"wolse":92,"wolseN":331,"wolseIdx":113.8},{"k":"2026-06","sale":72000,"saleN":727,"saleIdx":116.1,"jeonse":40000,"jeonseN":626,"jeonseIdx":113.7,"wolse":81.3,"wolseN":338,"wolseIdx":100.5},{"k":"2026-07","sale":64700,"saleN":139,"saleIdx":104.4,"jeonse":38850,"jeonseN":230,"jeonseIdx":110.4,"wolse":71.7,"wolseN":85,"wolseIdx":88.7}];
+</script>
+<script>
+(function () {
+  // ---- Tabs ----
+  document.querySelectorAll(".tabbar").forEach(function (bar) {
+    var buttons = bar.querySelectorAll("button[role=tab]");
+    buttons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        buttons.forEach(function (b) { b.setAttribute("aria-selected", "false"); });
+        btn.setAttribute("aria-selected", "true");
+        var card = bar.closest(".card");
+        card.querySelectorAll(".tabpanel").forEach(function (p) { p.classList.remove("active"); });
+        card.querySelector("#" + btn.dataset.tab).classList.add("active");
+      });
+    });
+  });
+
+  // ---- Index chart: real weekly/monthly buckets from full MOLIT trade history ----
+  var COLORS = { sale: "#0d6e4f", jeonse: "#c0392b", wolse: "#2461c9" };
+  var WINDOW = { week: 16, month: 12 }; // how many trailing buckets to plot
+
+  var svg = document.getElementById("chart");
+  var W = 640, H = 300, padL = 34, padR = 14, padT = 16, padB = 30;
+  var svgns = "http://www.w3.org/2000/svg";
+  function el(tag, attrs) {
+    var e = document.createElementNS(svgns, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function fmtDelta(cur, prev) {
+    if (cur == null || prev == null) return { text: "비교 불가", cls: "" };
+    var diff = cur - prev;
+    var sign = diff >= 0 ? "▲" : "▼";
+    var cls = diff >= 0 ? "up" : "down";
+    return { text: sign + " " + Math.abs(diff).toFixed(1) + "%p", cls: cls };
+  }
+  function fmtLabel(unit, k) {
+    if (unit === "month") {
+      var mm = k.split("-");
+      return mm[0].slice(2) + "." + mm[1];
+    }
+    var dd = k.split("-");
+    return dd[1] + "." + dd[2].padStart ? dd[1] + "." + dd[2] : k.slice(5).replace("-", ".");
+  }
+
+  var state = { unit: "week" };
+
+  function dataFor(unit) { return unit === "week" ? WEEKLY_DATA : MONTHLY_DATA; }
+
+  function clampDateToRange(unit) {
+    var data = dataFor(unit);
+    var min = data[0].k, max = data[data.length - 1].k;
+    var input = document.getElementById("refDate");
+    if (unit === "month") { min += "-01"; max += "-28"; }
+    input.min = min;
+    input.max = max;
+    if (!input.value || input.value < min) input.value = max;
+    if (input.value > max) input.value = max;
+    document.getElementById("rangeHint").textContent =
+      "조회 가능 범위: " + min + " ~ " + max;
+  }
+
+  function findBucketIndex(unit, dateStr) {
+    var data = dataFor(unit);
+    var key = unit === "month" ? dateStr.slice(0, 7) : dateStr;
+    var idx = -1;
+    for (var i = 0; i < data.length; i++) {
+      if (unit === "month") {
+        if (data[i].k <= key) idx = i;
+      } else {
+        if (data[i].k <= key) idx = i; else break;
+      }
+    }
+    if (idx === -1) idx = 0;
+    return idx;
+  }
+
+  function renderChart() {
+    var unit = state.unit;
+    clampDateToRange(unit);
+    var refDate = document.getElementById("refDate").value;
+    var data = dataFor(unit);
+    var endIdx = findBucketIndex(unit, refDate);
+    var win = WINDOW[unit];
+    var startIdx = Math.max(0, endIdx - win + 1);
+    var rows = data.slice(startIdx, endIdx + 1);
+
+    svg.innerHTML = "";
+    if (!rows.length) return;
+
+    var keys = ["sale", "jeonse", "wolse"];
+    var allVals = [];
+    keys.forEach(function (k) { rows.forEach(function (r) { if (r[k + "Idx"] != null) allVals.push(r[k + "Idx"]); }); });
+    if (!allVals.length) allVals = [90, 110];
+    var minV = Math.min.apply(null, allVals) - 8;
+    var maxV = Math.max.apply(null, allVals) + 8;
+
+    function x(i) { return padL + (rows.length === 1 ? 0 : (i / (rows.length - 1)) * (W - padL - padR)); }
+    function y(v) { return H - padB - ((v - minV) / (maxV - minV)) * (H - padT - padB); }
+
+    var gridVals = [];
+    for (var g = Math.ceil(minV / 10) * 10; g <= maxV; g += 10) gridVals.push(g);
+    gridVals.forEach(function (v) {
+      svg.appendChild(el("line", { x1: padL, x2: W - padR, y1: y(v), y2: y(v), stroke: "currentColor", opacity: v === 100 ? 0.35 : 0.08, "stroke-dasharray": v === 100 ? "4 4" : "0" }));
+      var t = el("text", { x: 6, y: y(v) + 4, "font-size": 10, fill: "currentColor", opacity: 0.55, "font-family": "var(--font-mono)" });
+      t.textContent = v;
+      svg.appendChild(t);
+    });
+
+    var labelStep = Math.ceil(rows.length / 8);
+    rows.forEach(function (r, i) {
+      if (i % labelStep !== 0 && i !== rows.length - 1) return;
+      var t = el("text", { x: x(i), y: H - 8, "font-size": 10, fill: "currentColor", opacity: 0.6, "text-anchor": "middle" });
+      t.textContent = fmtLabel(unit, r.k);
+      svg.appendChild(t);
+    });
+
+    keys.forEach(function (key) {
+      var pts = [];
+      rows.forEach(function (r, i) { if (r[key + "Idx"] != null) pts.push([i, r[key + "Idx"]]); });
+      if (!pts.length) return;
+      var d = pts.map(function (p, i) { return (i === 0 ? "M" : "L") + x(p[0]) + " " + y(p[1]); }).join(" ");
+      svg.appendChild(el("path", { d: d, fill: "none", stroke: COLORS[key], "stroke-width": 2.2, "stroke-linecap": "round", "stroke-linejoin": "round" }));
+      pts.forEach(function (p, i) {
+        var r = el("circle", { cx: x(p[0]), cy: y(p[1]), r: i === pts.length - 1 ? 4.5 : 2.2, fill: COLORS[key] });
+        svg.appendChild(r);
+      });
+      var last = pts[pts.length - 1][1];
+      var lbl = el("text", { x: x(pts[pts.length - 1][0]) - 4, y: y(last) - 10, "font-size": 11, "font-weight": 700, fill: COLORS[key], "text-anchor": "end" });
+      lbl.textContent = last.toFixed(1);
+      svg.appendChild(lbl);
+    });
+
+    // stats panel: last row in window vs previous row in window
+    var map = { sale: "Sale", jeonse: "Jeonse", wolse: "Wolse" };
+    var last = rows[rows.length - 1];
+    var prevRow = rows.length > 1 ? rows[rows.length - 2] : null;
+    keys.forEach(function (key) {
+      var cur = last[key + "Idx"];
+      var idxEl = document.getElementById("stat" + map[key] + "Idx");
+      idxEl.textContent = cur != null ? cur.toFixed(1) : "표본없음";
+      var delta = fmtDelta(cur, prevRow ? prevRow[key + "Idx"] : null);
+      var deltaEl = document.getElementById("stat" + map[key] + "Delta");
+      deltaEl.textContent = delta.cls ? delta.text + " (직전 " + (unit === "week" ? "주" : "월") + " 대비)" : delta.text;
+      deltaEl.className = "delta" + (delta.cls ? " " + delta.cls : "");
+    });
+
+    var unitLabel = unit === "week" ? "주" : "월";
+    document.getElementById("windowLabel").textContent =
+      fmtLabel(unit, rows[0].k) + " ~ " + fmtLabel(unit, last.k) + " (" + rows.length + unitLabel + "간)";
+    document.getElementById("indexDesc").textContent =
+      unit === "week"
+        ? "매주 월요일 기준 주간 구간(전체 데이터 첫 주=100)의 매매 중위가, 전세 중위보증금, 평균 월세를 지수화했습니다."
+        : "매월 구간(전체 데이터 첫 달=100)의 매매 중위가, 전세 중위보증금, 평균 월세를 지수화했습니다.";
+    document.getElementById("indexNote").innerHTML =
+      "국토교통부 실거래가 공개시스템 전수 데이터(만안구·동안구, 2025.01&ndash;2026.07)를 기준일 앞뒤로 최근 " + rows.length + unitLabel + " 구간만큼 조회한 결과입니다. 표본없음은 해당 구간 거래가 없어 지수를 계산할 수 없는 경우입니다.";
+  }
+
+  document.getElementById("refDate").addEventListener("change", renderChart);
+  document.querySelectorAll(".period-toggle button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".period-toggle button").forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
+      btn.setAttribute("aria-pressed", "true");
+      state.unit = btn.dataset.unit;
+      document.getElementById("refDate").value = "";
+      renderChart();
+    });
+  });
+
+  renderChart();
+
+  // ---- Location cards ----
+  var loc = [
+    {
+      icon: "🎓", key: "school", title: "학군", caption: "평촌 학원가 · 명문 학교 밀집",
+      html:
+        "<h3>평촌 학원가 &mdash; 경기도 3대 학원가</h3>" +
+        "<p>범계역 인근 평촌 학원가는 대치동(강남)·목동과 함께 수도권 3대 학원가로 꼽히며, 재수종합반·특목고 대비 학원이 밀집해 있습니다. 학군 프리미엄이 평촌동·호계동 아파트 가격을 지지하는 핵심 요인입니다.</p>" +
+        "<ul>" +
+        "<li><b>주요 학교</b> &mdash; 신성고, 백영고, 안양여자고등학교, 성문고 등 학업성취도 상위권 학교 다수</li>" +
+        "<li><b>학원 밀집지</b> &mdash; 범계역 서쪽 학원가, 재수종합반 및 이과 특화 학원 다수 분포</li>" +
+        "<li><b>영향 지역</b> &mdash; 평촌동, 호계동 단지가 학군 프리미엄의 직접 수혜 지역</li>" +
+        "</ul>" +
+        "<span class='loc-tag'>범계역 도보권</span><span class='loc-tag'>재수종합반 밀집</span>"
+    },
+    {
+      icon: "🚌", key: "traffic", title: "교통", caption: "간선도로 · 광역버스망",
+      html:
+        "<h3>도로 · 광역교통망</h3>" +
+        "<p>안양시는 서울 남부·수원·과천을 잇는 간선도로가 촘촘히 연결되어 있어 자가용 출퇴근 접근성이 우수합니다.</p>" +
+        "<ul>" +
+        "<li><b>과천봉담도시고속화도로</b> &mdash; 과천-의왕-수원 방향 무신호 고속화 도로</li>" +
+        "<li><b>경수대로 · 흥안대로</b> &mdash; 서울 금천·구로 방면 및 수원 방면 주요 간선</li>" +
+        "<li><b>제2경인고속도로</b> &mdash; 인천·시흥 방면 접근</li>" +
+        "<li><b>광역버스</b> &mdash; 사당·강남·여의도 등 서울 도심 방면 노선 다수 운행</li>" +
+        "</ul>" +
+        "<span class='loc-tag'>사당 20분대</span><span class='loc-tag'>강남 40분대</span>"
+    },
+    {
+      icon: "🚇", key: "subway", title: "지하철", caption: "1호선 · 4호선 환승",
+      html:
+        "<h3>지하철 노선 현황</h3>" +
+        "<p>안양시는 1호선과 4호선이 각각 만안구·동안구를 관통하며, 인덕원역은 향후 트리플 환승역으로 부상할 예정입니다.</p>" +
+        "<ul>" +
+        "<li><b>4호선</b> &mdash; 평촌역, 범계역, 인덕원역 (동안구 관통, 학원가·업무지구 접근)</li>" +
+        "<li><b>1호선</b> &mdash; 관악역, 명학역, 안양역, 석수역 (만안구 관통, 구로·용산·서울역 방면)</li>" +
+        "<li><b>환승 계획</b> &mdash; 인덕원역은 4호선 + GTX-C + 월곶판교선(예정)이 만나는 환승 거점으로 개발 예정</li>" +
+        "</ul>" +
+        "<span class='loc-tag'>평촌역·범계역 (4호선)</span><span class='loc-tag'>안양역 (1호선)</span>"
+    },
+    {
+      icon: "🚄", key: "ktx", title: "KTX", caption: "광명역 연계",
+      html:
+        "<h3>KTX / SRT 연계</h3>" +
+        "<p>안양시 내에는 KTX 정차역이 없어 인근 <b>광명역</b>을 통해 KTX·SRT를 이용합니다.</p>" +
+        "<ul>" +
+        "<li><b>광명역 접근</b> &mdash; 안양 시내에서 차량으로 약 20&ndash;30분, 버스 환승 노선 존재</li>" +
+        "<li><b>이용 노선</b> &mdash; 경부선(부산·대구 방면), 호남선(광주·목포 방면) KTX/SRT</li>" +
+        "<li><b>향후 계획</b> &mdash; 인덕원&ndash;동탄선 개통 시 동탄 경유 SRT 접근성 개선 기대</li>" +
+        "</ul>" +
+        "<span class='loc-tag'>광명역 차량 20분대</span>"
+    },
+    {
+      icon: "🚈", key: "gtx", title: "GTX", caption: "GTX-C 인덕원역 (예정)",
+      html:
+        "<h3>GTX-C 노선 계획</h3>" +
+        "<p>GTX-C 노선이 <b>인덕원역</b>에 정차할 예정으로, 개통 시 삼성역까지 약 15분대 접근이 가능해질 것으로 전망되어 인덕원역 인근 단지의 대표적인 개발 호재로 꼽힙니다.</p>" +
+        "<ul>" +
+        "<li><b>정차역</b> &mdash; 인덕원역 (4호선 환승)</li>" +
+        "<li><b>목표 시점</b> &mdash; 2028년 개통 목표 (공사 진행 상황에 따라 변동 가능)</li>" +
+        "<li><b>파급 효과</b> &mdash; 인덕원역 도보권 관양동·평촌동 단지(인덕원마을, 인덕원대우 등)에 프리미엄 형성</li>" +
+        "<li><b>참고</b> &mdash; 월곶판교선 등 추가 광역철도 계획도 인덕원역 경유가 논의되고 있어 장기적으로 환승 거점 가치가 더 커질 전망</li>" +
+        "</ul>" +
+        "<span class='loc-tag'>인덕원역 정차 예정</span><span class='loc-tag'>2028년 목표</span>"
+    }
+  ];
+
+  var grid = document.getElementById("locGrid");
+  loc.forEach(function (item, idx) {
+    var btn = document.createElement("button");
+    btn.className = "loc-card";
+    btn.setAttribute("aria-expanded", "false");
+    btn.innerHTML =
+      "<div class='loc-icon'>" + item.icon + "</div>" +
+      "<div class='loc-title'>" + item.title + " <span class='loc-chevron'>&#9662;</span></div>" +
+      "<div class='loc-caption'>" + item.caption + "</div>";
+
+    var detail = document.createElement("div");
+    detail.className = "loc-detail";
+    detail.id = "detail-" + item.key;
+    detail.innerHTML = item.html;
+
+    btn.addEventListener("click", function () {
+      var isOpen = btn.getAttribute("aria-expanded") === "true";
+      grid.querySelectorAll(".loc-card").forEach(function (c) { c.setAttribute("aria-expanded", "false"); });
+      grid.querySelectorAll(".loc-detail").forEach(function (d) { d.classList.remove("open"); });
+      if (!isOpen) {
+        btn.setAttribute("aria-expanded", "true");
+        detail.classList.add("open");
+        detail.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    });
+
+    grid.appendChild(btn);
+    grid.appendChild(detail);
+  });
+})();
+</script>
