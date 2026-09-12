@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>랜드랭귀지 이원화 기획안</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --paper:#f3f5f8; --surface:#ffffff; --surface-2:#e9edf2;
+    --ink:#16202b; --ink-2:#48525f; --ink-3:#77818e; --line:#d7dde5; --line-2:#c3cbd5;
+    --accent:#0f6b66; --accent-soft:#dcefed;
+    --cust:#b8410e; --cust-soft:#fbe7dc; --cust-ink:#7a2a0a;
+    --brok:#22418f; --brok-soft:#e1e8fa; --brok-ink:#182f68;
+    --sev0-bg:#16202b; --sev0-fg:#ffffff;
+    --ok:#2f6f3e;
+    --font-display:'Hahmlet','Noto Serif KR','Apple SD Gothic Neo',serif;
+    --font-body:'IBM Plex Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,'Malgun Gothic',monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0e1319; --surface:#161c25; --surface-2:#1e2632;
+      --ink:#e7ebf1; --ink-2:#b2bbc7; --ink-3:#8791a0; --line:#2a3441; --line-2:#3a4655;
+      --accent:#5fd0c6; --accent-soft:#12302e;
+      --cust:#f19a6b; --cust-soft:#3a2216; --cust-ink:#ffd4bf;
+      --brok:#93a9f4; --brok-soft:#1c2744; --brok-ink:#cbd6ff;
+      --sev0-bg:#e7ebf1; --sev0-fg:#0e1319;
+      --ok:#7fcf94;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0e1319; --surface:#161c25; --surface-2:#1e2632;
+    --ink:#e7ebf1; --ink-2:#b2bbc7; --ink-3:#8791a0; --line:#2a3441; --line-2:#3a4655;
+    --accent:#5fd0c6; --accent-soft:#12302e;
+    --cust:#f19a6b; --cust-soft:#3a2216; --cust-ink:#ffd4bf;
+    --brok:#93a9f4; --brok-soft:#1c2744; --brok-ink:#cbd6ff;
+    --sev0-bg:#e7ebf1; --sev0-fg:#0e1319;
+    --ok:#7fcf94;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased;padding-inline:20px;padding-block:0 80px}
+  a{color:var(--accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;letter-spacing:-.01em;line-height:1.3;text-wrap:balance;margin:0}
+  h1{font-size:clamp(28px,4vw,40px)}
+  h2{font-size:clamp(22px,2.6vw,28px)}
+  h3{font-size:18px;margin-top:34px;margin-bottom:10px}
+  h4{font-family:var(--font-body);font-weight:700;font-size:15px;margin-top:22px;margin-bottom:6px}
+  p{margin:0 0 12px;max-width:68ch}
+  ul,ol{margin:0 0 14px;padding-left:22px;max-width:72ch}
+  li{margin-bottom:5px}
+  li::marker{color:var(--ink-3)}
+  strong{font-weight:600}
+  code{font-family:var(--font-mono);font-size:.88em;background:var(--surface-2);padding:1px 5px;border-radius:4px}
+  .mono{font-family:var(--font-mono);font-size:12.5px}
+  hr{border:0;border-top:1px solid var(--line);margin:40px 0}
+
+  .page{max-width:1180px;margin:0 auto}
+  .masthead{padding:44px 0 28px;border-bottom:1px solid var(--line-2)}
+  .kicker{font-family:var(--font-body);font-size:11.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  .masthead .sub{color:var(--ink-2);font-size:16px;max-width:64ch;margin-top:14px}
+  .meta{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:20px;font-size:13px;color:var(--ink-3)}
+  .meta b{color:var(--ink-2);font-weight:600}
+
+  .layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:48px;margin-top:8px}
+  @media(max-width:1000px){.layout{grid-template-columns:1fr;gap:0}}
+  .toc{position:sticky;top:20px;align-self:start;padding-top:36px}
+  @media(max-width:1000px){.toc{position:static;padding:18px 0 0}}
+  .toc .kicker{margin-bottom:8px}
+  .toc ol{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:2px}
+  @media(max-width:1000px){.toc ol{flex-direction:row;flex-wrap:wrap;gap:6px}}
+  .toc a{display:block;text-decoration:none;color:var(--ink-2);font-size:13.5px;padding:6px 10px;border-radius:6px;border-left:2px solid transparent}
+  @media(max-width:1000px){.toc a{border:1px solid var(--line);background:var(--surface)}}
+  .toc a:hover{background:var(--surface);color:var(--ink);border-left-color:var(--accent)}
+  .toc .n{font-family:var(--font-mono);font-size:11px;color:var(--ink-3);margin-right:6px}
+
+  main{min-width:0;padding-top:36px}
+  section.part{padding-top:44px;scroll-margin-top:16px}
+  section.part + section.part{border-top:1px solid var(--line);margin-top:44px}
+  .part-head{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:baseline;margin-bottom:18px}
+  .part-num{font-family:var(--font-mono);font-size:13px;color:var(--ink-3)}
+  .lede{font-size:16.5px;color:var(--ink-2);max-width:66ch}
+
+  /* 요약 */
+  .summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:24px 0 8px}
+  @media(max-width:720px){.summary{grid-template-columns:1fr}}
+  .sum{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .sum .lbl{font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+  .sum p{margin:0;font-size:14.5px}
+
+  /* 발견 사항 */
+  .findings{display:flex;flex-direction:column;gap:10px;margin:16px 0 8px;max-width:820px}
+  .finding{display:grid;grid-template-columns:52px 1fr;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .sev{font-family:var(--font-mono);font-size:12px;font-weight:500;height:26px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid var(--ink);color:var(--ink);align-self:start}
+  .sev.p0{background:var(--sev0-bg);color:var(--sev0-fg);border-color:var(--sev0-bg)}
+  .sev.p2{border-color:var(--line-2);color:var(--ink-3)}
+  .finding h4{margin:0 0 4px;font-size:15px}
+  .finding p{margin:0;font-size:14px;color:var(--ink-2)}
+  .finding .fix{margin-top:8px;font-size:13.5px;color:var(--ink)}
+  .finding .fix b{color:var(--accent);font-weight:600;margin-right:6px}
+
+  /* 표 */
+  .tbl-wrap{overflow-x:auto;margin:14px 0 22px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:640px}
+  th{text-align:left;font-weight:600;font-size:12.5px;letter-spacing:.02em;color:var(--ink-2);background:var(--surface-2);padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.55}
+  tr:last-child td{border-bottom:0}
+  td.num{font-variant-numeric:tabular-nums}
+  th.c,td.c{background:var(--cust-soft);color:var(--cust-ink)}
+  th.b,td.b{background:var(--brok-soft);color:var(--brok-ink)}
+  :root[data-theme="dark"] td.c,:root[data-theme="dark"] td.b{background:transparent}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) td.c,:root:not([data-theme="light"]) td.b{background:transparent}}
+  td.c,td.b{background:transparent}
+  .tbl-wrap.wide table{min-width:820px}
+
+  /* 칩 */
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:5px;border:1px solid;line-height:1.5;white-space:nowrap}
+  .chip.c{color:var(--cust-ink);background:var(--cust-soft);border-color:transparent}
+  .chip.b{color:var(--brok-ink);background:var(--brok-soft);border-color:transparent}
+  .chip.n{color:var(--ink-2);background:var(--surface-2);border-color:transparent}
+  .chip.ok{color:var(--ok);border-color:var(--ok);background:transparent}
+  .chip.rule{font-family:var(--font-mono);font-weight:500;color:var(--accent);border-color:var(--accent);background:transparent}
+  .mark{font-weight:700}
+  .mark.y{color:var(--ok)}
+  .mark.n{color:var(--ink-3)}
+  .mark.d{color:var(--cust)}
+
+  /* 비교 표(정의) */
+  .compare{display:grid;grid-template-columns:120px 1fr 1fr;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface);margin:16px 0 22px;font-size:14px}
+  .compare > div{padding:10px 14px;border-bottom:1px solid var(--line)}
+  .compare > div:nth-last-child(-n+3){border-bottom:0}
+  .compare .k{font-weight:600;color:var(--ink-2);background:var(--surface-2);font-size:13px}
+  .compare .hb{font-weight:700;color:var(--brok);background:var(--brok-soft)}
+  .compare .hc{font-weight:700;color:var(--cust);background:var(--cust-soft)}
+  @media(max-width:720px){.compare{grid-template-columns:1fr;font-size:13.5px}.compare .k{padding-top:12px}}
+
+  /* 규칙 */
+  .rules{display:flex;flex-direction:column;gap:10px;margin:14px 0 20px;max-width:820px}
+  .rule{display:grid;grid-template-columns:44px 1fr;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .rule .id{font-family:var(--font-mono);font-size:12.5px;font-weight:500;color:var(--accent);padding-top:2px}
+  .rule h4{margin:0 0 4px}
+  .rule p{margin:0;font-size:14px;color:var(--ink-2)}
+  .rule .ex{margin-top:6px;font-size:13px;color:var(--ink)}
+  .rule .ex b{font-weight:600;color:var(--ink-3);margin-right:4px}
+
+  /* 목업 */
+  .mocks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:18px 0 10px}
+  @media(max-width:820px){.mocks{grid-template-columns:1fr}}
+  .mock{border:1px solid var(--line-2);border-radius:14px;background:var(--surface);overflow:hidden;box-shadow:0 10px 30px -18px rgba(0,0,0,.35)}
+  .mock .bar{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+  .mock.c .bar{background:var(--cust-soft);color:var(--cust-ink)}
+  .mock.b .bar{background:var(--brok-soft);color:var(--brok-ink)}
+  .mock .body{padding:14px 16px 16px;font-size:13.5px}
+  .mock .tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+  .mock h4{font-family:var(--font-display);font-size:16px;line-height:1.4;margin:0 0 8px}
+  .mock .blk{margin-top:10px}
+  .mock .lbl{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+  .mock p{margin:0 0 4px;font-size:13.5px}
+  .mock ul{margin:0;padding-left:18px;font-size:13.5px}
+  .mock .dots{font-family:var(--font-mono);letter-spacing:1px;color:var(--cust)}
+  .mock.b .dots{color:var(--brok)}
+  .mock .links{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .mock .links span{font-size:12px;border:1px solid var(--line-2);border-radius:5px;padding:2px 8px;color:var(--ink-2)}
+  .mock .cta{margin-top:12px;border-radius:8px;padding:10px 12px;text-align:center;font-weight:600;font-size:13px}
+  .mock.c .cta{background:var(--cust);color:#fff}
+  .mock.b .cta{background:var(--brok);color:#fff}
+  .mock .grade{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:13px}
+
+  /* 다이어그램 */
+  figure{margin:20px 0 26px}
+  figure svg{width:100%;height:auto;display:block;color:var(--ink)}
+  figcaption{font-size:13px;color:var(--ink-3);margin-top:8px;max-width:70ch}
+
+  /* IA 목록 */
+  .ia{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:14px 0 10px}
+  @media(max-width:820px){.ia{grid-template-columns:1fr}}
+  .ia .col{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:14px 16px}
+  .ia .col h4{margin:0 0 8px;display:flex;align-items:center;gap:8px}
+  .ia ol{margin:0;padding-left:20px;font-size:14px}
+  .ia li b{font-weight:600}
+  .ia li span{color:var(--ink-2)}
+
+  /* 로드맵 */
+  .phases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:14px 0}
+  @media(max-width:820px){.phases{grid-template-columns:1fr}}
+  .phase{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:14px 16px}
+  .phase .when{font-family:var(--font-mono);font-size:12px;color:var(--accent);margin-bottom:4px}
+  .phase h4{margin:0 0 8px}
+  .phase ul{margin:0;padding-left:18px;font-size:13.5px}
+
+  .note{font-size:13px;color:var(--ink-3);border-left:2px solid var(--line-2);padding-left:12px;margin:12px 0 18px;max-width:70ch}
+  .legend{font-size:13px;color:var(--ink-2);margin:8px 0 14px}
+
+  footer.end{margin-top:56px;padding-top:20px;border-top:1px solid var(--line-2);font-size:13px;color:var(--ink-3);max-width:72ch}
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+  @media print{body{background:#fff;padding-inline:0}.toc{display:none}.layout{grid-template-columns:1fr}.mock{box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="masthead">
+    <div class="kicker">LAND LANGUAGE · 사이트 검토 및 이원화 기획</div>
+    <h1>랜드랭귀지 이원화 기획안</h1>
+    <p class="sub">kimyusoo.github.io/landlanguage-edm 의 데모 원본(EDM 미리보기.html)과 DAILY·WEEKLY·MONTHLY·인스타 카드·블로그 화면 5장을 코드 수준까지 검토한 뒤, 고객용과 중개사용으로 나누는 설계와 보도자료 분류 규칙, 바로 연결할 공공데이터 사이트를 정리했습니다.</p>
+    <div class="meta">
+      <span><b>검토일</b> 2026-09-12</span>
+      <span><b>대상</b> 단일 HTML 1,900줄 · 스크린샷 5장 · 저장소 안양 대시보드</span>
+      <span><b>한계</b> 라이브 사이트는 이 세션의 네트워크 정책으로 접속 불가, 동일 코드의 데모 원본과 캡처로 대체</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc" aria-label="목차">
+      <div class="kicker">목차</div>
+      <ol>
+        <li><a href="#s0"><span class="n">0</span>한눈에</a></li>
+        <li><a href="#s1"><span class="n">1</span>현재 사이트 검토</a></li>
+        <li><a href="#s2"><span class="n">2</span>고객용·중개사용 분리</a></li>
+        <li><a href="#s3"><span class="n">3</span>보도자료 분류와 라우팅</a></li>
+        <li><a href="#s4"><span class="n">4</span>공공데이터 연결</a></li>
+        <li><a href="#s5"><span class="n">5</span>화면 구성과 UX 백로그</a></li>
+        <li><a href="#s6"><span class="n">6</span>로드맵</a></li>
+      </ol>
+    </aside>
+
+    <main>
+      <section class="part" id="s0" style="padding-top:0">
+        <div class="part-head"><span class="part-num">0</span><h2>한눈에</h2></div>
+        <div class="summary">
+          <div class="sum"><div class="lbl">검토 결론</div><p>디자인 시스템, 정책 단계 7분류, 보유형태별 영향도, 컴플라이언스 문구, 멀티채널 출력은 강점입니다. 그러나 실시간 뉴스가 들어오는 순간 모든 카드의 해설이 같은 안내문 3줄로 덮여 "AI 브리핑"이 비고, 숫자는 데모값이라 헤드라인과 모순되며, 중개사에게 하는 말이 고객 발송물에 그대로 실립니다.</p></div>
+          <div class="sum"><div class="lbl">분리 원칙</div><p>"하나의 이슈 레코드, 두 개의 렌더링". 중개사용은 전체 이슈를 다루는 편집·실무 스튜디오, 고객용은 3~5개 이슈를 쉬운 말과 할 일, 공공데이터 바로가기로 담는 읽기 전용 레터입니다.</p></div>
+          <div class="sum"><div class="lbl">보도자료 분류</div><p>발표 주체·정책 단계·주제·영향 대상·지역의 5축 태그를 붙이고, 라우팅 규칙 8개(R1~R8)로 고객용에 실을지, 중개사 전용으로 둘지, 특정 동네 고객에게만 보낼지를 정합니다.</p></div>
+          <div class="sum"><div class="lbl">공공데이터</div><p>보도자료 수집 소스 12곳, 고객용 바로가기 22곳, 중개사용 바로가기 20곳을 URL과 함께 정리했고, 주제별로 브리핑에 자동 삽입할 링크 매핑과 API로 자동화 가능한 항목을 표시했습니다.</p></div>
+        </div>
+        <p class="note">이 문서의 링크 표에서 ● 는 이번 검토에서 검색 결과로 URL을 확인한 사이트, ○ 는 널리 쓰이는 공식 도메인이지만 이 세션에서는 접속 검증을 하지 못한 사이트입니다.</p>
+      </section>
+
+      <!-- ───────── 1. 검토 ───────── -->
+      <section class="part" id="s1">
+        <div class="part-head"><span class="part-num">1</span><h2>현재 사이트 검토</h2></div>
+        <p class="lede">사이트는 한 개의 HTML 파일이 데이터·렌더링·편집·공유를 모두 맡는 "중개사용 제작 스튜디오"이며, 그 미리보기 화면이 그대로 고객에게 보내지는 구조입니다.</p>
+
+        <h3>1.1 무엇으로 만들어져 있나</h3>
+        <ul>
+          <li><strong>구성 축</strong>: 주기 3종(DAILY·WEEKLY·MONTHLY) × 출력 4종(이메일·모바일·인스타 카드·블로그 포스팅) × 액션 5종(사무소·메일·PDF 인쇄·카카오톡·링크).</li>
+          <li><strong>콘텐츠 단위</strong>: 이슈 12개 슬롯. 정식 데모 이슈 5개(금리·공급·청약·세금·통계)와 범용 주제 7개(임대차·정비사업·대출·분양·GTX·전세가율·신도시). 각 이슈는 정책 단계, 기관, 한 줄 요약, 설명, 불릿 3개, 영향 요약, 대상 태그, 관련 기사, 보유형태 7종 영향도를 가집니다.</li>
+          <li><strong>실시간 데이터</strong>: GitHub Actions가 Google News RSS를 수집해 news.json을 커밋하고, 페이지가 이를 읽어 12개 슬롯의 제목·기사·링크를 교체합니다. 캡처 기준 "실시간 뉴스 · 09.12 오후 07:45 수집".</li>
+          <li><strong>화면 순서(이메일)</strong>: 마스트헤드 → 슬로건 → 오늘의 헤드라인 → 정책 카드(4·6·8개) → 뉴스 카드(8·12·12개) → 오늘의 숫자(타일 6개와 막대) → 그래서 내 부동산에는?(7행) → 공인중개사의 한마디 → 상담 CTA → 푸터(사무소·면책·광고 표시·수신거부).</li>
+          <li><strong>저장</strong>: 사무소 정보, 섹션 편집, 블로그, 인스타 구성 모두 브라우저 localStorage. 서버·계정 없음, 기기 간 동기화 없음.</li>
+          <li><strong>발송</strong>: 메일 앱 초안(mailto·Gmail), 새 창 PDF 인쇄, 카카오 공유(SDK 키 미설정이라 실제로는 클립보드 복사), 링크 복사(<code>?t=DAILY</code> 파라미터만 포함).</li>
+          <li><strong>저장소의 다른 자산</strong>: 안양(만안·동안) 아파트 실거래 대시보드(index.html)와 수집 스크립트(fetch.js·process.js·top10.js)가 별도로 있어, "우리 동네 숫자" 섹션의 데이터 소스로 바로 쓸 수 있습니다.</li>
+        </ul>
+
+        <h3>1.2 잘 만든 것 (유지)</h3>
+        <ol>
+          <li><strong>정책 단계 7분류</strong> — 확정 · 시행 예정 · 입법예고 · 국회 심의 중 · 정부 검토 · 언론 보도 · 전망/분석. 이 서비스에서 가장 가치 있는 편집 원칙이며, 3장의 분류 체계도 이를 확장합니다.</li>
+          <li><strong>보유형태 7종 영향도</strong>(무주택·1주택·다주택·매수 예정·매도 예정·임대인·임차인) — 고객 세그먼트 설계의 뼈대입니다.</li>
+          <li><strong>"출처와 기준일이 확인된 수치만 게시"</strong>, 면책·광고성 정보 표시·수신거부 문구 — 컴플라이언스 골격이 이미 있습니다.</li>
+          <li><strong>한 데이터로 네 채널 생성</strong> — 이메일, 모바일, 1080×1350 인스타 카드(테마 6종·템플릿 4종·ZIP 저장), SEO 골격을 갖춘 블로그 초안(이미지 삽입 위치, 직접 경험 입력 슬롯, 용어 풀이, 체크리스트 표).</li>
+          <li><strong>사무소 브랜딩 자동 반영</strong>, 섹션 인라인 수정·삭제·복원, 발행일 자동 계산.</li>
+          <li><strong>에디토리얼 디자인 시스템</strong>(네이비·골드·오렌지)과 카드 가독성. 이 톤은 고객용 레터에서 그대로 살릴 가치가 있습니다.</li>
+        </ol>
+
+        <h3>1.3 문제점 (심각도순)</h3>
+        <p class="legend"><span class="sev p0">P0</span> 신뢰를 깨는 문제 · <span class="sev">P1</span> 구조 문제 · <span class="sev p2">P2</span> 마감 문제</p>
+        <div class="findings">
+          <div class="finding"><span class="sev p0">P0</span><div><h4>1. 실시간 모드에서 해설이 비어 있다</h4><p>news.json이 들어오면 <code>hydrateNews()</code>가 모든 이슈의 불릿·영향 요약·페르소나 영향도를 같은 문장으로 덮어씁니다. 캡처 기준 DAILY 12개, WEEKLY 18개 카드에 "헤드라인보다 적용 대상·시행 시점·구체 수치를 원문에서 먼저 확인하세요"가 반복되고, 영향도는 전부 ●●●○○입니다. 브리핑이 아니라 기사 링크 목록이 됩니다.</p><div class="fix"><b>해결</b>수집 후 요약·태깅·영향도 생성 단계(LLM)와 검수 플래그를 파이프라인에 넣고, 생성 실패 시 카드를 숨깁니다.</div></div></div>
+          <div class="finding"><span class="sev p0">P0</span><div><h4>2. 숫자가 헤드라인과 모순된다</h4><p>'오늘의 숫자'는 코드에 고정된 데모 상수입니다. 같은 화면에서 헤드라인은 "두 달 연속 기준금리 인상"인데 타일은 "기준금리 2.5% 보합, 기준일 2026-09-02"입니다. 한국은행 공시 기준으로는 7월 16일 2.75%, 8월 27일 3.00%입니다. 타일의 '출처' 링크도 네이버 검색으로 갑니다.</p><div class="fix"><b>해결</b>한국은행 ECOS, 부동산원 R-ONE, 실거래가 API(이미 fetch.js에 있음)로 타일을 채우고, 출처는 실제 통계 페이지로 연결합니다.</div></div></div>
+          <div class="finding"><span class="sev p0">P0</span><div><h4>3. 기관·단계 배지가 기사와 무관하다</h4><p>배지는 주제 슬롯에 고정되어 있어 실제 기사와 어긋납니다. "대전시의회, 둔산지구 재건축…" 기사에 국토교통부, "특별공급 개편 이후 달라진 당첨 전략" 기사에 입법예고, "종부세 개편" 기사에 공식자료·언론 보도가 붙습니다. 단계 분류가 이 서비스의 핵심 약속인데 이를 스스로 깨고 있습니다.</p><div class="fix"><b>해결</b>배지는 이슈 레코드의 실제 메타(발표 주체·단계)에서만 렌더하고, 분류기가 확신하지 못하면 배지를 숨기고 '확인 필요'만 표시합니다.</div></div></div>
+          <div class="finding"><span class="sev p0">P0</span><div><h4>4. 중개사에게 하는 말이 고객 발송물에 실린다</h4><p>불릿 "고객 상황에 따라 영향이 달라짐을 안내하세요", "확정된 내용과 논의 단계를 구분해 설명하세요"는 중개사 지침입니다. 인스타 카드의 "공인중개사 POINT ①②③" 슬라이드와 슬로건 "AI는 중개사를 대체하지 못합니다. AI를 아는 중개사가 대체합니다"도 B2B 문구입니다. 이 자료는 "광고성 정보 수신에 동의한 고객에게 발송"된다고 푸터에 적혀 있습니다.</p><div class="fix"><b>해결</b>렌더 함수에 audience 파라미터를 두고, 고객용에서는 금지어(R7)를 자동 차단합니다. 2장의 분리 설계가 이 문제의 답입니다.</div></div></div>
+          <div class="finding"><span class="sev p0">P0</span><div><h4>5. 공유 링크가 고객에게 '중개사 화면'을 보여준다</h4><p>카카오·링크 공유 URL은 같은 스튜디오 페이지이고 사무소 정보는 URL에 실리지 않습니다. 고객 브라우저에는 저장값이 없어 기본값 "홍길동부동산", "연락처를 입력해 주세요", "카카오톡 채널 미설정"이 보이고, 첫 방문 모달 "중개사무소 정보 입력"이 뜨며(첫 방문에는 ESC·배경 클릭으로 닫히지 않음), 수정·삭제 버튼과 편집 도구까지 노출됩니다.</p><div class="fix"><b>해결</b>발행 시 사무소 정보를 포함한 읽기 전용 스냅샷 URL을 만들고, 편집 UI와 모달은 스튜디오에만 둡니다.</div></div></div>
+          <div class="finding"><span class="sev p0">P0</span><div><h4>6. '확인 필요' 배지가 항상 켜져 있다</h4><p>모든 카드에 무조건 붙도록 코드에 고정되어 있어, 경고로서 의미를 잃었습니다.</p><div class="fix"><b>해결</b>원문 미확인, 단계 불명, 수치 미검증일 때만 조건부로 표시합니다.</div></div></div>
+
+          <div class="finding"><span class="sev">P1</span><div><h4>7. 정책 섹션과 뉴스 섹션이 같은 배열을 두 번 렌더한다</h4><p>두 섹션 모두 ISSUES 배열을 앞에서부터 자르므로 같은 카드와 같은 관련기사 3건이 반복됩니다. WEEKLY 캡처는 세로 25,180px(2배율)로 DAILY의 1.7배입니다.</p><div class="fix"><b>해결</b>정책 = 정부·기관 원문(보도자료·고시), 뉴스 = 언론 보도로 역할을 나누고 같은 이슈는 한 번만 싣습니다. 고객용은 분량 상한(R8)을 둡니다.</div></div></div>
+          <div class="finding"><span class="sev">P1</span><div><h4>8. DAILY인데 기사 날짜가 2~4주 전이다</h4><p>09.12 브리핑의 정책 카드 발표일이 08.27, 08.19, 08.01, 08.03이고, '발표일'은 첫 기사 날짜를 그대로 씁니다. 주기별 신선도 기준이 없습니다.</p><div class="fix"><b>해결</b>DAILY 48시간, WEEKLY 7일, MONTHLY 당월로 컷을 두고, 오래된 이슈는 "지켜볼 이슈"로 내립니다.</div></div></div>
+          <div class="finding"><span class="sev">P1</span><div><h4>9. "그래서 내 부동산에는?"이 첫 이슈에만 연결된다</h4><p>섹션 제목 옆에 첫 이슈 제목만 표시되고, 실시간 모드에서는 값이 전부 같아 정보량이 0입니다.</p><div class="fix"><b>해결</b>이슈마다 영향도를 두고, 고객용에서는 고객 세그먼트에 해당하는 행만 보여줍니다.</div></div></div>
+          <div class="finding"><span class="sev">P1</span><div><h4>10. 원문 링크의 폴백이 네이버 검색이다</h4><p>기사 URL이 없으면 "원문·관련보도 보기"와 "출처"가 검색 결과 페이지로 갑니다. 고객은 원문을 기대하고 누릅니다.</p><div class="fix"><b>해결</b>실제 URL이 없으면 버튼을 숨기고, 보도자료는 4장의 공식 소스 URL로 연결합니다.</div></div></div>
+          <div class="finding"><span class="sev">P1</span><div><h4>11. 발송 전 검증이 없다</h4><p>연락처·소재지·등록번호가 비어도 발송할 수 있습니다. 푸터는 "등록번호 브랜드설정에서 입력"이라 안내하지만 입력 모달에는 등록번호 칸이 없어 채울 방법이 없습니다.</p><div class="fix"><b>해결</b>발행 전 체크(사무소 필수 항목, 수신거부 링크, 금지어, 빈 카드)를 통과해야 발송 버튼이 열리게 합니다.</div></div></div>
+          <div class="finding"><span class="sev">P1</span><div><h4>12. 편집 모드와 읽기 모드가 나뉘어 있지 않다</h4><p>미리보기 안에 수정·삭제 버튼이 있고, 상단 도구막대가 항상 보입니다. 중개사는 "지금 보이는 게 고객이 볼 화면인지" 확신할 수 없습니다.</p><div class="fix"><b>해결</b>스튜디오(편집)와 레터(발행본)를 화면과 URL 수준에서 분리합니다.</div></div></div>
+
+          <div class="finding"><span class="sev p2">P2</span><div><h4>13. 텍스트 겹침 3곳</h4><p>정책 카드 불릿 두 줄 겹침, 뉴스 카드의 배지와 제목 겹침, CTA 제목 겹침이 캡처에 보입니다. 전체 페이지 캡처 도구의 이어붙이기 문제일 수 있으니 실제 기기에서 확인이 필요합니다.</p></div></div>
+          <div class="finding"><span class="sev p2">P2</span><div><h4>14. 푸터·주석 글자 9.5~10.5px</h4><p>50대 이상 고객이 많은 채널에서는 작습니다. 본문 최소 13px, 법적 고지 최소 12px을 권합니다.</p></div></div>
+          <div class="finding"><span class="sev p2">P2</span><div><h4>15. 인스타 카드 본문이 안내문이다</h4><p>실시간 모드에서 "무슨 내용인가요?" 슬라이드가 "주요 언론이 비중 있게 다룬 이슈입니다. 아래 기사 원문에서 확인하세요"로 채워집니다. SNS 카드가 다른 곳에서 읽으라고 말하는 셈입니다.</p></div></div>
+          <div class="finding"><span class="sev p2">P2</span><div><h4>16. 블로그 초안의 마감</h4><p>메타 설명 블록이 본문 안에 렌더되고, 목차에 앵커가 없으며, 실시간 모드에서는 보유형태 표가 전부 3/5입니다. 구조 자체는 좋으니 데이터만 채우면 됩니다.</p></div></div>
+          <div class="finding"><span class="sev p2">P2</span><div><h4>17. 접근성</h4><p>모달에 포커스 트랩이 없고, 주기·출력 선택 버튼에 aria-pressed가 없으며, 정책 단계가 색으로만 구분되는 곳이 있습니다.</p></div></div>
+          <div class="finding"><span class="sev p2">P2</span><div><h4>18. 수신거부·개인정보처리방침이 '#' 링크다</h4><p>광고성 메일은 수신거부 수단이 실제로 동작해야 합니다. 발송 인프라를 붙이는 시점에 함께 해결해야 합니다.</p></div></div>
+          <div class="finding"><span class="sev p2">P2</span><div><h4>19. EDM인데 메일을 보낼 수 없다</h4><p>발송은 메일 앱 초안 열기와 PDF 첨부에 의존합니다. 수신자 목록, 발송 이력, 반응 추적이 없어 "정보를 알게 해주는 서비스"로 가려면 발송 계층이 필요합니다.</p></div></div>
+        </div>
+
+        <h3>1.4 개발자용 기술 메모</h3>
+        <ul>
+          <li>Google News RSS는 제목·링크·짧은 요약만 주므로, 해설이 비는 문제(1번)는 데이터 소스의 한계입니다. 정부 보도자료 RSS(4.1)를 1차 소스로 두고 언론 기사는 보강 자료로 붙이는 편이 정확합니다.</li>
+          <li>단일 파일을 최소 <code>data</code>(이슈 레코드), <code>render-letter</code>(고객용), <code>render-studio</code>(중개사용) 세 모듈로 나누고, 렌더 함수는 같은 레코드를 받아 audience에 따라 다른 필드를 씁니다.</li>
+          <li>기관 색상 규칙(<code>agencyStyle</code>)은 '기획재정부'만 인식합니다. 최근 보도에는 '재정경제부'로 나오므로 기관 사전을 데이터로 빼서 관리해야 합니다.</li>
+          <li>저장소의 fetch.js에 공공데이터포털 서비스 키가 평문으로 들어 있습니다. GitHub Actions Secrets로 옮기고 키를 재발급하는 것이 안전합니다.</li>
+          <li>안양 대시보드의 주간·월간 중위가 지수와 TOP10 산출 로직은 그대로 "우리 동네 숫자" API로 재사용할 수 있습니다. 실거래 신고 기한이 30일이라 최근 두 달은 잠정치라는 주석을 고객용에도 그대로 실어야 합니다.</li>
+        </ul>
+      </section>
+
+      <!-- ───────── 2. 분리 ───────── -->
+      <section class="part" id="s2">
+        <div class="part-head"><span class="part-num">2</span><h2>고객용·중개사용 분리 설계</h2></div>
+        <p class="lede">두 제품은 데이터가 아니라 "누가, 무엇을 결정하려고 읽는가"가 다릅니다. 중개사는 오늘 무엇을 알고 누구에게 무엇을 보낼지 결정하고, 고객은 내 상황에 무엇이 달라지는지 3분 안에 이해하고 필요하면 상담을 요청합니다.</p>
+
+        <h3>2.1 두 제품 정의</h3>
+        <div class="compare">
+          <div class="k">구분</div><div class="hb">중개사용 STUDIO</div><div class="hc">고객용 LETTER</div>
+          <div class="k">사용자</div><div>개업·소속 공인중개사</div><div>중개사의 고객(매수·매도·임차·임대·청약 준비)</div>
+          <div class="k">읽는 이유</div><div>오늘 무엇을 알고, 누구에게 무엇을 보낼지 결정</div><div>내 상황에 무엇이 달라지는지 이해하고, 필요하면 상담</div>
+          <div class="k">분량</div><div>수집된 전체(12~20개), 접기·필터</div><div>DAILY 3 · WEEKLY 5 · MONTHLY 8개 이슈</div>
+          <div class="k">언어</div><div>실무 명령형, 법령·조문·수치 원문 그대로</div><div>2인칭 존댓말, 한 문장 30자 안팎, 용어는 첫 등장 시 풀이</div>
+          <div class="k">핵심 화면</div><div>인박스 · 이슈 상세 · 레터 빌더 · 마케팅 스튜디오 · 데이터 · 설정</div><div>헤드라인 · 이슈 카드 3~5 · 우리 동네 숫자 · 내 상황 체크 · 한마디 · 상담 CTA</div>
+          <div class="k">편집</div><div>가능(코멘트·순서·세그먼트·삭제)</div><div>불가. 발행 시점의 읽기 전용 스냅샷</div>
+          <div class="k">접근</div><div>로그인 또는 기기 인증</div><div>링크·메일·카카오, 로그인 없음</div>
+          <div class="k">데이터</div><div>원자료 표, API, 잠정치 주의, 원문·법령 링크</div><div>안양 숫자 2~4개와 추세 한 줄, 실제 출처 링크</div>
+          <div class="k">현재 사이트의 위치</div><div>도구막대·편집·인스타·블로그·사무소 설정이 여기</div><div>이메일·모바일 미리보기가 여기(편집 UI 제거 후)</div>
+        </div>
+
+        <h3>2.2 흐름</h3>
+        <figure>
+          <svg viewBox="0 0 980 300" role="img" aria-label="보도자료와 뉴스가 수집·태깅을 거쳐 중개사 스튜디오로 들어가고, 중개사가 선택·코멘트한 이슈만 세그먼트별 고객 레터로 발행되며, 고객 반응은 스튜디오로 돌아온다">
+            <defs>
+              <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+            </defs>
+            <g font-family="IBM Plex Sans KR, Apple SD Gothic Neo, sans-serif" font-size="12.5" fill="currentColor">
+              <!-- 1 수집 -->
+              <rect x="10" y="40" width="200" height="150" rx="10" fill="none" stroke="currentColor" stroke-width="1.2"/>
+              <text x="24" y="66" font-weight="700" font-size="14">① 수집</text>
+              <text x="24" y="90">정부 보도자료 RSS·API</text>
+              <text x="24" y="110">한은·금융위·부동산원</text>
+              <text x="24" y="130">경기도·안양시 고시공고</text>
+              <text x="24" y="150">언론 기사(Google News)</text>
+              <text x="24" y="170" fill="currentColor" opacity=".65">주기: 1~3시간</text>
+              <!-- arrow -->
+              <line x1="210" y1="115" x2="262" y2="115" stroke="currentColor" stroke-width="1.4" marker-end="url(#arr)"/>
+              <text x="236" y="104" text-anchor="middle" font-size="11" opacity=".75">원문·기사</text>
+              <!-- 2 태깅 -->
+              <rect x="264" y="40" width="200" height="150" rx="10" fill="none" stroke="currentColor" stroke-width="1.2"/>
+              <text x="278" y="66" font-weight="700" font-size="14">② 자동 태깅·초안</text>
+              <text x="278" y="90">5축 태그(기관·단계·주제·</text>
+              <text x="278" y="108">대상·지역)</text>
+              <text x="278" y="130">요약·영향도·할 일 초안</text>
+              <text x="278" y="150">중복 묶음, 검수 플래그</text>
+              <text x="278" y="170" opacity=".65">규칙 R1~R8 적용</text>
+              <line x1="464" y1="115" x2="516" y2="115" stroke="currentColor" stroke-width="1.4" marker-end="url(#arr)"/>
+              <text x="490" y="104" text-anchor="middle" font-size="11" opacity=".75">이슈 레코드</text>
+              <!-- 3 스튜디오 -->
+              <rect x="518" y="40" width="200" height="150" rx="10" style="fill:var(--brok);fill-opacity:.12;stroke:var(--brok)" stroke-width="1.6"/>
+              <text x="532" y="66" font-weight="700" font-size="14">③ 중개사 STUDIO</text>
+              <text x="532" y="90">인박스에서 선택</text>
+              <text x="532" y="110">코멘트·순서·세그먼트</text>
+              <text x="532" y="130">발송 전 검증</text>
+              <text x="532" y="150">인스타·블로그 소재 생성</text>
+              <text x="532" y="170" opacity=".65">중개사 전용 이슈는 여기서 끝</text>
+              <line x1="718" y1="115" x2="770" y2="115" stroke="currentColor" stroke-width="1.4" marker-end="url(#arr)"/>
+              <text x="744" y="104" text-anchor="middle" font-size="11" opacity=".75">발행 스냅샷</text>
+              <!-- 4 레터 -->
+              <rect x="772" y="40" width="200" height="150" rx="10" style="fill:var(--cust);fill-opacity:.12;stroke:var(--cust)" stroke-width="1.6"/>
+              <text x="786" y="66" font-weight="700" font-size="14">④ 고객 LETTER</text>
+              <text x="786" y="90">세그먼트별 3~5개 이슈</text>
+              <text x="786" y="110">우리 동네 숫자</text>
+              <text x="786" y="130">할 일·바로가기·CTA</text>
+              <text x="786" y="150">메일·모바일 웹·카카오</text>
+              <text x="786" y="170" opacity=".65">읽기 전용 URL, 로그인 없음</text>
+              <!-- feedback -->
+              <path d="M872 190 L872 240 L618 240 L618 192" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="5 4" marker-end="url(#arr)"/>
+              <text x="745" y="258" text-anchor="middle" font-size="11" opacity=".75">클릭·상담 요청·수신거부 → 인박스로 회신</text>
+              <!-- data side -->
+              <rect x="264" y="212" width="200" height="60" rx="10" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3"/>
+              <text x="278" y="236" font-weight="600">지역 데이터 API</text>
+              <text x="278" y="256" opacity=".8">실거래·R-ONE·ECOS → 타일</text>
+              <path d="M464 242 L500 242 L500 192" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arr)"/>
+            </g>
+          </svg>
+          <figcaption>수집과 태깅은 자동, 선택과 코멘트는 중개사, 고객은 발행된 스냅샷만 봅니다. 중개업 제도·지자체 고시처럼 중개사 전용으로 분류된 이슈는 ③에서 멈추고 ④로 넘어가지 않습니다.</figcaption>
+        </figure>
+
+        <h3>2.3 하나의 이슈 레코드, 두 개의 렌더링</h3>
+        <p>현재 코드의 이슈 객체를 아래처럼 확장하면 렌더 함수 두 개가 같은 레코드를 읽습니다. 고객용 필드는 자동 초안을 중개사가 검수한 뒤에만 발행됩니다.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>필드</th><th>내용</th><th>중개사용</th><th>고객용</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">agency · status · topic · region</td><td>발표 주체, 정책 단계, 주제, 지역 범위 (5축 태그)</td><td><span class="mark y">배지·필터</span></td><td><span class="mark y">배지(기관·단계·날짜만)</span></td></tr>
+              <tr><td class="mono">published_at · effective_at</td><td>발표일과 시행일. 시행일이 있으면 D-day 계산</td><td><span class="mark y">표시</span></td><td><span class="mark y">시행일 우선 표시</span></td></tr>
+              <tr><td class="mono">official_url · articles[]</td><td>공식 원문 URL, 관련 기사(최대 4)</td><td><span class="mark y">전부</span></td><td><span class="mark y">원문 1 + 기사 1~2</span></td></tr>
+              <tr><td class="mono">fact_sheet</td><td>대상·수치·일정·경과규정을 항목별로</td><td><span class="mark y">표로</span></td><td><span class="mark d">2문장으로 축약</span></td></tr>
+              <tr><td class="mono">headline_plain</td><td>고객용 20자 제목 ("기준금리가 3.0%로 올랐어요")</td><td><span class="mark n">참고</span></td><td><span class="mark y">제목</span></td></tr>
+              <tr><td class="mono">what_changes_for_me[segment]</td><td>세그먼트별 한 문장과 영향도 0~5</td><td><span class="mark y">세 세그먼트 모두</span></td><td><span class="mark y">해당 세그먼트만</span></td></tr>
+              <tr><td class="mono">actions[]</td><td>고객이 지금 할 일 1~3개, 각 항목에 바로가기</td><td><span class="mark n">참고</span></td><td><span class="mark y">체크리스트</span></td></tr>
+              <tr><td class="mono">consult_script</td><td>고객이 물으면 이렇게 설명(현재 불릿 3개가 여기로 이동)</td><td><span class="mark y">핵심</span></td><td><span class="mark n">제외</span></td></tr>
+              <tr><td class="mono">practice_checklist</td><td>계약서 특약, 확인·설명서 항목, 신고 의무, 세무 연계</td><td><span class="mark y">핵심</span></td><td><span class="mark n">제외</span></td></tr>
+              <tr><td class="mono">local_impact</td><td>안양 만안·동안구 관련 구역·단지·규제 여부</td><td><span class="mark y">전부</span></td><td><span class="mark d">해당 동 고객에게만</span></td></tr>
+              <tr><td class="mono">faq[]</td><td>예상 질문과 답 가이드</td><td><span class="mark y">전부</span></td><td><span class="mark d">1개까지</span></td></tr>
+              <tr><td class="mono">glossary</td><td>용어 풀이(현재 11개 사전 확장)</td><td><span class="mark n">참고</span></td><td><span class="mark y">1개</span></td></tr>
+              <tr><td class="mono">links_customer[] · links_broker[]</td><td>4.4 매핑으로 자동 삽입되는 공공데이터 바로가기</td><td><span class="mark y">broker</span></td><td><span class="mark y">customer</span></td></tr>
+              <tr><td class="mono">review_flag · reviewed_by</td><td>자동 초안 검수 여부와 검수자</td><td><span class="mark y">표시</span></td><td><span class="mark d">검수 완료만 발행</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>2.4 고객 세그먼트 3종</h3>
+        <p>보유형태 7종을 그대로 고객에게 묻기는 어렵습니다. 세 묶음으로 만들어 수신자 등록 시 하나만 고르게 하고, 이슈의 영향도가 3 이상인 세그먼트에만 발송합니다.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>세그먼트</th><th>포함 페르소나</th><th>우선 주제</th><th>우리 동네 숫자</th></tr></thead>
+            <tbody>
+              <tr><td><strong>내집마련</strong></td><td>무주택자 · 임차인 · 청약 준비</td><td>금리·대출, 청약·분양, 전세 안전, 월세 통계, 공급·신도시</td><td>전세 중위가, 전세가율, 기준금리, 청약 일정</td></tr>
+              <tr><td><strong>보유·갈아타기</strong></td><td>1주택자 · 매수 예정 · 매도 예정</td><td>양도·취득세, 규제지역, 실거래 추세, 정비사업 지역, 대출</td><td>매매 중위가·거래건수, 단지 TOP10</td></tr>
+              <tr><td><strong>자산·임대</strong></td><td>다주택자 · 임대인 · 투자</td><td>보유세, 임대차 제도, 정비사업, 전세가율·역전세, 경·공매</td><td>전세가율, 월세 추이, 미분양</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>2.5 같은 이슈, 두 가지 카드</h3>
+        <p>한국은행이 8월 27일 기준금리를 3.00%로 올린 이슈를 두 제품에서 각각 어떻게 보여주는지 예시입니다. 지역 숫자는 저장소 monthly.json의 2026년 6월 안양(만안·동안) 매매 중위가를 썼습니다.</p>
+        <div class="mocks">
+          <div class="mock c">
+            <div class="bar"><span>고객용 LETTER · 내집마련</span><span>DAILY 09.12</span></div>
+            <div class="body">
+              <div class="tags"><span class="chip n">한국은행</span><span class="chip ok">확정</span><span class="chip n">2026.08.27 발표</span></div>
+              <h4>기준금리가 3.0%로 올랐어요. 대출 이자를 다시 확인할 때입니다</h4>
+              <div class="blk"><div class="lbl">무슨 일</div><p>한국은행이 두 달 연속 기준금리를 올려 연 3.00%가 됐습니다. 은행 대출금리는 여기에 가산금리가 더해져 정해집니다.</p></div>
+              <div class="blk"><div class="lbl">나에게는</div><p>전세대출이나 주택담보대출이 변동금리라면 다음 금리 변경일부터 이자가 오를 수 있어요. <span class="dots">●●●●○</span></p></div>
+              <div class="blk"><div class="lbl">지금 할 일</div><ul><li>대출 약정서에서 '금리 변경일'과 금리 유형 확인</li><li>고정·혼합형으로 갈아탈 때 드는 비용 비교</li><li>디딤돌·버팀목 같은 정책대출 자격 확인</li></ul></div>
+              <div class="links"><span>한국은행 기준금리 추이</span><span>금융상품한눈에 주담대 비교</span><span>기금e든든 자격 조회</span></div>
+              <div class="cta">내 대출 조건으로 상담 요청하기</div>
+            </div>
+          </div>
+          <div class="mock b">
+            <div class="bar"><span>중개사용 STUDIO · 이슈 상세</span><span>★ 고객 발송 권장</span></div>
+            <div class="body">
+              <div class="tags"><span class="chip n">한국은행</span><span class="chip ok">확정</span><span class="chip n">금리·대출</span><span class="chip n">전국</span><span class="chip n">08.27</span></div>
+              <h4>기준금리 2.75% → 3.00%, 7·16 이후 2회 연속 인상</h4>
+              <div class="blk"><div class="lbl">팩트</div><p>인상폭 +0.25%p. 결정문·기자간담회 원문 링크. 다음 통화정책방향 결정회의 일정 자동 표시.</p></div>
+              <div class="blk"><div class="lbl">상담 스크립트</div><ul><li>"기준금리 인상 = 내 대출금리 즉시 인상"이 아님. 변동형은 갱신 주기(3·6개월)에 반영</li><li>DSR 산정 금리 상승 → 매수 예정 고객의 한도 재산정 후 자금계획 재확인</li></ul></div>
+              <div class="blk"><div class="lbl">실무 체크</div><ul><li>잔금일 전 대출 승인 조건 재확인 특약 문구</li><li>전세대출 임차인의 갱신 시점·상환 시나리오 안내</li></ul></div>
+              <div class="blk"><div class="lbl">지역 영향</div><p>안양 6월 매매 중위가 7.2억(실거래 잠정). 0.25%p 상승 시 4억 대출 기준 월 이자 약 8만 원 증가 시나리오 표.</p></div>
+              <div class="blk"><div class="lbl">세그먼트 영향도</div><div class="grade"><span>내집마련</span><span class="dots">●●●●○</span><span>보유·갈아타기</span><span class="dots">●●●○○</span><span>자산·임대</span><span class="dots">●●○○○</span></div></div>
+              <div class="links"><span>통화정책방향 결정문</span><span>ECOS 금리 시계열</span><span>금융위 가계부채 관리방안</span><span>R-ONE 주간동향</span></div>
+              <div class="cta">고객용 미리보기 → 세그먼트 선택 → 발행</div>
+            </div>
+          </div>
+        </div>
+        <p class="note">고객용 카드에는 "고객에게", "안내하세요" 같은 표현이 없고, 모든 지시문은 고객 본인의 행동입니다. 중개사용 카드는 같은 레코드에서 스크립트·체크리스트·지역 표를 추가로 읽습니다.</p>
+      </section>
+
+      <!-- ───────── 3. 분류·라우팅 ───────── -->
+      <section class="part" id="s3">
+        <div class="part-head"><span class="part-num">3</span><h2>보도자료 분류와 라우팅 규칙</h2></div>
+        <p class="lede">"관련 보도자료를 어떻게 나눌까"의 답은 주제로 나누는 것이 아니라, 5축 태그를 붙인 뒤 규칙으로 보낼 곳을 정하는 것입니다. 같은 보도자료가 중개사에게는 전문으로, 고객에게는 한 줄로, 특정 동네 고객에게는 타깃으로 갑니다.</p>
+
+        <h3>3.1 분류 5축</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>축</th><th>값</th><th>비고</th></tr></thead>
+            <tbody>
+              <tr><td><strong>A 발표 주체</strong></td><td>국토교통부 · 금융위원회·금융감독원 · 재정경제부(구 기획재정부) · 국세청 · 한국은행 · 한국부동산원·HUG·LH · 법제처·국회 · 경기도 · 안양시 · 협회·업계 · 언론 단독</td><td>배지 색은 주체군별로. 현재 코드의 기관 사전을 데이터로 분리</td></tr>
+              <tr><td><strong>B 정책 단계</strong></td><td>확정·시행 · 시행 예정 · 입법예고 · 국회 심의 중 · 정부 검토 · 언론 보도 · 전망·분석 · <strong>통계 발표</strong> · <strong>지자체 고시·공고</strong></td><td>기존 7단계에 2개 추가. 통계와 고시는 "확정"과 성격이 달라 별도 단계가 필요</td></tr>
+              <tr><td><strong>C 주제</strong></td><td>금리·대출 · 세금 · 청약·분양 · 공급·택지·신도시 · 정비사업(재개발·재건축·노후계획도시) · 임대차·전세 안전 · 교통·개발 · 시장 통계 · 규제지역·거래허가 · 중개업 제도</td><td>현재 12개 슬롯을 10개 주제로 정리. '중개업 제도'는 신설</td></tr>
+              <tr><td><strong>D 영향 대상</strong></td><td>무주택 · 1주택 · 다주택 · 매수 예정 · 매도 예정 · 임대인 · 임차인 · <strong>공인중개사</strong></td><td>기존 7종에 공인중개사 추가. 각 대상에 0~5 영향도</td></tr>
+              <tr><td><strong>E 지역 범위</strong></td><td>전국 · 수도권 · 경기 · 안양(만안·동안) · 동·단지 단위</td><td>안양시 고시는 동·구역명까지 추출해 타깃 발송에 사용</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>3.2 라우팅 규칙 R1~R8</h3>
+        <div class="rules">
+          <div class="rule"><span class="id">R1</span><div><h4>단계로 1차 결정</h4><p>확정·시행 예정·통계 발표·지자체 고시는 고객용 본문 후보. 입법예고·국회 심의·정부 검토·언론 보도·전망은 고객용에서는 주 1회 "지켜볼 이슈" 코너에 한 줄로만, '확정 아님' 표시와 함께. 중개사용은 전 단계를 다룹니다.</p><div class="ex"><b>예</b>소득세법 시행령 개정안 입법예고(의견제출 9.10까지) → 고객 "지켜볼 이슈" 한 줄, 중개사 전문</div></div></div>
+          <div class="rule"><span class="id">R2</span><div><h4>중개업 제도는 중개사 전용</h4><p>공인중개사법, 중개보수, 임장비, 확인·설명 의무, 전자계약, 협회, 행정처분·과태료는 고객용에 싣지 않습니다. 시행이 확정된 뒤 고객이 체감할 변화만 한 줄로 알립니다.</p><div class="ex"><b>예</b>원룸·오피스텔 공동관리비 확인·설명 의무화 → 시행 시 고객용 "계약 전 관리비 내역을 요구할 수 있어요" 한 줄</div></div></div>
+          <div class="rule"><span class="id">R3</span><div><h4>지자체 고시는 동네 타깃</h4><p>안양시 정비구역 지정·주민공람, 특별정비구역, 지구단위계획 고시는 중개사 전용으로 전문을 싣고, 고객에게는 해당 동에 거주·보유한 수신자에게만 발송합니다.</p><div class="ex"><b>예</b>수촌마을(A블럭) 재개발 정비구역 지정(안) 공람(공고 제2026-1260호) → 관양동 고객 타깃</div></div></div>
+          <div class="rule"><span class="id">R4</span><div><h4>세금·대출·청약은 양쪽, 깊이만 다르게</h4><p>고객용은 "나에게 적용되나?" 체크 3개와 계산 바로가기(홈택스·기금e든든·청약홈). 중개사용은 요건표, 경과규정, 상담 스크립트, 세무사 연계 기준.</p></div></div>
+          <div class="rule"><span class="id">R5</span><div><h4>통계는 지역 숫자로 치환</h4><p>고객용은 안양 숫자 2~4개와 추세 한 줄. 서울 통계는 안양 수치로 바꾸고, 바꿀 수 없으면 싣지 않습니다. 중개사용은 전체 표와 원자료 링크, "신고 기한 30일이라 최근 두 달은 잠정치" 주석.</p><div class="ex"><b>예</b>"서울 평균 월세 160만 원 돌파" → 고객용에는 안양 월세 중위값·추이로</div></div></div>
+          <div class="rule"><span class="id">R6</span><div><h4>언어 규칙</h4><p>고객용: 2인칭 존댓말, 한 문장 30자 안팎, 용어 첫 등장 시 풀이, 지시문(~하세요)은 고객 본인의 행동에만. 중개사용: 체크리스트 명령형, 법령·조문·수치는 원문 그대로.</p></div></div>
+          <div class="rule"><span class="id">R7</span><div><h4>고객용 금지 목록 (자동 차단)</h4><p>"고객에게", "안내하세요", "설명하세요", "상담 시", "영업", "경쟁", "수주", "협회", "DEMO", 미입력 브랜드 필드("입력해 주세요", "미설정"). 걸리면 발행이 막히고 스튜디오에 표시됩니다.</p></div></div>
+          <div class="rule"><span class="id">R8</span><div><h4>분량과 신선도</h4><p>고객용 DAILY 3개(48시간 이내) · WEEKLY 5개(7일) · MONTHLY 8개(당월). 같은 이슈는 정책·뉴스 섹션에 중복 게재하지 않습니다. 중개사용은 제한 없이 접기로.</p></div></div>
+        </div>
+
+        <h3>3.3 이번 주 실제 보도자료로 적용해 보기</h3>
+        <p>9월 둘째 주에 실제로 나온 자료와 안양시 고시에 규칙을 적용한 결과입니다. <span class="mark y">✔</span> 본문 게재, <span class="mark d">△</span> 한 줄 또는 타깃 발송, <span class="mark n">✖</span> 제외.</p>
+        <div class="tbl-wrap wide">
+          <table>
+            <thead><tr><th>자료</th><th>주체 · 단계</th><th>주제 · 지역</th><th class="c">고객용</th><th class="b">중개사용</th><th>규칙</th></tr></thead>
+            <tbody>
+              <tr><td>한국은행 기준금리 3.00%로 인상 (8.27, 2회 연속)</td><td>한국은행 · 확정</td><td>금리·대출 · 전국</td><td class="c"><span class="mark y">✔</span> 세 세그먼트 모두, 대출 보유자 중심</td><td class="b"><span class="mark y">✔</span> DSR 한도 재산정 스크립트</td><td><span class="chip rule">R1 R4</span></td></tr>
+              <tr><td>8·13 공급대책 후속: 내년 말까지 착공 시 개발부담금 면제 (9.12)</td><td>국토교통부 · 시행 예정</td><td>공급·택지 · 전국</td><td class="c"><span class="mark d">△</span> WEEKLY 한 줄(내집마련)</td><td class="b"><span class="mark y">✔</span> 사업자·토지주 상담</td><td><span class="chip rule">R1 R8</span></td></tr>
+              <tr><td>서울 평균 월세 160만 원 돌파, 월세 비중 68.6% (9.11)</td><td>부동산원 · 통계 발표</td><td>임대차 · 서울→안양 치환</td><td class="c"><span class="mark y">✔</span> 안양 월세 수치로 바꿔 임차인·임대인</td><td class="b"><span class="mark y">✔</span> 전월세 전환율 표</td><td><span class="chip rule">R5</span></td></tr>
+              <tr><td>공인중개사 '임장비' 논란, 국토부 설명자료 (9.8~10)</td><td>협회·국토부 · 언론 보도</td><td>중개업 제도 · 전국</td><td class="c"><span class="mark n">✖</span> 문의 시 답변만 준비</td><td class="b"><span class="mark y">✔</span> 협회 입장·국토부 설명자료·응대 문구</td><td><span class="chip rule">R2</span></td></tr>
+              <tr><td>공인중개사협회 법정단체 전환 시행 (8.28)</td><td>국토교통부 · 확정</td><td>중개업 제도 · 전국</td><td class="c"><span class="mark n">✖</span></td><td class="b"><span class="mark y">✔</span></td><td><span class="chip rule">R2</span></td></tr>
+              <tr><td>원룸·오피스텔 공동관리비 확인·설명 의무화 개정안 (8.14)</td><td>국토교통부 · 입법예고</td><td>중개업·임대차 · 전국</td><td class="c"><span class="mark d">△</span> 시행 확정 시 한 줄</td><td class="b"><span class="mark y">✔</span> 확인·설명서 기재 항목 변경</td><td><span class="chip rule">R1 R2</span></td></tr>
+              <tr><td>소득세법 시행령 개정안 입법예고: 주택 수 제외 적용기한 2027.12.31로 연장 (의견제출 9.10)</td><td>재정경제부 · 입법예고</td><td>세금 · 전국</td><td class="c"><span class="mark d">△</span> 자산·임대 "지켜볼 이슈"</td><td class="b"><span class="mark y">✔</span> 의견제출 기한, 적용 요건</td><td><span class="chip rule">R1 R4</span></td></tr>
+              <tr><td>주택법 시행령 개정안 입법예고 (의견제출 9.28)</td><td>국토교통부 · 입법예고</td><td>청약·공급 · 전국</td><td class="c"><span class="mark d">△</span></td><td class="b"><span class="mark y">✔</span></td><td><span class="chip rule">R1</span></td></tr>
+              <tr><td>수촌마을(A블럭) 재개발 정비계획·정비구역 지정(안) 주민공람 (공고 제2026-1260호, 7.22) + 시의회 의견청취 (9.7)</td><td>안양시 · 지자체 고시</td><td>정비사업 · 동안구 관양동</td><td class="c"><span class="mark d">△</span> 관양동 거주·보유 고객 타깃</td><td class="b"><span class="mark y">✔</span> 구역도, 공람 기간, 동의 절차</td><td><span class="chip rule">R3</span></td></tr>
+              <tr><td>평촌신도시 특별정비구역(A-17·A-18) 특별정비계획 고시</td><td>안양시 · 지자체 고시</td><td>노후계획도시 · 동안구 평촌동</td><td class="c"><span class="mark d">△</span> 해당 단지 소유자 타깃</td><td class="b"><span class="mark y">✔</span></td><td><span class="chip rule">R3</span></td></tr>
+              <tr><td>안양 충훈부 일원 공공재개발 시공사 선정, 7,567억 (9.8)</td><td>업계 · 언론 보도</td><td>정비사업 · 만안구 석수동</td><td class="c"><span class="mark d">△</span> 구역 내 보유자에게 사실 한 줄</td><td class="b"><span class="mark y">✔</span> 수주 조건, 분담금 추정 근거</td><td><span class="chip rule">R1 R3</span></td></tr>
+              <tr><td>경기도의회 전세사기 예방 AI 권리분석 안전망 조례안 (9.7)</td><td>경기도의회 · 심의 중</td><td>전세 안전 · 경기</td><td class="c"><span class="mark d">△</span> 내집마련 "지켜볼 이슈"</td><td class="b"><span class="mark y">✔</span> 시행 시 활용 계획</td><td><span class="chip rule">R1</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">현재 사이트의 12개 슬롯에는 "대전시의회 둔산지구 재건축"처럼 안양 고객과 무관한 타 지역 기사가 국토교통부 배지로 실렸습니다. E축(지역)이 있으면 이런 기사는 중개사용 참고로만 남고 고객용에서는 자동으로 빠집니다.</p>
+      </section>
+
+      <!-- ───────── 4. 공공데이터 ───────── -->
+      <section class="part" id="s4">
+        <div class="part-head"><span class="part-num">4</span><h2>공공데이터 연결 기획</h2></div>
+        <p class="lede">원칙은 네 가지입니다. 원문 링크는 실제 페이지로(검색 폴백 금지), 지역 코드로 딥링크(만안구 41171·동안구 41173), 모든 숫자에 출처와 기준일, 그리고 자동 수집이 가능한 소스(RSS·API)를 우선합니다. 첨부하신 KB통계보드처럼 위젯마다 '원자료 바로가기'를 붙이는 방식이 기준입니다.</p>
+        <p class="legend">● 이번 검토에서 검색 결과로 URL 확인 · ○ 공식 도메인이나 이 세션에서 접속 검증 불가</p>
+
+        <h3>4.1 보도자료 수집 소스 (파이프라인용)</h3>
+        <div class="tbl-wrap wide">
+          <table>
+            <thead><tr><th>소스</th><th>URL</th><th>수집 방식</th><th>무엇이 나오나</th></tr></thead>
+            <tbody>
+              <tr><td>● 대한민국 정책브리핑 보도자료</td><td class="mono"><a href="https://www.korea.kr/briefing/pressReleaseList.do">korea.kr/briefing/pressReleaseList.do</a><br><a href="https://www.korea.kr/rss/pressrelease.xml">korea.kr/rss/pressrelease.xml</a></td><td>RSS</td><td>전 부처 보도자료 통합. 1차 소스로 가장 적합. 부처 브리핑 RSS(ebriefing.xml)도 있음</td></tr>
+              <tr><td>● 국토교통부 보도자료 · 입법예고</td><td class="mono"><a href="https://www.molit.go.kr/USR/NEWS/m_71/lst.jsp">molit.go.kr/USR/NEWS/m_71/lst.jsp</a><br><a href="https://www.molit.go.kr/USR/law/m_46/lst.jsp">molit.go.kr/USR/law/m_46/lst.jsp</a><br><a href="https://www.molit.go.kr/USR/p_etc_rsssvc/m_123/ers.jsp">RSS 서비스 안내</a></td><td>RSS · HTML</td><td>공급대책, 규제지역 지정·해제, 청약제도, 정비사업 법령 입법예고</td></tr>
+              <tr><td>● 금융위원회 보도자료</td><td class="mono"><a href="https://www.fsc.go.kr/no010101">fsc.go.kr/no010101</a></td><td>HTML(RSS 확인 필요)</td><td>가계부채 관리방안, 스트레스 DSR, LTV·DTI</td></tr>
+              <tr><td>● 재정경제부 보도·참고자료</td><td class="mono"><a href="https://www.mofe.go.kr/">mofe.go.kr</a> (보도·참고자료, menuNo=4010100)</td><td>HTML</td><td>세제개편안, 양도·종부·취득세 개정. 구 기획재정부(moef)에서 개편</td></tr>
+              <tr><td>● 국세청 · 홈택스</td><td class="mono"><a href="https://www.nts.go.kr/">nts.go.kr</a> · <a href="https://hometax.go.kr/">hometax.go.kr</a></td><td>HTML</td><td>세법 해석, 신고 안내, 다주택 중과 안내</td></tr>
+              <tr><td>● 한국은행 기준금리 · 통화정책방향</td><td class="mono"><a href="https://www.bok.or.kr/portal/singl/baseRate/list.do?dataSeCd=01&menuNo=200643">기준금리 추이</a><br><a href="https://www.bok.or.kr/portal/singl/crncyPolicyDrcMtg/listYear.do?menuNo=200755&mtgSe=A">결정회의 일정·결정문</a></td><td>HTML · ECOS API</td><td>기준금리 변경 이력(2026.08.27 3.00%), 결정문·의사록, 다음 회의 일정</td></tr>
+              <tr><td>● 한국부동산원 R-ONE 보도자료</td><td class="mono"><a href="https://www.reb.or.kr/r-one/portal/bbs/pres/searchBulletinPage.do">주간아파트가격동향 보도자료</a><br><a href="https://www.reb.or.kr/r-one/portal/bbs/rpt/searchBulletinPage.do">공표보고서·시계열</a></td><td>HTML · R-ONE API</td><td>주간·월간 가격동향, 시계열 통계표(매주 목요일 등록)</td></tr>
+              <tr><td>● 국민참여입법센터 · 법제처</td><td class="mono"><a href="https://opinion.lawmaking.go.kr/">opinion.lawmaking.go.kr</a><br><a href="https://www.moleg.go.kr/lawinfo/makingInfo.mo">moleg.go.kr 입법예고</a></td><td>HTML</td><td>모든 부처 입법예고와 의견제출 기한. B축 '입법예고' 단계의 원문</td></tr>
+              <tr><td>○ 국회 의안정보시스템</td><td class="mono"><a href="https://likms.assembly.go.kr/bill/main.do">likms.assembly.go.kr/bill</a></td><td>HTML · 열린국회정보 API</td><td>B축 '국회 심의 중' 단계의 법안 진행 상태</td></tr>
+              <tr><td>● 경기도뉴스포털 보도자료</td><td class="mono"><a href="https://gnews.gg.go.kr/briefing/brief_gongbo.do">gnews.gg.go.kr/briefing/brief_gongbo.do</a><br><a href="https://www.data.go.kr/data/15034926/openapi.do">경기도 보도자료 현황 API(공공데이터포털)</a></td><td>API · HTML</td><td>경기도 주택·교통·정비 정책, GTX 관련 도 차원 발표</td></tr>
+              <tr><td>● 안양시 고시공고 (도시정비)</td><td class="mono"><a href="https://www.anyang.go.kr/newtown/emwsWebList.do?key=2558">anyang.go.kr/newtown/emwsWebList.do?key=2558</a></td><td>HTML(스크래핑)</td><td>정비구역 지정·변경, 주민공람, 추진위 승인, 특별정비구역, 지구단위계획. E축 동·구역명 추출</td></tr>
+              <tr><td>● HUG 안심전세포털</td><td class="mono"><a href="https://www.khug.or.kr/jeonse/index.jsp">khug.or.kr/jeonse</a></td><td>HTML</td><td>전세보증 제도 변경, 상습 채무불이행자 명단 공개 안내</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>4.2 고객용 바로가기 (필요한 순간별)</h3>
+        <div class="tbl-wrap wide">
+          <table>
+            <thead><tr><th>순간</th><th>사이트</th><th>URL</th><th>고객이 얻는 것</th></tr></thead>
+            <tbody>
+              <tr><td rowspan="7">집을 고를 때</td><td>● 국토교통부 실거래가 공개시스템</td><td class="mono"><a href="https://rt.molit.go.kr/">rt.molit.go.kr</a> · <a href="https://rt.molit.go.kr/pt/gis/gis.do">지도 검색</a></td><td>아파트·연립·오피스텔 매매·전월세 실거래. 안양 만안·동안 딥링크</td></tr>
+              <tr><td>● KB부동산 데이터허브</td><td class="mono"><a href="https://data.kbland.kr/">data.kbland.kr</a></td><td>KB 시세·통계보드(첨부 캡처)</td></tr>
+              <tr><td>● 한국부동산원 R-ONE</td><td class="mono"><a href="https://www.reb.or.kr/r-one/portal/stat/easyStatPage.do">reb.or.kr/r-one 쉬운 통계</a></td><td>주간·월간 가격지수, 전세가율</td></tr>
+              <tr><td>● 경기부동산포털 GRIS</td><td class="mono"><a href="https://gris.gg.go.kr/">gris.gg.go.kr</a> · <a href="https://gris.gg.go.kr/map/main/grisMapView.do?contentId=ui-cont-tojiTrade-id">토지거래허가구역 지도</a></td><td>경기도 토지·건물·공시가격·실거래·허가구역을 지도에서</td></tr>
+              <tr><td>● 부동산공시가격 알리미</td><td class="mono"><a href="https://www.realtyprice.kr/notice/town/nfSiteLink.htm">realtyprice.kr 공동주택 열람</a></td><td>공시가격(보유세·대출 한도 기준)</td></tr>
+              <tr><td>● K-apt 공동주택관리정보</td><td class="mono"><a href="https://www.k-apt.go.kr/apiinfo/goApiSearchCompare.do">k-apt.go.kr 관리비 비교</a></td><td>단지별 관리비, 다른 단지와 1:1 비교</td></tr>
+              <tr><td>● 학구도안내서비스 · ○ 생활안전지도</td><td class="mono"><a href="https://schoolzone.emac.kr/gis/gis.do">schoolzone.emac.kr</a> · <a href="https://www.safemap.go.kr/">safemap.go.kr</a></td><td>초·중 통학구역, 치안·재난 지도</td></tr>
+              <tr><td rowspan="3">청약·주거지원</td><td>○ 청약홈</td><td class="mono"><a href="https://www.applyhome.co.kr/">applyhome.co.kr</a></td><td>청약 일정·경쟁률·가점 계산</td></tr>
+              <tr><td>● LH 청약플러스 · 마이홈포털</td><td class="mono"><a href="https://apply.lh.or.kr/">apply.lh.or.kr</a> · <a href="https://www.myhome.go.kr/">myhome.go.kr</a></td><td>공공분양·임대 공고, 주거복지 자가진단</td></tr>
+              <tr><td>● 주택도시기금 · 기금e든든</td><td class="mono"><a href="https://nhuf.molit.go.kr/">nhuf.molit.go.kr</a> · <a href="https://enhuf.molit.go.kr/">enhuf.molit.go.kr</a></td><td>디딤돌·버팀목 자격과 신청</td></tr>
+              <tr><td rowspan="4">전세·월세 계약 전</td><td>● HUG 안심전세포털</td><td class="mono"><a href="https://www.khug.or.kr/jeonse/web/s01/s010320.jsp">보증금 미반환 조회</a> · <a href="https://www.khug.or.kr/jeonse/web/s03/s030204.jsp">공인중개사 확인</a></td><td>상습 채무불이행 임대인 조회, 전세보증 가입 요건</td></tr>
+              <tr><td>○ 인터넷등기소</td><td class="mono"><a href="https://www.iros.go.kr/">iros.go.kr</a></td><td>등기부등본(근저당·가압류 확인)</td></tr>
+              <tr><td>● 부동산중개업 조회(브이월드)</td><td class="mono"><a href="https://www.vworld.kr/dtld/broker/dtld_list_s001.do">vworld.kr 부동산중개업</a></td><td>중개사무소 등록·휴폐업 여부</td></tr>
+              <tr><td>● 임대차분쟁조정위원회</td><td class="mono"><a href="https://adrhome.reb.or.kr/">adrhome.reb.or.kr</a> · <a href="https://www.hldcc.or.kr/">hldcc.or.kr</a></td><td>보증금·수선·갱신 분쟁 조정 신청</td></tr>
+              <tr><td rowspan="4">대출·세금</td><td>● 한국은행 기준금리 추이</td><td class="mono"><a href="https://www.bok.or.kr/portal/singl/baseRate/list.do?dataSeCd=01&menuNo=200643">bok.or.kr 기준금리</a></td><td>변경 이력과 다음 회의 일정</td></tr>
+              <tr><td>● 금융상품한눈에</td><td class="mono"><a href="https://finlife.fss.or.kr/finlife/ldng/houseMrtg/list.do?menuNo=700007">주담대 비교</a> · <a href="https://finlife.fss.or.kr/finlife/ldng/lfstsFunds/list.do?menuNo=700008">전세대출 비교</a></td><td>은행별 금리·조건 비교</td></tr>
+              <tr><td>○ 한국주택금융공사</td><td class="mono"><a href="https://www.hf.go.kr/">hf.go.kr</a></td><td>보금자리론, 전세보증</td></tr>
+              <tr><td>● 홈택스 · ○ 위택스</td><td class="mono"><a href="https://hometax.go.kr/">hometax.go.kr</a> · <a href="https://www.wetax.go.kr/">wetax.go.kr</a></td><td>양도세 모의계산, 취득세·재산세 조회</td></tr>
+              <tr><td rowspan="4">우리 동네(안양)</td><td>● 안양시 정비사업 지구별 추진현황</td><td class="mono"><a href="https://www.anyang.go.kr/newtown/contents.do?key=2516">재개발</a> · <a href="https://www.anyang.go.kr/newtown/contents.do?key=2535">재건축 아파트지구</a> · <a href="https://www.anyang.go.kr/newtown/contents.do?key=2525">촉진지구</a></td><td>구역별 위치·면적·세대수·단계</td></tr>
+              <tr><td>● 안양시 고시공고</td><td class="mono"><a href="https://www.anyang.go.kr/newtown/emwsWebList.do?key=2558">anyang.go.kr 고시공고</a></td><td>정비구역 지정·공람 원문</td></tr>
+              <tr><td>● 경기도 정비사업 온누리</td><td class="mono"><a href="https://www.gg.go.kr/onnuri/index.do">gg.go.kr/onnuri</a> · <a href="https://www.gg.go.kr/onnuri/view.do?no=109">사업장 검색</a></td><td>경기도 재개발·재건축 조합 정보 공개</td></tr>
+              <tr><td>● 씨:리얼(LH)</td><td class="mono"><a href="https://seereal.lh.or.kr/main.do">seereal.lh.or.kr</a></td><td>지도 기반 부동산 종합 정보</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>4.3 중개사용 바로가기 (업무별)</h3>
+        <div class="tbl-wrap wide">
+          <table>
+            <thead><tr><th>업무</th><th>사이트</th><th>URL</th><th>용도</th></tr></thead>
+            <tbody>
+              <tr><td rowspan="5">물건 조사</td><td>○ 인터넷등기소 · 정부24</td><td class="mono"><a href="https://www.iros.go.kr/">iros.go.kr</a> · <a href="https://www.gov.kr/">gov.kr</a></td><td>등기부, 토지·건축물대장</td></tr>
+              <tr><td>● 세움터</td><td class="mono"><a href="https://www.eais.go.kr/moct/bci/aaa02/BCIAAA02L01">eais.go.kr 건축물대장 발급</a></td><td>건축물대장, 위반건축물, 인허가</td></tr>
+              <tr><td>● 일사편리</td><td class="mono"><a href="https://www.kras.go.kr/">kras.go.kr</a></td><td>부동산종합증명서(18종 통합)</td></tr>
+              <tr><td>○ 토지이음 · ○ 브이월드</td><td class="mono"><a href="https://www.eum.go.kr/">eum.go.kr</a> · <a href="https://www.vworld.kr/">vworld.kr</a></td><td>토지이용계획, 용도지역, 필지 경계</td></tr>
+              <tr><td>● 씨:리얼 · ● GRIS</td><td class="mono"><a href="https://seereal.lh.or.kr/main.do">seereal.lh.or.kr</a> · <a href="https://gris.gg.go.kr/">gris.gg.go.kr</a></td><td>지도 기반 종합 조회, 경기도 허가구역</td></tr>
+              <tr><td rowspan="3">신고·계약</td><td>● 부동산거래관리시스템</td><td class="mono"><a href="https://rtms.molit.go.kr/">rtms.molit.go.kr</a></td><td>거래신고, 주택임대차 신고(확정일자)</td></tr>
+              <tr><td>● 부동산거래 전자계약시스템</td><td class="mono"><a href="https://irts.molit.go.kr/">irts.molit.go.kr</a></td><td>전자계약, 중개·법무대리인 검색</td></tr>
+              <tr><td>● 임대차분쟁조정위원회</td><td class="mono"><a href="https://adrhome.reb.or.kr/">adrhome.reb.or.kr</a></td><td>분쟁 조정 절차 안내</td></tr>
+              <tr><td rowspan="5">시장 데이터</td><td>● 실거래가 자료제공(다운로드)</td><td class="mono"><a href="https://rt.molit.go.kr/pt/xls/xls.do">rt.molit.go.kr/pt/xls/xls.do</a></td><td>월별 엑셀, API는 fetch.js에서 사용 중</td></tr>
+              <tr><td>● 국토교통 통계누리</td><td class="mono"><a href="https://stat.molit.go.kr/">stat.molit.go.kr</a></td><td>주택 거래량, 미분양, 인허가·착공</td></tr>
+              <tr><td>● 등기정보광장</td><td class="mono"><a href="https://data.iros.go.kr/">data.iros.go.kr</a></td><td>소유권이전등기 신청 현황(매수 연령·외지인·생애최초), 근저당 현황, 경·공매 등기</td></tr>
+              <tr><td>● KB 데이터허브 · ● R-ONE 시계열</td><td class="mono"><a href="https://data.kbland.kr/">data.kbland.kr</a> · <a href="https://www.reb.or.kr/r-one/portal/bbs/rpt/searchBulletinPage.do">R-ONE 공표보고서</a></td><td>주간 시계열, 심리지수</td></tr>
+              <tr><td>○ KOSIS · ○ ECOS</td><td class="mono"><a href="https://kosis.kr/">kosis.kr</a> · <a href="https://ecos.bok.or.kr/">ecos.bok.or.kr</a></td><td>인구·가구, 금리·대출 시계열(API)</td></tr>
+              <tr><td rowspan="3">법령·규제</td><td>○ 국가법령정보센터</td><td class="mono"><a href="https://www.law.go.kr/">law.go.kr</a></td><td>공인중개사법·주택법·소득세법 조문</td></tr>
+              <tr><td>● 국민참여입법센터 · ● 국토부 입법예고</td><td class="mono"><a href="https://opinion.lawmaking.go.kr/">opinion.lawmaking.go.kr</a> · <a href="https://www.molit.go.kr/USR/law/m_46/lst.jsp">molit 입법예고</a></td><td>의견제출 기한, 개정안 전문</td></tr>
+              <tr><td>● 국토부 보도자료(규제지역) · ● 대광위</td><td class="mono"><a href="https://www.molit.go.kr/USR/NEWS/m_71/lst.jsp">규제지역 지정·해제 공고</a> · <a href="https://www.molit.go.kr/mtc/">molit.go.kr/mtc</a></td><td>조정대상지역·투기과열지구 현황, GTX·광역철도 사업 현황</td></tr>
+              <tr><td rowspan="2">정비사업</td><td>● 안양시 고시공고 · 추진현황</td><td class="mono"><a href="https://www.anyang.go.kr/newtown/emwsWebList.do?key=2558">고시공고</a> · <a href="https://www.anyang.go.kr/newtown/contents.do?key=2516">추진현황</a></td><td>구역 지정, 공람, 추진위·조합 승인</td></tr>
+              <tr><td>● 경기도 온누리 · ○ 서울 정보몽땅</td><td class="mono"><a href="https://www.gg.go.kr/onnuri/index.do">gg.go.kr/onnuri</a> · <a href="https://cleanup.seoul.go.kr/">cleanup.seoul.go.kr</a></td><td>조합 총회·입찰 공고, 서울 고객 참고</td></tr>
+              <tr><td>경·공매</td><td>○ 법원경매정보 · ○ 온비드</td><td class="mono"><a href="https://www.courtauction.go.kr/">courtauction.go.kr</a> · <a href="https://www.onbid.co.kr/">onbid.co.kr</a></td><td>매각 일정·낙찰가율</td></tr>
+              <tr><td>업계</td><td>○ 한국공인중개사협회</td><td class="mono"><a href="https://www.kar.or.kr/">kar.or.kr</a></td><td>협회 공지, 교육, 법정단체 전환 안내</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>4.4 주제별 자동 삽입 매핑</h3>
+        <p>이슈의 C축(주제)에 따라 카드 하단에 자동으로 붙는 바로가기입니다. 고객용은 2~3개, 중개사용은 3~4개를 넘기지 않습니다.</p>
+        <div class="tbl-wrap wide">
+          <table>
+            <thead><tr><th>주제</th><th class="c">고객용 바로가기</th><th class="b">중개사용 바로가기</th></tr></thead>
+            <tbody>
+              <tr><td>금리·대출</td><td>한은 기준금리 추이 · 금융상품한눈에 · 기금e든든</td><td>통화정책방향 결정문 · ECOS · 금융위 보도자료 · HF</td></tr>
+              <tr><td>세금</td><td>홈택스 모의계산 · 위택스 · 공시가격 알리미</td><td>재정경제부 보도자료 · 국세청 · 법령정보센터 조문 · 국민참여입법센터</td></tr>
+              <tr><td>청약·분양</td><td>청약홈 · LH 청약플러스 · 마이홈</td><td>국토부 보도자료 · 통계누리 미분양 · 주택법 입법예고</td></tr>
+              <tr><td>공급·택지·신도시</td><td>마이홈 · LH 청약플러스</td><td>국토부 보도자료 · 경기도뉴스포털 · 대광위</td></tr>
+              <tr><td>정비사업</td><td>안양시 추진현황 · 경기도 온누리</td><td>안양시 고시공고 · 온누리 사업장 검색 · 세움터 · 토지이음</td></tr>
+              <tr><td>임대차·전세 안전</td><td>안심전세 미반환 조회 · 등기소 · 분쟁조정위</td><td>rtms 임대차 신고 · 안심전세 중개사 확인 · 법령정보센터</td></tr>
+              <tr><td>교통·개발</td><td>안양시 고시공고 · GRIS 지도</td><td>대광위 · 경기도뉴스포털 · 국토부 보도자료</td></tr>
+              <tr><td>시장 통계</td><td>실거래가 지도(안양) · KB 데이터허브 · R-ONE 쉬운 통계</td><td>실거래 자료제공 · R-ONE 시계열 · 등기정보광장 · 통계누리</td></tr>
+              <tr><td>규제지역·거래허가</td><td>GRIS 허가구역 지도</td><td>국토부 규제지역 공고 · GRIS · 법령정보센터</td></tr>
+              <tr><td>중개업 제도</td><td>(시행 확정 시) 브이월드 중개업 조회</td><td>협회 · 국토부 보도자료 · 법령정보센터 · 전자계약시스템</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>4.5 API로 자동화할 수 있는 것</h3>
+        <ul>
+          <li><strong>실거래가 API</strong>(공공데이터포털, 이미 fetch.js에서 사용) — 안양 만안·동안 매매·전월세를 주간·월간 중위가로 집계해 "우리 동네 숫자" 타일 4개를 채웁니다. 최근 두 달은 잠정치 표기.</li>
+          <li><strong>한국은행 ECOS API</strong> — 기준금리, 예금은행 주택담보대출 금리(신규취급액). 현재 데모 상수 두 개를 대체합니다.</li>
+          <li><strong>한국부동산원 R-ONE API</strong> — 주간 아파트 매매·전세 가격지수(경기 안양 단위), 월간 거래량, 미분양.</li>
+          <li><strong>korea.kr·국토부 RSS</strong> — 보도자료 제목·본문 링크. 태깅 파이프라인의 1차 입력.</li>
+          <li><strong>경기도 보도자료 API</strong>(공공데이터포털 15034926) — 도 단위 정책 발표.</li>
+          <li><strong>건축물대장·토지 API</strong>(공공데이터포털) — 중개사용 물건 조사 자동화(노후도·위반건축물).</li>
+          <li><strong>안양시 고시공고</strong> — API가 없어 HTML 수집이 필요합니다. 제목에서 동·구역명을 뽑아 E축 태그로 씁니다.</li>
+        </ul>
+      </section>
+
+      <!-- ───────── 5. 화면·UX ───────── -->
+      <section class="part" id="s5">
+        <div class="part-head"><span class="part-num">5</span><h2>화면 구성과 UX 백로그</h2></div>
+
+        <h3>5.1 화면 구성안</h3>
+        <div class="ia">
+          <div class="col">
+            <h4><span class="chip b">중개사용 STUDIO</span></h4>
+            <ol>
+              <li><b>인박스</b> <span>— 수집된 보도자료·기사·고시 목록. 열: 시각, 주체, 단계 배지, 주제, 지역, 추천 등급(★ 발송 권장 · ◎ 참고 · ○ 보관), 중복 묶음. 필터: 오늘·이번 주, 안양만, 확정만, 미검수만.</span></li>
+              <li><b>이슈 상세</b> <span>— 팩트시트 → 원문·법령·관련 기사 → 지역 영향 → 상담 스크립트 → 실무 체크리스트 → FAQ → 세그먼트 영향도 → [고객용 미리보기] 토글.</span></li>
+              <li><b>레터 빌더</b> <span>— 세그먼트 선택 → 규칙 R1~R8로 자동 선정 → 카드 순서·코멘트 편집 → 우리 동네 숫자 자동 → 발행 전 검증(필수 사무소 정보, 수신거부 링크, 금지어, 빈 카드) → 이메일·모바일 미리보기 → 발행(읽기 전용 URL) → 발송.</span></li>
+              <li><b>마케팅 스튜디오</b> <span>— 현재 인스타 카드·블로그 기능 이관. 본문 슬라이드는 고객용 필드(what_changes_for_me, actions)로 채우고 금지어 규칙을 동일 적용.</span></li>
+              <li><b>데이터</b> <span>— 저장소의 안양 대시보드 통합(주간·월간 중위가 지수, TOP10) + 4.3의 바로가기 패널.</span></li>
+              <li><b>설정</b> <span>— 사무소(등록번호 포함), 채널(카카오 채널·발신 메일), 수신자 목록과 세그먼트·동 태그, 서명·한마디 기본 문구.</span></li>
+            </ol>
+          </div>
+          <div class="col">
+            <h4><span class="chip c">고객용 LETTER</span></h4>
+            <ol>
+              <li><b>마스트헤드</b> <span>— 사무소명·대표·등록번호(신뢰 요소). 슬로건은 고객 문구로 교체, 예: "안양 부동산 소식, 3분 브리핑".</span></li>
+              <li><b>오늘의 한 줄</b> <span>— 가장 중요한 이슈의 고객용 제목.</span></li>
+              <li><b>이슈 카드 3~5</b> <span>— [주체·단계·날짜] 쉬운 제목 → 무슨 일(2문장) → 나에게는(세그먼트 1문장과 영향도) → 지금 할 일(1~3) → 원문·바로가기.</span></li>
+              <li><b>우리 동네 숫자</b> <span>— 안양 만안·동안 타일 4개와 6개월 추세, 출처·기준일, 잠정치 표시.</span></li>
+              <li><b>지켜볼 이슈</b> <span>— 주 1회, 확정 전 사안 한 줄씩, '확정 아님' 표시.</span></li>
+              <li><b>용어 하나</b> <span>— 이번 호 이슈와 연결된 용어 1개.</span></li>
+              <li><b>중개사의 한마디</b> <span>— 사진·이름·한 문단. 비어 있으면 섹션 제거.</span></li>
+              <li><b>상담 CTA</b> <span>— 전화·카카오 채널·예약. 미설정 채널은 버튼 자체를 숨김.</span></li>
+              <li><b>푸터</b> <span>— 사무소·등록번호·면책·광고성 정보 표시·실제로 동작하는 수신거부 링크. 글자 12px 이상.</span></li>
+            </ol>
+          </div>
+        </div>
+
+        <h3>5.2 UX 백로그 (우선순위·예상 공수)</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>우선</th><th>작업</th><th>해결하는 문제</th><th>공수</th></tr></thead>
+            <tbody>
+              <tr><td><span class="sev p0">P0</span></td><td>수집 → 요약·태깅·영향도 초안 → 검수 플래그 파이프라인(Actions에 LLM 단계 추가)</td><td>1, 3, 9, 15, 16</td><td class="num">3~5일</td></tr>
+              <tr><td><span class="sev p0">P0</span></td><td>숫자 타일을 ECOS·R-ONE·실거래 API로 교체, 출처는 실제 통계 페이지</td><td>2, 10</td><td class="num">2~3일</td></tr>
+              <tr><td><span class="sev p0">P0</span></td><td>렌더 함수 audience 분리 + 금지어 필터(R7) + 고객용 문장 규칙(R6)</td><td>4</td><td class="num">2~3일</td></tr>
+              <tr><td><span class="sev p0">P0</span></td><td>발행 스냅샷 URL(사무소 정보 포함, 편집 UI·모달 제거, 읽기 전용)</td><td>5, 12</td><td class="num">2일</td></tr>
+              <tr><td><span class="sev p0">P0</span></td><td>'확인 필요' 조건부 표시, 배지는 레코드 메타에서만</td><td>3, 6</td><td class="num">0.5일</td></tr>
+              <tr><td><span class="sev">P1</span></td><td>정책·뉴스 섹션 역할 분리와 중복 제거, 신선도 컷(R8)</td><td>7, 8</td><td class="num">1~2일</td></tr>
+              <tr><td><span class="sev">P1</span></td><td>이슈별 영향도와 세그먼트 3종, 수신자 세그먼트 태그</td><td>9</td><td class="num">2~3일</td></tr>
+              <tr><td><span class="sev">P1</span></td><td>발행 전 검증(사무소 필수 항목·등록번호 입력란·수신거부·빈 카드)</td><td>11</td><td class="num">1일</td></tr>
+              <tr><td><span class="sev">P1</span></td><td>원문 링크 폴백 제거(없으면 버튼 숨김), 4.4 바로가기 자동 삽입</td><td>10</td><td class="num">1일</td></tr>
+              <tr><td><span class="sev p2">P2</span></td><td>글자 크기 최소 12px, 겹침 실기기 검수, 인스타 본문 데이터화, 블로그 메타·앵커</td><td>13~16</td><td class="num">1~2일</td></tr>
+              <tr><td><span class="sev p2">P2</span></td><td>접근성(포커스 트랩, aria-pressed, 단계 텍스트 병기)</td><td>17</td><td class="num">1일</td></tr>
+              <tr><td><span class="sev p2">P2</span></td><td>발송 계층(메일 발송 서비스 또는 카카오 알림톡), 수신자 관리, 수신거부 실동작, 클릭 추적</td><td>18, 19</td><td class="num">1~2주</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ───────── 6. 로드맵 ───────── -->
+      <section class="part" id="s6">
+        <div class="part-head"><span class="part-num">6</span><h2>로드맵</h2></div>
+        <div class="phases">
+          <div class="phase"><div class="when">1~2주</div><h4>신뢰 회복</h4><ul><li>P0 5건 전부</li><li>고객용 렌더 분리와 금지어 필터</li><li>실데이터 숫자 타일(안양 4개)</li><li>읽기 전용 발행 URL</li></ul></div>
+          <div class="phase"><div class="when">3~6주</div><h4>이원화 완성</h4><ul><li>5축 태깅과 R1~R8 라우팅</li><li>세그먼트 3종과 수신자 태그</li><li>인박스·이슈 상세·레터 빌더</li><li>4.4 바로가기 자동 삽입</li><li>안양시 고시 수집과 동네 타깃</li></ul></div>
+          <div class="phase"><div class="when">7주~</div><h4>서비스화</h4><ul><li>발송 계층과 수신거부</li><li>클릭·상담 요청 회신</li><li>마케팅 스튜디오 데이터화</li><li>안양 대시보드 통합과 지역 확장(구 단위 코드 파라미터)</li></ul></div>
+        </div>
+        <p>첫 2주의 목표는 기능 추가가 아니라, 지금 나가는 브리핑이 헤드라인·배지·숫자·문장 어느 하나도 스스로를 반박하지 않게 만드는 것입니다. 이원화는 그 위에서 규칙으로 완성됩니다.</p>
+      </section>
+
+      <footer class="end">
+        검토 자료: EDM 미리보기.html(1,900줄, 라이브와 동일 코드), 스크린샷 31~35.png(DAILY 이메일, WEEKLY, MONTHLY 인스타 주제 목록, 인스타 카드 5장, 블로그 포스팅), 저장소 안양 대시보드(index.html, fetch.js, process.js, top10.js, monthly.json), KB통계보드 참고 캡처. 라이브 사이트와 외부 사이트는 이 세션의 네트워크 정책으로 직접 접속하지 못해, 링크는 검색 결과로 확인했습니다. 보도자료 예시는 2026년 9월 둘째 주 네이버 뉴스 검색과 안양시 고시공고 검색 결과에서 가져왔습니다.
+      </footer>
+    </main>
+  </div>
+</div>
+</body>
+</html>
