@@ -1,0 +1,58 @@
+/** 고객용 포털 — 알림톡의 링크로 열리는 화면. 고객 한 명(박지훈)의 시점. */
+export const portal = {
+  customer: { name: "박지훈", phoneMasked: "010-****-7788" },
+  agent: {
+    name: "이서연",
+    office: "서연공인중개사사무소",
+    phone: "010-0000-1848",
+    officePhone: "032-000-1234",
+    address: "인천 부평구 십정동 630 더샵부평센트럴시티 상가 102호",
+    mapUrl: "https://map.naver.com/",
+    kakaoUrl: "https://pf.kakao.com/",
+    hours: "평일 09:00–19:00 · 토 10:00–15:00",
+  },
+  deal: {
+    name: "더샵부평 110동 103호 전세",
+    property: "더샵부평센트럴시티 110동 103호",
+    address: "인천 부평구 십정동 630",
+    method: "전세",
+    deposit: 42000,
+    steps: [
+      { key: "contract", label: "계약", date: "2026-08-15", desc: "계약금 4,200만원 입금 완료", done: true },
+      { key: "balance", label: "잔금", date: "2026-09-30", desc: "잔금 3억 7,800만원 · 확정일자·전입신고 동행", done: false },
+      { key: "moveIn", label: "입주", date: "2026-10-01", desc: "열쇠 인수 · 관리비 정산", done: false },
+      { key: "expiry", label: "계약 만료", date: "2028-09-30", desc: "만료 90일 전 재계약 안내 예정", done: false },
+    ],
+    documents: ["신분증", "인감도장 또는 서명", "잔금 이체 한도 확인", "전입신고 서류(주민센터)"],
+  },
+  registry: { active: true, since: "2026-08-15", lastChecked: "2026-09-12 17:02", changes: 0, address: "인천 부평구 십정동 630 110동 103호" },
+  appointment: { id: "a4", date: "2026-09-14", time: "10:00", type: "임장", place: "더샵부평 110동 103호 현장", memo: "가전 실측", confirmed: false },
+  market: {
+    region: "인천 부평구 십정동",
+    complex: "더샵부평센트럴시티 84㎡ 전세",
+    unit: "만원",
+    /** 최근 12개월 전세 평균 (만원) */
+    series: [
+      { m: "2025-10", v: 38500 },
+      { m: "2025-11", v: 38800 },
+      { m: "2025-12", v: 39200 },
+      { m: "2026-01", v: 39000 },
+      { m: "2026-02", v: 39600 },
+      { m: "2026-03", v: 40100 },
+      { m: "2026-04", v: 40500 },
+      { m: "2026-05", v: 41000 },
+      { m: "2026-06", v: 41300 },
+      { m: "2026-07", v: 41800 },
+      { m: "2026-08", v: 42000 },
+      { m: "2026-09", v: 42200 },
+    ],
+    recent: [
+      { date: "2026-09-08", dong: "110동", floor: "12층", area: 84.9, price: 42500, kind: "전세" },
+      { date: "2026-09-02", dong: "108동", floor: "5층", area: 84.9, price: 41000, kind: "전세" },
+      { date: "2026-08-27", dong: "112동", floor: "20층", area: 84.9, price: 43000, kind: "전세" },
+      { date: "2026-08-21", dong: "110동", floor: "3층", area: 59.9, price: 33500, kind: "전세" },
+      { date: "2026-08-14", dong: "107동", floor: "15층", area: 84.9, price: 72000, kind: "매매" },
+    ],
+  },
+  consent: { alimtalk: true, marketInfo: true, registryAlert: true, consentedAt: "2026-08-02" },
+};
