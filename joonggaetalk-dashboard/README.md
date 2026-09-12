@@ -36,14 +36,30 @@ Node.js 18.18 이상이 필요합니다.
 
 ## Vercel 배포
 
-1. 이 폴더를 GitHub 저장소로 올리거나(권장), Vercel CLI로 바로 올립니다.
-   ```bash
-   npx vercel        # 미리보기
-   npx vercel --prod # 프로덕션
-   ```
-2. Vercel 대시보드에서 **New Project → Import** 후 프레임워크가 `Next.js`로 자동 감지되는지 확인합니다.
-3. 이 폴더가 다른 저장소의 하위 폴더에 있다면 **Settings → General → Root Directory** 를 `joonggaetalk-dashboard`로 지정합니다.
-4. 환경 변수는 필요 없습니다. 글꼴(Pretendard)은 jsDelivr CDN에서 불러옵니다.
+환경 변수는 필요 없습니다. 글꼴(Pretendard)은 jsDelivr CDN에서 불러옵니다. 세 가지 방법 중 하나를 고릅니다.
+
+**방법 1 · CLI (가장 빠름, 2분)**
+
+```bash
+cd joonggaetalk-dashboard
+npx vercel login
+npx vercel --prod      # 질문에는 모두 기본값(Enter) — 프레임워크 Next.js 자동 감지
+```
+
+**방법 2 · GitHub 저장소 가져오기**
+
+1. Vercel 대시보드 → **Add New → Project → Import** 에서 `taeli850410-lang/name` 을 고릅니다.
+2. **Root Directory** 를 `joonggaetalk-dashboard` 로 지정하고 Deploy 합니다.
+3. 소스가 `main` 이 아닌 브랜치(`claude/modest-bohr-bhbc4b`)에 있으면 **Settings → Git → Production Branch** 를 그 브랜치로 바꾸고 Redeploy 하거나, 브랜치를 `main` 에 합칩니다.
+
+**방법 3 · 부트스트랩 배포 (`deploy/` 폴더)**
+
+소스 전체를 올리지 않고 `deploy/package.json` 과 `deploy/fetch-source.js` 두 파일만 배포하면, 빌드 단계에서 공개 저장소의 브랜치를 내려받아 `next build` 합니다. Vercel MCP나 API처럼 파일을 직접 올리는 도구에 적합하고, 같은 두 파일을 다시 배포하면 그 시점의 최신 커밋이 빌드됩니다. 저장소·브랜치·폴더는 환경 변수 `SOURCE_REPO`, `SOURCE_BRANCH`, `SOURCE_DIR` 로 바꿉니다.
+
+```bash
+cd joonggaetalk-dashboard/deploy
+npx vercel --prod --name joonggaetalk-dashboard
+```
 
 ## 설계 메모 (검토 보고서 대응)
 
