@@ -24,6 +24,8 @@ export default async function StudioLayout({ children }: { children: ReactNode }
             <Link href="/studio/brief">브리핑</Link>
             <Link href="/studio">인박스</Link>
             <Link href="/studio/letters">레터 빌더</Link>
+            <Link href="/studio/instagram">인스타 카드</Link>
+            <Link href="/studio/blog">블로그</Link>
             <Link href="/studio/data">우리 동네 숫자</Link>
             <Link href="/studio/settings">설정</Link>
           </nav>

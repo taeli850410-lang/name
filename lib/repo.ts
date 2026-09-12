@@ -1,11 +1,11 @@
 import bundledMarket from "@/data/market-anyang.json";
 import { DEFAULT_OFFICE, seedIssues, seedLetters } from "./seed";
 import { getStore } from "./store";
-import type { Issue, Letter, MarketDoc, Meta, Office } from "./types";
+import type { BlogPost, InstaSave, Issue, Letter, MarketDoc, Meta, Office } from "./types";
 
-/** 저장소 접근 계층. 컬렉션 단위 문서(issues, letters, settings, market, meta)로 저장합니다. */
+/** 저장소 접근 계층. 컬렉션 단위 문서(issues, letters, settings, market, meta, insta, blog)로 저장합니다. */
 
-const KEYS = { issues: "issues", letters: "letters", settings: "settings", market: "market", meta: "meta" } as const;
+const KEYS = { issues: "issues", letters: "letters", settings: "settings", market: "market", meta: "meta", insta: "insta", blog: "blog" } as const;
 
 export async function getIssues(): Promise<Issue[]> {
   const store = getStore();
@@ -86,4 +86,38 @@ export async function getMeta(): Promise<Meta> {
 
 export async function saveMeta(meta: Meta): Promise<void> {
   await getStore().set(KEYS.meta, meta);
+}
+
+/* ── 인스타 카드 구성 ── */
+export async function getInstaSaves(): Promise<InstaSave[]> {
+  return (await getStore().get<InstaSave[]>(KEYS.insta)) ?? [];
+}
+export async function addInstaSave(save: InstaSave): Promise<InstaSave[]> {
+  const list = [save, ...(await getInstaSaves())].slice(0, 100);
+  await getStore().set(KEYS.insta, list);
+  return list;
+}
+export async function deleteInstaSave(id: string): Promise<InstaSave[]> {
+  const list = (await getInstaSaves()).filter((s) => s.id !== id);
+  await getStore().set(KEYS.insta, list);
+  return list;
+}
+
+/* ── 블로그 포스팅 ── */
+export async function getBlogPosts(): Promise<BlogPost[]> {
+  return (await getStore().get<BlogPost[]>(KEYS.blog)) ?? [];
+}
+export async function upsertBlogPost(post: BlogPost): Promise<BlogPost[]> {
+  const list = await getBlogPosts();
+  const idx = list.findIndex((p) => p.id === post.id);
+  if (idx >= 0) list[idx] = post;
+  else list.unshift(post);
+  const next = list.slice(0, 200);
+  await getStore().set(KEYS.blog, next);
+  return next;
+}
+export async function deleteBlogPost(id: string): Promise<BlogPost[]> {
+  const list = (await getBlogPosts()).filter((p) => p.id !== id);
+  await getStore().set(KEYS.blog, list);
+  return list;
 }

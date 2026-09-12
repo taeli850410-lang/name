@@ -251,3 +251,26 @@ export interface Meta {
   lastCollect: CollectStats | null;
   lastMarketAt: string | null;
 }
+
+/** 인스타 카드뉴스 저장 구성 */
+export interface InstaSave {
+  id: string;
+  issueId: string;
+  title: string;
+  count: number;
+  theme: string;
+  template: string;
+  segment: Segment;
+  createdAt: string;
+}
+
+/** 블로그 포스팅 초안 (마크다운) */
+export interface BlogPost {
+  id: string;
+  issueId: string;
+  topicLabel: string;
+  title: string;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+}

@@ -344,6 +344,17 @@ export default function IssueEditor({ issue: initial, llm }: { issue: Issue; llm
           </div>
         </div>
         <div className="card" style={{ marginTop: 12 }}>
+          <h4>이 이슈로 만들기</h4>
+          <div className="row" style={{ marginTop: 6 }}>
+            <a className="btn btn-sm" href={`/studio/instagram?issue=${issue.id}`}>
+              인스타 카드뉴스
+            </a>
+            <a className="btn btn-sm" href={`/studio/blog?issue=${issue.id}`}>
+              블로그 초안
+            </a>
+          </div>
+        </div>
+        <div className="card" style={{ marginTop: 12 }}>
           <h4>중개사용 바로가기</h4>
           <ul className="small" style={{ marginTop: 6 }}>
             {links(TOPIC_LINKS[issue.topic].broker).map((l) => (

@@ -12,6 +12,8 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.125.0",
     "fast-xml-parser": "^5.11.1",
+    "html-to-image": "^1.11.13",
+    "jszip": "^3.10.2",
     "next": "15.5.25",
     "react": "19.3.0",
     "react-dom": "19.3.0",
