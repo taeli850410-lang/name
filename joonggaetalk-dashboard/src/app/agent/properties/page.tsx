@@ -7,8 +7,11 @@ import { Badge, EmptyState, Kw, MoreMenu, PageHead, Pager, SearchBox, Switch } f
 import { ConfirmModal } from "@/components/ui/Modal";
 import { Drawer } from "@/components/ui/Drawer";
 import { useToast } from "@/components/ui/Toast";
+import { RegisterLookup, RegisterSummary } from "@/components/property/RegisterLookup";
 import { properties as seed, type Property, type PropertyType } from "@/data/properties";
 import { customers } from "@/data/customers";
+import type { RegisterSnapshot } from "@/lib/bldrgst";
+import { openPostcode } from "@/lib/daumPostcode";
 import { formatManwon, TODAY } from "@/lib/format";
 
 const TYPES: PropertyType[] = ["아파트", "오피스텔", "빌라·다세대", "상가", "토지", "단독주택"];
@@ -184,6 +187,31 @@ function Properties() {
               <dt>주소 검증</dt>
               <dd>{detail.verified ? <Badge tone="good" dot>온라인등기소 단일 물건 확인 완료</Badge> : <Badge tone="warn" dot>미검증 — 임대차 물건은 확인이 필요합니다</Badge>}</dd>
             </dl>
+            <div>
+              <div className="section-label">건축물대장</div>
+              {detail.register && <RegisterSummary snapshot={detail.register} />}
+              <div className={detail.register ? "mt-8" : ""}>
+                <RegisterLookup
+                  source={detail.bcode && detail.jibunAddress ? { bcode: detail.bcode, jibunAddress: detail.jibunAddress } : null}
+                  dongHint={detail.dong}
+                  applyLabel={detail.register ? "이 내용으로 갱신" : "물건 정보에 반영"}
+                  onApply={(patch, snapshot) => {
+                    const next: Property = {
+                      ...detail,
+                      register: snapshot,
+                      type: patch.type ?? detail.type,
+                      areaM2: patch.areaM2 ?? detail.areaM2,
+                      parking: patch.parking ?? detail.parking,
+                      floor: detail.floor || (patch.totalFloor ? `/${patch.totalFloor}` : undefined),
+                    };
+                    setList((xs) => xs.map((p) => (p.id === detail.id ? next : p)));
+                    setDetail(next);
+                    toast("건축물대장 내용을 물건에 반영했습니다.");
+                  }}
+                />
+              </div>
+            </div>
+
             <div className="card" style={{ boxShadow: "none" }}>
               <div className="card__body row row--between">
                 <div>
@@ -242,12 +270,16 @@ function NewPropertyForm({ onSave, onCancel }: { onSave: (p: Property) => void; 
   const [name, setName] = useState("");
   const [type, setType] = useState<PropertyType>("아파트");
   const [address, setAddress] = useState("");
+  const [addrMeta, setAddrMeta] = useState<{ bcode: string; jibunAddress: string; roadAddress: string } | null>(null);
+  const [register, setRegister] = useState<RegisterSnapshot | null>(null);
+  const [searchBlocked, setSearchBlocked] = useState(false);
   const [dong, setDong] = useState("");
   const [ho, setHo] = useState("");
   const [floor, setFloor] = useState("");
   const [owner, setOwner] = useState("");
   const [m2, setM2] = useState("");
   const [py, setPy] = useState("");
+  const [parking, setParking] = useState("");
   const [ctypes, setCtypes] = useState<("매매" | "전세" | "월세")[]>([]);
   const [sale, setSale] = useState("");
   const [deposit, setDeposit] = useState("");
@@ -264,6 +296,22 @@ function NewPropertyForm({ onSave, onCancel }: { onSave: (p: Property) => void; 
     }
   };
   const isRent = ctypes.includes("전세") || ctypes.includes("월세");
+
+  /** 주소 검색 — 법정동코드까지 받아 둬야 건축물대장을 조회할 수 있다. */
+  const searchAddress = async () => {
+    const r = await openPostcode();
+    if (!r) {
+      setSearchBlocked(true);
+      return;
+    }
+    setSearchBlocked(false);
+    setAddress(r.jibunAddress || r.address);
+    setAddrMeta({ bcode: r.bcode, jibunAddress: r.jibunAddress, roadAddress: r.roadAddress });
+    setRegister(null);
+    if (!name.trim() && r.buildingName) setName(r.buildingName);
+    setErr((e) => ({ ...e, address: "" }));
+  };
+
   const submit = () => {
     const e: Record<string, string> = {};
     if (!name.trim()) e.name = "명칭을 입력해 주세요.";
@@ -277,13 +325,17 @@ function NewPropertyForm({ onSave, onCancel }: { onSave: (p: Property) => void; 
       name: name.trim(),
       type,
       address: address.trim(),
-      roadAddress: "-",
+      roadAddress: addrMeta?.roadAddress || "-",
+      bcode: addrMeta?.bcode,
+      jibunAddress: addrMeta?.jibunAddress,
+      register: register ?? undefined,
       dong: dong || undefined,
       ho: ho || undefined,
       floor: floor || undefined,
       ownerId: o?.id,
       ownerName: o?.name,
       areaM2: m2 ? Number(m2) : undefined,
+      parking: parking ? Number(parking) : undefined,
       contractTypes: ctypes,
       salePrice: sale ? Number(sale) : undefined,
       deposit: deposit ? Number(deposit) : undefined,
@@ -321,14 +373,39 @@ function NewPropertyForm({ onSave, onCancel }: { onSave: (p: Property) => void; 
           주소 <span className="req">*</span>
         </label>
         <div className="input-group">
-          <input id="np-addr" className={`input${err.address ? " is-invalid" : ""}`} placeholder="도로명 또는 지번으로 검색" value={address} onChange={(e) => setAddress(e.target.value)} />
-          <button type="button" className="btn" onClick={() => setAddress("인천 부평구 십정동 630 더샵부평센트럴시티")}>
+          <input id="np-addr" className={`input${err.address ? " is-invalid" : ""}`} placeholder="도로명 또는 지번으로 검색" value={address} onChange={(e) => { setAddress(e.target.value); setAddrMeta(null); }} />
+          <button type="button" className="btn" onClick={searchAddress}>
             <Icon name="search" size={14} /> 검색
           </button>
         </div>
         {err.address && <div className="error">{err.address}</div>}
-        <div className="help">동/호를 입력해야 등기소 단일 물건 확인과 실거래가 조회가 정확합니다. 빌라 등 동이 없으면 동은 비워 두세요.</div>
+        {addrMeta ? (
+          <div className="addr-picked">
+            <Icon name="checkCircle" size={14} style={{ color: "var(--good)" }} />
+            <span>
+              지번 <b>{addrMeta.jibunAddress}</b>
+            </span>
+            {addrMeta.roadAddress && <span className="faint">도로명 {addrMeta.roadAddress}</span>}
+            <span className="k">법정동 {addrMeta.bcode}</span>
+          </div>
+        ) : (
+          <div className="help">동/호를 입력해야 등기소 단일 물건 확인과 실거래가 조회가 정확합니다. 빌라 등 동이 없으면 동은 비워 두세요.</div>
+        )}
+        {searchBlocked && <div className="help">주소 검색 창을 열지 못했습니다. 주소를 직접 입력하면 저장은 되지만, 법정동코드가 없어 건축물대장은 조회할 수 없습니다.</div>}
       </div>
+
+      <RegisterLookup
+        source={addrMeta?.bcode ? { bcode: addrMeta.bcode, jibunAddress: addrMeta.jibunAddress } : null}
+        dongHint={dong}
+        onApply={(patch, snapshot) => {
+          if (patch.name && !name.trim()) setName(patch.name);
+          if (patch.type) setType(patch.type);
+          if (patch.totalFloor) setFloor((f) => (f.includes("/") ? f : `${f || ""}/${patch.totalFloor}`));
+          if (patch.areaM2) setArea(String(Math.round(patch.areaM2 * 100) / 100), "m2");
+          if (patch.parking != null) setParking(String(patch.parking));
+          setRegister(snapshot);
+        }}
+      />
       <div className="form-grid-2">
         <div className="field">
           <span className="label">동 / 호</span>
@@ -366,6 +443,15 @@ function NewPropertyForm({ onSave, onCancel }: { onSave: (p: Property) => void; 
             <input className="input" inputMode="decimal" placeholder="평" value={py} onChange={(e) => setArea(e.target.value, "py")} aria-label="평" />
           </div>
           <div className="help">두 값은 자동 환산됩니다 (1평 ≈ 3.3058㎡).</div>
+        </div>
+      </div>
+      <div className="field" style={{ maxWidth: 220 }}>
+        <label className="label" htmlFor="np-parking">
+          주차대수 <span className="opt">세대당</span>
+        </label>
+        <div className="input-group">
+          <input id="np-parking" className="input" inputMode="decimal" placeholder="예: 1.2" value={parking} onChange={(e) => setParking(e.target.value)} />
+          <span className="unit">대</span>
         </div>
       </div>
       <div className="field">
