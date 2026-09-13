@@ -3,11 +3,12 @@ import { editionLabel, letterTitle } from "./letter";
 import { links, TOPIC_LINKS } from "./links";
 import { computeTiles } from "./market";
 import { focusRank, gradeIssue, isFresh, maxSegmentImpact, ROUTE_LABEL, routeIssue } from "./routing";
-import { pickVideos } from "./channels";
+import { pickVideos, VIDEO_MAX_AGE } from "./channels";
+import { isRealEstateRelevant } from "./classify";
 import { descriptionPoints } from "./video";
 import { sourceLinks, type SourceLink } from "./source";
 import { PERIOD_LABEL, PERSONAS, regionLabel, SEGMENTS, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL } from "./taxonomy";
-import type { Article, Glossary, HistoryPoint, Issue, Letter, LetterIssue, MarketDoc, MarketTile, Office, Period, Persona, Segment, VideoItem } from "./types";
+import type { Article, Glossary, HistoryPoint, Issue, Letter, LetterIssue, MarketDoc, MarketTile, Office, Period, Persona, Segment, Topic, VideoItem } from "./types";
 
 /**
  * 브리핑 뷰 모델. 원본 EDM 의 구조(마스트헤드 → 슬로건 → 헤드라인 → 정책 카드 → 뉴스 → 숫자 →
@@ -84,6 +85,20 @@ export interface BriefVideoModel {
   url: string;
   thumb: string;
   date: string;
+  /** 이 영상과 같은 주제의 보도 — 대표 영상에만 채웁니다 */
+  articles: BriefArticle[];
+  /** 영상에서 확인되는 것. 보도한 곳과 날짜를 붙여 출처를 남깁니다 */
+  fact?: string;
+  /** 중개사가 판단할 것. 사실이 아니라 해석이라는 걸 화면에서 갈라 보여 줍니다 */
+  analysis?: string;
+}
+
+/** 영상 한 편에 딸리는 보도 묶음을 찾을 때 쓰는 최소 정보 */
+export interface VideoNewsSource {
+  topic: Topic;
+  place?: string | null;
+  publishedAt: string;
+  articles: Article[];
 }
 
 export interface BriefModel {
@@ -127,6 +142,34 @@ export const VIDEO_SUB = "언론사·공공기관 유튜브 채널이 만든 영
 export const VIDEO_POINTS_TITLE = "이 영상에서 다루는 것";
 /** 영상 기사란 코너 이름. 설정에서 바꾸고, 비우면 코너 이름 없이 제목만 섭니다 */
 export const VIDEO_BRAND = "REPORT K";
+/**
+ * ANALYSIS 칸에 들어가는 문장. 영상이 말한 내용을 옮기는 게 아니라,
+ * 그 주제에서 중개사가 원문을 열고 무엇부터 확인해야 하는지를 적습니다.
+ * 사실(FACT)과 섞이면 안 되는 칸이라 지어낸 시장 전망은 넣지 않습니다.
+ */
+export const VIDEO_ANALYSIS: Record<Topic, string> = {
+  rate: "적용 시점과 대상 대출(신규·대환·생활안정)을 원문에서 확인하세요. 기존 차주에게 소급되는지가 상담의 갈림길입니다.",
+  tax: "취득·보유·양도 중 어느 단계인지, 시행일 기준이 계약일인지 잔금일인지 확인하세요. 주택 수 산정이 함께 바뀌는 경우가 많습니다.",
+  subs: "공급 유형(특별·일반)과 거주·무주택 기간 요건, 재당첨 제한 기간을 확인하세요. 지역별로 요건이 갈립니다.",
+  supply: "지구 지정인지 착공·분양 일정인지 단계를 확인하세요. 발표 물량과 실제 입주 시점은 몇 년 차이가 납니다.",
+  redev: "어느 단계(조합설립·사업시행·관리처분)의 이야기인지 확인하세요. 단계마다 조합원 지위 양도 가능 여부가 달라집니다.",
+  lease: "보증금 보호 한도와 대항력·우선변제 요건에 영향이 있는지 확인하세요. 계약 중인 임차인에게 소급되는지가 핵심입니다.",
+  transit: "예비타당성·기본계획·착공 중 어느 단계인지 확인하세요. 노선도만 보고 개통 시점을 말하지 않습니다.",
+  stat: "조사 기관과 기준일, 표본을 확인하세요. 실거래 신고 기한 30일 때문에 최근 두 달 수치는 잠정치입니다.",
+  regulation: "지정·해제의 효력 발생일과 대상 구역 경계를 확인하세요. 거래허가는 계약 체결 전에 받아야 합니다.",
+  broker: "시행일과 적용 대상 중개행위를 확인하세요. 기존 계약·기존 등록 사무소에 소급되는지 함께 봐야 합니다.",
+};
+
+export const VIDEO_FACT_LABEL = "FACT";
+export const VIDEO_ANALYSIS_LABEL = "ANALYSIS";
+export const VIDEO_SPLIT_TITLE = "전문가 영향도 분석";
+export const VIDEO_SUMMARY_TITLE = "핵심 요약";
+export const VIDEO_RELATED_TITLE = "관련 기사";
+export const VIDEO_CTA = "원문·관련보도 보기";
+/** 플레이어 위 좌우에 앉는 꼬리표 */
+export const VIDEO_TAG = "VIDEO NEWS";
+export const VIDEO_ASIDE = "관련 영상";
+
 export const PERSONA_TITLE = "그래서 내 부동산에는?";
 export const PERSONA_NOTE = "※ 매수·매도 판단을 단정적으로 권하지 않습니다. 적용 여부는 주택 수·취득시기·지역·보유기간 등에 따라 달라질 수 있습니다.";
 export const CTA_TITLE = "이 정책이 내 집에 어떤 영향을 주는지 궁금하신가요?";
@@ -225,7 +268,13 @@ export function letterToBrief(letter: Letter): BriefModel {
     keynote: { main: o.slogan, sub: "확정된 정책과 우리 동네 숫자만 골라, 내 상황에 무엇이 달라지는지 3분 안에 정리해 드립니다." },
     eyebrow: `${PERIOD_EYEBROW[period]} · ${letter.editionLabel}`,
     headline: letter.headline,
-    video: videoSection(letter.videos, period, o.videoBrand ?? VIDEO_BRAND),
+    video: videoSection(
+      letter.videos,
+      period,
+      o.videoBrand ?? VIDEO_BRAND,
+      // 레터 스냅샷에는 지역이 실리지 않습니다. 주제만으로 묶고, 지역 가산점은 중개사용에서만 씁니다
+      letter.issues.map((i) => ({ topic: i.topic, publishedAt: i.publishedAt, articles: i.articles ?? [] })),
+    ),
     policy: {
       title: POLICY_TITLE[period],
       sub: "공식 고시·발표 종합 · 확정·시행 예정·통계만",
@@ -266,11 +315,52 @@ export function letterToBrief(letter: Letter): BriefModel {
 }
 
 /**
+ * 영상과 같은 주제의 보도를 골라 붙입니다.
+ *
+ * 영상은 이슈와 따로 수집되기 때문에, 그대로 두면 영상 한 편이 아무 데로도 이어지지 않습니다.
+ * 같은 주제(그리고 영상에 지역이 찍혀 있으면 같은 시도)의 기사를 최신순으로 세 건까지 붙여
+ * '영상 → 요약 → 해석 → 원문' 한 흐름으로 만듭니다. 억지로 채우지 않습니다 — 없으면 빈 배열입니다.
+ */
+function relatedForVideo(v: VideoItem, pool: VideoNewsSource[], period: Period, limit = 3): BriefArticle[] {
+  // 이슈는 정책 섹션 기준(주간이면 7일)으로 걸러져 들어오지만 영상은 그보다 오래된 것도 실립니다.
+  // 그래서 '이번 호에 실린 기간'이 아니라 '이 영상이 올라온 무렵'을 기준으로 봅니다.
+  const span = VIDEO_MAX_AGE[period] * 86400000;
+  const vAt = new Date(v.publishedAt).getTime();
+  const sameTopic = pool.filter((n) => n.topic === v.topic && Math.abs(new Date(n.publishedAt).getTime() - vAt) <= span);
+  // 영상에 지역이 있으면 같은 지역을 먼저, 그다음 같은 주제 전체
+  const ranked = [...sameTopic].sort((a, b) => {
+    const pa = v.place && a.place === v.place ? 0 : 1;
+    const pb = v.place && b.place === v.place ? 0 : 1;
+    if (pa !== pb) return pa - pb;
+    return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+  });
+  const out: BriefArticle[] = [];
+  const seen = new Set<string>();
+  for (const n of ranked) {
+    for (const a of n.articles) {
+      if (!a.url || seen.has(a.url)) continue;
+      // 주제만 맞추면 '시장 통계'에 걸린 어업 안전 점검 같은 기사가 부동산 영상 밑에 붙습니다.
+      // 제목에 부동산 낱말이 없으면 버립니다 — 세 칸을 채우는 것보다 엉뚱한 걸 안 붙이는 게 낫습니다.
+      if (!isRealEstateRelevant(a.title)) continue;
+      seen.add(a.url);
+      out.push(toBriefArticle(a));
+      if (out.length >= limit) return out;
+    }
+  }
+  return out;
+}
+
+/**
  * 영상 기사 → 브리핑 모델. 주제·지역을 함께 붙여 열기 전에 무슨 영상인지 알게 합니다.
  * 맨 앞 한 편(head)은 플레이어를 붙이고 설명문 꼭지까지 펴서 기사 카드처럼 세웁니다.
+ *
+ * 대표 영상에는 FACT / ANALYSIS 를 갈라 담습니다. FACT 는 어디가 언제 보도했는지까지 적어
+ * 출처를 남기고, ANALYSIS 는 주제별로 '무엇부터 확인할 것' 한 줄입니다. 둘을 한 칸에 섞으면
+ * 방송이 말한 사실과 중개사의 해석이 구분되지 않습니다.
  */
-function toBriefVideo(v: VideoItem, full: boolean): BriefVideoModel {
+function toBriefVideo(v: VideoItem, full: boolean, period: Period, pool: VideoNewsSource[] = []): BriefVideoModel {
   const { lead, points } = descriptionPoints(v.summary);
+  const leadText = clamp(lead || v.summary, full ? 200 : 110);
   return {
     id: v.id,
     title: v.title,
@@ -279,23 +369,27 @@ function toBriefVideo(v: VideoItem, full: boolean): BriefVideoModel {
     topicLabel: TOPIC_LABEL[v.topic],
     place: v.place,
     summary: clamp(v.summary, 110),
-    lead: clamp(lead || v.summary, full ? 200 : 110),
+    lead: leadText,
     points: full ? points.slice(0, 5) : [],
     url: v.url,
     thumb: v.thumb,
     date: fmtDate(v.publishedAt),
+    articles: full ? relatedForVideo(v, pool, period) : [],
+    // 채널 이름 뒤에 조사를 붙이면 받침에 따라 이/가가 갈립니다. 받침을 안 가리는 "에서"를 씁니다
+    fact: full ? `${v.channel}에서 ${fmtDate(v.publishedAt)}에 보도한 내용입니다. ${leadText}`.trim() : undefined,
+    analysis: full ? VIDEO_ANALYSIS[v.topic] : undefined,
   };
 }
 
-export function videoSection(videos: VideoItem[] | undefined, period: Period, brand = VIDEO_BRAND): BriefModel["video"] {
+export function videoSection(videos: VideoItem[] | undefined, period: Period, brand = VIDEO_BRAND, pool: VideoNewsSource[] = []): BriefModel["video"] {
   const picked = pickVideos(videos ?? [], period);
   if (!picked.length) return undefined;
   return {
     brand,
     title: VIDEO_TITLE[period],
     sub: VIDEO_SUB,
-    head: toBriefVideo(picked[0], true),
-    items: picked.slice(1).map((v) => toBriefVideo(v, false)),
+    head: toBriefVideo(picked[0], true, period, pool),
+    items: picked.slice(1).map((v) => toBriefVideo(v, false, period)),
   };
 }
 
@@ -396,7 +490,13 @@ export function buildBrokerBrief(issues: Issue[], office: Office, market: Market
     },
     eyebrow: `${PERIOD_EYEBROW[period]} · ${edition}`,
     headline: lead ? lead.title : "이 기간에 새로 수집된 이슈가 없습니다",
-    video: videoSection(videos, period, office.videoBrand ?? VIDEO_BRAND),
+    video: videoSection(
+      videos,
+      period,
+      office.videoBrand ?? VIDEO_BRAND,
+      // 정책 카드에 못 든 이슈도 '관련 기사'로는 쓸 수 있습니다. 버려진 것(archived)만 뺍니다
+      issues.filter((i) => i.review !== "archived").map((i) => ({ topic: i.topic, place: i.place, publishedAt: i.publishedAt, articles: i.articles })),
+    ),
     policy: {
       title: POLICY_TITLE[period],
       sub: "공식 고시·발표 종합 · 추천 등급 순 · 검수 전 이슈는 '검수 필요' 표시",

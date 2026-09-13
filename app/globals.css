@@ -420,6 +420,34 @@ tr:last-child td { border-bottom: 0; }
 .brief .vhero-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 58px; height: 58px; border-radius: 999px; background: rgba(0, 0, 0, 0.66); color: #fff; font-size: 20px; display: flex; align-items: center; justify-content: center; padding-left: 4px; }
 .brief .vhero-facade:hover .vhero-play { background: #c4302b; }
 
+/* 썸네일 위 꼬리표. 재생을 누르면 iframe 이 자리를 대신해 함께 사라집니다 */
+.brief .vhero-tag, .brief .vhero-aside { position: absolute; top: 9px; font-size: 9.5px; font-weight: 800; letter-spacing: 0.1em; padding: 3px 7px; border-radius: 5px; line-height: 1.4; }
+.brief .vhero-tag { left: 9px; background: var(--p); color: #fff; }
+.brief .vhero-aside { right: 9px; background: rgba(255, 255, 255, 0.9); color: var(--p); letter-spacing: 0.02em; font-weight: 700; }
+
+/* 영상 아래 한 줄 — 어디가 언제 올렸는지. 길이는 유튜브 피드가 주지 않아 싣지 않습니다 */
+.brief .vhero-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 7px; font-size: 11.5px; color: var(--muted-b); }
+.brief .vhero-chan { font-weight: 800; color: var(--p); }
+.brief .vhero-more { margin-left: auto; color: var(--p); font-weight: 700; text-decoration: none; }
+.brief .vhero-more:hover { text-decoration: underline; }
+
+/* 전문가 영향도 분석 — 사실과 해석을 한 칸에 섞지 않습니다 */
+.brief .va-split { margin-top: 11px; border: 1px solid var(--line-b); border-radius: 10px; overflow: hidden; }
+.brief .va-split-lbl { font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; color: var(--p); background: var(--tint); padding: 7px 11px; border-bottom: 1px solid var(--line-b); }
+.brief .va-row { display: flex; gap: 9px; padding: 9px 11px; align-items: flex-start; }
+.brief .va-row + .va-row { border-top: 1px dashed var(--line-b); }
+.brief .va-row p { font-size: 12.5px; line-height: 1.6; color: var(--ink-b); margin: 0; }
+.brief .va-tag { flex: none; font-size: 9px; font-weight: 800; letter-spacing: 0.08em; padding: 2px 6px; border-radius: 4px; margin-top: 2px; }
+.brief .va-fact .va-tag { background: var(--p); color: #fff; }
+.brief .va-analysis { background: var(--surface-b); }
+.brief .va-analysis .va-tag { background: var(--accent-b); color: #fff; }
+
+/* 관련 기사 — ARTICLE 01·02·03. CTA 에서 앵커로 내려오는 자리 */
+.brief .va-arts { scroll-margin-top: 16px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+.brief .va-num { font-weight: 800; letter-spacing: 0.06em; color: var(--p); }
+.brief .va-art:hover { border-color: var(--p); }
+
 /* 영상 기사 — 상단 가로 3칸, 좁아지면 한 칸씩 쌓임 */
 .brief .vid-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .brief .vid { display: flex; flex-direction: column; gap: 5px; background: var(--card-b); border: 1px solid var(--line-b); border-radius: 12px; padding: 9px; text-decoration: none; }
@@ -442,6 +470,8 @@ tr:last-child td { border-bottom: 0; }
   .brief .vid-title { grid-area: title; }
   .brief .vid-date { grid-area: date; margin-top: 0; }
   .brief .vid-sum { display: none; }
+  .brief .vhero .srcrow .srcbtn { flex: 1 1 100%; justify-content: center; }
+  .brief .va-row { flex-direction: column; gap: 5px; }
 }
 
 /* 섹션 헤드 */

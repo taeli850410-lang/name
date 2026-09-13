@@ -1,6 +1,21 @@
 import { SERVICE_BRAND, serviceHome } from "@/lib/brand";
 import { dots, fmtDate } from "@/lib/format";
-import { VIDEO_POINTS_TITLE, type BriefBadge, type BriefCardModel, type BriefLink, type BriefModel, type BriefNewsModel, type BriefVideoModel } from "@/lib/brief";
+import {
+  VIDEO_ANALYSIS_LABEL,
+  VIDEO_ASIDE,
+  VIDEO_CTA,
+  VIDEO_FACT_LABEL,
+  VIDEO_POINTS_TITLE,
+  VIDEO_RELATED_TITLE,
+  VIDEO_SPLIT_TITLE,
+  VIDEO_TAG,
+  type BriefBadge,
+  type BriefCardModel,
+  type BriefLink,
+  type BriefModel,
+  type BriefNewsModel,
+  type BriefVideoModel,
+} from "@/lib/brief";
 import VideoPlayer from "@/components/VideoPlayer";
 
 /**
@@ -63,7 +78,40 @@ function Impact({ card }: { card: BriefCardModel }) {
   );
 }
 
-/** 대표 영상 기사 — 플레이어 + 정책 카드와 같은 골격(뱃지 · 번호 제목 · 리드 · 체크 목록 · 버튼) */
+/** 번호가 붙는 관련 기사 카드 — ARTICLE 01 · 02 · 03 */
+function NumberedArticles({ articles, id }: { articles: BriefVideoModel["articles"]; id: string }) {
+  if (!articles.length) return null;
+  return (
+    <div className="artlist va-arts" id={`va-${id}`}>
+      <div className="artlist-lbl">
+        {VIDEO_RELATED_TITLE} {articles.length}건
+      </div>
+      {articles.map((a, i) => (
+        <a className="art va-art" key={a.url} href={a.url} target="_blank" rel="noreferrer noopener">
+          <div className="art-meta">
+            <span className="va-num">ARTICLE {String(i + 1).padStart(2, "0")}</span>
+            <span>
+              {a.publisher} · {fmtDate(a.date)}
+            </span>
+            <span className="art-go">기사 보기 ↗</span>
+          </div>
+          <div className="art-title">{a.title}</div>
+        </a>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * 대표 영상 기사 — 하나의 Video Article.
+ *
+ * 순서가 곧 읽는 순서입니다: 발표 주체·날짜 → 헤드라인 → 영상 → 핵심 요약 →
+ * 전문가 영향도 분석(FACT / ANALYSIS) → 원문·관련보도 → 관련 기사.
+ * 영상만 봐도 내용을 알 수 있고, 글로 읽는 사람은 요약에서 바로 분석으로 넘어갑니다.
+ *
+ * CTA 는 스크립트가 아니라 앵커(#va-…)로 내려갑니다. 부드러운 스크롤은 CSS 가 맡고,
+ * 스크립트를 지우는 이메일 클라이언트에서도 링크로 남습니다.
+ */
 function VideoHead({ v }: { v: BriefVideoModel }) {
   return (
     <article className="pcard vhero">
@@ -80,9 +128,22 @@ function VideoHead({ v }: { v: BriefVideoModel }) {
           {v.title}
         </a>
       </h4>
-      <VideoPlayer id={v.id} title={v.title} thumb={v.thumb} url={v.url} />
-      {v.lead && <p className="pcard-lead">{v.lead}</p>}
-      {v.points.length > 0 && (
+
+      <div className="vhero-stage">
+        <VideoPlayer id={v.id} title={v.title} thumb={v.thumb} url={v.url} tag={VIDEO_TAG} aside={VIDEO_ASIDE} />
+      </div>
+      <div className="vhero-meta">
+        <span className="vhero-chan">{v.channel}</span>
+        <span aria-hidden="true">·</span>
+        <span>{v.date}</span>
+        {v.channelUrl && (
+          <a className="vhero-more" href={v.channelUrl} target="_blank" rel="noreferrer noopener">
+            채널 보기 ↗
+          </a>
+        )}
+      </div>
+
+      {v.points.length > 0 ? (
         <div className="pcard-bullets">
           <div className="lbl">{VIDEO_POINTS_TITLE}</div>
           {v.points.map((t, i) => (
@@ -92,17 +153,54 @@ function VideoHead({ v }: { v: BriefVideoModel }) {
             </div>
           ))}
         </div>
+      ) : (
+        v.lead && <p className="pcard-lead">{v.lead}</p>
       )}
+
+      {(v.fact || v.analysis) && (
+        <div className="va-split">
+          <div className="va-split-lbl">{VIDEO_SPLIT_TITLE}</div>
+          {v.fact && (
+            <div className="va-row va-fact">
+              <span className="va-tag">{VIDEO_FACT_LABEL}</span>
+              <p>{v.fact}</p>
+            </div>
+          )}
+          {v.analysis && (
+            <div className="va-row va-analysis">
+              <span className="va-tag">{VIDEO_ANALYSIS_LABEL}</span>
+              <p>{v.analysis}</p>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="srcrow">
-        <a className="srcbtn primary" href={v.url} target="_blank" rel="noreferrer noopener">
-          유튜브에서 보기 →
-        </a>
-        {v.channelUrl && (
-          <a className="srcbtn ghost" href={v.channelUrl} target="_blank" rel="noreferrer noopener">
-            {v.channel} 채널
-          </a>
+        {/* 붙일 보도가 있을 때만 아래로 내려보냅니다. 없으면 같은 자리에서 영상으로 보냅니다 */}
+        {v.articles.length > 0 ? (
+          <>
+            <a className="srcbtn primary" href={`#va-${v.id}`}>
+              {VIDEO_CTA} →
+            </a>
+            <a className="srcbtn ghost" href={v.url} target="_blank" rel="noreferrer noopener">
+              영상 원본
+            </a>
+          </>
+        ) : (
+          <>
+            <a className="srcbtn primary" href={v.url} target="_blank" rel="noreferrer noopener">
+              유튜브에서 보기 →
+            </a>
+            {v.channelUrl && (
+              <a className="srcbtn ghost" href={v.channelUrl} target="_blank" rel="noreferrer noopener">
+                {v.channel} 채널
+              </a>
+            )}
+          </>
         )}
       </div>
+
+      <NumberedArticles articles={v.articles} id={v.id} />
     </article>
   );
 }

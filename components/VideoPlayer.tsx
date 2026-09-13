@@ -11,7 +11,23 @@ import { useState } from "react";
  *    스크립트가 없는 곳에서는 유튜브로 가는 링크로 남습니다.
  * 재생은 youtube-nocookie.com 으로 붙여 재생 전에는 추적 쿠키가 심기지 않습니다.
  */
-export default function VideoPlayer({ id, title, thumb, url }: { id: string; title: string; thumb: string; url: string }) {
+export default function VideoPlayer({
+  id,
+  title,
+  thumb,
+  url,
+  tag,
+  aside,
+}: {
+  id: string;
+  title: string;
+  thumb: string;
+  url: string;
+  /** 썸네일 좌측 위 꼬리표 — VIDEO NEWS */
+  tag?: string;
+  /** 썸네일 우측 위 꼬리표 — 관련 영상 */
+  aside?: string;
+}) {
   const [playing, setPlaying] = useState(false);
 
   if (playing) {
@@ -42,6 +58,8 @@ export default function VideoPlayer({ id, title, thumb, url }: { id: string; tit
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={thumb} alt="" loading="lazy" />
+      {tag && <span className="vhero-tag">{tag}</span>}
+      {aside && <span className="vhero-aside">{aside}</span>}
       <span className="vhero-play" aria-hidden="true">
         ▶
       </span>
