@@ -64,10 +64,13 @@ const AGENCY_RULES: { re: RegExp; group: AgencyGroup; name: string }[] = [
   { re: /건설|시공사|수주|조합/, group: "industry", name: "업계" },
 ];
 
-/** "안양시의회", "경기도청" 처럼 지자체 이름을 뽑습니다 */
+/** "안양시의회", "경기도청", 또는 "안양시, ○○ 고시" 처럼 발표 주체 자리에 선 지자체 이름을 뽑습니다 */
 function detectLocalGov(text: string, area?: AreaConfig): string | null {
-  const m = text.match(/([가-힣]{2,7}(?:특별자치시|특별자치도|특별시|광역시|시|군|구|도))(?:의회|청)/);
-  if (m) return m[1];
+  const withOffice = text.match(/([가-힣]{2,7}(?:특별자치시|특별자치도|특별시|광역시|시|군|구|도))(?:의회|청)/);
+  if (withOffice) return withOffice[1];
+  // 제목 맨 앞의 "○○시," / "○○군은" 같은 주어 자리
+  const asSubject = text.match(/^([가-힣]{2,6}(?:특별자치시|특별자치도|특별시|광역시|시|군|구|도))(?=[,은는이가의\s])/);
+  if (asSubject) return asSubject[1];
   for (const name of [area?.sigungu, area?.sido, ...SIDO_NAMES]) {
     if (name && text.includes(name)) return name;
   }
