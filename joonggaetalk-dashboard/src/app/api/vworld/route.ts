@@ -52,27 +52,53 @@ function fail(code: VworldErrorCode, status = 400, extra?: Record<string, unknow
   return NextResponse.json({ ok: false, code, ...VWORLD_ERRORS[code], ...extra }, { status });
 }
 
-async function getJson(url: string): Promise<{ payload: unknown } | { code: VworldErrorCode }> {
+/**
+ * 실패했을 때 무엇 때문인지. ?check=1 에서만 밖으로 내보낸다.
+ * 인증키가 들어 있는 요청 주소는 절대 넣지 않는다.
+ */
+export type UpstreamDetail = { error?: string; status?: number; snippet?: string; ms?: number };
+
+async function getJson(url: string): Promise<{ payload: unknown } | { code: VworldErrorCode; detail?: UpstreamDetail }> {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  const started = Date.now();
   let res: Response;
   try {
     res = await fetch(url, { signal: ctrl.signal, cache: "no-store", headers: headers() });
-  } catch {
-    return { code: "UPSTREAM" };
+  } catch (e) {
+    const err = e as { name?: string; message?: string; cause?: { code?: string } };
+    return {
+      code: "UPSTREAM",
+      detail: {
+        // 10초를 넘겨 우리가 끊은 것인지, 아예 닿지 못한 것인지 구분한다
+        error: err?.name === "AbortError" ? "TIMEOUT" : (err?.cause?.code || err?.name || "FETCH_FAILED"),
+        ms: Date.now() - started,
+      },
+    };
   } finally {
     clearTimeout(timer);
   }
   const text = await res.text();
-  if (!text.trim().startsWith("{")) return { code: res.ok ? "BAD_RESPONSE" : "UPSTREAM" };
+  if (!text.trim().startsWith("{")) {
+    return {
+      code: res.ok ? "BAD_RESPONSE" : "UPSTREAM",
+      detail: { status: res.status, snippet: redact(text.slice(0, 200)), ms: Date.now() - started },
+    };
+  }
   try {
     return { payload: JSON.parse(text) };
   } catch {
-    return { code: "BAD_RESPONSE" };
+    return { code: "BAD_RESPONSE", detail: { status: res.status, snippet: redact(text.slice(0, 200)) } };
   }
 }
 
-async function geocode(address: string, type: "parcel" | "road"): Promise<{ hit: GeocodeHit } | { code: VworldErrorCode }> {
+/** 혹시라도 응답이 인증키를 되비추면 지운다. */
+function redact(text: string): string {
+  const k = apiKey();
+  return k ? text.split(k).join("***") : text;
+}
+
+async function geocode(address: string, type: "parcel" | "road"): Promise<{ hit: GeocodeHit } | { code: VworldErrorCode; detail?: UpstreamDetail }> {
   const qs = new URLSearchParams({
     service: "address",
     request: "getcoord",
@@ -134,7 +160,9 @@ export async function GET(req: Request) {
     if (!apiKey()) return fail("NO_KEY", 503, { live: true });
     const r = await geocode(CHECK_ADDRESS, "parcel");
     if ("code" in r) {
-      return fail(r.code, r.code === "UPSTREAM" ? 502 : 400, { live: true, address: CHECK_ADDRESS });
+      // 운영자만 보는 확인이라 실패 원인을 그대로 붙인다. "잠시 뒤 다시"만
+      // 보여 주면 도메인 문제인지 시간 초과인지 영영 알 수 없다.
+      return fail(r.code, r.code === "UPSTREAM" ? 502 : 400, { live: true, address: CHECK_ADDRESS, detail: r.detail ?? null });
     }
     return NextResponse.json({
       ok: true,
