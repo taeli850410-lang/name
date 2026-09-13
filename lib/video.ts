@@ -25,7 +25,8 @@ const PER_CHANNEL = 5;
 const HASHTAG_LINE = /^\s*(#[^\s#]+\s*)+$/;
 const CHAPTER_LINE = /^\d{1,2}:\d{2}(:\d{2})?(\s|$)/;
 const DECOR_LINE = /^[\s✅📰📌▶️▶◆◇■□※·\-–—=*]+$/u;
-const PROMO_LINE = /https?:\/\/|바로가기|구독하기|구독 신청|채널 가입|멤버십|제보|무단\s*전재|저작권|앱에서도|자동이체|광고\s*문의|협업\s*문의|비즈니스\s*문의|출연\s*문의|문의는/;
+// 이메일만 덩그러니 있는 줄은 연락처지 내용이 아닙니다 — 매부리TV 쇼츠가 이 한 줄 때문에 본편으로 잡혔습니다
+const PROMO_LINE = /[\w.+-]+@[\w-]+\.[\w.]+|https?:\/\/|바로가기|구독하기|구독 신청|채널 가입|멤버십|제보|무단\s*전재|저작권|앱에서도|자동이체|광고\s*문의|협업\s*문의|비즈니스\s*문의|출연\s*문의|문의는/;
 
 export function cleanDescription(raw: string): string {
   const kept: string[] = [];

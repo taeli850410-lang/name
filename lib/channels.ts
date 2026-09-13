@@ -80,6 +80,16 @@ export const DEFAULT_CHANNELS_TEXT = DEFAULT_VIDEO_SOURCES.join("\n");
 const CLIP_SUMMARY = 25;
 
 /**
+ * 코너 이름. 본편에는 프로그램 이름이 붙습니다 — `| 부동산now`, `| 집코노미 타임즈`,
+ * `｜분양나우(牛)`, `[주택청약 아카데미 EP.01]`. 쇼츠에는 안 붙습니다.
+ * 제목 앞머리의 `[속보]` 같은 건 코너가 아니라서, 막대 뒤 또는 제목 끝 괄호만 봅니다.
+ */
+const PROGRAM_MARK = /[|｜]\s*\S|[[［【][^\]］】]{2,}[\]］】]\s*$/;
+
+/** 제목 끝에 해시태그가 줄줄이 달린 건 쇼츠입니다 — `#청약 #부동산 #다자녀 #청약전략` */
+const HASHTAG_TAIL = /#[^\s#]+(?:\s+#[^\s#]+){1,}\s*$/;
+
+/**
  * 브리핑에 실을 수 있는 최대 나이(일). 집코노미 타임즈처럼 주 1회 올리는 목록도 있어서
  * 넉넉히 잡되, 지난달 영상이 오늘 브리핑에 남아 있지는 않게 합니다.
  */
@@ -94,7 +104,18 @@ DEFAULT_CHANNELS.forEach((c, rank) => {
 });
 
 const channelKey = (v: VideoItem) => v.channelId || v.channel;
-const isClip = (v: VideoItem) => v.summary.trim().length < CLIP_SUMMARY;
+/**
+ * 쇼츠인가 본편인가. 피드에 재생 시간이 없어서 제목과 설명문으로 가릅니다.
+ *
+ * 설명문 길이만 보다가 `상가 복병 만난 은마아파트 재건축 | 부동산now`(2분 21초, 매일경제
+ * 부동산부 뉴스 코너)를 쇼츠로 버렸습니다. 설명문이 해시태그와 구독 안내뿐이라서요.
+ * 유튜브에서 재생 시간을 받아 15편을 맞춰 보고 이 순서로 정했습니다.
+ */
+const isClip = (v: VideoItem) => {
+  if (PROGRAM_MARK.test(v.title)) return false;
+  if (HASHTAG_TAIL.test(v.title)) return true;
+  return v.summary.trim().length < CLIP_SUMMARY;
+};
 const newest = (a: VideoItem, b: VideoItem) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
 
 /**
