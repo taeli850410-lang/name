@@ -1,5 +1,5 @@
-import { VIDEO_IN_BRIEF } from "./taxonomy";
-import type { Period, VideoItem } from "./types";
+import { PERSONA_MATRIX, VIDEO_IN_BRIEF } from "./taxonomy";
+import type { Period, Persona, VideoItem } from "./types";
 
 /**
  * 영상 기사 기본 채널. 설정(영상 채널)을 비우면 이 목록으로 돕니다.
@@ -205,3 +205,14 @@ export function pickVideos(
   return out;
 }
 
+/**
+ * 보는 사람 기준으로 주제의 무게를 잽니다. 이미 있는 표(PERSONA_MATRIX)를 그대로 씁니다 —
+ * '그래서 내 부동산에는?' 을 그리는 바로 그 표입니다.
+ *
+ * 중개사에게는 규제지역·거래허가와 중개업 제도가 5점, 청약은 3점입니다. 계약 실무에 바로 걸리는 쪽이
+ * 먼저 서야 합니다. 고객용은 그 호의 세그먼트에 속한 사람들 기준으로 잽니다 — 생애최초에게는
+ * 청약이 5점이고 중개업 제도는 1점이니, 같은 날 같은 영상 더미에서 서로 다른 대표가 뽑힙니다.
+ */
+export function videoWeigh(personas: Persona[]): (v: VideoItem) => number {
+  return (v) => Math.max(...personas.map((p) => PERSONA_MATRIX[v.topic][p] ?? 0));
+}

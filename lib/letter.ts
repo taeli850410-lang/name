@@ -3,7 +3,7 @@ import { links, TOPIC_LINKS } from "./links";
 import { sortArticles, sourceLinks } from "./source";
 import { computeTiles } from "./market";
 import { findForbidden, focusRank, gradeIssue, isFresh, routeIssue, segmentImpact } from "./routing";
-import { pickVideos } from "./channels";
+import { pickVideos, videoWeigh } from "./channels";
 import { PERIOD_LIMIT, PERIOD_TITLE, SEGMENTS, STATUS_LABEL, TOPIC_GLOSSARY } from "./taxonomy";
 import type { Issue, Letter, LetterIssue, MarketDoc, Office, Period, Segment, Validation, VideoItem, WatchItem } from "./types";
 
@@ -149,7 +149,15 @@ export function buildDraft(issues: Issue[], office: Office, market: MarketDoc, o
     regions: market.regions,
     comment: opts.comment ?? office.defaultComment,
     glossary,
-    videos: pickVideos(opts.videos ?? [], period, undefined, now),
+    /**
+     * 이 호를 읽을 사람 기준으로 골라 얼려 둡니다.
+     *
+     * 예전에는 가중치 없이 세 편으로 줄여 저장하고, 세그먼트 가중치는 letterToBrief 에서
+     * 매겼습니다. 그런데 그때는 이미 부동산 전문 채널이 한 편밖에 안 남아 있어서 가중치가
+     * 아무 일도 못 했습니다 — 내집마련·보유·자산 세 호가 모두 중개사용과 같은 영상을
+     * 대표로 달았습니다. 고를 것이 남아 있을 때 골라야 합니다.
+     */
+    videos: pickVideos(opts.videos ?? [], period, undefined, now, videoWeigh(SEGMENTS[segment].personas)),
   };
 }
 

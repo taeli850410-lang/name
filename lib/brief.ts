@@ -3,13 +3,16 @@ import { editionLabel, letterTitle } from "./letter";
 import { links, TOPIC_LINKS } from "./links";
 import { applyArea, computeTiles, regionRows } from "./market";
 import { focusRank, gradeIssue, isFresh, maxSegmentImpact, ROUTE_LABEL, routeIssue } from "./routing";
-import { pickVideos, VIDEO_MAX_AGE } from "./channels";
+import { pickVideos, videoWeigh, VIDEO_MAX_AGE } from "./channels";
 import { isRealEstateRelevant } from "./classify";
 import { AUDIENCE_NOTE, AUDIENCES, audienceImpact, AUDIENCE_LABEL, CHECKPOINTS, EASY_QUESTION, impactLabel, NOT_SETTLED, type Audience as VideoAudience } from "./videoGuide";
 import { descriptionPoints } from "./video";
 import { sourceLinks, type SourceLink } from "./source";
-import { PERIOD_LABEL, PERSONA_MATRIX, PERSONAS, regionLabel, SEGMENTS, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL } from "./taxonomy";
+import { PERIOD_LABEL, PERSONAS, regionLabel, SEGMENTS, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL } from "./taxonomy";
 import type { Article, Glossary, HistoryPoint, Issue, Letter, LetterIssue, MarketDoc, MarketTile, Office, Period, Persona, Segment, Topic, VideoItem } from "./types";
+
+// 고르는 자리는 channels.ts 로 옮겼지만 이름은 여기 그대로 둡니다 — 부르던 곳이 그대로 부를 수 있게
+export { videoWeigh };
 
 /**
  * 브리핑 뷰 모델. 원본 EDM 의 구조(마스트헤드 → 슬로건 → 헤드라인 → 정책 카드 → 뉴스 → 숫자 →
@@ -277,6 +280,12 @@ export function customerCard(item: LetterIssue, _index: number): BriefCardModel 
   };
 }
 
+/** 이 호의 기준 시각 — 발행됐으면 발행일, 초안이면 만든 날 */
+function letterAt(letter: Letter): number | undefined {
+  const at = Date.parse(letter.publishedAt ?? letter.createdAt ?? "");
+  return Number.isFinite(at) ? at : undefined;
+}
+
 export function letterToBrief(letter: Letter): BriefModel {
   const o = letter.office;
   const telHref = o.phone ? `tel:${o.phone.replace(/[^0-9+]/g, "")}` : null;
@@ -316,6 +325,7 @@ export function letterToBrief(letter: Letter): BriefModel {
       letter.issues.map((i) => ({ topic: i.topic, publishedAt: i.publishedAt, articles: i.articles ?? [] })),
       videoWeigh(SEGMENTS[letter.segment].personas),
       true,
+      letterAt(letter),
     ),
     policy: {
       title: POLICY_TITLE[period],
@@ -438,18 +448,6 @@ function toBriefVideo(v: VideoItem, full: boolean, period: Period, pool: VideoNe
   };
 }
 
-/**
- * 보는 사람 기준으로 주제의 무게를 잽니다. 이미 있는 표(PERSONA_MATRIX)를 그대로 씁니다 —
- * '그래서 내 부동산에는?' 을 그리는 바로 그 표입니다.
- *
- * 중개사에게는 규제지역·거래허가와 중개업 제도가 5점, 청약은 3점입니다. 계약 실무에 바로 걸리는 쪽이
- * 먼저 서야 합니다. 고객용은 그 호의 세그먼트에 속한 사람들 기준으로 잽니다 — 생애최초에게는
- * 청약이 5점이고 중개업 제도는 1점이니, 같은 날 같은 영상 더미에서 서로 다른 대표가 뽑힙니다.
- */
-export function videoWeigh(personas: Persona[]): (v: VideoItem) => number {
-  return (v) => Math.max(...personas.map((p) => PERSONA_MATRIX[v.topic][p] ?? 0));
-}
-
 export function videoSection(
   videos: VideoItem[] | undefined,
   period: Period,
@@ -457,8 +455,13 @@ export function videoSection(
   pool: VideoNewsSource[] = [],
   weigh?: (v: VideoItem) => number,
   forCustomer = false,
+  /**
+   * 신선도를 재는 기준 시각. 발행된 EDM 은 발행일로 고정합니다 —
+   * 고객에게 보낸 링크를 열흘 뒤에 열어도 그날 보낸 영상이 그대로 서 있어야 합니다.
+   */
+  now?: number,
 ): BriefModel["video"] {
-  const picked = pickVideos(videos ?? [], period, undefined, undefined, weigh);
+  const picked = pickVideos(videos ?? [], period, undefined, now, weigh);
   if (!picked.length) return undefined;
   return {
     brand,
