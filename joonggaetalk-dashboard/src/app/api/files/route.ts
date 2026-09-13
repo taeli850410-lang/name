@@ -14,7 +14,7 @@
  */
 import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
-import { presign, readConfig, type S3Config } from "@/lib/s3sign";
+import { presign, presignListBuckets, readConfig, type S3Config } from "@/lib/s3sign";
 import { FILE_KINDS, KIND_RULES, extMatches, extOf, safeName, sniff, storageKey, validateUpload, type FileKind } from "@/lib/storage";
 
 export const runtime = "nodejs";
@@ -194,6 +194,20 @@ async function selfCheck(cfg: S3Config, req: Request) {
   const bucket = cfg.bucket;
   const host = new URL(cfg.endpoint).host;
 
+  // 이름이 틀렸다면 맞는 이름을 저장소에 물어본다. 못 물어보면 그냥 넘어간다.
+  let buckets: string[] | null = null;
+  if ((detail["올리기"] || "").startsWith("NoSuchBucket")) {
+    try {
+      const list = await fetch(presignListBuckets(cfg, 60), { cache: "no-store" });
+      if (list.ok) {
+        const xml = await list.text();
+        buckets = [...xml.matchAll(/<Name>([^<]+)<\/Name>/g)].map((m) => m[1]);
+      }
+    } catch {
+      /* 토큰이 버킷 하나로 묶여 있으면 목록을 못 본다. 그것만으로 실패로 치지 않는다. */
+    }
+  }
+
   if (failed.length === 0) {
     return NextResponse.json({ ok: true, live: true, bucket, endpoint: host, steps });
   }
@@ -208,6 +222,7 @@ async function selfCheck(cfg: S3Config, req: Request) {
       endpoint: host,
       steps,
       detail,
+      ...(buckets ? { buckets } : {}),
     },
     { status: 502 },
   );

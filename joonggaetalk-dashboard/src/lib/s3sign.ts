@@ -68,6 +68,7 @@ export function presign(
   expiresSec: number,
   now: Date = new Date(),
   extraQuery: Record<string, string> = {},
+  overridePath?: string,
 ): string {
   const url = new URL(cfg.endpoint);
   const host = url.host;
@@ -75,7 +76,8 @@ export function presign(
   const scope = `${stamp}/${cfg.region}/${SERVICE}/aws4_request`;
 
   // 경로 방식(path-style): 버킷이 경로 앞에 온다. R2·MinIO·Supabase 가 이 방식이다.
-  const canonicalPath = `/${uriEncode(cfg.bucket)}/${uriEncode(key, true)}`;
+  // path 를 직접 준 경우(버킷 목록 조회)는 그것을 쓴다.
+  const canonicalPath = overridePath ?? `/${uriEncode(cfg.bucket)}/${uriEncode(key, true)}`;
 
   const q: Record<string, string> = {
     "X-Amz-Algorithm": ALGO,
@@ -106,4 +108,16 @@ export function readConfig(env: Record<string, string | undefined>): S3Config | 
   const secretAccessKey = (env.S3_SECRET_ACCESS_KEY || "").trim();
   if (!endpoint || !bucket || !accessKeyId || !secretAccessKey) return null;
   return { endpoint, bucket, accessKeyId, secretAccessKey, region: (env.S3_REGION || "auto").trim() };
+}
+
+/**
+ * 버킷 목록 주소.
+ *
+ * 버킷 이름을 틀리면 NoSuchBucket 만 돌아와서, 맞는 이름이 무엇인지는
+ * 사람이 대시보드를 열어 봐야 안다. 그런데 저장소에 물어보면 된다.
+ * 토큰이 특정 버킷으로 묶여 있으면 그 버킷만 나오거나 거절당하는데,
+ * 거절당하면 그냥 못 물어본 것으로 두면 된다.
+ */
+export function presignListBuckets(cfg: S3Config, expiresSec: number, now: Date = new Date()): string {
+  return presign(cfg, "GET", "", expiresSec, now, {}, "/");
 }
