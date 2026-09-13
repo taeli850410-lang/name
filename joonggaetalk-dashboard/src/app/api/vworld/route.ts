@@ -42,10 +42,23 @@ function apiKey(): string {
   return (process.env.VWORLD_API_KEY || process.env.VWORLD_KEY || "").trim();
 }
 
-/** VWorld 키는 발급 시 등록한 서비스 URL 에서만 동작한다. 서버에서 부를 땐 Referer 로 맞춘다. */
+/**
+ * VWorld 키는 발급 시 등록한 서비스 URL 에서만 동작한다. 서버에서 부를 땐 Referer 로 맞춘다.
+ *
+ * User-Agent 를 직접 넣는 이유: Node 의 fetch(undici)는 User-Agent 를 아예 보내지
+ * 않는다. 공공기관 앞단의 보안장비는 이런 요청을 응답 없이 연결만 끊는 경우가 있고,
+ * 그러면 우리 쪽에는 "소켓이 닫혔다"로만 보여 원인을 알 수 없다.
+ * 어차피 부르는 쪽을 밝히는 게 맞다.
+ */
 function headers(): Record<string, string> {
+  const h: Record<string, string> = {
+    Accept: "application/json",
+    "User-Agent": "budongsan-talk/1.0 (+https://joonggaetalk-dashboard.vercel.app)",
+    "Accept-Language": "ko-KR,ko;q=0.9",
+  };
   const ref = (process.env.VWORLD_REFERER || "").trim();
-  return ref ? { Referer: ref, Accept: "application/json" } : { Accept: "application/json" };
+  if (ref) h.Referer = ref;
+  return h;
 }
 
 function fail(code: VworldErrorCode, status = 400, extra?: Record<string, unknown>) {
