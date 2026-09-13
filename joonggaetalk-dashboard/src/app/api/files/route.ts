@@ -55,6 +55,32 @@ function mayRead(_key: string): boolean {
 }
 
 /**
+ * 어느 환경 변수가 비어 있는지. **값은 절대 내보내지 않는다** — 이름과
+ * 들어 있는지 여부, 글자 수까지만.
+ *
+ * 네 개 중 하나만 비어도 저장소 전체가 꺼진 것으로 보이는데, 그 상태에서는
+ * "설정되지 않았습니다"만 나와서 무엇을 빠뜨렸는지 알 수가 없다.
+ * Vercel 에서 Production 체크를 안 했거나 이름을 다르게 적은 경우가 대부분이다.
+ */
+function envReport(env: Record<string, string | undefined>) {
+  const NEEDED = ["S3_ENDPOINT", "S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"] as const;
+  const vars: Record<string, { set: boolean; length?: number }> = {};
+  for (const name of NEEDED) {
+    const raw = env[name];
+    const v = (raw || "").trim();
+    vars[name] = v ? { set: true, length: v.length } : { set: false };
+  }
+
+  // 이름을 다르게 적었을 때 짚어 주기 위해 — 저장소와 관련돼 보이는 이름만, 값은 보지 않는다
+  const lookalike = Object.keys(env)
+    .filter((k) => !NEEDED.includes(k as (typeof NEEDED)[number]))
+    .filter((k) => /^(R2_|S3_|CLOUDFLARE_|AWS_)|BUCKET|ACCESS_KEY|ENDPOINT/i.test(k))
+    .slice(0, 12);
+
+  return { vars, missing: NEEDED.filter((n) => !vars[n].set), lookalike };
+}
+
+/**
  * 저장소가 진짜로 도는지 — 작은 파일 하나를 올렸다, 되읽고, 지운다.
  *
  * "설정됨"은 환경 변수에 글자가 있다는 뜻일 뿐이다. 열쇠가 틀렸는지,
@@ -163,7 +189,15 @@ export async function GET(req: Request) {
 
   // 실제로 올렸다 지워 본다. 운영자가 누를 때만 돈다.
   if (url.searchParams.get("check") === "1") {
-    if (!cfg) return fail("NO_STORE", 503, { live: true });
+    if (!cfg) {
+      const report = envReport(process.env);
+      return fail("NO_STORE", 503, {
+        live: true,
+        message: `환경 변수 ${report.missing.join(" · ")} 가 비어 있습니다.`,
+        hint: "Vercel 의 Settings → Environment Variables 에서 이름이 맞는지, Production 에 체크했는지 보고 다시 배포하세요.",
+        ...report,
+      });
+    }
     return selfCheck(cfg, req);
   }
 
