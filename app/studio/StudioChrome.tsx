@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { Period } from "@/lib/types";
+import OfficeDialog from "./OfficeDialog";
 
 /**
  * 원본 EDM 스튜디오의 상단 뼈대. 짙은 남색 바 한 줄에
@@ -49,6 +50,7 @@ export default function StudioChrome({
   const onInsta = pathname.startsWith("/studio/instagram");
   const onBlog = pathname.startsWith("/studio/blog");
   const [toast, setToast] = useState<string | null>(null);
+  const [officeOpen, setOfficeOpen] = useState(false);
   const headRef = useRef<HTMLElement>(null);
 
   // 상단 바 높이를 --chrome-h 로 알려 줍니다. 문서 액션 바·사이드 패널이 이 값 아래에 붙습니다.
@@ -106,6 +108,7 @@ export default function StudioChrome({
 
   return (
     <>
+      {officeOpen && <OfficeDialog onClose={() => setOfficeOpen(false)} />}
       <header className="studio-top" ref={headRef}>
         <div className="inner">
           {/* 로고는 메인(고객·중개사 선택 화면)으로. 브리핑은 아래 주기 탭으로 갑니다 */}
@@ -134,9 +137,9 @@ export default function StudioChrome({
             </Link>
           </nav>
           <div className="chrome-acts">
-            <Link className="chrome-btn" href="/studio/settings" title="사무소 정보·슬로건·한마디">
+            <button className="chrome-btn" onClick={() => setOfficeOpen(true)} title="상호·대표·등록번호·연락처를 이 화면에서 바로 고칩니다">
               🏢 사무소
-            </Link>
+            </button>
             <button className="chrome-btn" onClick={mail} title="최근 발행한 고객용 레터를 메일로 보냅니다">
               ✉ 메일
             </button>
