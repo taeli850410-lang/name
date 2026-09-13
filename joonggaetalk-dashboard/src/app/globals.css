@@ -639,3 +639,13 @@ a.list__item:hover { background: var(--surface-2); }
 .bytebar i { display: block; height: 100%; background: var(--good); transition: width 0.15s ease; }
 .bytebar.is-lms i { background: var(--warn); }
 .bytebar.is-over i { background: var(--danger); }
+
+/* 플랜 고르기 */
+.plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.plan { display: flex; flex-direction: column; gap: 10px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.plan.is-current { border-color: var(--brand); background: var(--brand-soft); }
+.plan__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 15px; }
+.plan__price { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.plan__limits { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 12.5px; color: var(--muted); flex: 1; }
+.plan__limits li { display: flex; align-items: center; gap: 6px; }
+.plan__limits svg { color: var(--good); flex: none; }

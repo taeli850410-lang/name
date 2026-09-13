@@ -30,7 +30,7 @@ export const agentNav: NavGroup[] = [
     label: "내 계정",
     items: [
       { href: "/agent/settings", label: "나의 정보", icon: "user" },
-      { href: "/agent/billing", label: "구매내역", icon: "card" },
+      { href: "/agent/billing", label: "이용권", icon: "card" },
       { href: "/agent/logs", label: "작업 로그", icon: "list" },
     ],
   },
@@ -80,7 +80,7 @@ const labels: Record<string, string> = {
   "/agent/alimtalk/send": "지금 발송",
   "/agent/alimtalk/history": "발송 내역",
   "/agent/settings": "나의 정보",
-  "/agent/billing": "구매내역",
+  "/agent/billing": "이용권",
   "/agent/logs": "작업 로그",
   "/agent/notices": "공지사항",
   "/agent/karma": "채널 품앗이",

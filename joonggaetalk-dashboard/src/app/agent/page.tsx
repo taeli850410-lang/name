@@ -14,6 +14,7 @@ import { properties } from "@/data/properties";
 import { notices } from "@/data/notices";
 import { karma } from "@/data/notices";
 import { systemStatus, usage } from "@/data/system";
+import { subscription } from "@/data/billing";
 import { monthlySends, FAIL_REASONS } from "@/data/sends";
 import { registryProgram } from "@/data/registry";
 import { activeDeals, calendarEvents, failedSummary, registrySummary, todaysAppointments, todaysSends, upcoming } from "@/lib/derive";
@@ -308,7 +309,11 @@ export default function AgentDashboard() {
                   <div className="t">
                     이용기한 {usage.expiresAt.slice(5)}까지 · D-{usage.daysLeft}
                   </div>
-                  <div className="s">{usage.plan} 이용 중 · 연장은 구매내역에서</div>
+                  <div className="s">
+                    {subscription.autoRenew && subscription.nextChargeAt
+                      ? `${usage.plan} 이용 중 · ${subscription.nextChargeAt.slice(5)} 자동결제`
+                      : `${usage.plan} 이용 중 · 자동결제 꺼짐 — 만료되면 자동발송이 멈춥니다`}
+                  </div>
                 </span>
               </Link>
               <div className="alert-i">

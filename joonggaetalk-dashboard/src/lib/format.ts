@@ -138,3 +138,17 @@ export function seeded(seed: number): () => number {
 export function pick<T>(rnd: () => number, arr: readonly T[]): T {
   return arr[Math.floor(rnd() * arr.length)];
 }
+
+/**
+ * 으로/로 조사. 받침이 없거나 ㄹ 받침이면 "로", 나머지는 "으로".
+ *   프로 → 프로로 · 베이직 → 베이직으로 · 서울 → 서울로
+ * 이름을 템플릿에 그대로 끼워 넣으면 "베이직로" 같은 말이 화면에 나간다.
+ */
+export function euro(word: string): string {
+  const last = word.trim().at(-1) ?? "";
+  const code = last.charCodeAt(0);
+  // 한글 음절이 아니면(영문·숫자) 받침을 알 수 없으니 "로"로 둔다
+  if (!(code >= 0xac00 && code <= 0xd7a3)) return "로";
+  const jong = (code - 0xac00) % 28;
+  return jong === 0 || jong === 8 ? "로" : "으로";
+}
