@@ -190,7 +190,7 @@ ${artLines}${issue.officialUrl ? `\n- ${issue.agency} 공식 원문: ${issue.off
 ${tiles.map((t) => `- ${t.label} (${t.asOf}): [${urlHost(t.sourceUrl)}](${t.sourceUrl})`).join("\n")}
 
 ---
-_이 글은 LAND LANGUAGE 자동 초안입니다. 🖼️ [이미지 추가위치] 안내에 맞춰 이미지를 넣고, ✍️ 표시된 부분에 직접 경험을 채우고, 수치·날짜를 원문과 대조한 뒤 발행하세요._`;
+_이 글은 Real Estate Report Alert 자동 초안입니다. 🖼️ [이미지 추가위치] 안내에 맞춰 이미지를 넣고, ✍️ 표시된 부분에 직접 경험을 채우고, 수치·날짜를 원문과 대조한 뒤 발행하세요._`;
 
   const now = new Date().toISOString();
   return { id: newId("b"), issueId: issue.id, topicLabel: `${issue.agency} · ${TOPIC_LABEL[issue.topic]} · ${clamp(base, 40)}`, title, body, createdAt: now, updatedAt: now };

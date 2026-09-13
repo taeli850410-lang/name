@@ -109,7 +109,7 @@ export default function StudioChrome({
       <header className="studio-top" ref={headRef}>
         <div className="inner">
           <Link href="/studio/brief" className="chrome-brand">
-            LAND LANGUAGE<small>AI REAL ESTATE BRIEF</small>
+            REAL ESTATE<small>REPORT ALERT</small>
           </Link>
           <nav className="chrome-seg" aria-label="주기">
             {PERIODS.map((p) => (

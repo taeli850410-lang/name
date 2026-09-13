@@ -9,7 +9,7 @@ export default async function Home() {
   const letters = (await getLetters()).filter((l) => l.status === "published").slice(0, 5);
   return (
     <main className="landing">
-      <div className="kicker">LAND LANGUAGE · 전국 부동산 브리핑</div>
+      <div className="kicker">REAL ESTATE REPORT ALERT · 전국 부동산 브리핑</div>
       <h1>하나의 이슈 레코드, 두 개의 렌더링</h1>
       <p style={{ color: "var(--ink-2)", maxWidth: "64ch", marginTop: 12 }}>
         정부 보도자료와 뉴스, 지자체 고시를 모아 5축(발표 주체·정책 단계·주제·영향 대상·지역)으로 태깅하고, 중개사는 스튜디오에서
