@@ -114,7 +114,9 @@ tr:last-child td { border-bottom: 0; }
 .door:hover { text-decoration: none; border-color: var(--ink-3); }
 .door.b { border-top: 4px solid var(--brok); }
 .door.c { border-top: 4px solid var(--cust); }
-.door p { color: var(--ink-2); margin: 10px 0 0; }
+/* 랜딩 카드의 구분 칩만 크게 — 다른 화면의 칩은 그대로 */
+.door .chip { font-size: 18px; font-weight: 800; padding: 5px 14px; border-radius: 8px; letter-spacing: -0.01em; }
+.door p { color: var(--ink-2); margin: 12px 0 0; }
 
 /* ── 스튜디오 셸 ── */
 .studio { min-height: 100vh; display: flex; flex-direction: column; }
