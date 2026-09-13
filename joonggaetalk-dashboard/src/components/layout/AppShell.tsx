@@ -38,10 +38,13 @@ export function AppShell({ role, children }: Props) {
       <div className={`backdrop${open ? " is-open" : ""}`} onClick={() => setOpen(false)} />
       <aside className={`side${open ? " is-open" : ""}`} aria-label="주 메뉴">
         <div className="side__brand">
-          <span className="mark" aria-hidden>
-            J
-          </span>
-          <span className="name">중개톡</span>
+          {/* 브랜드를 누르면 첫 화면(역할 선택)으로 — 관례대로 로고가 홈 링크다 */}
+          <Link href="/" className="side__brand-link" title="중개톡 메인 화면으로">
+            <span className="mark" aria-hidden>
+              J
+            </span>
+            <span className="name">중개톡</span>
+          </Link>
           <span className={`role${role === "admin" ? " role--admin" : ""}`}>{role === "admin" ? "운영자" : "중개사"}</span>
         </div>
         <nav className="side__nav">
@@ -67,13 +70,9 @@ export function AppShell({ role, children }: Props) {
             <span className="status-dot" />
             등기부 감시 작동 중 · {systemStatus.registry.running}대
           </div>
-          {role === "admin" ? (
+          {role === "admin" && (
             <Link href="/agent" className="link">
               내 중개사 화면으로 →
-            </Link>
-          ) : (
-            <Link href="/" className="link">
-              역할 선택으로 →
             </Link>
           )}
         </div>

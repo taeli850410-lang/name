@@ -25,10 +25,12 @@ export default function LoginPage() {
   return (
     <main className="login">
       <section className="login__side">
-        <div className="mark" aria-hidden>
-          J
-        </div>
-        <div className="name">중개톡</div>
+        <Link href="/" className="stack" style={{ alignItems: "center", gap: 14 }} title="중개톡 메인 화면으로">
+          <span className="mark" aria-hidden>
+            J
+          </span>
+          <span className="name">중개톡</span>
+        </Link>
         <div className="tag">고객과 중개사를 이어주는 바로 그 시스템</div>
       </section>
       <section className="login__form">
