@@ -115,11 +115,13 @@ export function pickVideos(videos: VideoItem[], period: Period = "weekly", limit
   const cutoff = now - VIDEO_MAX_AGE[period] * 86400000;
   const fresh = videos.filter((v) => new Date(v.publishedAt).getTime() >= cutoff);
 
+  // 채널마다 대표 한 편: 본편을 쇼츠보다 먼저, 같은 급이면 새 것으로.
+  // 들어온 순서에 기대지 않습니다 — 지금은 저장할 때 최신순으로 정렬해 두지만,
+  // 그 전제가 여기 적혀 있지 않으면 나중에 순서가 바뀌는 날 조용히 묵은 영상이 올라옵니다.
   const best = new Map<string, VideoItem>();
   for (const v of fresh) {
     const cur = best.get(channelKey(v));
-    if (!cur) best.set(channelKey(v), v);
-    else if (isClip(cur) && !isClip(v)) best.set(channelKey(v), v);
+    if (!cur || (isClip(cur) !== isClip(v) ? !isClip(v) : newest(v, cur) < 0)) best.set(channelKey(v), v);
   }
 
   const meta = (v: VideoItem) => CHANNEL_META.get(v.channelId) ?? CHANNEL_META.get(v.channel);
@@ -131,18 +133,32 @@ export function pickVideos(videos: VideoItem[], period: Period = "weekly", limit
 
   const out: VideoItem[] = [];
   const usedTier = new Set<string>();
+  const take = (v: VideoItem) => {
+    out.push(v);
+    usedTier.add(meta(v)?.tier ?? channelKey(v));
+  };
+
+  // 대표(플레이어가 붙는 자리)는 '부동산 전문 채널 중 가장 새 영상'이 가져갑니다.
+  //
+  // 14일치를 돌려 보고 정했습니다.
+  //   목록 순서대로  → 한 채널이 14일 내내 대표. 다른 채널은 영영 못 올라옵니다.
+  //   그냥 최신순    → 14일 중 12일을 종합뉴스·증시 채널이 차지합니다. 하루 수백 편을
+  //                   올리니 어쩌다 하나 나온 부동산 영상도 늘 제일 새것이라서요.
+  // 부동산 전문 채널로 범위를 좁혀 최신순으로 고르면 둘 다 피합니다 — 대표는 늘 오늘 것이고,
+  // 그날 누가 먼저 올렸느냐에 따라 채널이 자연스럽게 돌아갑니다.
+  const head = reps.filter((v) => meta(v)?.tier === "estate").sort(newest)[0];
+  if (head) take(head);
+
   for (const v of reps) {
     if (out.length >= limit) break;
-    const tier = meta(v)?.tier ?? channelKey(v);
-    if (usedTier.has(tier)) continue;
-    usedTier.add(tier);
-    out.push(v);
+    if (out.includes(v)) continue;
+    if (usedTier.has(meta(v)?.tier ?? channelKey(v))) continue;
+    take(v);
   }
   for (const v of reps) {
     if (out.length >= limit) break;
     if (!out.includes(v)) out.push(v);
   }
-  // 고른 순서 그대로 돌려줍니다. 맨 앞이 대표 영상(플레이어가 붙는 자리)이라
-  // 여기서 최신순으로 다시 섞으면 목록 맨 위에 둔 채널이 대표 자리를 잃습니다.
+  // 고른 순서 그대로 돌려줍니다. 여기서 다시 최신순으로 섞으면 위에서 정한 대표가 밀립니다.
   return out;
 }
