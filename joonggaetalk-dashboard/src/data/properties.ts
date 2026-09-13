@@ -1,5 +1,6 @@
 import type { Keyword } from "./customers";
 import type { RegisterSnapshot } from "@/lib/bldrgst";
+import type { VworldSnapshot } from "@/lib/vworld";
 
 export type PropertyType = "아파트" | "오피스텔" | "빌라·다세대" | "상가" | "토지" | "단독주택";
 
@@ -28,6 +29,8 @@ export type Property = {
   createdAt: string;
   /** 건축물대장 조회 결과 스냅샷 (조회했을 때만) */
   register?: RegisterSnapshot;
+  /** VWorld 좌표·필지 스냅샷 (조회했을 때만) */
+  parcel?: VworldSnapshot;
   /** 주소 검색으로 받은 법정동코드 — 대장 재조회에 쓴다 */
   bcode?: string;
   jibunAddress?: string;

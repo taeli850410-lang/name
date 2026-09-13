@@ -7,10 +7,12 @@ import { Badge, EmptyState, Kw, MoreMenu, PageHead, Pager, SearchBox, Switch } f
 import { ConfirmModal } from "@/components/ui/Modal";
 import { Drawer } from "@/components/ui/Drawer";
 import { useToast } from "@/components/ui/Toast";
+import { ParcelLookup } from "@/components/property/ParcelLookup";
 import { RegisterLookup, RegisterSummary } from "@/components/property/RegisterLookup";
 import { properties as seed, type Property, type PropertyType } from "@/data/properties";
 import { customers } from "@/data/customers";
 import type { RegisterSnapshot } from "@/lib/bldrgst";
+import type { VworldSnapshot } from "@/lib/vworld";
 import { openPostcode } from "@/lib/daumPostcode";
 import { formatManwon, TODAY } from "@/lib/format";
 
@@ -188,6 +190,28 @@ function Properties() {
               <dd>{detail.verified ? <Badge tone="good" dot>온라인등기소 단일 물건 확인 완료</Badge> : <Badge tone="warn" dot>미검증 — 임대차 물건은 확인이 필요합니다</Badge>}</dd>
             </dl>
             <div>
+              <div className="section-label">주소·필지</div>
+              <ParcelLookup
+                address={detail.jibunAddress || detail.address}
+                areaM2={detail.areaM2}
+                saved={detail.parcel}
+                onResolved={(r) => {
+                  if (r.bjdCode && !detail.bcode) {
+                    const next = { ...detail, bcode: r.bjdCode, jibunAddress: r.jibunAddress || detail.jibunAddress };
+                    setList((xs) => xs.map((p) => (p.id === detail.id ? next : p)));
+                    setDetail(next);
+                  }
+                }}
+                onSave={(snapshot) => {
+                  const next = { ...detail, parcel: snapshot };
+                  setList((xs) => xs.map((p) => (p.id === detail.id ? next : p)));
+                  setDetail(next);
+                  toast("필지 정보를 물건에 저장했습니다.");
+                }}
+              />
+            </div>
+
+            <div>
               <div className="section-label">건축물대장</div>
               {detail.register && <RegisterSummary snapshot={detail.register} />}
               <div className={detail.register ? "mt-8" : ""}>
@@ -272,6 +296,7 @@ function NewPropertyForm({ onSave, onCancel }: { onSave: (p: Property) => void; 
   const [address, setAddress] = useState("");
   const [addrMeta, setAddrMeta] = useState<{ bcode: string; jibunAddress: string; roadAddress: string } | null>(null);
   const [register, setRegister] = useState<RegisterSnapshot | null>(null);
+  const [parcel, setParcel] = useState<VworldSnapshot | null>(null);
   const [searchBlocked, setSearchBlocked] = useState(false);
   const [dong, setDong] = useState("");
   const [ho, setHo] = useState("");
@@ -329,6 +354,7 @@ function NewPropertyForm({ onSave, onCancel }: { onSave: (p: Property) => void; 
       bcode: addrMeta?.bcode,
       jibunAddress: addrMeta?.jibunAddress,
       register: register ?? undefined,
+      parcel: parcel ?? undefined,
       dong: dong || undefined,
       ho: ho || undefined,
       floor: floor || undefined,
@@ -393,6 +419,16 @@ function NewPropertyForm({ onSave, onCancel }: { onSave: (p: Property) => void; 
         )}
         {searchBlocked && <div className="help">주소 검색 창을 열지 못했습니다. 주소를 직접 입력하면 저장은 되지만, 법정동코드가 없어 건축물대장은 조회할 수 없습니다.</div>}
       </div>
+
+      {/* 주소 → 좌표·지번. 도로명만 있어도 여기서 대장 조회 키가 나온다. */}
+      <ParcelLookup
+        address={address}
+        areaM2={m2 ? Number(m2) : undefined}
+        onResolved={(r) => {
+          if (r.bjdCode) setAddrMeta((a) => ({ bcode: r.bjdCode!, jibunAddress: r.jibunAddress || a?.jibunAddress || address, roadAddress: a?.roadAddress ?? "" }));
+        }}
+        onSave={setParcel}
+      />
 
       <RegisterLookup
         source={addrMeta?.bcode ? { bcode: addrMeta.bcode, jibunAddress: addrMeta.jibunAddress } : null}
