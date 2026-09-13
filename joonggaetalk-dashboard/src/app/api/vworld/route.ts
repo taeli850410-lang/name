@@ -50,15 +50,19 @@ function apiKey(): string {
  * 그러면 우리 쪽에는 "소켓이 닫혔다"로만 보여 원인을 알 수 없다.
  * 어차피 부르는 쪽을 밝히는 게 맞다.
  */
-function headers(): Record<string, string> {
+function headers(withReferer = true): Record<string, string> {
   const h: Record<string, string> = {
     Accept: "application/json",
     "User-Agent": "budongsan-talk/1.0 (+https://joonggaetalk-dashboard.vercel.app)",
     "Accept-Language": "ko-KR,ko;q=0.9",
   };
-  const ref = (process.env.VWORLD_REFERER || "").trim();
-  if (ref) h.Referer = ref;
+  const ref = referer();
+  if (withReferer && ref) h.Referer = ref;
   return h;
+}
+
+function referer(): string {
+  return (process.env.VWORLD_REFERER || "").trim();
 }
 
 function fail(code: VworldErrorCode, status = 400, extra?: Record<string, unknown>) {
@@ -71,13 +75,13 @@ function fail(code: VworldErrorCode, status = 400, extra?: Record<string, unknow
  */
 export type UpstreamDetail = { error?: string; status?: number; snippet?: string; ms?: number };
 
-async function getJson(url: string): Promise<{ payload: unknown } | { code: VworldErrorCode; detail?: UpstreamDetail }> {
+async function getJson(url: string, withReferer = true): Promise<{ payload: unknown } | { code: VworldErrorCode; detail?: UpstreamDetail }> {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
   const started = Date.now();
   let res: Response;
   try {
-    res = await fetch(url, { signal: ctrl.signal, cache: "no-store", headers: headers() });
+    res = await fetch(url, { signal: ctrl.signal, cache: "no-store", headers: headers(withReferer) });
   } catch (e) {
     const err = e as { name?: string; message?: string; cause?: { code?: string } };
     return {
@@ -111,7 +115,7 @@ function redact(text: string): string {
   return k ? text.split(k).join("***") : text;
 }
 
-async function geocode(address: string, type: "parcel" | "road"): Promise<{ hit: GeocodeHit } | { code: VworldErrorCode; detail?: UpstreamDetail }> {
+async function geocode(address: string, type: "parcel" | "road", withReferer = true): Promise<{ hit: GeocodeHit } | { code: VworldErrorCode; detail?: UpstreamDetail }> {
   const qs = new URLSearchParams({
     service: "address",
     request: "getcoord",
@@ -124,7 +128,7 @@ async function geocode(address: string, type: "parcel" | "road"): Promise<{ hit:
     format: "json",
     key: apiKey(),
   });
-  const r = await getJson(`${GEO}?${qs}`);
+  const r = await getJson(`${GEO}?${qs}`, withReferer);
   if ("code" in r) return r;
   const mapped = mapVworldStatus(readGeoStatus(r.payload), readGeoError(r.payload));
   if (mapped) return { code: mapped };
@@ -171,18 +175,28 @@ export async function GET(req: Request) {
   // 호출 한도를 쓰므로 화면을 열 때가 아니라 운영자가 누를 때만 돈다.
   if (sp.get("check") === "1") {
     if (!apiKey()) return fail("NO_KEY", 503, { live: true });
+    const ref = referer();
     const r = await geocode(CHECK_ADDRESS, "parcel");
-    if ("code" in r) {
-      // 운영자만 보는 확인이라 실패 원인을 그대로 붙인다. "잠시 뒤 다시"만
-      // 보여 주면 도메인 문제인지 시간 초과인지 영영 알 수 없다.
-      return fail(r.code, r.code === "UPSTREAM" ? 502 : 400, { live: true, address: CHECK_ADDRESS, detail: r.detail ?? null });
+    if (!("code" in r)) {
+      return NextResponse.json({ ok: true, live: true, address: CHECK_ADDRESS, referer: ref || null, pnu: r.hit.pnu ?? null, point: r.hit.point });
     }
-    return NextResponse.json({
-      ok: true,
+
+    // 실패했으면 Referer 를 빼고 한 번 더. 이것만으로 되면 원인은 키도
+    // 네트워크도 아니라 VWORLD_REFERER 값이다 — 운영자가 고칠 수 있는 것이다.
+    let withoutReferer: string | null = null;
+    if (ref) {
+      const retry = await geocode(CHECK_ADDRESS, "parcel", false);
+      withoutReferer = "code" in retry ? `실패 (${retry.code})` : "성공";
+    }
+
+    // 운영자만 보는 확인이라 실패 원인을 그대로 붙인다. "잠시 뒤 다시"만
+    // 보여 주면 도메인 문제인지 시간 초과인지 영영 알 수 없다.
+    return fail(r.code, r.code === "UPSTREAM" ? 502 : 400, {
       live: true,
       address: CHECK_ADDRESS,
-      pnu: r.hit.pnu ?? null,
-      point: r.hit.point,
+      referer: ref || null,
+      withoutReferer,
+      detail: r.detail ?? null,
     });
   }
 
