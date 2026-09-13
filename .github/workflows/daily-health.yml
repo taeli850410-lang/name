@@ -1,0 +1,59 @@
+# 부동산TALK 매일 상태 점검
+#
+# 사람이 안 봐도 매일 한 번 실제로 호출해 본다. "설정됨"이 아니라
+# "진짜 되는지"를 본다 — 세 라우트의 ?check=1 이 실제 외부 호출을 한다.
+#
+# 실패하면 이 작업이 빨간불이 되고 GitHub 이 저장소 주인에게 메일을 보낸다.
+# 커넥터도, 켜둔 대화창도 필요 없다.
+name: 매일 상태 점검
+
+on:
+  schedule:
+    # 00:00 UTC = 한국시간 오전 9시
+    - cron: "0 0 * * *"
+  workflow_dispatch: # 버튼으로 즉시 실행
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 연동 3개를 실제로 호출
+        env:
+          BASE: https://joonggaetalk-dashboard.vercel.app
+        run: |
+          set -uo pipefail
+          fail=0
+
+          # 한 번 실패했다고 장애로 보지 않는다. VWorld 는 실패했다가
+          # 15초 뒤 정상으로 돌아온 적이 있다. 두 번 다 실패할 때만 빨간불.
+          check() {
+            local name="$1" path="$2"
+            for attempt in 1 2; do
+              body=$(curl -sS -m 45 "$BASE$path" 2>&1) || body="(연결 실패)"
+              if printf '%s' "$body" | grep -q '"ok":true'; then
+                echo "✅ $name"
+                return 0
+              fi
+              if [ "$attempt" = 1 ]; then
+                echo "… $name 1차 실패, 90초 뒤 다시 확인합니다"
+                sleep 90
+              fi
+            done
+            echo "❌ $name"
+            echo "   $body" | head -c 600
+            echo
+            fail=1
+            return 1
+          }
+
+          check "주소·필지 (VWorld)"   "/api/vworld?check=1"
+          check "건축물대장"           "/api/building-register?check=1"
+          check "첨부 파일 저장소"      "/api/files?check=1"
+
+          echo
+          if [ "$fail" -ne 0 ]; then
+            echo "점검 실패 — 위의 응답을 보고 원인을 확인하세요."
+            echo "오류 코드(NoSuchBucket·DOMAIN·KEY_INVALID·QUOTA 등)가 있으면 그게 원인입니다."
+            exit 1
+          fi
+          echo "3/3 정상"
