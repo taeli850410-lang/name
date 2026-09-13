@@ -144,7 +144,10 @@ tr:last-child td { border-bottom: 0; }
 .odlg-sub { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; line-height: 1.6; }
 .odlg-loading { font-size: 13px; color: var(--ink-3); padding: 18px 0; }
 /* 칸이 많아 화면을 넘기면 여기 안에서만 스크롤합니다. 바깥이 스크롤하면 머리말과 저장 버튼까지 같이 흘러갑니다 */
-.odlg-body { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; margin-top: 14px; overflow-y: auto; min-height: 0; padding-right: 4px; scroll-padding: 8px; }
+/* 칸이 많아 화면을 넘기면 여기 안에서만 스크롤합니다. 바깥이 스크롤하면 머리말과 저장 버튼까지 같이 흘러갑니다.
+   안쪽 여백 5px 은 포커스 테두리(outline 2px + offset 2px) 자리입니다 — 없으면 맨 윗칸 테두리가 잘려 보입니다.
+   scrollbar-gutter 는 스크롤바가 오른쪽 칸 테두리를 덮지 않게 자리를 미리 비워 둡니다. */
+.odlg-body { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; margin-top: 9px; overflow-y: auto; min-height: 0; padding: 5px; scroll-padding: 8px; scrollbar-gutter: stable; }
 .odlg-body .field:first-child, .odlg-body .field:nth-child(8) { grid-column: 1 / -1; }
 @media (max-width: 520px) { .odlg-body { grid-template-columns: 1fr; } .odlg-body .field:nth-child(8) { grid-column: auto; } }
 .odlg-req { display: inline-block; margin-left: 5px; font-size: 10px; font-weight: 700; color: var(--warn); background: var(--warn-soft); border-radius: 4px; padding: 1px 5px; vertical-align: 1px; }

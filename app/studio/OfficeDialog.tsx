@@ -41,9 +41,15 @@ export default function OfficeDialog({ onClose }: { onClose: () => void }) {
     };
   }, []);
 
+  // 불러온 직후 한 번만 첫 칸에 커서를 둡니다.
+  //
+  // 여기 의존값을 office 로 두면 안 됩니다. 한 글자 칠 때마다 setOffice 가 새 객체를 만들어
+  // 이 효과가 다시 돌고, 커서가 첫 칸(중개사무소 상호)으로 튕겨 나갑니다. 두 번째 글자부터
+  // 엉뚱한 칸에 찍힙니다. loaded 는 false → true 로 한 번만 바뀝니다.
+  const loaded = office !== null;
   useEffect(() => {
-    if (office) firstRef.current?.focus();
-  }, [office]);
+    if (loaded) firstRef.current?.focus();
+  }, [loaded]);
 
   // Esc 로 닫기 — 열려 있는 동안 뒤 화면은 스크롤하지 않습니다
   useEffect(() => {

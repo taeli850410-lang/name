@@ -192,12 +192,23 @@ export function descriptionPoints(text: string): { lead: string; points: string[
 export interface VideoCollectStats {
   fetched: number;
   added: number;
+  /** 예전 기준으로 담겨 있다가 지금 기준에 안 맞아 빠진 편수 */
+  dropped: number;
   sources: { input: string; key: string | null; items: number; ok: boolean; error?: string }[];
 }
 
-/** 같은 영상은 videoId 로 한 번만. 새로 온 것을 앞에 두고 최신순으로 자릅니다 */
-export function mergeVideos(existing: VideoItem[], incoming: VideoItem[]): { videos: VideoItem[]; added: number } {
-  const seen = new Map(existing.map((v) => [v.id, v]));
+/**
+ * 같은 영상은 videoId 로 한 번만. 새로 온 것을 앞에 두고 최신순으로 자릅니다.
+ *
+ * 이미 담겨 있던 영상도 지금 기준으로 다시 걸러냅니다. 걸러내는 규칙을 고쳐도 저장소에 남아 있던
+ * 영상은 그대로 남아서, 예전에 들어온 증시·정치 영상이 신선도가 다할 때까지(최대 21일) 브리핑에
+ * 계속 올라왔습니다. 해시태그는 저장하지 않으므로 제목과 요약만 봅니다 — 해시태그로만 통과했던
+ * 영상이 여기서 빠질 수 있는데, 애매한 걸 남기는 것보다 낫습니다.
+ */
+export function mergeVideos(existing: VideoItem[], incoming: VideoItem[]): { videos: VideoItem[]; added: number; dropped: number } {
+  const kept = existing.filter((v) => isStrongRealEstate(v.title) || isStrongRealEstate(v.summary));
+  const dropped = existing.length - kept.length;
+  const seen = new Map(kept.map((v) => [v.id, v]));
   let added = 0;
   for (const v of incoming) {
     if (seen.has(v.id)) continue;
@@ -205,7 +216,7 @@ export function mergeVideos(existing: VideoItem[], incoming: VideoItem[]): { vid
     added++;
   }
   const videos = [...seen.values()].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()).slice(0, VIDEO_KEEP);
-  return { videos, added };
+  return { videos, added, dropped };
 }
 
 export async function collectVideos(
@@ -213,7 +224,7 @@ export async function collectVideos(
   existing: VideoItem[],
   cache: Record<string, string> = {},
 ): Promise<{ videos: VideoItem[]; stats: VideoCollectStats; cache: Record<string, string> }> {
-  const stats: VideoCollectStats = { fetched: 0, added: 0, sources: [] };
+  const stats: VideoCollectStats = { fetched: 0, added: 0, dropped: 0, sources: [] };
   const nextCache = { ...cache };
   const incoming: VideoItem[] = [];
 
@@ -239,7 +250,8 @@ export async function collectVideos(
     stats.sources.push({ input: r.input, key: r.key, items: r.items.length, ok: r.ok, error: r.error });
   }
 
-  const { videos, added } = mergeVideos(existing, incoming);
+  const { videos, added, dropped } = mergeVideos(existing, incoming);
   stats.added = added;
+  stats.dropped = dropped;
   return { videos, stats, cache: nextCache };
 }

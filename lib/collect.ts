@@ -288,7 +288,7 @@ export async function runCollect(opts: CollectOptions = {}): Promise<CollectStat
       const res = await collectVideos(sources, await getVideos(), meta0.channelIds ?? {});
       await saveVideos(res.videos);
       meta0.channelIds = res.cache;
-      stats.videos = { fetched: res.stats.fetched, added: res.stats.added };
+      stats.videos = { fetched: res.stats.fetched, added: res.stats.added, dropped: res.stats.dropped };
       for (const src of res.stats.sources) if (!src.ok) stats.errors.push(`영상 ${src.input}: ${src.error ?? "실패"}`);
     }
   } catch (e) {
