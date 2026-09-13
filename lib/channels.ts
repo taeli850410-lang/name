@@ -62,9 +62,16 @@ export const SOURCE_EXAMPLES_TEXT = SOURCE_EXAMPLES.join("\n");
 /** 채널 목록을 설정 칸에 넣을 여러 줄 문자열로. 아이디 뒤에 이름을 주석처럼 붙이지 않습니다(그대로 저장되므로) */
 export const DEFAULT_CHANNELS_TEXT = DEFAULT_VIDEO_SOURCES.join("\n");
 
+/** 이보다 짧은 요약만 남는 영상은 쇼츠·클립으로 봅니다 */
+const CLIP_SUMMARY = 25;
+
 /**
  * 채널을 돌아가며 한 편씩 고릅니다. 부동산만 올리는 채널이 가장 많이 걸리기 때문에
  * 최신순으로만 자르면 세 칸이 한 채널로 채워집니다.
+ *
+ * 채널 안에서는 설명문이 제대로 붙은 편을 앞에 둡니다. 피드에는 영상 길이가 없지만,
+ * 쇼츠는 설명이 해시태그와 구독 링크뿐이라 홍보 문구를 걷어내면 거의 남지 않습니다.
+ * 그게 사실상 길이 구분이 됩니다. 거르지는 않습니다 — 긴 영상이 없으면 쇼츠라도 싣습니다.
  */
 export function pickVideos(videos: VideoItem[], limit = VIDEO_IN_BRIEF): VideoItem[] {
   const byChannel = new Map<string, VideoItem[]>();
@@ -74,7 +81,14 @@ export function pickVideos(videos: VideoItem[], limit = VIDEO_IN_BRIEF): VideoIt
     if (cur) cur.push(v);
     else byChannel.set(key, [v]);
   }
-  const queues = [...byChannel.values()];
+  const queues = [...byChannel.values()].map((q) =>
+    [...q].sort((a, b) => {
+      const sa = a.summary.trim().length >= CLIP_SUMMARY ? 0 : 1;
+      const sb = b.summary.trim().length >= CLIP_SUMMARY ? 0 : 1;
+      if (sa !== sb) return sa - sb;
+      return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+    }),
+  );
   const out: VideoItem[] = [];
   for (let round = 0; out.length < limit; round++) {
     let took = false;

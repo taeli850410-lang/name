@@ -17,6 +17,27 @@ import type { VideoItem } from "./types";
 /** 한 채널에서 한 번에 담는 최대 편수 — 부동산만 올리는 채널이 목록을 덮지 않게 */
 const PER_CHANNEL = 5;
 
+/**
+ * 유튜브 설명문은 절반이 홍보 문구입니다 — 해시태그 줄, 구독 링크, 타임스탬프 목차.
+ * 그대로 카드에 실으면 "#영끌 #서울집값 한국경제신문의 새로운 투자 정보 플랫폼…" 이 됩니다.
+ * 본문만 남기고 나머지는 버립니다.
+ */
+const HASHTAG_LINE = /^\s*(#[^\s#]+\s*)+$/;
+const CHAPTER_LINE = /^\d{1,2}:\d{2}(:\d{2})?(\s|$)/;
+const DECOR_LINE = /^[\s✅📰📌▶️▶◆◇■□※·\-–—=*]+$/u;
+const PROMO_LINE = /https?:\/\/|바로가기|구독하기|구독 신청|채널 가입|멤버십|제보|무단\s*전재|저작권|앱에서도|자동이체|광고\s*문의|협업\s*문의|비즈니스\s*문의|출연\s*문의|문의는/;
+
+export function cleanDescription(raw: string): string {
+  const kept: string[] = [];
+  for (const line of raw.split(/\r?\n/)) {
+    const t = line.trim();
+    if (!t || HASHTAG_LINE.test(t) || CHAPTER_LINE.test(t) || DECOR_LINE.test(t) || PROMO_LINE.test(t)) continue;
+    const body = t.replace(/#[^\s#]+/g, "").trim();
+    if (body) kept.push(body);
+  }
+  return kept.join(" ").replace(/\s+/g, " ").trim();
+}
+
 /** 24시간 라이브 루프·다시보기 모음은 기사로 쓰지 않습니다 */
 const NOT_A_REPORT = /24시간|다시보기|풀영상 모음|전체 다시|LIVE 스트리밍/i;
 
@@ -109,8 +130,11 @@ export function parseVideoFeed(xml: string): VideoItem[] {
     if (!videoId) continue;
     const title = stripHtml(txt(e.title) || txt(group["media:title"]));
     if (!title || NOT_A_REPORT.test(title)) continue;
-    const summary = clamp(stripHtml(txt(group["media:description"])), 320);
-    if (!isRealEstateRelevant(`${title} ${summary}`)) continue;
+    // 줄 단위로 걸러야 하므로 줄바꿈이 살아 있는 원문에서 먼저 정리하고, 그 다음에 태그·엔티티를 풉니다
+    const raw = txt(group["media:description"]);
+    const summary = clamp(stripHtml(cleanDescription(raw)), 320);
+    // 관련 여부는 홍보 문구를 걷어내기 전 원문으로 봅니다 — 해시태그(#재건축)도 단서라서
+    if (!isRealEstateRelevant(`${title} ${stripHtml(raw)}`)) continue;
 
     const channel = stripHtml(txt(e.author)) || feedTitle;
     out.push({
