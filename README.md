@@ -57,6 +57,34 @@ npm run dev                  # http://localhost:3000
 
 로컬에서는 `.data/` 폴더에 파일로 저장됩니다(`.gitignore` 됨).
 
+### 영구 저장소 붙이기 (Vercel)
+
+저장소를 연결하지 않으면 **메모리 저장**입니다. 배포 환경에서는 요청마다 다른 인스턴스에 뜰 수 있어서, 설정을 저장해도 다음 요청에서는 기본값이 보입니다. 사무소 이름을 바꿔도 안 바뀌는 것처럼 보이는 증상이 이것입니다.
+
+| | |
+|---|---|
+| 증상 | 상단 칩이 `메모리 저장 · 재시작 시 초기화` · 저장 버튼이 빨간 경고를 띄움 |
+| 원인 | `KV_REST_API_URL` / `KV_REST_API_TOKEN` 이 없음 |
+| 해결 | Upstash Redis 연결 (무료 티어로 충분) |
+
+**방법 A — Vercel Marketplace (권장)**
+
+1. Vercel → 프로젝트 → **Storage** 탭 → **Create Database**
+2. **Marketplace Database Providers → Upstash → Redis** → 이름 짓고 Create
+3. **Connect Project** → 이 프로젝트 선택 → 환경은 Production·Preview·Development 모두 체크
+4. **Deployments → 맨 위 ⋯ → Redeploy** (환경변수는 재배포해야 붙습니다)
+
+**방법 B — Upstash 에서 직접 만들고 값만 붙여넣기**
+
+1. [upstash.com](https://upstash.com) 가입 → **Create Database** → Type `Redis`, Region은 배포 지역과 가까운 곳
+2. 데이터베이스 화면의 **REST API** 에서 `UPSTASH_REDIS_REST_URL` 과 `UPSTASH_REDIS_REST_TOKEN` 복사
+3. Vercel → 프로젝트 → **Settings → Environment Variables** 에 그대로 두 개 추가(이 이름도 그대로 인식합니다)
+4. Redeploy
+
+연결되면 상단 칩이 **`Upstash Redis 연결됨`** 으로 바뀝니다. 그게 확인 방법입니다.
+
+**한 Redis 를 다른 앱과 같이 쓸 때**는 키가 겹칠 수 있어 `issues` · `settings` 같은 키 앞에 `rera:` 를 붙여 저장합니다. 다른 이름표를 쓰려면 `KV_PREFIX` 를 설정하세요.
+
 ## 데이터 흐름
 
 ```

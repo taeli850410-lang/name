@@ -17,6 +17,12 @@ export interface KV {
   set<T>(key: string, value: T): Promise<void>;
 }
 
+/**
+ * 키 앞에 붙이는 이름표. 한 Redis 를 다른 앱과 같이 쓸 때 issues·settings 같은
+ * 흔한 키가 겹치지 않게 합니다. KV_PREFIX 로 바꿀 수 있습니다.
+ */
+const PREFIX = process.env.KV_PREFIX ?? "rera:";
+
 class UpstashStore implements KV {
   kind: StoreKind = "upstash";
   persistent = true;
@@ -24,6 +30,9 @@ class UpstashStore implements KV {
     private url: string,
     private token: string,
   ) {}
+  private k(key: string) {
+    return `${PREFIX}${key}`;
+  }
   private async cmd(args: (string | number)[]): Promise<unknown> {
     const res = await fetch(this.url, {
       method: "POST",
@@ -37,7 +46,7 @@ class UpstashStore implements KV {
     return data.result;
   }
   async get<T>(key: string): Promise<T | null> {
-    const r = await this.cmd(["GET", key]);
+    const r = await this.cmd(["GET", this.k(key)]);
     if (r == null) return null;
     try {
       return JSON.parse(String(r)) as T;
@@ -46,7 +55,7 @@ class UpstashStore implements KV {
     }
   }
   async set<T>(key: string, value: T): Promise<void> {
-    await this.cmd(["SET", key, JSON.stringify(value)]);
+    await this.cmd(["SET", this.k(key), JSON.stringify(value)]);
   }
 }
 
