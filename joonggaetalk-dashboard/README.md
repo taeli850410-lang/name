@@ -38,22 +38,42 @@ Node.js 18.18 이상이 필요합니다.
 
 라이브: **https://joonggaetalk-dashboard.vercel.app**
 
-GitHub `main` 에 푸시하면 Vercel 이 자동으로 배포합니다
-(`taeli850410-lang/name` ↔ 프로젝트 `joonggaetalk-dashboard`).
+프로젝트 `joonggaetalk-dashboard` 가 `taeli850410-lang/name` 에 연결돼 있습니다.
 
-### Root Directory 를 반드시 지정해야 합니다
+### 지금은 부트스트랩으로 배포합니다
 
-이 저장소는 앱이 최상단이 아니라 `joonggaetalk-dashboard/` 폴더 안에 있습니다.
-**Settings → General → Root Directory** 에 `joonggaetalk-dashboard` 를 넣지 않으면
-빌드가 이렇게 끝납니다.
+이 저장소는 최상단에 다른 프로젝트(`index.html` 외)가 있고 이 앱은
+`joonggaetalk-dashboard/` 안에 있습니다. Vercel 의 **Root Directory** 가
+비어 있으면 최상단에서 `next build` 를 돌려 이렇게 끝납니다.
 
 ```
 [Error: > Couldn't find any `pages` or `app` directory. Please create one under the project root]
 ```
 
-클론도 의존성 설치도 다 성공한 뒤 마지막에 터지기 때문에, 로그 맨 아래만 보면
-코드 문제로 오해하기 쉽습니다. 저장소를 연결하기 **전에** 이 칸을 채우면
-첫 빌드부터 통과합니다.
+클론도 의존성 설치도 다 성공한 뒤 마지막에 터지기 때문에 코드 문제로 오해하기 쉽습니다.
+**Root Directory 가 설정되기 전까지 `main` 푸시는 자동 배포되지 않고 실패합니다.**
+
+그동안은 `deploy/` 의 부트스트랩 두 파일만 올려 배포합니다. 올린 파일이 곧 빌드 루트라
+Root Directory 설정과 무관하고, 빌드할 때 GitHub 에서 소스를 받아 옵니다.
+
+```bash
+cd joonggaetalk-dashboard/deploy
+npx vercel --prod            # 또는 파일 업로드형 도구로 이 두 파일만 배포
+```
+
+브랜치·폴더는 `SOURCE_REPO` · `SOURCE_BRANCH` · `SOURCE_DIR` 로 바꿉니다 (기본값 `main`).
+
+### 자동 배포로 바꾸려면
+
+**Settings → General → Root Directory** 에 `joonggaetalk-dashboard` 를 넣으면
+그때부터 `main` 푸시마다 자동 배포됩니다. 부트스트랩은 더 쓰지 않아도 됩니다.
+
+### 저장소를 거치지 않고 올리고 싶을 때
+
+```bash
+cd joonggaetalk-dashboard
+npx vercel --prod      # 이 폴더에서 실행하므로 Root Directory 설정과 무관합니다
+```
 
 ### 환경 변수
 
@@ -69,17 +89,6 @@ Settings → Environment Variables 에 넣습니다. 하나도 없어도 앱은 
 
 `VWORLD_REFERER` 는 VWorld 에 등록한 서비스 URL 과 **글자 그대로 같아야** 합니다.
 키가 맞아도 도메인이 다르면 거절됩니다.
-
-### 저장소를 거치지 않고 올리고 싶을 때
-
-```bash
-cd joonggaetalk-dashboard
-npx vercel --prod      # 이 폴더에서 실행하므로 Root Directory 설정과 무관합니다
-```
-
-`deploy/` 폴더에는 소스를 올리지 않고 빌드 때 저장소에서 내려받는 부트스트랩이
-들어 있습니다. 파일을 직접 올리는 도구로만 배포할 수 있을 때 쓰며,
-지금처럼 저장소가 연결돼 있으면 필요 없습니다.
 
 ## 외부 연동 — 건축물대장 (국토교통부)
 

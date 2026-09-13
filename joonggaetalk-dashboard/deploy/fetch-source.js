@@ -13,7 +13,7 @@ const os = require("node:os");
 const path = require("node:path");
 
 const REPO = process.env.SOURCE_REPO || "taeli850410-lang/name";
-const BRANCH = process.env.SOURCE_BRANCH || "claude/modest-bohr-bhbc4b";
+const BRANCH = process.env.SOURCE_BRANCH || "main";
 const SUBDIR = process.env.SOURCE_DIR || "joonggaetalk-dashboard";
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "jt-src-"));
