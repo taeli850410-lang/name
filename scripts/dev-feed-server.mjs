@@ -143,10 +143,103 @@ const atom = `<?xml version="1.0" encoding="utf-8"?>
 <summary>국토교통부는 다세대주택 6층까지 건축을 허용하는 주택법 시행령 개정안을 입법예고했다. 의견제출 2026년 9월 28일까지.</summary></entry>
 </feed>`;
 
+/** 유튜브 채널 Atom — YT_FEED_BASE=http://127.0.0.1:3999/yt 로 붙입니다 */
+const ytEntry = (videoId, title, desc, published, channel, channelId) =>
+  `<entry><id>yt:video:${videoId}</id><yt:videoId>${videoId}</yt:videoId><yt:channelId>${channelId}</yt:channelId>` +
+  `<title>${title}</title><link rel="alternate" href="https://www.youtube.com/watch?v=${videoId}"/>` +
+  `<author><name>${channel}</name></author><published>${published}</published>` +
+  `<media:group><media:title>${title}</media:title>` +
+  `<media:thumbnail url="http://127.0.0.1:3999/thumb?t=${encodeURIComponent(channel)}" width="480" height="360"/>` +
+  `<media:description>${desc}</media:description></media:group></entry>`;
+
+const ytFeed = (channel, channelId, entries) =>
+  `<?xml version="1.0" encoding="UTF-8"?>\n<feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns:media="http://search.yahoo.com/mrss/" xmlns="http://www.w3.org/2005/Atom">` +
+  `<title>${channel}</title><yt:channelId>${channelId}</yt:channelId>${entries.join("")}</feed>`;
+
+const YT = {
+  UCTHCOPwqNfZ0uiKOvFyhGwg: ytFeed("연합뉴스TV", "UCTHCOPwqNfZ0uiKOvFyhGwg", [
+    ytEntry(
+      "yt0001",
+      "[뉴스초점] 강남3구 토지거래허가 1년 재지정…실수요 영향은",
+      "국토교통부가 서울 강남3구 토지거래허가구역을 1년 재지정했습니다. 실수요자 매매에 어떤 영향이 있는지 짚어봅니다.",
+      "2026-09-12T09:10:00+00:00",
+      "연합뉴스TV",
+      "UCTHCOPwqNfZ0uiKOvFyhGwg",
+    ),
+    ytEntry("yt0002", "오늘의 증시 마감 시황", "코스피 코스닥 마감 시황입니다.", "2026-09-12T08:00:00+00:00", "연합뉴스TV", "UCTHCOPwqNfZ0uiKOvFyhGwg"),
+    ytEntry(
+      "yt0003",
+      "전세 줄고 월세 늘고…서울 월세 160만원 시대",
+      "한국부동산원 통계에서 서울 아파트 월세 평균이 160만원을 넘었습니다. 임대차 시장 흐름을 정리했습니다.",
+      "2026-09-11T10:00:00+00:00",
+      "연합뉴스TV",
+      "UCTHCOPwqNfZ0uiKOvFyhGwg",
+    ),
+    ytEntry("yt0004", "24시간 뉴스 LIVE 스트리밍", "연합뉴스TV 24시간 라이브입니다. 부동산 주택 뉴스 포함.", "2026-09-13T00:00:00+00:00", "연합뉴스TV", "UCTHCOPwqNfZ0uiKOvFyhGwg"),
+  ]),
+  UCF8AeLlUbEpKju6v1H6p8Eg: ytFeed("한국경제TV", "UCF8AeLlUbEpKju6v1H6p8Eg", [
+    ytEntry(
+      "yt0101",
+      "기준금리 또 올랐다…주택담보대출 이자 얼마나 늘까",
+      "한국은행이 기준금리를 연 3.00%로 인상했습니다. 변동금리 주택담보대출 상환액이 얼마나 달라지는지 계산해 봤습니다.",
+      "2026-09-12T02:30:00+00:00",
+      "한국경제TV",
+      "UCF8AeLlUbEpKju6v1H6p8Eg",
+    ),
+    ytEntry(
+      "yt0102",
+      "재건축 초과이익 부담금 완화 검토…조합들 셈법은",
+      "국토교통부가 재건축초과이익 환수 부담금 완화를 검토합니다. 정비사업 조합의 분담금이 어떻게 달라질지 살펴봅니다.",
+      "2026-09-10T04:00:00+00:00",
+      "한국경제TV",
+      "UCF8AeLlUbEpKju6v1H6p8Eg",
+    ),
+  ]),
+  UCXiDk1r8MDRqTD0j2BxNWWQ: ytFeed("한국부동산원", "UCXiDk1r8MDRqTD0j2BxNWWQ", [
+    ytEntry(
+      "yt0201",
+      "9월 첫째 주 주간 아파트가격동향 브리핑",
+      "전국 아파트 매매가격지수와 전세가격지수 변동률을 한국부동산원이 직접 설명합니다.",
+      "2026-09-09T01:00:00+00:00",
+      "한국부동산원",
+      "UCXiDk1r8MDRqTD0j2BxNWWQ",
+    ),
+  ]),
+  UCmolitKOREALANDtest0000: ytFeed("국토교통부", "UCmolitKOREALANDtest0000", [
+    ytEntry(
+      "yt0301",
+      "공동관리비 설명 의무화, 이렇게 달라집니다",
+      "원룸·오피스텔 임대차 계약 전 공인중개사가 공동관리비를 설명하도록 하는 공인중개사법 시행규칙 개정 내용을 안내합니다.",
+      "2026-09-08T05:00:00+00:00",
+      "국토교통부",
+      "UCmolitKOREALANDtest0000",
+    ),
+  ]),
+};
+
 http
   .createServer((req, res) => {
-    const body = req.url?.startsWith("/gnews") ? gnews : req.url?.startsWith("/atom") ? atom : rss;
+    const url = req.url ?? "/";
+    if (url.startsWith("/thumb")) {
+      // 샌드박스에서 i.ytimg.com 에 못 닿아서 스크린샷용으로 대신 그려 주는 자리표시자입니다
+      const label = new URL(url, "http://x").searchParams.get("t") ?? "VIDEO";
+      res.writeHead(200, { "Content-Type": "image/svg+xml; charset=utf-8" });
+      res.end(
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 270"><rect width="480" height="270" fill="#1b2435"/>` +
+          `<rect x="0" y="214" width="480" height="56" fill="#0f1622"/>` +
+          `<text x="24" y="250" fill="#c9a227" font-family="sans-serif" font-size="26" font-weight="700">${label}</text>` +
+          `<circle cx="240" cy="110" r="34" fill="rgba(255,255,255,0.16)"/><path d="M230 92 l30 18 -30 18 z" fill="#fff"/></svg>`,
+      );
+      return;
+    }
+    if (url.startsWith("/yt")) {
+      const id = new URL(url, "http://x").searchParams.get("channel_id") ?? "";
+      res.writeHead(200, { "Content-Type": "application/atom+xml; charset=utf-8" });
+      res.end(YT[id] ?? ytFeed("빈 채널", id, []));
+      return;
+    }
+    const body = url.startsWith("/gnews") ? gnews : url.startsWith("/atom") ? atom : rss;
     res.writeHead(200, { "Content-Type": "application/rss+xml; charset=utf-8" });
     res.end(body);
   })
-  .listen(3999, () => console.log("sample feed server on http://127.0.0.1:3999 (/rss /gnews /atom)"));
+  .listen(3999, () => console.log("sample feed server on http://127.0.0.1:3999 (/rss /gnews /atom /yt?channel_id=…)"));

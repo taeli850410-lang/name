@@ -3,11 +3,11 @@ import { DEFAULT_OFFICE, seedIssues, seedLetters } from "./seed";
 import { detectPlace } from "./classify";
 import { getStore } from "./store";
 import { normalizeRegion } from "./taxonomy";
-import type { AreaConfig, BlogPost, InstaSave, Issue, Letter, MarketDoc, Meta, Office } from "./types";
+import type { AreaConfig, BlogPost, InstaSave, Issue, Letter, MarketDoc, Meta, Office, VideoItem } from "./types";
 
 /** 저장소 접근 계층. 컬렉션 단위 문서(issues, letters, settings, market, meta, insta, blog)로 저장합니다. */
 
-const KEYS = { issues: "issues", letters: "letters", settings: "settings", market: "market", meta: "meta", insta: "insta", blog: "blog" } as const;
+const KEYS = { issues: "issues", letters: "letters", settings: "settings", market: "market", meta: "meta", insta: "insta", blog: "blog", videos: "videos" } as const;
 
 export async function getIssues(): Promise<Issue[]> {
   const store = getStore();
@@ -97,6 +97,14 @@ export async function getMeta(): Promise<Meta> {
 
 export async function saveMeta(meta: Meta): Promise<void> {
   await getStore().set(KEYS.meta, meta);
+}
+
+/* ── 영상 기사 ── */
+export async function getVideos(): Promise<VideoItem[]> {
+  return (await getStore().get<VideoItem[]>(KEYS.videos)) ?? [];
+}
+export async function saveVideos(list: VideoItem[]): Promise<void> {
+  await getStore().set(KEYS.videos, list);
 }
 
 /* ── 인스타 카드 구성 ── */

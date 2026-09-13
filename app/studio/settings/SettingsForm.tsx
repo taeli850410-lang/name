@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { TOPICS, TOPIC_LABEL } from "@/lib/taxonomy";
+import { TOPICS, TOPIC_LABEL, VIDEO_IN_BRIEF } from "@/lib/taxonomy";
+
 import type { Office, Topic } from "@/lib/types";
 
 /** 전국구 기본 추천 조합 */
@@ -16,9 +17,16 @@ const WHY: Partial<Record<Topic, string>> = {
   redev: "지역 독점 정보 — 구역 소식은 전국 매체가 다루지 않아 검색 경쟁이 낮습니다",
 };
 const list = (v?: string[]) => (v ?? []).join(", ");
+const lines = (v?: string[]) => (v ?? []).join("\n");
+const parseLines = (s: string) => s.split(/[\n,]+/).map((x) => x.trim()).filter(Boolean);
+/** 기본 채널 — 설정을 비우면 이 목록으로 돕니다 */
+const DEFAULT_CHANNELS = ["한국부동산원", "한국경제TV", "연합뉴스TV", "국토교통부"];
 const parseList = (s: string) => s.split(/[,\s]+/).map((x) => x.trim()).filter(Boolean);
 
-const FIELDS: { key: keyof Office; label: string; hint?: string; type?: string; textarea?: boolean }[] = [
+/** 자유 입력 칸으로 다룰 수 있는 문자열 필드만 (스위치·목록 필드는 아래에서 따로 그립니다) */
+type TextKey = Extract<{ [K in keyof Office]-?: string extends NonNullable<Office[K]> ? K : never }[keyof Office], string>;
+
+const FIELDS: { key: TextKey; label: string; hint?: string; type?: string; textarea?: boolean }[] = [
   { key: "officeName", label: "중개사무소 상호" },
   { key: "brandName", label: "브랜드 표기", hint: "마스트헤드 아래 작은 글씨" },
   { key: "repName", label: "대표 공인중개사 성명" },
@@ -41,6 +49,8 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
   const [scope, setScope] = useState<"national" | "local">(initial.scope === "local" ? "local" : "national");
   const [dongs, setDongs] = useState(list(initial.dongs));
   const [codes, setCodes] = useState(list(initial.lawdCodes));
+  const [channels, setChannels] = useState(lines(initial.videoSources));
+  const [showVideos, setShowVideos] = useState(initial.showVideos !== false);
   const [busy, setBusy] = useState<"save" | "reset" | null>(null);
   const [msg, setMsg] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
 
@@ -48,7 +58,7 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
     setBusy("save");
     setMsg(null);
     try {
-      const res = await fetch("/api/studio/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...office, focusTopics: focus, scope, dongs: parseList(dongs), lawdCodes: parseList(codes) }) });
+      const res = await fetch("/api/studio/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...office, focusTopics: focus, scope, dongs: parseList(dongs), lawdCodes: parseList(codes), videoSources: parseLines(channels), showVideos }) });
       const data = (await res.json()) as { office?: Office; error?: string };
       if (!res.ok || !data.office) throw new Error(data.error || res.statusText);
       setOffice(data.office);
@@ -56,6 +66,8 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
       setScope(data.office.scope === "local" ? "local" : "national");
       setDongs(list(data.office.dongs));
       setCodes(list(data.office.lawdCodes));
+      setChannels(lines(data.office.videoSources));
+      setShowVideos(data.office.showVideos !== false);
       setMsg({ tone: "ok", text: "저장되었습니다. 다음 발행부터 반영됩니다." });
       router.refresh();
     } catch (e) {
@@ -139,6 +151,30 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
             에서 시군구까지 5자리로 확인합니다. 비우면 기준금리만 갱신되고 실거래는 샘플 값이 남습니다.
           </span>
         </div>
+        <div className="field">
+          <label>영상 기사란</label>
+          <div className="seg" role="group" aria-label="영상 기사란">
+            <button type="button" aria-pressed={showVideos} onClick={() => setShowVideos(true)}>
+              켜기
+            </button>
+            <button type="button" aria-pressed={!showVideos} onClick={() => setShowVideos(false)}>
+              끄기
+            </button>
+          </div>
+          <span className="hint">
+            브리핑·레터 맨 위에 유튜브 영상 보도 {VIDEO_IN_BRIEF}편을 채널 이름·주제와 함께 싣습니다. 부동산과 무관한 영상은 제목·설명을 보고 걸러냅니다.
+          </span>
+        </div>
+        {showVideos && (
+          <div className="field">
+            <label htmlFor="f-channels">영상 채널 (한 줄에 하나)</label>
+            <textarea id="f-channels" rows={4} placeholder={"@korealand\nhttps://www.youtube.com/channel/UCTHCOPwqNfZ0uiKOvFyhGwg"} value={channels} onChange={(e) => setChannels(e.target.value)} />
+            <span className="hint">
+              채널 주소 · @핸들 · UC 아이디 · 재생목록 주소를 넣을 수 있습니다. 비우면 기본 채널({DEFAULT_CHANNELS.join(" · ")})로 돕니다. 유튜브 채널 피드는 최신 15편만 주므로, 업로드가
+              잦은 종합뉴스 채널보다 부동산·경제 전문 채널이나 그 채널의 부동산 재생목록을 넣는 편이 잘 걸립니다.
+            </span>
+          </div>
+        )}
         <div className="field">
           <label>주력 주제</label>
           <div className="chipbar">

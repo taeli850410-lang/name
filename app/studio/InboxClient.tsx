@@ -136,7 +136,8 @@ export default function InboxClient({
       const data = (await res.json()) as { stats?: CollectStats; error?: string };
       if (!res.ok || !data.stats) throw new Error(data.error || res.statusText);
       const s = data.stats;
-      setMsg(`수집 완료: ${s.fetched}건 읽음 · 새 이슈 ${s.added} · 기사 병합 ${s.merged} · 제외 ${s.skipped}${llm ? ` · 자동 초안 ${s.enriched}` : ""}${s.errors.length ? ` · 오류 ${s.errors.length}건` : ""}`);
+      const vid = s.videos ? ` · 영상 ${s.videos.added}편 추가` : "";
+      setMsg(`수집 완료: ${s.fetched}건 읽음 · 새 이슈 ${s.added} · 기사 병합 ${s.merged} · 제외 ${s.skipped}${vid}${llm ? ` · 자동 초안 ${s.enriched}` : ""}${s.errors.length ? ` · 오류 ${s.errors.length}건` : ""}`);
       router.refresh();
     } catch (e) {
       setMsg(`수집 실패: ${(e as Error).message}`);
@@ -217,7 +218,8 @@ export default function InboxClient({
       <p className="panel-sub">
         수집된 보도자료·기사·고시에 5축(발표 주체 · 정책 단계 · 주제 · 영향 대상 · 지역) 태그가 붙습니다. 주제로 먼저 묶고, 기관은 확정 여부 판단에만 씁니다.{" "}
         {focusTopics.length > 0 && <>주력 주제 ★ {focusTopics.map((t) => TOPIC_LABEL[t]).join(" · ")} 가 같은 등급 안에서 먼저 옵니다. </>}★ 발송 권장 {starCount}건 · 미검수 {draftCount}건
-        {lastCollect && ` · 마지막 수집 읽음 ${lastCollect.fetched} / 새 이슈 ${lastCollect.added} / 병합 ${lastCollect.merged}${lastCollect.errors.length ? ` / 오류 ${lastCollect.errors.length}` : ""}`}
+        {lastCollect &&
+          ` · 마지막 수집 읽음 ${lastCollect.fetched} / 새 이슈 ${lastCollect.added} / 병합 ${lastCollect.merged}${lastCollect.videos ? ` / 영상 ${lastCollect.videos.added}` : ""}${lastCollect.errors.length ? ` / 오류 ${lastCollect.errors.length}` : ""}`}
       </p>
 
       {msg && (

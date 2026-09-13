@@ -29,6 +29,9 @@ export async function PUT(req: Request) {
   if (Array.isArray(body.focusTopics)) {
     next.focusTopics = Array.from(new Set(body.focusTopics.filter((t): t is Topic => TOPICS.includes(t as Topic))));
   }
+  if (typeof body.showVideos === "boolean") next.showVideos = body.showVideos;
+  // 채널 주소·@핸들·UC 아이디. 해석은 수집할 때 하므로 여기서는 모양만 봅니다
+  if (Array.isArray(body.videoSources)) next.videoSources = strings(body.videoSources, /^(https?:\/\/\S+|@[\w.\-가-힣]{2,40}|(?:UC|PL|UU)[\w-]{16,})$/);
   if (body.scope === "national" || body.scope === "local") next.scope = body.scope;
   if (Array.isArray(body.dongs)) next.dongs = strings(body.dongs, /^.{1,20}$/);
   if (Array.isArray(body.lawdCodes)) next.lawdCodes = strings(body.lawdCodes, /^\d{5}$/);

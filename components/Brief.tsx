@@ -280,6 +280,33 @@ export default function BriefView({ model }: { model: BriefModel }) {
           </div>
         </section>
 
+        {model.video && model.video.items.length > 0 && (
+          <section className="sec">
+            <SectionHead title={model.video.title} sub={model.video.sub} />
+            <div className="vid-row">
+              {model.video.items.map((v) => (
+                <a className="vid" key={v.id} href={v.url} target="_blank" rel="noreferrer noopener">
+                  <span className="vid-thumb">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={v.thumb} alt="" loading="lazy" />
+                    <span className="vid-play" aria-hidden="true">
+                      ▶
+                    </span>
+                  </span>
+                  <span className="vid-meta">
+                    <span className="vid-chan">{v.channel}</span>
+                    <span className="vid-tag">{v.topicLabel}</span>
+                    {v.place && <span className="vid-tag vid-place">{v.place}</span>}
+                  </span>
+                  <strong className="vid-title">{v.title}</strong>
+                  {v.summary && <span className="vid-sum">{v.summary}</span>}
+                  <span className="vid-date">{v.date}</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
         <section className="sec">
           <SectionHead title={model.policy.title} sub={model.policy.sub} />
           {model.policy.cards.length === 0 && <div className="card empty">{model.policy.empty}</div>}

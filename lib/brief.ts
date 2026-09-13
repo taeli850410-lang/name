@@ -4,8 +4,8 @@ import { links, TOPIC_LINKS } from "./links";
 import { computeTiles } from "./market";
 import { focusRank, gradeIssue, isFresh, maxSegmentImpact, ROUTE_LABEL, routeIssue } from "./routing";
 import { sourceLinks, type SourceLink } from "./source";
-import { PERIOD_LABEL, PERSONAS, regionLabel, SEGMENTS, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL } from "./taxonomy";
-import type { Article, Glossary, HistoryPoint, Issue, Letter, LetterIssue, MarketDoc, MarketTile, Office, Period, Persona, Segment } from "./types";
+import { PERIOD_LABEL, PERSONAS, regionLabel, SEGMENTS, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL, VIDEO_IN_BRIEF } from "./taxonomy";
+import type { Article, Glossary, HistoryPoint, Issue, Letter, LetterIssue, MarketDoc, MarketTile, Office, Period, Persona, Segment, VideoItem } from "./types";
 
 /**
  * 브리핑 뷰 모델. 원본 EDM 의 구조(마스트헤드 → 슬로건 → 헤드라인 → 정책 카드 → 뉴스 → 숫자 →
@@ -66,6 +66,19 @@ export interface BriefNewsModel {
   /** 전체 기사 수 */
   count: number;
 }
+/** 상단 영상 기사란 한 칸 */
+export interface BriefVideoModel {
+  id: string;
+  title: string;
+  channel: string;
+  topicLabel: string;
+  place?: string | null;
+  summary: string;
+  url: string;
+  thumb: string;
+  date: string;
+}
+
 export interface BriefModel {
   audience: Audience;
   office: Office;
@@ -74,6 +87,8 @@ export interface BriefModel {
   keynote: { main: string; sub: string };
   eyebrow: string;
   headline: string;
+  /** 정책 섹션 위에 서는 영상 기사란. 수집된 영상이 없으면 없습니다 */
+  video?: { title: string; sub: string; items: BriefVideoModel[] };
   policy: { title: string; sub: string; cards: BriefCardModel[]; empty: string };
   news?: { title: string; sub: string; items: BriefNewsModel[] };
   numbers: { title: string; sub: string; tiles: MarketTile[]; history: HistoryPoint[]; historyLabel: string; note: string };
@@ -101,6 +116,8 @@ export const PERIOD_EYEBROW: Record<Period, string> = { daily: "TODAY'S REAL EST
 export const POLICY_TITLE: Record<Period, string> = { daily: "오늘 꼭 알아야 할 정책", weekly: "이번 주 꼭 알아야 할 정책", monthly: "이달 꼭 알아야 할 정책" };
 export const NEWS_TITLE: Record<Period, string> = { daily: "오늘의 주요 뉴스", weekly: "이번 주 주요 뉴스", monthly: "이달의 주요 뉴스" };
 export const NUMBERS_TITLE: Record<Period, string> = { daily: "오늘의 숫자", weekly: "이번 주 숫자", monthly: "이달의 숫자" };
+export const VIDEO_TITLE: Record<Period, string> = { daily: "오늘의 영상 기사", weekly: "이번 주 영상 기사", monthly: "이달의 영상 기사" };
+export const VIDEO_SUB = "언론사·공공기관 유튜브 채널의 영상 보도 · 제목을 누르면 유튜브로 이동합니다";
 export const PERSONA_TITLE = "그래서 내 부동산에는?";
 export const PERSONA_NOTE = "※ 매수·매도 판단을 단정적으로 권하지 않습니다. 적용 여부는 주택 수·취득시기·지역·보유기간 등에 따라 달라질 수 있습니다.";
 export const CTA_TITLE = "이 정책이 내 집에 어떤 영향을 주는지 궁금하신가요?";
@@ -199,6 +216,7 @@ export function letterToBrief(letter: Letter): BriefModel {
     keynote: { main: o.slogan, sub: "확정된 정책과 우리 동네 숫자만 골라, 내 상황에 무엇이 달라지는지 3분 안에 정리해 드립니다." },
     eyebrow: `${PERIOD_EYEBROW[period]} · ${letter.editionLabel}`,
     headline: letter.headline,
+    video: videoSection(letter.videos, period),
     policy: {
       title: POLICY_TITLE[period],
       sub: "공식 고시·발표 종합 · 확정·시행 예정·통계만",
@@ -237,6 +255,22 @@ export function letterToBrief(letter: Letter): BriefModel {
     },
     demoNote: letter.id === "demo" ? "샘플 레터입니다. 스튜디오 → 설정에서 사무소 정보를 입력하고 레터 빌더에서 발행하면 실제 정보로 만들어집니다." : undefined,
   };
+}
+
+/** 영상 기사 → 브리핑 모델. 주제와 지역을 함께 보여 줘야 무슨 영상인지 열기 전에 압니다 */
+export function videoSection(videos: VideoItem[] | undefined, period: Period): BriefModel["video"] {
+  const items = (videos ?? []).slice(0, VIDEO_IN_BRIEF).map((v) => ({
+    id: v.id,
+    title: v.title,
+    channel: v.channel,
+    topicLabel: TOPIC_LABEL[v.topic],
+    place: v.place,
+    summary: clamp(v.summary, 110),
+    url: v.url,
+    thumb: v.thumb,
+    date: fmtDate(v.publishedAt),
+  }));
+  return items.length ? { title: VIDEO_TITLE[period], sub: VIDEO_SUB, items } : undefined;
 }
 
 /* ───────── 중개사용: 인박스 이슈 → 브리핑 모델 ───────── */
@@ -304,7 +338,7 @@ function brokerNews(issue: Issue): BriefNewsModel {
   };
 }
 
-export function buildBrokerBrief(issues: Issue[], office: Office, market: MarketDoc, period: Period, now = Date.now()): BriefModel {
+export function buildBrokerBrief(issues: Issue[], office: Office, market: MarketDoc, period: Period, now = Date.now(), videos: VideoItem[] = []): BriefModel {
   const gradeRank = { star: 0, ref: 1, keep: 2 } as const;
   const focus = office.focusTopics;
   const fresh = issues
@@ -336,6 +370,7 @@ export function buildBrokerBrief(issues: Issue[], office: Office, market: Market
     },
     eyebrow: `${PERIOD_EYEBROW[period]} · ${edition}`,
     headline: lead ? lead.title : "이 기간에 새로 수집된 이슈가 없습니다",
+    video: videoSection(videos, period),
     policy: {
       title: POLICY_TITLE[period],
       sub: "공식 고시·발표 종합 · 추천 등급 순 · 검수 전 이슈는 '검수 필요' 표시",

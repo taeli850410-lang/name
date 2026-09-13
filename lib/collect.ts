@@ -2,8 +2,9 @@ import { XMLParser } from "fast-xml-parser";
 import { classify, titleHash, titleSimilarity } from "./classify";
 import { enrichIssue, llmEnabled } from "./enrich";
 import { clamp, newId, stripHtml } from "./format";
-import { getArea, getIssues, getMeta, getSettings, saveIssues, saveMeta } from "./repo";
-import type { AreaConfig, BrokerFields, CollectStats, CustomerFields, Issue, SourceKind } from "./types";
+import { getArea, getIssues, getMeta, getSettings, getVideos, saveIssues, saveMeta, saveVideos } from "./repo";
+import { collectVideos, DEFAULT_VIDEO_SOURCES } from "./video";
+import type { AreaConfig, BrokerFields, CollectStats, CustomerFields, Issue, Office, SourceKind } from "./types";
 
 /**
  * 수집 파이프라인 ①: 정부 보도자료 RSS(1차 소스)와 주제별 언론 기사(보강)를 읽어
@@ -77,6 +78,13 @@ export function activeFeeds(area?: AreaConfig): Feed[] {
   } catch {
     return withLocal(FEEDS);
   }
+}
+
+/** 설정에 채널을 적었으면 그것만, 비었으면 기본 채널을 씁니다. 빈 배열을 저장하면 영상란을 끕니다. */
+export function videoSources(office: Office): string[] {
+  if (office.showVideos === false) return [];
+  const list = (office.videoSources ?? []).map((v) => v.trim()).filter(Boolean);
+  return list.length ? list : DEFAULT_VIDEO_SOURCES;
 }
 
 export interface RawItem {
@@ -270,7 +278,24 @@ export async function runCollect(opts: CollectOptions = {}): Promise<CollectStat
   }
 
   await saveIssues(issues);
-  const meta = await getMeta();
+
+  // 영상 기사는 이슈와 따로 담습니다 — 브리핑 상단 영상란에만 쓰고 라우팅에는 넣지 않습니다
+  const meta0 = await getMeta();
+  try {
+    const office = await getSettings();
+    const sources = videoSources(office);
+    if (sources.length) {
+      const res = await collectVideos(sources, await getVideos(), meta0.channelIds ?? {});
+      await saveVideos(res.videos);
+      meta0.channelIds = res.cache;
+      stats.videos = { fetched: res.stats.fetched, added: res.stats.added };
+      for (const src of res.stats.sources) if (!src.ok) stats.errors.push(`영상 ${src.input}: ${src.error ?? "실패"}`);
+    }
+  } catch (e) {
+    stats.errors.push(`영상 수집 실패: ${(e as Error).message}`);
+  }
+
+  const meta = meta0;
   await saveMeta({ ...meta, lastCollectAt: new Date().toISOString(), lastCollect: stats });
   return stats;
 }

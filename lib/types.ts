@@ -149,6 +149,10 @@ export interface Office {
   privacyUrl?: string;
   /** 주력 주제. 같은 등급 안에서 이 주제를 앞으로 당깁니다(규칙 R1~R8을 덮어쓰지는 않음). 비우면 가중치 없음 */
   focusTopics?: Topic[];
+  /** 영상 기사를 가져올 유튜브 채널. 채널 주소·@핸들·UC 아이디 모두 됩니다. 비우면 기본 채널 */
+  videoSources?: string[];
+  /** 브리핑 상단 영상 기사란을 켤지. 기본 켬 */
+  showVideos?: boolean;
   /** 서비스 범위. national = 전국구(기본), local = 지역 밀착 */
   scope?: "national" | "local";
   /** 지역 밀착일 때 시도 (예: 경기도) */
@@ -262,6 +266,8 @@ export interface Letter {
   historyLabel: string;
   comment: string;
   glossary: Glossary | null;
+  /** 발행 시점의 영상 기사 스냅샷. 이전 스냅샷에는 없을 수 있음 */
+  videos?: VideoItem[];
 }
 
 export interface Validation {
@@ -277,12 +283,32 @@ export interface CollectStats {
   enriched: number;
   errors: string[];
   feeds: { id: string; items: number; ok: boolean }[];
+  /** 유튜브 영상 기사 — 가져온 편수 / 새로 담은 편수 */
+  videos?: { fetched: number; added: number };
 }
 
 export interface Meta {
   lastCollectAt: string | null;
   lastCollect: CollectStats | null;
   lastMarketAt: string | null;
+  /** @핸들 → UC 아이디. 매번 채널 페이지를 읽지 않으려고 남깁니다 */
+  channelIds?: Record<string, string>;
+}
+
+/** 유튜브 영상 기사 한 편 */
+export interface VideoItem {
+  /** 유튜브 videoId */
+  id: string;
+  title: string;
+  summary: string;
+  /** 채널 이름 — 연합뉴스TV, 한국부동산원 … */
+  channel: string;
+  channelId: string;
+  url: string;
+  thumb: string;
+  publishedAt: string;
+  topic: Topic;
+  place?: string | null;
 }
 
 /** 인스타 카드뉴스 저장 구성 */

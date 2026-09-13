@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { buildDraft, publishLetter, validateLetter } from "@/lib/letter";
-import { getIssues, getLetters, getMarket, getSettings, saveLetter } from "@/lib/repo";
+import { getIssues, getLetters, getMarket, getSettings, getVideos, saveLetter } from "@/lib/repo";
 import type { Letter, Period, Segment } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -33,8 +33,14 @@ export async function POST(req: Request) {
   if (body.action === "draft") {
     const period = PERIODS.includes(body.period as Period) ? (body.period as Period) : "weekly";
     const segment = SEGMENTS.includes(body.segment as Segment) ? (body.segment as Segment) : "first";
-    const [issues, office, market] = await Promise.all([getIssues(), getSettings(), getMarket()]);
-    const letter = buildDraft(issues, office, market, { period, segment, dong: body.dong ?? null, comment: body.comment });
+    const [issues, office, market, videos] = await Promise.all([getIssues(), getSettings(), getMarket(), getVideos()]);
+    const letter = buildDraft(issues, office, market, {
+      period,
+      segment,
+      dong: body.dong ?? null,
+      comment: body.comment,
+      videos: office.showVideos === false ? [] : videos,
+    });
     return NextResponse.json({ letter, validation: validateLetter(letter) });
   }
 

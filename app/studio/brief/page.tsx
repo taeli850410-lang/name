@@ -1,6 +1,6 @@
 import BriefView from "@/components/Brief";
 import { buildBrokerBrief } from "@/lib/brief";
-import { getIssues, getMarket, getSettings } from "@/lib/repo";
+import { getIssues, getMarket, getSettings, getVideos } from "@/lib/repo";
 import type { Period } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -12,8 +12,8 @@ export default async function BriefPage({ searchParams }: { searchParams: Promis
   const sp = await searchParams;
   const period: Period = PERIODS.includes(sp.period as Period) ? (sp.period as Period) : "daily";
   const view = sp.view === "mobile" ? "mobile" : "email";
-  const [issues, office, market] = await Promise.all([getIssues(), getSettings(), getMarket()]);
-  const model = buildBrokerBrief(issues, office, market, period);
+  const [issues, office, market, videos] = await Promise.all([getIssues(), getSettings(), getMarket(), getVideos()]);
+  const model = buildBrokerBrief(issues, office, market, period, Date.now(), office.showVideos === false ? [] : videos);
   return (
     <div className="brief-stage">
       <div className={`brief-device ${view}`}>

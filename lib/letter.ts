@@ -3,8 +3,8 @@ import { links, TOPIC_LINKS } from "./links";
 import { sortArticles, sourceLinks } from "./source";
 import { computeTiles } from "./market";
 import { findForbidden, focusRank, gradeIssue, isFresh, routeIssue, segmentImpact } from "./routing";
-import { PERIOD_LIMIT, PERIOD_TITLE, SEGMENTS, STATUS_LABEL, TOPIC_GLOSSARY } from "./taxonomy";
-import type { Issue, Letter, LetterIssue, MarketDoc, Office, Period, Segment, Validation, WatchItem } from "./types";
+import { PERIOD_LIMIT, PERIOD_TITLE, SEGMENTS, STATUS_LABEL, TOPIC_GLOSSARY, VIDEO_IN_BRIEF } from "./taxonomy";
+import type { Issue, Letter, LetterIssue, MarketDoc, Office, Period, Segment, Validation, VideoItem, WatchItem } from "./types";
 
 /** 고객용 레터 생성·검증·발행. 모두 순수 함수이며 저장은 호출자가 합니다. */
 
@@ -31,6 +31,8 @@ export interface BuildOptions {
   dong?: string | null;
   now?: number;
   comment?: string;
+  /** 상단 영상 기사란에 실을 영상. 발행하면 이 스냅샷 그대로 남습니다 */
+  videos?: VideoItem[];
 }
 
 function toLetterIssue(issue: Issue, segment: Segment, targeted: boolean): LetterIssue {
@@ -145,6 +147,7 @@ export function buildDraft(issues: Issue[], office: Office, market: MarketDoc, o
     historyLabel,
     comment: opts.comment ?? office.defaultComment,
     glossary,
+    videos: (opts.videos ?? []).slice(0, VIDEO_IN_BRIEF),
   };
 }
 
