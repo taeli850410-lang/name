@@ -27,6 +27,8 @@ export async function GET() {
     topic: v.topic,
     at: v.publishedAt.slice(5, 16),
     len: v.summary.trim().length,
+    // 재생시간을 실제로 읽어 온 편만 값이 있습니다. 없으면 제목·설명문으로 어림한 판정입니다
+    sec: v.seconds ?? null,
     clip: isClipVideo(v),
     title: clamp(v.title, 34),
   }));

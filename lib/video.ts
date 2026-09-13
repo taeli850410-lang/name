@@ -269,3 +269,74 @@ export async function collectVideos(
   stats.dropped = dropped;
   return { videos, stats, cache: nextCache };
 }
+
+/* ───────── 재생시간 ───────── */
+
+/** 워치 페이지 주소. YT_WATCH_BASE 로 바꿀 수 있습니다(피드와 같은 이유) */
+function watchUrl(videoId: string): string {
+  const base = process.env.YT_WATCH_BASE || "https://www.youtube.com/watch";
+  return `${base}?v=${encodeURIComponent(videoId)}`;
+}
+
+const LENGTH_MARK = /"lengthSeconds":"(\d+)"/;
+/** 표시를 못 찾아도 여기까지만 읽고 포기합니다 */
+const MAX_SCAN = 512 * 1024;
+/** 한 편을 기다리는 최대 시간. 여덟 편을 한꺼번에 부르므로 이게 곧 이 단계의 상한입니다 */
+const DURATION_TIMEOUT = 4000;
+
+/**
+ * 영상 한 편의 재생시간(초). Atom 피드에 없어서 워치 페이지에서 읽습니다.
+ *
+ * 워치 페이지는 1MB가 넘지만 재생시간은 앞쪽 재생 정보에 들어 있습니다. 그래서 전부 받지 않고
+ * 조각을 읽어 가며 표시를 만나는 즉시 끊습니다 — 수집 한 번에 여덟 번을 불러도 부담이 적습니다.
+ */
+export async function fetchDuration(videoId: string): Promise<number | null> {
+  // 끊는 수단을 abort 하나로 통일합니다. 스트림을 reader.cancel() 로 닫으면 Next 가 감싼 fetch 에서
+  // 응답이 끝날 때까지 돌아오지 않는 자리가 있었습니다(수집이 100초를 넘겨도 안 끝났습니다).
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), DURATION_TIMEOUT);
+  try {
+    const res = await fetch(watchUrl(videoId), {
+      headers: { "user-agent": "Mozilla/5.0 (compatible; RealEstateReportAlert/1.0)" },
+      cache: "no-store",
+      signal: ctl.signal,
+    });
+    if (!res.ok || !res.body) return null;
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = "";
+    let read = 0;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      read += value.byteLength;
+      buf += dec.decode(value, { stream: true });
+      const m = buf.match(LENGTH_MARK);
+      if (m) return Number(m[1]) || null;
+      if (read >= MAX_SCAN) break;
+      // 표시가 조각 경계에 걸칠 수 있어 꼬리만 남깁니다
+      buf = buf.slice(-64);
+    }
+    return null;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+    ctl.abort();
+  }
+}
+
+/**
+ * 고른 몇 편의 재생시간을 채워 돌려줍니다. 한 편이라도 실패하면 그 편만 비워 두고 넘어갑니다 —
+ * 재생시간은 있으면 더 정확해지는 정보이지 없으면 못 도는 정보가 아닙니다.
+ */
+export async function withDurations(
+  videos: VideoItem[],
+  targets: VideoItem[],
+): Promise<{ videos: VideoItem[]; timed: number }> {
+  if (!targets.length) return { videos, timed: 0 };
+  const found = await Promise.all(targets.map(async (v) => [v.id, await fetchDuration(v.id)] as const));
+  const secs = new Map(found.filter((p): p is [string, number] => typeof p[1] === "number"));
+  if (!secs.size) return { videos, timed: 0 };
+  return { videos: videos.map((v) => (secs.has(v.id) ? { ...v, seconds: secs.get(v.id) } : v)), timed: secs.size };
+}

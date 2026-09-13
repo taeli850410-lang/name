@@ -91,8 +91,21 @@ export const SOURCE_EXAMPLES_TEXT = SOURCE_EXAMPLES.join("\n");
 /** 채널 목록을 설정 칸에 넣을 여러 줄 문자열로. 아이디 뒤에 이름을 주석처럼 붙이지 않습니다(그대로 저장되므로) */
 export const DEFAULT_CHANNELS_TEXT = DEFAULT_VIDEO_SOURCES.join("\n");
 
-/** 이보다 짧은 요약만 남는 영상은 쇼츠·클립으로 봅니다 */
+/** 이보다 짧은 요약만 남는 영상은 쇼츠·클립으로 봅니다 — 재생시간을 모를 때 쓰는 어림입니다 */
 const CLIP_SUMMARY = 25;
+/**
+ * 재생시간을 아는 영상은 이보다 짧으면 카드·쇼츠로 봅니다.
+ *
+ * 위아래가 다 막혀 있어 2분으로 정했습니다. 아래로는 걸러야 할 카드가 42~81초입니다
+ * (SH 공고매거진 42초, 청약홈 복정역 46초, HUG 안전한 전세집 60초, 세제개편 총정리 81초).
+ * 위로는 `상가 복병 만난 은마아파트 재건축 | 부동산now`가 2분 21초짜리 진짜 뉴스 코너라
+ * 그보다 낮아야 합니다. 141초와 81초 사이, 둘 다에서 멀찍이 떨어진 자리입니다.
+ */
+const CLIP_SECONDS = 120;
+/** 한 번 수집에 재생시간을 확인할 최대 편수 */
+const DURATION_LOOKUPS = 10;
+/** 한 채널에서 확인할 편수 */
+const PER_CHANNEL_LOOKUPS = 2;
 
 /**
  * 코너 이름. 본편에는 프로그램 이름이 붙습니다 — `| 부동산now`, `| 집코노미 타임즈`,
@@ -152,6 +165,10 @@ const channelKey = (v: VideoItem) => v.channelId || v.channel;
  * 유튜브에서 재생 시간을 받아 15편을 맞춰 보고 이 순서로 정했습니다.
  */
 export const isClipVideo = (v: VideoItem) => {
+  // 재생시간을 아는 영상은 그것으로 끝냅니다. 제목·설명문 추정이 틀린 자리가 실제로 있었습니다 —
+  // 42초 [공고매거진], 60초 안전한 전세집, 61초 안심전세앱 Q&A 셋 다 설명문이 188~320자라
+  // 길이로는 안 걸렸습니다.
+  if (typeof v.seconds === "number" && v.seconds > 0) return v.seconds < CLIP_SECONDS;
   if (SHORTS_MARK.test(v.title)) return true;
   if (PROGRAM_MARK.test(v.title) || PROGRAM_HEAD.test(v.title)) return false;
   if (HASHTAG_TAIL.test(v.title)) return true;
@@ -260,4 +277,33 @@ export function pickVideos(
  */
 export function videoWeigh(personas: Persona[]): (v: VideoItem) => number {
   return (v) => Math.max(...personas.map((p) => PERSONA_MATRIX[v.topic][p] ?? 0));
+}
+
+/**
+ * 재생시간을 확인할 영상을 고릅니다.
+ *
+ * 저장된 40편을 다 확인하면 수집 한 번에 40번을 더 불러야 해서 60초 함수 안에 들어가지 않습니다.
+ * 그런데 재생시간이 실제로 필요한 자리는 하나뿐입니다 — 플레이어가 붙는 대표 칸.
+ *
+ *   · 대표는 '부동산 전문'과 '생활·제도 안내'에서만 나옵니다 → 다른 구분은 뺍니다
+ *   · 대표는 그 채널에서 '쇼츠가 아닌 것 중 가장 새것'입니다 → 이미 쇼츠로 본 것은 뺍니다
+ *   · 채널마다 새것 둘씩 봅니다. 첫째가 확인해 보니 쇼츠이면 둘째가 대표가 되니까요
+ *
+ * 사무소가 직접 넣은 채널은 구분을 모르니 빠집니다. 그런 채널의 영상은 대표 자리(구분으로 고름)에
+ * 설 수 없고 둘째·셋째 칸에만 들어가므로, 재생시간을 몰라도 손해가 적습니다.
+ */
+export function durationLookups(videos: VideoItem[], limit = DURATION_LOOKUPS): VideoItem[] {
+  const byChannel = new Map<string, VideoItem[]>();
+  for (const v of videos) {
+    if (typeof v.seconds === "number") continue;
+    const tier = (CHANNEL_META.get(v.channelId) ?? CHANNEL_META.get(v.channel))?.tier;
+    if (tier !== "estate" && tier !== "guide") continue;
+    if (isClipVideo(v)) continue;
+    const list = byChannel.get(channelKey(v));
+    if (list) list.push(v);
+    else byChannel.set(channelKey(v), [v]);
+  }
+  const picked: VideoItem[] = [];
+  for (const list of byChannel.values()) picked.push(...list.sort(newest).slice(0, PER_CHANNEL_LOOKUPS));
+  return picked.sort(newest).slice(0, limit);
 }

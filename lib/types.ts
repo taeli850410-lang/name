@@ -307,7 +307,7 @@ export interface CollectStats {
   errors: string[];
   feeds: { id: string; items: number; ok: boolean }[];
   /** 유튜브 영상 기사 — 가져온 편수 / 새로 담은 편수 */
-  videos?: { fetched: number; added: number; dropped?: number };
+  videos?: { fetched: number; added: number; dropped?: number; timed?: number };
 }
 
 export interface Meta {
@@ -330,6 +330,8 @@ export interface VideoItem {
   url: string;
   thumb: string;
   publishedAt: string;
+  /** 재생시간(초). 피드에는 없어서 대표 후보만 워치 페이지에서 따로 읽어 옵니다 */
+  seconds?: number;
   topic: Topic;
   place?: string | null;
 }

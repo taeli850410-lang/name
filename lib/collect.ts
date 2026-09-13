@@ -3,7 +3,8 @@ import { classify, titleHash, titleSimilarity } from "./classify";
 import { enrichIssue, llmEnabled } from "./enrich";
 import { clamp, newId, stripHtml } from "./format";
 import { getArea, getIssues, getMeta, getSettings, getVideos, saveIssues, saveMeta, saveVideos } from "./repo";
-import { collectVideos, DEFAULT_VIDEO_SOURCES } from "./video";
+import { collectVideos, DEFAULT_VIDEO_SOURCES, withDurations } from "./video";
+import { durationLookups } from "./channels";
 import type { AreaConfig, BrokerFields, CollectStats, CustomerFields, Issue, Office, SourceKind } from "./types";
 
 /**
@@ -286,9 +287,12 @@ export async function runCollect(opts: CollectOptions = {}): Promise<CollectStat
     const sources = videoSources(office);
     if (sources.length) {
       const res = await collectVideos(sources, await getVideos(), meta0.channelIds ?? {});
-      await saveVideos(res.videos);
+      // 대표 자리(플레이어가 붙는 칸)에 1분짜리 카드가 서지 않도록, 대표 후보만 재생시간을 확인합니다.
+      // 피드에는 재생시간이 없고, 제목·설명문으로는 42초 공고 카드와 7분짜리 해설이 갈리지 않습니다.
+      const timed = await withDurations(res.videos, durationLookups(res.videos));
+      await saveVideos(timed.videos);
       meta0.channelIds = res.cache;
-      stats.videos = { fetched: res.stats.fetched, added: res.stats.added, dropped: res.stats.dropped };
+      stats.videos = { fetched: res.stats.fetched, added: res.stats.added, dropped: res.stats.dropped, timed: timed.timed };
       for (const src of res.stats.sources) if (!src.ok) stats.errors.push(`영상 ${src.input}: ${src.error ?? "실패"}`);
     }
   } catch (e) {
