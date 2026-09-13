@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Period } from "@/lib/types";
 
 /**
@@ -49,6 +49,18 @@ export default function StudioChrome({
   const onInsta = pathname.startsWith("/studio/instagram");
   const onBlog = pathname.startsWith("/studio/blog");
   const [toast, setToast] = useState<string | null>(null);
+  const headRef = useRef<HTMLElement>(null);
+
+  // 상단 바 높이를 --chrome-h 로 알려 줍니다. 문서 액션 바·사이드 패널이 이 값 아래에 붙습니다.
+  useEffect(() => {
+    const el = headRef.current;
+    if (!el) return;
+    const update = () => document.documentElement.style.setProperty("--chrome-h", `${Math.round(el.getBoundingClientRect().height)}px`);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const periodHref = (p: Period) => (onInsta ? `/studio/instagram?period=${p}` : onBlog ? `/studio/blog?period=${p}` : `/studio/brief?period=${p}&view=${view}`);
   const letter = letters.find((l) => l.period === period) ?? letters[0] ?? null;
@@ -94,7 +106,7 @@ export default function StudioChrome({
 
   return (
     <>
-      <header className="studio-top">
+      <header className="studio-top" ref={headRef}>
         <div className="inner">
           <Link href="/studio/brief" className="chrome-brand">
             LAND LANGUAGE<small>AI REAL ESTATE BRIEF</small>

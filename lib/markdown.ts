@@ -9,7 +9,8 @@ export function escapeHtml(s: string): string {
 
 function inline(s: string): string {
   return escapeHtml(s)
-    .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer noopener">$1</a>')
+    // 링크 텍스트 안의 대괄호([월세시대①] 같은 말머리)까지 링크로 잡습니다
+    .replace(/\[((?:[^[\]]|\[[^[\]]*\])*)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer noopener">$1</a>')
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
 }
 
