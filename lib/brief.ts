@@ -103,7 +103,6 @@ export interface BriefModel {
   comment?: { name: string; tag: string; body: string };
   cta: { title: string; sub: string; buttons: BriefLink[] };
   footer: { head: string; rows: [string, string][]; legal: string[]; links: { label: string; href: string }[] };
-  demoNote?: string;
 }
 
 export const DISCLAIMER =
@@ -263,7 +262,6 @@ export function letterToBrief(letter: Letter): BriefModel {
       legal: [DISCLAIMER, AD_FOOTER],
       links: footLinks,
     },
-    demoNote: letter.id === "demo" ? "샘플 레터입니다. 스튜디오 → 설정에서 사무소 정보를 입력하고 레터 빌더에서 발행하면 실제 정보로 만들어집니다." : undefined,
   };
 }
 

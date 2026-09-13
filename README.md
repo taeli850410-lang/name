@@ -99,6 +99,7 @@ npm run dev                  # http://localhost:3000
 
 ### 브리핑 본문 구조 (중개사용 그린 · 고객용 남색 공통, 원본 EDM 순서)
 
+0. (고객용만) **서비스 로고 바** — `REAL ESTATE / REPORT ALERT`. 누르면 메인 화면으로 갑니다. `NEXT_PUBLIC_SITE_URL` 이 있으면 절대 주소로 걸려, 레터 HTML 을 발송 서비스에 옮겨도 링크가 깨지지 않습니다
 1. 마스트헤드 — 사무소명 · 공인중개 · 브랜드 · `DAILY BRIEFING · 날짜`
 2. 슬로건 인용구
 3. `TODAY'S / THIS WEEK'S / THIS MONTH'S REAL ESTATE BRIEF` + 헤드라인

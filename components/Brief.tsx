@@ -1,3 +1,4 @@
+import { SERVICE_BRAND, serviceHome } from "@/lib/brand";
 import { dots, fmtDate } from "@/lib/format";
 import { VIDEO_POINTS_TITLE, type BriefBadge, type BriefCardModel, type BriefLink, type BriefModel, type BriefNewsModel, type BriefVideoModel } from "@/lib/brief";
 import VideoPlayer from "@/components/VideoPlayer";
@@ -281,7 +282,12 @@ export default function BriefView({ model }: { model: BriefModel }) {
   return (
     <div className={`brief ${theme}`}>
       <div className="wrap">
-        {model.demoNote && <div className="demo-note">{model.demoNote}</div>}
+        {model.audience === "customer" && (
+          <a className="letter-brand" href={serviceHome()} aria-label={`${SERVICE_BRAND.line1} ${SERVICE_BRAND.line2} 메인으로`}>
+            {SERVICE_BRAND.line1}
+            <small>{SERVICE_BRAND.line2}</small>
+          </a>
+        )}
 
         <header className="masthead">
           <div>

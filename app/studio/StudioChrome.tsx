@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { SERVICE_BRAND } from "@/lib/brand";
 import type { Period } from "@/lib/types";
 import OfficeDialog from "./OfficeDialog";
 
@@ -113,7 +114,8 @@ export default function StudioChrome({
         <div className="inner">
           {/* 로고는 메인(고객·중개사 선택 화면)으로. 브리핑은 아래 주기 탭으로 갑니다 */}
           <Link href="/" className="chrome-brand">
-            REAL ESTATE<small>REPORT ALERT</small>
+            {SERVICE_BRAND.line1}
+            <small>{SERVICE_BRAND.line2}</small>
           </Link>
           <nav className="chrome-seg" aria-label="주기">
             {PERIODS.map((p) => (
