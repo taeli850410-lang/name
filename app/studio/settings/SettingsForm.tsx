@@ -59,7 +59,7 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
     setMsg(null);
     try {
       const res = await fetch("/api/studio/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...office, focusTopics: focus, scope, dongs: parseList(dongs), lawdCodes: parseList(codes), videoSources: parseLines(channels), showVideos }) });
-      const data = (await res.json()) as { office?: Office; error?: string };
+      const data = (await res.json()) as { office?: Office; error?: string; persistent?: boolean; storeLabel?: string };
       if (!res.ok || !data.office) throw new Error(data.error || res.statusText);
       setOffice(data.office);
       setFocus(data.office.focusTopics ?? []);
@@ -68,7 +68,14 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
       setCodes(list(data.office.lawdCodes));
       setChannels(lines(data.office.videoSources));
       setShowVideos(data.office.showVideos !== false);
-      setMsg({ tone: "ok", text: "저장되었습니다. 다음 발행부터 반영됩니다." });
+      setMsg(
+        data.persistent === false
+          ? {
+              tone: "error",
+              text: `저장은 됐지만 이 배포에는 영구 저장소가 없습니다(${data.storeLabel ?? "메모리 저장"}). 잠시 뒤 다른 화면을 열면 기본값으로 돌아가 있을 수 있습니다. Vercel → Storage → Upstash Redis 를 연결하고 다시 배포하세요.`,
+            }
+          : { tone: "ok", text: "저장되었습니다. 브리핑·레터 마스트헤드와 푸터에 바로 반영됩니다." },
+      );
       router.refresh();
     } catch (e) {
       setMsg({ tone: "error", text: `저장 실패: ${(e as Error).message}` });

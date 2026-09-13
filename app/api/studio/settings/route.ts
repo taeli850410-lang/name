@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSettings, resetIssuesToSeed, saveSettings } from "@/lib/repo";
+import { storeStatus } from "@/lib/store";
 import { TOPICS } from "@/lib/taxonomy";
 import type { Office, Topic } from "@/lib/types";
 
@@ -42,7 +43,9 @@ export async function PUT(req: Request) {
     next.dongs = [];
   }
   await saveSettings(next);
-  return NextResponse.json({ office: next });
+  // 메모리 저장이면 이 요청을 처리한 인스턴스에만 남습니다. 화면에서 그 사실을 알려야 합니다.
+  const store = storeStatus();
+  return NextResponse.json({ office: next, persistent: store.persistent, storeLabel: store.label });
 }
 
 export async function POST(req: Request) {

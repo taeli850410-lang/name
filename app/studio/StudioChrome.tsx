@@ -108,7 +108,8 @@ export default function StudioChrome({
     <>
       <header className="studio-top" ref={headRef}>
         <div className="inner">
-          <Link href="/studio/brief" className="chrome-brand">
+          {/* 로고는 메인(고객·중개사 선택 화면)으로. 브리핑은 아래 주기 탭으로 갑니다 */}
+          <Link href="/" className="chrome-brand">
             REAL ESTATE<small>REPORT ALERT</small>
           </Link>
           <nav className="chrome-seg" aria-label="주기">
