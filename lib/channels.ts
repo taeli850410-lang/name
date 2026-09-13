@@ -157,6 +157,9 @@ DEFAULT_CHANNELS.forEach((c, rank) => {
 });
 
 const channelKey = (v: VideoItem) => v.channelId || v.channel;
+
+/** 기본 목록에 있는 채널의 구분. 목록에 없으면(사무소가 직접 넣은 채널) undefined */
+export const channelTier = (idOrName: string): ChannelTier | undefined => CHANNEL_META.get(idOrName)?.tier;
 /**
  * 쇼츠인가 본편인가. 피드에 재생 시간이 없어서 제목과 설명문으로 가릅니다.
  *

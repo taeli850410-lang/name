@@ -3,6 +3,7 @@ import { detectPlace, detectTopic, hashtagsOf, isStrongRealEstate } from "./clas
 import { clamp, stripHtml } from "./format";
 import { VIDEO_KEEP } from "./taxonomy";
 export { DEFAULT_VIDEO_SOURCES } from "./channels";
+import { channelTier } from "./channels";
 import type { VideoItem } from "./types";
 
 /**
@@ -128,7 +129,7 @@ function txt(v: unknown): string {
 }
 
 /** 유튜브 Atom 한 편 → 영상 기사. 부동산과 무관하면 null */
-export function parseVideoFeed(xml: string): VideoItem[] {
+export function parseVideoFeed(xml: string, trustHashtags = true): VideoItem[] {
   const parsed = parser.parse(xml) as Record<string, unknown>;
   const feed = parsed.feed as Record<string, unknown> | undefined;
   if (!feed) return [];
@@ -151,7 +152,15 @@ export function parseVideoFeed(xml: string): VideoItem[] {
     // 설명문 전체를 보면 안 됩니다. 종합뉴스 채널은 설명문 끝에 채널 소개·구독 안내를 길게 붙이는데
     // 거기 '부동산' 한 번만 들어 있어도 증시·정치 영상이 통과합니다. 실제로 그렇게 올라왔습니다.
     // 금리·대출 같은 말도 제목에 있다고 부동산은 아니라서(→ isStrongRealEstate) 따로 가릅니다.
-    if (!isStrongRealEstate(title) && !isStrongRealEstate(hashtagsOf(raw))) continue;
+    //
+    // 해시태그는 종합뉴스 채널에서만 믿지 않습니다. 그 채널들은 영상마다 같은 태그 묶음을 다는데
+    // 거기 부동산 낱말이 섞여 있어서, 2026-09-13 라이브 브리핑에 이런 것들이 실려 있었습니다.
+    //   · 5명으로 줄어든 장관 후보자…이번 주 인사청문회
+    //   · [날씨] 낮에도 선선한 휴일…올해 단풍 작년보다 빠를 듯
+    //   · [잇슈#태그] "중국 자본에 제주도 질식 위기"…독일 신문 보도
+    // 저장된 영상을 다시 거를 때(mergeVideos)는 제목만 보므로, 해시태그로 들어온 영상은 다음 수집에
+    // 조용히 사라집니다 — 담는 규칙과 남기는 규칙이 어긋나 있었던 셈입니다. 종합뉴스에서는 맞췄습니다.
+    if (!isStrongRealEstate(title) && !(trustHashtags && isStrongRealEstate(hashtagsOf(raw)))) continue;
 
     const channel = stripHtml(txt(e.author)) || feedTitle;
     out.push({
@@ -250,7 +259,9 @@ export async function collectVideos(
       try {
         const res = await fetch(feedUrl(src), { headers: { "user-agent": "Mozilla/5.0 (compatible; RealEstateReportAlert/1.0)" }, cache: "no-store" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return { input, key: src.key, items: parseVideoFeed(await res.text()), ok: true };
+        // 종합뉴스 채널(연합뉴스TV·YTN·KBS)은 제목에 부동산 낱말이 있을 때만 담습니다
+        const tier = channelTier(src.key) ?? channelTier(input.trim());
+        return { input, key: src.key, items: parseVideoFeed(await res.text(), tier !== "news"), ok: true };
       } catch (e) {
         return { input, key: src.key, items: [] as VideoItem[], ok: false, error: e instanceof Error ? e.message : String(e) };
       }
