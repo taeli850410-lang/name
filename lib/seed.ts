@@ -13,6 +13,7 @@ import type { AgencyGroup, AreaConfig, Article, BrokerFields, CustomerFields, Is
 export const DEFAULT_OFFICE: Office = {
   officeName: "랜드랭귀지 샘플공인중개사사무소",
   brandName: "REAL ESTATE REPORT ALERT",
+  videoBrand: "REPORT K",
   repName: "홍길동",
   registrationNo: "41171-2026-00000",
   phone: "010-0000-0000",

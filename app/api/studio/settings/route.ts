@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 /** 문자열 필드만 화이트리스트로 받습니다. focusTopics(배열)는 아래에서 따로 검증합니다. */
 type TextKey = Extract<{ [K in keyof Office]-?: string extends NonNullable<Office[K]> ? K : never }[keyof Office], string>;
-const KEYS: TextKey[] = ["officeName", "brandName", "repName", "registrationNo", "phone", "address", "email", "kakaoUrl", "unsubscribeUrl", "privacyUrl", "sido", "sigungu", "slogan", "defaultComment", "areaLabel"];
+const KEYS: TextKey[] = ["officeName", "brandName", "repName", "registrationNo", "phone", "address", "email", "kakaoUrl", "unsubscribeUrl", "privacyUrl", "sido", "sigungu", "slogan", "defaultComment", "areaLabel", "videoBrand"];
 
 const strings = (v: unknown, re: RegExp): string[] =>
   Array.isArray(v) ? Array.from(new Set(v.map((x) => String(x ?? "").trim()).filter((x) => re.test(x)))) : [];

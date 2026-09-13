@@ -153,6 +153,8 @@ export interface Office {
   videoSources?: string[];
   /** 브리핑 상단 영상 기사란을 켤지. 기본 켬 */
   showVideos?: boolean;
+  /** 영상 기사란 코너 이름. 비우면 코너 이름 없이 제목만 섭니다 */
+  videoBrand?: string;
   /** 서비스 범위. national = 전국구(기본), local = 지역 밀착 */
   scope?: "national" | "local";
   /** 지역 밀착일 때 시도 (예: 경기도) */

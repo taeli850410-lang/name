@@ -167,6 +167,22 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
         </div>
         {showVideos && (
           <div className="field">
+            <label htmlFor="f-videoBrand">영상 코너 이름</label>
+            <input
+              id="f-videoBrand"
+              type="text"
+              placeholder="REPORT K"
+              value={office.videoBrand ?? ""}
+              onChange={(e) => setOffice({ ...office, videoBrand: e.target.value })}
+            />
+            <span className="hint">
+              영상 기사란 제목 위에 작게 붙는 코너 이름입니다. 비우면 코너 이름 없이 &lsquo;이번 주 영상 기사&rsquo;만 섭니다. 영상은 우리가 만든 게 아니라 언론사·공공기관 채널 것이라, 바로
+              아래 줄에 출처를 밝히고 카드마다 채널 이름을 답니다.
+            </span>
+          </div>
+        )}
+        {showVideos && (
+          <div className="field">
             <label htmlFor="f-channels">영상 채널 (한 줄에 하나)</label>
             <textarea id="f-channels" rows={6} placeholder={SOURCE_EXAMPLES_TEXT} value={channels} onChange={(e) => setChannels(e.target.value)} />
             <span className="hint">

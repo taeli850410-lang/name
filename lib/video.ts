@@ -160,6 +160,30 @@ function toIso(s: string): string {
   return Number.isNaN(t) ? new Date().toISOString() : new Date(t).toISOString();
 }
 
+/**
+ * 설명문에서 ①②③ 으로 늘어놓은 꼭지를 뽑습니다. 집코노미 타임즈처럼 주간 종합 영상은
+ * "이번주엔 ①용산 개발과 ②청약통장 전환 ③…" 식으로 다룰 내용을 적어 두는데,
+ * 그게 곧 이 영상의 목차라 카드에 체크 목록으로 세웁니다. 없으면 빈 배열.
+ */
+const CIRCLED = /[①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳]/;
+
+export function descriptionPoints(text: string): { lead: string; points: string[] } {
+  const at = text.search(CIRCLED);
+  if (at < 0) return { lead: text.trim(), points: [] };
+  const parts = text
+    .slice(at)
+    .split(CIRCLED)
+    .map((x) => x.trim())
+    .filter(Boolean);
+  const points = parts.map((p, i) =>
+    // 마지막 꼭지 뒤에는 "등 한국경제신문의 주요 기사를 짚어봅니다" 같은 맺음말이 붙습니다
+    i === parts.length - 1 ? p.replace(/\s*등\s.*$/, "").trim() : p,
+  );
+  // 리드는 마지막 문장까지만 — 안 그러면 "…라이브입니다. 이번주엔" 처럼 접속 조각이 남습니다
+  const lead = text.slice(0, at).trim().replace(/([.!?])[^.!?]*$/, "$1");
+  return { lead: lead.trim(), points: points.filter(Boolean) };
+}
+
 export interface VideoCollectStats {
   fetched: number;
   added: number;

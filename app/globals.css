@@ -386,8 +386,22 @@ tr:last-child td { border-bottom: 0; }
 .brief .lede .eyebrow { font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; color: var(--accent-b); text-transform: uppercase; }
 .brief .lede h3 { font-size: 17px; font-weight: 800; color: var(--p); line-height: 1.45; margin-top: 5px; letter-spacing: -0.01em; }
 
+/* 영상 기사 코너 이름 */
+.brief .vbrand { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.16em; color: var(--accent-b); margin-bottom: 6px; }
+.brief .vbrand::after { content: ""; display: block; width: 22px; height: 2px; background: var(--accent-b); border-radius: 2px; }
+
+/* 대표 영상 — 플레이어가 붙는 카드 */
+.brief .vhero { margin-bottom: 12px; }
+.brief .vhero .pcard-title a { color: inherit; text-decoration: none; }
+.brief .vhero .pcard-title a:hover { text-decoration: underline; }
+.brief .vhero-frame { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background: #0f1622; margin: 10px 0 0; }
+.brief .vhero-frame img, .brief .vhero-frame iframe { width: 100%; height: 100%; display: block; border: 0; object-fit: cover; }
+.brief .vhero-facade { cursor: pointer; }
+.brief .vhero-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 58px; height: 58px; border-radius: 999px; background: rgba(0, 0, 0, 0.66); color: #fff; font-size: 20px; display: flex; align-items: center; justify-content: center; padding-left: 4px; }
+.brief .vhero-facade:hover .vhero-play { background: #c4302b; }
+
 /* 영상 기사 — 상단 가로 3칸, 좁아지면 한 칸씩 쌓임 */
-.brief .vid-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.brief .vid-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .brief .vid { display: flex; flex-direction: column; gap: 5px; background: var(--card-b); border: 1px solid var(--line-b); border-radius: 12px; padding: 9px; text-decoration: none; }
 .brief .vid:hover { border-color: var(--p); text-decoration: none; }
 .brief .vid-thumb { position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: var(--tint-2); }

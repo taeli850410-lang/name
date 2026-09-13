@@ -1,5 +1,6 @@
 import { dots, fmtDate } from "@/lib/format";
-import type { BriefBadge, BriefCardModel, BriefLink, BriefModel, BriefNewsModel } from "@/lib/brief";
+import { VIDEO_POINTS_TITLE, type BriefBadge, type BriefCardModel, type BriefLink, type BriefModel, type BriefNewsModel, type BriefVideoModel } from "@/lib/brief";
+import VideoPlayer from "@/components/VideoPlayer";
 
 /**
  * 브리핑 렌더러. 원본 EDM 구조를 그대로 따르고, audience 에 따라 그린(중개사)·남색(고객) 테마를 씁니다.
@@ -58,6 +59,50 @@ function Impact({ card }: { card: BriefCardModel }) {
       </span>
       <span className="val">{card.impact.value}</span>
     </div>
+  );
+}
+
+/** 대표 영상 기사 — 플레이어 + 정책 카드와 같은 골격(뱃지 · 번호 제목 · 리드 · 체크 목록 · 버튼) */
+function VideoHead({ v }: { v: BriefVideoModel }) {
+  return (
+    <article className="pcard vhero">
+      <div className="pcard-top">
+        <span className="badge agency">{v.channel}</span>
+        <span className="badge info">{v.topicLabel}</span>
+        {v.place && <span className="badge neutral">{v.place}</span>}
+        <span className="badge warn">영상 기사</span>
+        <span className="pcard-date">{v.date} 공개</span>
+      </div>
+      <h4 className="pcard-title">
+        <span className="num">01</span>
+        <a href={v.url} target="_blank" rel="noreferrer noopener">
+          {v.title}
+        </a>
+      </h4>
+      <VideoPlayer id={v.id} title={v.title} thumb={v.thumb} url={v.url} />
+      {v.lead && <p className="pcard-lead">{v.lead}</p>}
+      {v.points.length > 0 && (
+        <div className="pcard-bullets">
+          <div className="lbl">{VIDEO_POINTS_TITLE}</div>
+          {v.points.map((t, i) => (
+            <div className="bl" key={i}>
+              <span className="bl-ic">✓</span>
+              <p>{t}</p>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="srcrow">
+        <a className="srcbtn primary" href={v.url} target="_blank" rel="noreferrer noopener">
+          유튜브에서 보기 →
+        </a>
+        {v.channelUrl && (
+          <a className="srcbtn ghost" href={v.channelUrl} target="_blank" rel="noreferrer noopener">
+            {v.channel} 채널
+          </a>
+        )}
+      </div>
+    </article>
   );
 }
 
@@ -280,9 +325,11 @@ export default function BriefView({ model }: { model: BriefModel }) {
           </div>
         </section>
 
-        {model.video && model.video.items.length > 0 && (
+        {model.video && (
           <section className="sec">
+            {model.video.brand && <div className="vbrand">{model.video.brand}</div>}
             <SectionHead title={model.video.title} sub={model.video.sub} />
+            <VideoHead v={model.video.head} />
             <div className="vid-row">
               {model.video.items.map((v) => (
                 <a className="vid" key={v.id} href={v.url} target="_blank" rel="noreferrer noopener">

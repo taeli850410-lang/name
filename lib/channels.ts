@@ -138,5 +138,7 @@ export function pickVideos(videos: VideoItem[], period: Period = "weekly", limit
     if (out.length >= limit) break;
     if (!out.includes(v)) out.push(v);
   }
-  return out.sort(newest);
+  // 고른 순서 그대로 돌려줍니다. 맨 앞이 대표 영상(플레이어가 붙는 자리)이라
+  // 여기서 최신순으로 다시 섞으면 목록 맨 위에 둔 채널이 대표 자리를 잃습니다.
+  return out;
 }

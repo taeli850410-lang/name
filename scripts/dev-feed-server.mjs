@@ -267,14 +267,15 @@ http
   .createServer((req, res) => {
     const url = req.url ?? "/";
     if (url.startsWith("/thumb")) {
-      // 샌드박스에서 i.ytimg.com 에 못 닿아서 스크린샷용으로 대신 그려 주는 자리표시자입니다
+      // 샌드박스에서 i.ytimg.com 에 못 닿아서 스크린샷용으로 대신 그려 주는 자리표시자입니다.
+      // 실제 유튜브 썸네일처럼 재생 단추는 그리지 않습니다 — 화면 쪽에서 얹습니다.
       const label = new URL(url, "http://x").searchParams.get("t") ?? "VIDEO";
       res.writeHead(200, { "Content-Type": "image/svg+xml; charset=utf-8" });
       res.end(
         `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 270"><rect width="480" height="270" fill="#1b2435"/>` +
           `<rect x="0" y="214" width="480" height="56" fill="#0f1622"/>` +
           `<text x="24" y="250" fill="#c9a227" font-family="sans-serif" font-size="26" font-weight="700">${label}</text>` +
-          `<circle cx="240" cy="110" r="34" fill="rgba(255,255,255,0.16)"/><path d="M230 92 l30 18 -30 18 z" fill="#fff"/></svg>`,
+          `</svg>`,
       );
       return;
     }
