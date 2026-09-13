@@ -23,6 +23,8 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+/** 국토교통부 서버가 한국에 있다. 가까운 데서 부른다. */
+export const preferredRegion = "icn1";
 
 const BASE = process.env.BLD_RGST_BASE || "https://apis.data.go.kr/1613000/BldRgstHubService";
 const TIMEOUT_MS = 10_000;

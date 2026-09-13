@@ -28,6 +28,12 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+/**
+ * 서울에서 부른다. VWorld 는 미국 리전(iad1)에서 부르면 게이트웨이가 502 를 주거나
+ * 연결을 끊는다 — 키·Referer 와 무관하게 요청 자체가 거절된다. 같은 주소를 서울
+ * 리전에서 부르면 정상 응답한다. 부르는 상대가 전부 한국 서버라 다른 라우트도 같다.
+ */
+export const preferredRegion = "icn1";
 
 const GEO = "https://api.vworld.kr/req/address";
 const DATA = "https://api.vworld.kr/req/data";

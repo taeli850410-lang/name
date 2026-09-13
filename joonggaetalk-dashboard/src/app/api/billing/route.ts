@@ -13,6 +13,8 @@ import { orderId, planOf, priceOf, PG_LABEL, type Cycle, type PgName, type PlanI
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+/** 결제대행사 서버가 한국에 있다. */
+export const preferredRegion = "icn1";
 
 const TIMEOUT_MS = 15_000;
 

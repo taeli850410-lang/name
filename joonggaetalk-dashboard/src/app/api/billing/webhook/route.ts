@@ -16,6 +16,8 @@ import { verifyWebhook } from "@/lib/webhook";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+/** 결제대행사가 부르는 자리다. 가까울수록 재시도가 줄어든다. */
+export const preferredRegion = "icn1";
 
 /** PG 에 그 결제를 다시 물어본다. 이용기한을 늘리는 근거는 이 응답뿐이다. */
 async function refetch(pg: "portone" | "toss", id: string): Promise<{ status: string; amount: number } | null> {

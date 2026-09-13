@@ -19,6 +19,8 @@ import { FILE_KINDS, KIND_RULES, extMatches, extOf, safeName, sniff, storageKey,
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+/** 올리는 사람도 저장소도 한국 쪽이다. */
+export const preferredRegion = "icn1";
 
 /** 올리는 주소는 오래 살 필요가 없다. 받는 주소는 더 짧게. */
 const PUT_TTL = 10 * 60;
