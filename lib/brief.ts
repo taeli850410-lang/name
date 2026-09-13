@@ -7,7 +7,7 @@ import { pickVideos, VIDEO_MAX_AGE } from "./channels";
 import { isRealEstateRelevant } from "./classify";
 import { descriptionPoints } from "./video";
 import { sourceLinks, type SourceLink } from "./source";
-import { PERIOD_LABEL, PERSONAS, regionLabel, SEGMENTS, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL } from "./taxonomy";
+import { PERIOD_LABEL, PERSONA_MATRIX, PERSONAS, regionLabel, SEGMENTS, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL } from "./taxonomy";
 import type { Article, Glossary, HistoryPoint, Issue, Letter, LetterIssue, MarketDoc, MarketTile, Office, Period, Persona, Segment, Topic, VideoItem } from "./types";
 
 /**
@@ -279,6 +279,7 @@ export function letterToBrief(letter: Letter): BriefModel {
       o.videoBrand ?? VIDEO_BRAND,
       // 레터 스냅샷에는 지역이 실리지 않습니다. 주제만으로 묶고, 지역 가산점은 중개사용에서만 씁니다
       letter.issues.map((i) => ({ topic: i.topic, publishedAt: i.publishedAt, articles: i.articles ?? [] })),
+      videoWeigh(SEGMENTS[letter.segment].personas),
     ),
     policy: {
       title: POLICY_TITLE[period],
@@ -386,8 +387,26 @@ function toBriefVideo(v: VideoItem, full: boolean, period: Period, pool: VideoNe
   };
 }
 
-export function videoSection(videos: VideoItem[] | undefined, period: Period, brand = VIDEO_BRAND, pool: VideoNewsSource[] = []): BriefModel["video"] {
-  const picked = pickVideos(videos ?? [], period);
+/**
+ * 보는 사람 기준으로 주제의 무게를 잽니다. 이미 있는 표(PERSONA_MATRIX)를 그대로 씁니다 —
+ * '그래서 내 부동산에는?' 을 그리는 바로 그 표입니다.
+ *
+ * 중개사에게는 규제지역·거래허가와 중개업 제도가 5점, 청약은 3점입니다. 계약 실무에 바로 걸리는 쪽이
+ * 먼저 서야 합니다. 고객용은 그 호의 세그먼트에 속한 사람들 기준으로 잽니다 — 생애최초에게는
+ * 청약이 5점이고 중개업 제도는 1점이니, 같은 날 같은 영상 더미에서 서로 다른 대표가 뽑힙니다.
+ */
+export function videoWeigh(personas: Persona[]): (v: VideoItem) => number {
+  return (v) => Math.max(...personas.map((p) => PERSONA_MATRIX[v.topic][p] ?? 0));
+}
+
+export function videoSection(
+  videos: VideoItem[] | undefined,
+  period: Period,
+  brand = VIDEO_BRAND,
+  pool: VideoNewsSource[] = [],
+  weigh?: (v: VideoItem) => number,
+): BriefModel["video"] {
+  const picked = pickVideos(videos ?? [], period, undefined, undefined, weigh);
   if (!picked.length) return undefined;
   return {
     brand,
@@ -501,6 +520,7 @@ export function buildBrokerBrief(issues: Issue[], office: Office, market: Market
       office.videoBrand ?? VIDEO_BRAND,
       // 정책 카드에 못 든 이슈도 '관련 기사'로는 쓸 수 있습니다. 버려진 것(archived)만 뺍니다
       issues.filter((i) => i.review !== "archived").map((i) => ({ topic: i.topic, place: i.place, publishedAt: i.publishedAt, articles: i.articles })),
+      videoWeigh(["공인중개사"]),
     ),
     policy: {
       title: POLICY_TITLE[period],

@@ -93,6 +93,12 @@ const HASHTAG_TAIL = /#[^\s#]+(?:\s+#[^\s#]+){1,}\s*$/;
  * 브리핑에 실을 수 있는 최대 나이(일). 집코노미 타임즈처럼 주 1회 올리는 목록도 있어서
  * 넉넉히 잡되, 지난달 영상이 오늘 브리핑에 남아 있지는 않게 합니다.
  */
+/**
+ * 대표 자리를 다툴 수 있는 최대 나이. 이 안에 올라온 게 하나라도 있으면 그중에서만 고릅니다.
+ * 주제가 아무리 알맞아도 사흘 지난 영상이 오늘 아침 브리핑 맨 위에 서면 안 됩니다.
+ */
+const HEAD_FRESH_MS = 48 * 3600000;
+
 export const VIDEO_MAX_AGE: Record<Period, number> = { daily: 10, weekly: 21, monthly: 60 };
 
 /** 기본 목록에 있는 채널의 순서와 구분 — 브리핑 세 칸을 무엇으로 채울지 정할 때 씁니다 */
@@ -132,7 +138,14 @@ const newest = (a: VideoItem, b: VideoItem) => new Date(b.publishedAt).getTime()
  * 그래서 한 줄이 "부동산 전문 + 경제 + 종합뉴스"로 서고, 목록 맨 위에 둔 채널이 우선합니다.
  * 기본 목록에 없는 채널은 저마다 다른 구분으로 쳐서, 그 사무소가 적은 순서대로 채워집니다.
  */
-export function pickVideos(videos: VideoItem[], period: Period = "weekly", limit = VIDEO_IN_BRIEF, now = Date.now()): VideoItem[] {
+export function pickVideos(
+  videos: VideoItem[],
+  period: Period = "weekly",
+  limit = VIDEO_IN_BRIEF,
+  now = Date.now(),
+  /** 이 브리핑을 볼 사람에게 그 영상 주제가 얼마나 중요한가(0~5). 중개사용과 고객용이 다른 값을 줍니다 */
+  weigh?: (v: VideoItem) => number,
+): VideoItem[] {
   const cutoff = now - VIDEO_MAX_AGE[period] * 86400000;
   const fresh = videos.filter((v) => new Date(v.publishedAt).getTime() >= cutoff);
 
@@ -167,7 +180,15 @@ export function pickVideos(videos: VideoItem[], period: Period = "weekly", limit
   //                   올리니 어쩌다 하나 나온 부동산 영상도 늘 제일 새것이라서요.
   // 부동산 전문 채널로 범위를 좁혀 최신순으로 고르면 둘 다 피합니다 — 대표는 늘 오늘 것이고,
   // 그날 누가 먼저 올렸느냐에 따라 채널이 자연스럽게 돌아갑니다.
-  const head = reps.filter((v) => meta(v)?.tier === "estate").sort(newest)[0];
+  const estate = reps.filter((v) => meta(v)?.tier === "estate");
+  // ① 오늘 것 먼저 — 이틀 안에 올라온 게 있으면 그중에서만 고릅니다
+  // ② 그중에서 보는 사람에게 중요한 주제 먼저 — 중개사에게는 규제지역·중개업 제도가 5점, 청약이 3점
+  // ③ 같으면 새것
+  const sameDay = estate.filter((v) => now - new Date(v.publishedAt).getTime() <= HEAD_FRESH_MS);
+  const head = (sameDay.length ? sameDay : estate).sort((a, b) => {
+    const w = (weigh?.(b) ?? 0) - (weigh?.(a) ?? 0);
+    return w !== 0 ? w : newest(a, b);
+  })[0];
   if (head) take(head);
 
   for (const v of reps) {
