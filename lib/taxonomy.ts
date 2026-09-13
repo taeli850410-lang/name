@@ -42,7 +42,7 @@ export const TOPIC_LABEL: Record<Topic, string> = {
 };
 export const TOPICS = Object.keys(TOPIC_LABEL) as Topic[];
 
-/** 영상 기사 — 저장해 두는 편수와 브리핑·레터에 싣는 편수 */
+/** 영상 기사 — 저장해 두는 편수와 브리핑·EDM에 싣는 편수 */
 export const VIDEO_KEEP = 40;
 export const VIDEO_IN_BRIEF = 3;
 

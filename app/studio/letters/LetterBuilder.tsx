@@ -10,8 +10,8 @@ import { PERIOD_LABEL, PERIOD_LIMIT, SEGMENTS, SEGMENT_KEYS } from "@/lib/taxono
 import type { Letter, Office, Period, Segment, Validation } from "@/lib/types";
 
 /**
- * 레터 빌더. 브리핑 화면과 같은 뼈대를 씁니다:
- * 왼쪽 흰 패널에 주기·세그먼트·동네·한마디, 오른쪽에 고객이 받게 될 남색 레터(브리핑과 같은 기기 프레임).
+ * EDM 빌더. 브리핑 화면과 같은 뼈대를 씁니다:
+ * 왼쪽 흰 패널에 주기·세그먼트·동네·한마디, 오른쪽에 고객이 받게 될 남색 EDM(브리핑과 같은 기기 프레임).
  */
 
 type Mode = "build" | "history";
@@ -95,14 +95,14 @@ export default function LetterBuilder({ office, published }: { office: Office; p
       <div className="panel panel-wide">
         <div className="row between">
           <button className="btn" onClick={() => setMode("build")}>
-            ← 레터 만들기
+            ← EDM 만들기
           </button>
         </div>
         <h2 className="panel-title">발행 이력 ({published.length})</h2>
-        <p className="panel-sub">발행본은 읽기 전용 스냅샷입니다. 나중에 이슈를 고쳐도 이미 보낸 레터의 내용은 바뀌지 않습니다.</p>
+        <p className="panel-sub">발행본은 읽기 전용 스냅샷입니다. 나중에 이슈를 고쳐도 이미 보낸 EDM의 내용은 바뀌지 않습니다.</p>
         {note && <div className="alert alert-ok banner">{note}</div>}
         <div className="stack">
-          {published.length === 0 && <div className="card">아직 발행한 레터가 없습니다.</div>}
+          {published.length === 0 && <div className="card">아직 발행한 EDM이 없습니다.</div>}
           {published.map((l) => (
             <div className="card row between" key={l.id}>
               <div style={{ minWidth: 0 }}>
@@ -134,13 +134,13 @@ export default function LetterBuilder({ office, published }: { office: Office; p
     );
   }
 
-  /* ── 레터 만들기 ── */
+  /* ── EDM 만들기 ── */
   return (
     <div className="builder">
       <div className="stack">
         <div className="card">
           <div className="row between" style={{ marginBottom: 12 }}>
-            <b>레터 만들기</b>
+            <b>EDM 만들기</b>
             <button className="btn btn-sm" onClick={() => setMode("history")}>
               발행 이력 ({published.length})
             </button>
@@ -243,7 +243,7 @@ export default function LetterBuilder({ office, published }: { office: Office; p
           ) : (
             <div className="brief theme-navy">
               <div className="wrap">
-                <div className="card empty">주기와 세그먼트를 고르고 '초안 만들기'를 누르면 고객이 받게 될 레터가 여기에 나타납니다.</div>
+                <div className="card empty">주기와 세그먼트를 고르고 '초안 만들기'를 누르면 고객이 받게 될 EDM이 여기에 나타납니다.</div>
               </div>
             </div>
           )}

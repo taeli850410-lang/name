@@ -7,7 +7,7 @@ import { pickVideos } from "./channels";
 import { PERIOD_LIMIT, PERIOD_TITLE, SEGMENTS, STATUS_LABEL, TOPIC_GLOSSARY } from "./taxonomy";
 import type { Issue, Letter, LetterIssue, MarketDoc, Office, Period, Segment, Validation, VideoItem, WatchItem } from "./types";
 
-/** 고객용 레터 생성·검증·발행. 모두 순수 함수이며 저장은 호출자가 합니다. */
+/** 고객용 EDM 생성·검증·발행. 모두 순수 함수이며 저장은 호출자가 합니다. */
 
 const pad2 = (n: number) => String(n).padStart(2, "0");
 const DOW = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];

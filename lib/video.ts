@@ -206,7 +206,9 @@ export interface VideoCollectStats {
  * 영상이 여기서 빠질 수 있는데, 애매한 걸 남기는 것보다 낫습니다.
  */
 export function mergeVideos(existing: VideoItem[], incoming: VideoItem[]): { videos: VideoItem[]; added: number; dropped: number } {
-  const kept = existing.filter((v) => isStrongRealEstate(v.title) || isStrongRealEstate(v.summary));
+  // 제목만 봅니다. 요약까지 보면 종합뉴스 채널의 채널 소개 문구에 '부동산'이 한 번 들어 있어서
+  // 인사청문회 영상이 그대로 남습니다 — 수집할 때 설명문을 안 보는 것과 같은 이유입니다.
+  const kept = existing.filter((v) => isStrongRealEstate(v.title));
   const dropped = existing.length - kept.length;
   const seen = new Map(kept.map((v) => [v.id, v]));
   let added = 0;

@@ -7,7 +7,7 @@ import type { Office } from "@/lib/types";
 /**
  * 상단 바 '사무소' 단추가 여는 정보 입력 창. 원본 EDM 처럼 화면을 떠나지 않고 그 자리에서 고칩니다.
  *
- * 여기 있는 칸은 전부 지금 보고 있는 브리핑·레터에 바로 찍히는 값들입니다 —
+ * 여기 있는 칸은 전부 지금 보고 있는 브리핑·EDM에 바로 찍히는 값들입니다 —
  * 마스트헤드(상호·브랜드), CTA 버튼(연락처·카카오톡), 푸터(대표·등록번호), 슬로건.
  * 나머지 설정(지역·주력 주제·영상 채널)은 양이 많아 설정 화면에 그대로 둡니다.
  */
@@ -16,11 +16,11 @@ const FIELDS: { key: keyof Office; label: string; hint?: string; type?: string; 
   { key: "officeName", label: "중개사무소 상호", hint: "마스트헤드에 가장 크게 나옵니다", required: true, auto: "organization" },
   { key: "repName", label: "대표 공인중개사", required: true, auto: "name" },
   { key: "registrationNo", label: "중개사무소 등록번호", required: true },
-  { key: "phone", label: "연락처(휴대전화)", type: "tel", hint: "고객용 레터의 전화 버튼에 걸립니다", required: true, auto: "tel" },
+  { key: "phone", label: "연락처(휴대전화)", type: "tel", hint: "고객용 EDM의 전화 버튼에 걸립니다", required: true, auto: "tel" },
   { key: "brandName", label: "브랜드 표기", hint: "마스트헤드 아래 작은 글씨" },
   { key: "areaLabel", label: "지역 표기", hint: '전국구면 "전국", 지역 밀착이면 "인천 부평구" 처럼' },
   { key: "kakaoUrl", label: "카카오톡 채널 URL", type: "url", hint: "비우면 상담 버튼이 전화만 표시됩니다", auto: "url" },
-  { key: "slogan", label: "레터 슬로건", hint: "고객에게 보이는 문구입니다" },
+  { key: "slogan", label: "EDM 슬로건", hint: "고객에게 보이는 문구입니다" },
 ];
 
 export default function OfficeDialog({ onClose }: { onClose: () => void }) {
@@ -107,7 +107,7 @@ export default function OfficeDialog({ onClose }: { onClose: () => void }) {
             ✕
           </button>
         </div>
-        <p className="odlg-sub">여기서 고치면 지금 보고 있는 브리핑·레터의 마스트헤드·상담 버튼·푸터가 바로 바뀝니다.</p>
+        <p className="odlg-sub">여기서 고치면 지금 보고 있는 브리핑·EDM의 마스트헤드·상담 버튼·푸터가 바로 바뀝니다.</p>
 
         {!office ? (
           <p className="odlg-loading">불러오는 중…</p>

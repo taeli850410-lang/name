@@ -20,7 +20,7 @@ export default async function DataPage() {
         <div>
           <h1>우리 동네 숫자</h1>
           <p>
-            {market.area} 실거래 집계와 한국은행 기준금리입니다. 레터의 '우리 동네 숫자' 섹션이 이 값을 씁니다. 집계 기준 {fmtDate(market.generatedAt)}
+            {market.area} 실거래 집계와 한국은행 기준금리입니다. EDM의 '우리 동네 숫자' 섹션이 이 값을 씁니다. 집계 기준 {fmtDate(market.generatedAt)}
             {meta.lastMarketAt ? ` · 마지막 갱신 ${fmtDate(meta.lastMarketAt)}` : ""}
           </p>
         </div>

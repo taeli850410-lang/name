@@ -211,7 +211,7 @@ function dateLabel(publishedAt: string, effectiveAt: string | null): string {
 const ext = (l: SourceLink, kind: BriefLink["kind"]): BriefLink => ({ label: l.label, href: l.href, kind, external: true });
 const toBriefArticle = (a: Article): BriefArticle => ({ publisher: a.publisher, date: a.date, title: a.title, url: a.url });
 
-/* ───────── 고객용: 발행된 레터 → 브리핑 모델 ───────── */
+/* ───────── 고객용: 발행된 EDM → 브리핑 모델 ───────── */
 
 export function customerCard(item: LetterIssue, _index: number): BriefCardModel {
   const c = item.customer;
@@ -277,7 +277,7 @@ export function letterToBrief(letter: Letter): BriefModel {
       letter.videos,
       period,
       o.videoBrand ?? VIDEO_BRAND,
-      // 레터 스냅샷에는 지역이 실리지 않습니다. 주제만으로 묶고, 지역 가산점은 중개사용에서만 씁니다
+      // EDM 스냅샷에는 지역이 실리지 않습니다. 주제만으로 묶고, 지역 가산점은 중개사용에서만 씁니다
       letter.issues.map((i) => ({ topic: i.topic, publishedAt: i.publishedAt, articles: i.articles ?? [] })),
       videoWeigh(SEGMENTS[letter.segment].personas),
     ),
@@ -542,25 +542,25 @@ export function buildBrokerBrief(issues: Issue[], office: Office, market: Market
           title: PERSONA_TITLE,
           sub: clamp(lead.title, 40),
           rows: personaRows(lead.personas, lead.customer.forMe, PERSONAS),
-          note: "※ 영향도는 분류기 초안입니다. 이슈 상세에서 수정하면 레터에도 반영됩니다.",
+          note: "※ 영향도는 분류기 초안입니다. 이슈 상세에서 수정하면 EDM에도 반영됩니다.",
           glossary: lead.customer.glossary,
         }
       : undefined,
     comment: office.defaultComment
-      ? { name: office.repName ? `${office.repName} 공인중개사의 한마디` : `${office.officeName}의 한마디`, tag: "전문가 코멘트 · 레터에 실을 기본 문구, 설정에서 수정", body: office.defaultComment }
+      ? { name: office.repName ? `${office.repName} 공인중개사의 한마디` : `${office.officeName}의 한마디`, tag: "전문가 코멘트 · EDM에 실을 기본 문구, 설정에서 수정", body: office.defaultComment }
       : undefined,
     cta: {
-      title: "고객용 레터를 만들 준비가 됐습니다",
-      sub: "검수 완료된 이슈만 규칙 R1~R8을 거쳐 세그먼트별 레터로 발행됩니다.",
+      title: "고객용 EDM을 만들 준비가 됐습니다",
+      sub: "검수 완료된 이슈만 규칙 R1~R8을 거쳐 세그먼트별 EDM으로 발행됩니다.",
       buttons: [
-        { label: "레터 빌더 열기", href: "/studio/letters", kind: "primary" },
+        { label: "EDM 빌더 열기", href: "/studio/letters", kind: "primary" },
         { label: "인박스에서 검수하기", href: "/studio", kind: "ghost" },
       ],
     },
     footer: {
       head: `${office.officeName} · 중개사용`,
       rows: officeRows(office),
-      legal: ["중개사 내부용 자료입니다. 이 화면을 고객에게 그대로 전달하지 마세요. 고객용은 레터 빌더에서 금지 표현 검사와 분량 규칙을 거쳐 발행됩니다."],
+      legal: ["중개사 내부용 자료입니다. 이 화면을 고객에게 그대로 전달하지 마세요. 고객용은 EDM 빌더에서 금지 표현 검사와 분량 규칙을 거쳐 발행됩니다."],
       links: [
         { label: "인박스", href: "/studio" },
         { label: "우리 동네 숫자", href: "/studio/data" },

@@ -38,7 +38,7 @@ const FIELDS: { key: TextKey; label: string; hint?: string; type?: string; texta
   { key: "unsubscribeUrl", label: "수신거부 링크", hint: "발송 서비스(스티비 등)의 수신거부 URL. 없으면 이메일로 대체", type: "url" },
   { key: "privacyUrl", label: "개인정보처리방침 링크", hint: "푸터 '수신거부·개인정보처리방침'에 연결. 비우면 수신거부만 표시", type: "url" },
   { key: "areaLabel", label: "지역 표기", hint: "마스트헤드와 숫자 섹션에 쓰는 이름. 전국구면 \"전국\", 지역 밀착이면 \"안양 만안·동안구\" 처럼" },
-  { key: "slogan", label: "레터 슬로건", hint: "고객에게 보이는 문구입니다. 중개사 대상 문구는 쓰지 마세요" },
+  { key: "slogan", label: "EDM 슬로건", hint: "고객에게 보이는 문구입니다. 중개사 대상 문구는 쓰지 마세요" },
   { key: "defaultComment", label: "한마디 기본 문구", textarea: true },
 ];
 
@@ -74,7 +74,7 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
               tone: "error",
               text: `저장은 됐지만 이 배포에는 영구 저장소가 없습니다(${data.storeLabel ?? "메모리 저장"}). 잠시 뒤 다른 화면을 열면 기본값으로 돌아가 있을 수 있습니다. Vercel → Storage → Upstash Redis 를 연결하고 다시 배포하세요.`,
             }
-          : { tone: "ok", text: "저장되었습니다. 브리핑·레터 마스트헤드와 푸터에 바로 반영됩니다." },
+          : { tone: "ok", text: "저장되었습니다. 브리핑·EDM 마스트헤드와 푸터에 바로 반영됩니다." },
       );
       router.refresh();
     } catch (e) {
@@ -143,7 +143,7 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
             <div className="field">
               <label htmlFor="f-dongs">행정동 (쉼표 구분)</label>
               <input id="f-dongs" type="text" placeholder="예: 관양동, 비산동, 석수동" value={dongs} onChange={(e) => setDongs(e.target.value)} />
-              <span className="hint">레터 빌더의 동네 타깃과 지역 뉴스 피드에 씁니다.</span>
+              <span className="hint">EDM 빌더의 동네 타깃과 지역 뉴스 피드에 씁니다.</span>
             </div>
           </>
         )}
@@ -169,7 +169,7 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
             </button>
           </div>
           <span className="hint">
-            브리핑·레터 맨 위에 유튜브 영상 보도 {VIDEO_IN_BRIEF}편을 채널 이름·주제와 함께 싣습니다. 부동산과 무관한 영상은 제목·설명을 보고 걸러냅니다.
+            브리핑·EDM 맨 위에 유튜브 영상 보도 {VIDEO_IN_BRIEF}편을 채널 이름·주제와 함께 싣습니다. 부동산과 무관한 영상은 제목·설명을 보고 걸러냅니다.
           </span>
         </div>
         {showVideos && (
@@ -231,7 +231,7 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
             ))}
           </div>
           <span className="hint">
-            고른 주제를 인박스·브리핑·레터에서 같은 조건일 때 앞으로 당깁니다. 규칙 R1~R8(고객 본문 여부·분량·신선도)은 그대로라 다른 주제가 사라지지는 않습니다. 2~4개가 적당하고, 비우면
+            고른 주제를 인박스·브리핑·EDM에서 같은 조건일 때 앞으로 당깁니다. 규칙 R1~R8(고객 본문 여부·분량·신선도)은 그대로라 다른 주제가 사라지지는 않습니다. 2~4개가 적당하고, 비우면
             가중치 없이 최신순으로만 정렬합니다.
           </span>
           {focus.length === 0 && (

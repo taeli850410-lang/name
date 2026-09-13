@@ -272,7 +272,7 @@ export default function IssueEditor({ issue: initial, llm }: { issue: Issue; llm
 
         <div className="card" style={{ marginTop: 14 }}>
           <h3>
-            <span className="chip chip-c">고객용</span> 레터에 실리는 문장
+            <span className="chip chip-c">고객용</span> EDM에 실리는 문장
           </h3>
           <div className="field">
             <label>고객용 제목 (30자 안팎)</label>
@@ -347,11 +347,11 @@ export default function IssueEditor({ issue: initial, llm }: { issue: Issue; llm
           </div>
           <p className="small muted" style={{ margin: "6px 0 0" }}>
             {route.customer === "exclude"
-              ? "중개사 전용으로 분류되어 고객 레터에는 실리지 않습니다."
+              ? "중개사 전용으로 분류되어 고객 EDM에는 실리지 않습니다."
               : route.customer === "watch"
-                ? "고객 레터에는 '주요 뉴스' 카드(제목·기사 링크)로만 실립니다. 아래는 본문에 실릴 경우의 모습입니다."
+                ? "고객 EDM에는 '주요 뉴스' 카드(제목·기사 링크)로만 실립니다. 아래는 본문에 실릴 경우의 모습입니다."
                 : route.customer === "target"
-                  ? "해당 동을 지정한 레터에만 실립니다."
+                  ? "해당 동을 지정한 EDM에만 실립니다."
                   : "검수 완료 후 이 세그먼트 영향도가 3 이상이면 본문에 실립니다."}
           </p>
         </div>

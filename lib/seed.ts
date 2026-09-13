@@ -5,7 +5,7 @@ import type { AgencyGroup, AreaConfig, Article, BrokerFields, CustomerFields, Is
 
 /**
  * 샘플 데이터. 2026년 9월 둘째 주 실제 보도를 바탕으로 손으로 쓴 초안이며,
- * 수집 파이프라인이 채우기 전에도 스튜디오와 레터가 어떻게 보이는지 보여 줍니다.
+ * 수집 파이프라인이 채우기 전에도 스튜디오와 EDM이 어떻게 보이는지 보여 줍니다.
  * 기본은 전국구입니다. 인천 사례 2건(정비사업 현황·부평 산곡)은 설정에서 시군구를 '미추홀구'나 '부평구'로 두면
  * '우리 지역'으로 잡혀 동네 타깃이 되고, 그 밖에는 타 지역 참고로만 남습니다.
  */
@@ -526,7 +526,7 @@ export function seedIssues(area?: AreaConfig): Issue[] {
   ];
 }
 
-/** 샘플 레터: 2026-09-12 기준 MONTHLY · 내집마련 호를 미리 발행해 둡니다. */
+/** 샘플 EDM: 2026-09-12 기준 MONTHLY · 내집마련 호를 미리 발행해 둡니다. */
 export function seedLetters(market: MarketDoc): Letter[] {
   const now = Date.parse("2026-09-12T12:00:00+09:00");
   const draft = buildDraft(seedIssues(), DEFAULT_OFFICE, market, { period: "monthly", segment: "first", now });

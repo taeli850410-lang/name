@@ -10,7 +10,7 @@ import OfficeDialog from "./OfficeDialog";
 /**
  * 원본 EDM 스튜디오의 상단 뼈대. 짙은 남색 바 한 줄에
  * 브랜드 · DAILY/WEEKLY/MONTHLY · 이메일/모바일/인스타 카드/블로그 포스팅 · 사무소/메일/PDF·인쇄/카카오톡/링크 · 실시간 뉴스 수집 시각.
- * 그 아래 얇은 줄에 이 서비스에만 있는 인박스·레터 빌더·우리 동네 숫자·설정과 상태 칩을 둡니다.
+ * 그 아래 얇은 줄에 이 서비스에만 있는 인박스·EDM 빌더·우리 동네 숫자·설정과 상태 칩을 둡니다.
  */
 
 export interface ChromeLetter {
@@ -18,7 +18,7 @@ export interface ChromeLetter {
   period: Period;
   title: string;
   headline: string;
-  /** 카카오톡 공유 문구. {{URL}} 자리에 레터 주소가 들어갑니다 */
+  /** 카카오톡 공유 문구. {{URL}} 자리에 EDM 주소가 들어갑니다 */
   share: string;
 }
 
@@ -86,7 +86,7 @@ export default function StudioChrome({
     }
   }
   function needLetter() {
-    flash("발행된 고객용 레터가 없습니다. 레터 빌더에서 먼저 발행하세요.");
+    flash("발행된 고객용 EDM이 없습니다. EDM 빌더에서 먼저 발행하세요.");
     router.push("/studio/letters");
   }
   function mail() {
@@ -104,7 +104,7 @@ export default function StudioChrome({
   function link() {
     const url = letterUrl();
     if (!letter || !url) return needLetter();
-    void copy(url, "고객용 레터 링크를 복사했습니다.");
+    void copy(url, "고객용 EDM 링크를 복사했습니다.");
   }
 
   const cur = (on: boolean) => (on ? { "aria-current": "true" as const } : {});
@@ -144,16 +144,16 @@ export default function StudioChrome({
             <button className="chrome-btn" onClick={() => setOfficeOpen(true)} title="상호·대표·등록번호·연락처를 이 화면에서 바로 고칩니다">
               🏢 사무소
             </button>
-            <button className="chrome-btn" onClick={mail} title="최근 발행한 고객용 레터를 메일로 보냅니다">
+            <button className="chrome-btn" onClick={mail} title="최근 발행한 고객용 EDM을 메일로 보냅니다">
               ✉ 메일
             </button>
             <button className="chrome-btn" onClick={() => window.print()} title="브라우저 인쇄 대화상자에서 PDF로 저장">
               🖨 PDF·인쇄
             </button>
-            <button className="chrome-btn" onClick={kakao} title="최근 발행한 레터의 카카오톡 공유 문구 복사">
+            <button className="chrome-btn" onClick={kakao} title="최근 발행한 EDM의 카카오톡 공유 문구 복사">
               💬 카카오톡
             </button>
-            <button className="chrome-btn" onClick={link} title="최근 발행한 레터 링크 복사">
+            <button className="chrome-btn" onClick={link} title="최근 발행한 EDM 링크 복사">
               🔗 링크
             </button>
           </div>
@@ -168,7 +168,7 @@ export default function StudioChrome({
             📥 인박스
           </Link>
           <Link href="/studio/letters" {...cur(pathname.startsWith("/studio/letters"))}>
-            ✉ 레터 빌더
+            ✉ EDM 빌더
           </Link>
           <Link href="/studio/data" {...cur(pathname.startsWith("/studio/data"))}>
             📊 우리 동네 숫자

@@ -117,7 +117,7 @@ const channelKey = (v: VideoItem) => v.channelId || v.channel;
  * 부동산부 뉴스 코너)를 쇼츠로 버렸습니다. 설명문이 해시태그와 구독 안내뿐이라서요.
  * 유튜브에서 재생 시간을 받아 15편을 맞춰 보고 이 순서로 정했습니다.
  */
-const isClip = (v: VideoItem) => {
+export const isClipVideo = (v: VideoItem) => {
   if (PROGRAM_MARK.test(v.title)) return false;
   if (HASHTAG_TAIL.test(v.title)) return true;
   return v.summary.trim().length < CLIP_SUMMARY;
@@ -155,7 +155,7 @@ export function pickVideos(
   const best = new Map<string, VideoItem>();
   for (const v of fresh) {
     const cur = best.get(channelKey(v));
-    if (!cur || (isClip(cur) !== isClip(v) ? !isClip(v) : newest(v, cur) < 0)) best.set(channelKey(v), v);
+    if (!cur || (isClipVideo(cur) !== isClipVideo(v) ? !isClipVideo(v) : newest(v, cur) < 0)) best.set(channelKey(v), v);
   }
 
   const meta = (v: VideoItem) => CHANNEL_META.get(v.channelId) ?? CHANNEL_META.get(v.channel);
@@ -204,3 +204,4 @@ export function pickVideos(
   // 고른 순서 그대로 돌려줍니다. 여기서 다시 최신순으로 섞으면 위에서 정한 대표가 밀립니다.
   return out;
 }
+
