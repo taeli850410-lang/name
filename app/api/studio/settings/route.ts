@@ -4,7 +4,7 @@ import type { Office } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-const KEYS: (keyof Office)[] = ["officeName", "brandName", "repName", "registrationNo", "phone", "address", "email", "kakaoUrl", "unsubscribeUrl", "slogan", "defaultComment", "areaLabel"];
+const KEYS: (keyof Office)[] = ["officeName", "brandName", "repName", "registrationNo", "phone", "address", "email", "kakaoUrl", "unsubscribeUrl", "privacyUrl", "slogan", "defaultComment", "areaLabel"];
 
 export async function GET() {
   return NextResponse.json({ office: await getSettings() });

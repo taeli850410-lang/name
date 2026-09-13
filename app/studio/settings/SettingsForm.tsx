@@ -14,6 +14,7 @@ const FIELDS: { key: keyof Office; label: string; hint?: string; type?: string; 
   { key: "email", label: "이메일", hint: "수신거부 링크가 없으면 이 주소로 수신거부 메일이 옵니다", type: "email" },
   { key: "kakaoUrl", label: "카카오톡 채널 URL", hint: "예: https://pf.kakao.com/_xxxx", type: "url" },
   { key: "unsubscribeUrl", label: "수신거부 링크", hint: "발송 서비스(스티비 등)의 수신거부 URL. 없으면 이메일로 대체", type: "url" },
+  { key: "privacyUrl", label: "개인정보처리방침 링크", hint: "푸터 '수신거부·개인정보처리방침'에 연결. 비우면 수신거부만 표시", type: "url" },
   { key: "areaLabel", label: "동네 표기", hint: "우리 동네 숫자 섹션 제목 옆" },
   { key: "slogan", label: "레터 슬로건", hint: "고객에게 보이는 문구입니다. 중개사 대상 문구는 쓰지 마세요" },
   { key: "defaultComment", label: "한마디 기본 문구", textarea: true },
@@ -64,9 +65,9 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
           <div className="field" key={f.key}>
             <label htmlFor={`f-${f.key}`}>{f.label}</label>
             {f.textarea ? (
-              <textarea id={`f-${f.key}`} value={office[f.key]} onChange={(e) => setOffice({ ...office, [f.key]: e.target.value })} />
+              <textarea id={`f-${f.key}`} value={office[f.key] ?? ""} onChange={(e) => setOffice({ ...office, [f.key]: e.target.value })} />
             ) : (
-              <input id={`f-${f.key}`} type={f.type ?? "text"} value={office[f.key]} onChange={(e) => setOffice({ ...office, [f.key]: e.target.value })} />
+              <input id={`f-${f.key}`} type={f.type ?? "text"} value={office[f.key] ?? ""} onChange={(e) => setOffice({ ...office, [f.key]: e.target.value })} />
             )}
             {f.hint && <span className="hint">{f.hint}</span>}
           </div>

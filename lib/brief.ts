@@ -3,8 +3,9 @@ import { editionLabel, letterTitle } from "./letter";
 import { links, TOPIC_LINKS } from "./links";
 import { computeTiles } from "./market";
 import { gradeIssue, isFresh, maxSegmentImpact, ROUTE_LABEL, routeIssue } from "./routing";
-import { PERIOD_LABEL, PERIOD_TITLE, PERSONAS, REGION_LABEL, SEGMENTS, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL } from "./taxonomy";
-import type { Glossary, HistoryPoint, Issue, Letter, LetterIssue, MarketDoc, MarketTile, Office, Period, WatchItem } from "./types";
+import { sourceLinks, type SourceLink } from "./source";
+import { PERIOD_LABEL, PERSONAS, REGION_LABEL, SEGMENTS, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL } from "./taxonomy";
+import type { Article, Glossary, HistoryPoint, Issue, Letter, LetterIssue, MarketDoc, MarketTile, Office, Period, Persona, Segment } from "./types";
 
 /**
  * 브리핑 뷰 모델. 원본 EDM 의 구조(마스트헤드 → 슬로건 → 헤드라인 → 정책 카드 → 뉴스 → 숫자 →
@@ -45,10 +46,14 @@ export interface BriefCardModel {
   extra?: BriefList;
   checklist?: BriefList;
   impact?: { label: string; value: string; dots?: number };
-  /** 고객용: '나에게는'을 할 일보다 먼저 보여 줍니다 */
-  impactFirst?: boolean;
+  /** 큰 버튼들: 원문·관련보도 보기(대표 기사) · 공식 원문 · 이슈 상세 */
   links: BriefLink[];
+  /** 대표 기사를 뺀 관련 보도, 최신순 */
   articles: BriefArticle[];
+  /** 최신 뉴스 검색(네이버·구글) */
+  search: BriefLink[];
+  /** 참고 사이트(공공데이터 바로가기) — 작게 */
+  refs: BriefLink[];
 }
 export interface BriefNewsModel {
   id: string;
@@ -56,7 +61,10 @@ export interface BriefNewsModel {
   title: string;
   href: string | null;
   excerpt: string;
+  /** 대표 기사를 뺀 관련 보도 */
   articles: BriefArticle[];
+  /** 전체 기사 수 */
+  count: number;
 }
 export interface BriefModel {
   audience: Audience;
@@ -69,9 +77,7 @@ export interface BriefModel {
   policy: { title: string; sub: string; cards: BriefCardModel[]; empty: string };
   news?: { title: string; sub: string; items: BriefNewsModel[] };
   numbers: { title: string; sub: string; tiles: MarketTile[]; history: HistoryPoint[]; historyLabel: string; note: string };
-  persona?: { title: string; sub: string; rows: { label: string; level: number; note: string }[]; note: string };
-  watch?: { title: string; sub: string; items: WatchItem[] };
-  glossary?: Glossary | null;
+  persona?: { title: string; sub: string; rows: { label: string; level: number; note: string }[]; note: string; glossary?: Glossary | null };
   comment?: { name: string; tag: string; body: string };
   cta: { title: string; sub: string; buttons: BriefLink[] };
   footer: { head: string; rows: [string, string][]; legal: string[]; links: { label: string; href: string }[] };
@@ -82,20 +88,48 @@ export const DISCLAIMER =
   "본 자료는 정부·공공기관의 발표자료 및 공개된 언론보도를 바탕으로 일반적인 부동산 정보를 제공하기 위해 작성되었습니다. 개별 부동산의 매수·매도·세무·법률 판단은 개인별 상황에 따라 달라질 수 있으므로 필요한 경우 관련 전문가의 별도 확인을 권합니다.";
 export const AD_FOOTER =
   "본 자료는 일반적인 부동산 정보 제공을 목적으로 작성되었으며 개별적인 투자·세무·법률 판단을 대신하지 않습니다. 광고성 정보 수신에 동의한 고객에게 발송되었습니다.";
-export const NUMBERS_NOTE = "※ 실거래 신고 기한이 30일이라 최근 두 달 수치는 잠정치이며 이후 늘어날 수 있습니다.";
+export const NUMBERS_NOTE = "※ 실거래 신고 기한이 30일이라 최근 두 달 수치는 잠정치이며 이후 늘어날 수 있습니다. 출처와 기준일이 확인되지 않은 수치는 표시하지 않습니다.";
+
+/** 원본 EDM 의 섹션 제목·부제. 주기에 따라 '오늘/이번 주/이달'만 바뀝니다 */
+export const PERIOD_EYEBROW: Record<Period, string> = { daily: "TODAY'S REAL ESTATE BRIEF", weekly: "THIS WEEK'S REAL ESTATE BRIEF", monthly: "THIS MONTH'S REAL ESTATE BRIEF" };
+export const POLICY_TITLE: Record<Period, string> = { daily: "오늘 꼭 알아야 할 정책", weekly: "이번 주 꼭 알아야 할 정책", monthly: "이달 꼭 알아야 할 정책" };
+export const NEWS_TITLE: Record<Period, string> = { daily: "오늘의 주요 뉴스", weekly: "이번 주 주요 뉴스", monthly: "이달의 주요 뉴스" };
+export const NUMBERS_TITLE: Record<Period, string> = { daily: "오늘의 숫자", weekly: "이번 주 숫자", monthly: "이달의 숫자" };
+export const PERSONA_TITLE = "그래서 내 부동산에는?";
+export const PERSONA_NOTE = "※ 매수·매도 판단을 단정적으로 권하지 않습니다. 적용 여부는 주택 수·취득시기·지역·보유기간 등에 따라 달라질 수 있습니다.";
+export const CTA_TITLE = "이 정책이 내 집에 어떤 영향을 주는지 궁금하신가요?";
+export const CTA_SUB = "지금 매도할지 보유할지, 갈아타기를 계획 중이신지. 공인중개사가 확정된 숫자로 함께 정리해 드립니다.";
+
+/** 고객에게 보이는 영향 대상 7종 — 원본 순서 */
+const CUSTOMER_PERSONAS = PERSONAS.filter((p) => p !== "공인중개사");
+const SEGMENT_OF: Partial<Record<Persona, Segment>> = Object.fromEntries(
+  (Object.keys(SEGMENTS) as Segment[]).flatMap((s) => SEGMENTS[s].personas.map((p) => [p, s] as const)),
+);
+
+/** '그래서 내 부동산에는?' 행: 영향 대상별 영향도 + 그 대상이 속한 세그먼트의 한 줄 */
+function personaRows(levels: Record<Persona, number>, forMe: Partial<Record<Segment, string>>, personas: Persona[]): { label: string; level: number; note: string }[] {
+  return personas.map((p) => {
+    const seg = SEGMENT_OF[p];
+    const note = seg ? forMe[seg] || "" : "중개사 실무 영향 · 이슈 상세의 상담 스크립트 참고";
+    return { label: p, level: levels[p] ?? 0, note };
+  });
+}
 
 function officeRows(o: Office): [string, string][] {
   const rows: [string, string][] = [];
   if (o.repName) rows.push(["대표 공인중개사", o.repName]);
-  if (o.registrationNo) rows.push(["등록번호", o.registrationNo]);
   if (o.phone) rows.push(["연락처", o.phone]);
   if (o.address) rows.push(["소재지", o.address]);
+  if (o.registrationNo) rows.push(["등록번호", o.registrationNo]);
   return rows;
 }
 
 function dateLabel(publishedAt: string, effectiveAt: string | null): string {
   return effectiveAt ? `${fmtDate(effectiveAt)} 시행` : `${fmtDate(publishedAt)} 발표`;
 }
+
+const ext = (l: SourceLink, kind: BriefLink["kind"]): BriefLink => ({ label: l.label, href: l.href, kind, external: true });
+const toBriefArticle = (a: Article): BriefArticle => ({ publisher: a.publisher, date: a.date, title: a.title, url: a.url });
 
 /* ───────── 고객용: 발행된 레터 → 브리핑 모델 ───────── */
 
@@ -106,10 +140,13 @@ export function customerCard(item: LetterIssue, _index: number): BriefCardModel 
     { label: STATUS_LABEL[item.status], tone: STATUS_TONE[item.status] },
   ];
   if (item.targeted && item.dong.length) badges.push({ label: `${item.dong.join("·")} 소식`, tone: "target" });
+  // 이전 스냅샷(articles 없음)은 대표 기사 한 건으로 복원합니다
+  const arts: Article[] =
+    item.articles ?? (item.articleUrl ? [{ publisher: (item.articleLabel ?? "기사").replace(/ 기사$/, ""), title: c.headline, url: item.articleUrl, date: item.publishedAt }] : []);
+  const src = sourceLinks({ title: item.title ?? c.headline, officialUrl: item.officialUrl, articles: arts, agency: item.agency });
   const linkList: BriefLink[] = [];
-  if (item.officialUrl) linkList.push({ label: "원문 보기", href: item.officialUrl, kind: "primary", external: true });
-  if (item.articleUrl && item.articleUrl !== item.officialUrl) linkList.push({ label: item.articleLabel ?? "기사 보기", href: item.articleUrl, kind: "ghost", external: true });
-  for (const l of item.links) linkList.push({ label: l.label, href: l.url, kind: "link", external: true });
+  if (src.primary) linkList.push(ext(src.primary, "primary"));
+  if (src.official) linkList.push(ext(src.official, "ghost"));
   return {
     id: item.issueId,
     badges,
@@ -118,9 +155,10 @@ export function customerCard(item: LetterIssue, _index: number): BriefCardModel 
     lead: c.what,
     bullets: c.actions.length ? { title: "지금 할 일", items: c.actions } : undefined,
     impact: item.forMe ? { label: "나에게는", value: item.forMe, dots: item.impact } : undefined,
-    impactFirst: true,
     links: linkList,
-    articles: [],
+    articles: src.related.map(toBriefArticle),
+    search: src.search.map((l) => ext(l, "link")),
+    refs: item.links.slice(0, 3).map((l) => ({ label: l.label, href: l.url, kind: "link" as const, external: true })),
   };
 }
 
@@ -132,52 +170,64 @@ export function letterToBrief(letter: Letter): BriefModel {
   if (telHref) buttons.push({ label: `☏ ${o.phone}`, href: telHref, kind: "primary" });
   if (o.kakaoUrl) buttons.push({ label: "카카오톡으로 상담하기", href: o.kakaoUrl, kind: "ghost", external: true });
 
+  const lead = letter.issues[0];
+  const period = letter.period;
+  const footLinks: { label: string; href: string }[] = [];
+  if (unsubscribeHref) footLinks.push({ label: "수신거부", href: unsubscribeHref });
+  if (o.privacyUrl) footLinks.push({ label: "개인정보처리방침", href: o.privacyUrl });
+  const news: BriefNewsModel[] = letter.watch.map((w) => ({
+    id: w.issueId,
+    badges: [{ label: w.statusLabel, tone: "warn" as BadgeTone }],
+    title: w.title,
+    href: w.url,
+    excerpt: `${w.statusLabel} 단계라 아직 확정되지 않았습니다. 기사 원문에서 구체 수치·일정·대상을 확인하세요.`,
+    articles: (w.articles ?? []).map(toBriefArticle),
+    count: w.count ?? (w.url ? 1 : 0),
+  }));
+
   return {
     audience: "customer",
     office: o,
-    kicker: `${PERIOD_LABEL[letter.period]} BRIEFING · ${letter.editionLabel}`,
+    kicker: `${PERIOD_LABEL[period]} BRIEFING · ${letter.editionLabel}`,
     vol: `${SEGMENTS[letter.segment].label} 호`,
     keynote: { main: o.slogan, sub: "확정된 정책과 우리 동네 숫자만 골라, 내 상황에 무엇이 달라지는지 3분 안에 정리해 드립니다." },
-    eyebrow: letterTitle(letter),
+    eyebrow: `${PERIOD_EYEBROW[period]} · ${letter.editionLabel}`,
     headline: letter.headline,
     policy: {
-      title: "이번 호 이슈",
-      sub: "확정·시행 예정·통계만 본문에 싣습니다",
+      title: POLICY_TITLE[period],
+      sub: "공식 고시·발표 종합 · 확정·시행 예정·통계만",
       cards: letter.issues.map(customerCard),
       empty: "이번 호에 실을 확정 이슈가 없습니다.",
     },
+    news: news.length ? { title: NEWS_TITLE[period], sub: "기사 제목을 누르면 원문으로 이동합니다 · 확정 전 사안", items: news } : undefined,
     numbers: {
-      title: "우리 동네 숫자",
-      sub: `${o.areaLabel} · 출처·기준일이 확인된 수치만`,
+      title: NUMBERS_TITLE[period],
+      sub: `${o.areaLabel} · 출처·기준일이 확인된 수치만 게시`,
       tiles: letter.tiles,
       history: letter.history,
       historyLabel: letter.historyLabel,
       note: NUMBERS_NOTE,
     },
-    persona:
-      letter.issues.length > 0
-        ? {
-            title: "그래서 내 상황에는?",
-            sub: `${SEGMENTS[letter.segment].desc} 기준`,
-            rows: letter.issues.map((it) => ({ label: clamp(it.customer.headline, 34), level: it.impact, note: it.forMe })),
-            note: "※ 매수·매도 판단을 단정적으로 권하지 않습니다. 적용 여부는 주택 수·취득시기·지역·보유기간에 따라 달라질 수 있습니다.",
-          }
-        : undefined,
-    watch: letter.watch.length ? { title: "지켜볼 이슈", sub: "아직 확정되지 않았습니다", items: letter.watch } : undefined,
-    glossary: letter.glossary,
-    comment: letter.comment
-      ? { name: o.repName ? `${o.repName} 공인중개사의 한마디` : `${o.officeName}의 한마디`, tag: "현장에서 드리는 코멘트", body: letter.comment }
+    persona: lead
+      ? {
+          title: PERSONA_TITLE,
+          sub: clamp(lead.customer.headline, 40),
+          rows: lead.personas
+            ? personaRows(lead.personas, lead.customer.forMe, CUSTOMER_PERSONAS)
+            : letter.issues.map((it) => ({ label: clamp(it.customer.headline, 34), level: it.impact, note: it.forMe })),
+          note: PERSONA_NOTE,
+          glossary: letter.glossary,
+        }
       : undefined,
-    cta: {
-      title: "이 소식이 내 집에 어떤 영향을 주는지 궁금하신가요?",
-      sub: "매도할지 보유할지, 갈아타기를 계획 중이신지. 확정된 숫자로 함께 정리해 드립니다.",
-      buttons,
-    },
+    comment: letter.comment
+      ? { name: o.repName ? `${o.repName} 공인중개사의 한마디` : `${o.officeName}의 한마디`, tag: "전문가 코멘트", body: letter.comment }
+      : undefined,
+    cta: { title: CTA_TITLE, sub: CTA_SUB, buttons },
     footer: {
       head: `${o.officeName} 안내`,
       rows: officeRows(o),
       legal: [DISCLAIMER, AD_FOOTER],
-      links: unsubscribeHref ? [{ label: "수신거부", href: unsubscribeHref }] : [],
+      links: footLinks,
     },
     demoNote: letter.id === "demo" ? "샘플 레터입니다. 스튜디오 → 설정에서 사무소 정보를 입력하고 레터 빌더에서 발행하면 실제 정보로 만들어집니다." : undefined,
   };
@@ -200,10 +250,11 @@ function brokerCard(issue: Issue): BriefCardModel {
   if (issue.review === "draft") badges.push({ label: "검수 필요", tone: "warn" });
 
   const facts = issue.broker.facts.filter(Boolean);
+  const src = sourceLinks({ title: issue.title, officialUrl: issue.officialUrl, articles: issue.articles, agency: issue.agency });
   const linkList: BriefLink[] = [];
-  if (issue.officialUrl) linkList.push({ label: "원문 보기", href: issue.officialUrl, kind: "primary", external: true });
+  if (src.primary) linkList.push(ext(src.primary, "primary"));
+  if (src.official) linkList.push(ext(src.official, "ghost"));
   linkList.push({ label: "이슈 상세", href: `/studio/issues/${issue.id}`, kind: "ghost" });
-  for (const l of links(TOPIC_LINKS[issue.topic].broker).slice(0, 2)) linkList.push({ label: l.label, href: l.url, kind: "link", external: true });
 
   const top = maxSegmentImpact(issue);
   return {
@@ -216,18 +267,22 @@ function brokerCard(issue: Issue): BriefCardModel {
     extra: issue.broker.script.length ? { title: "상담 포인트", items: issue.broker.script.slice(0, 3) } : undefined,
     checklist: issue.broker.checklist.length ? { title: "실무 체크", items: issue.broker.checklist.slice(0, 4) } : undefined,
     impact: {
-      label: issue.broker.local ? "지역 영향" : "영향도",
+      label: "전문가 영향도 분석",
       value: issue.broker.local || `${TOPIC_LABEL[issue.topic]} · 세그먼트 최대 영향도 ${top}/5`,
       dots: top,
     },
     links: linkList,
-    articles: issue.articles.slice(0, 3).map((a) => ({ publisher: a.publisher, date: a.date, title: a.title, url: a.url })),
+    articles: src.related.map(toBriefArticle),
+    search: src.search.map((l) => ext(l, "link")),
+    refs: links(TOPIC_LINKS[issue.topic].broker)
+      .slice(0, 2)
+      .map((l) => ({ label: l.label, href: l.url, kind: "link" as const, external: true })),
   };
 }
 
 function brokerNews(issue: Issue): BriefNewsModel {
   const route = routeIssue(issue);
-  const first = issue.articles[0];
+  const src = sourceLinks({ title: issue.title, officialUrl: issue.officialUrl, articles: issue.articles, agency: issue.agency });
   return {
     id: issue.id,
     badges: [
@@ -236,9 +291,10 @@ function brokerNews(issue: Issue): BriefNewsModel {
       ...(issue.region === "anyang" ? [{ label: "안양", tone: "target" as BadgeTone }] : []),
     ],
     title: issue.title,
-    href: issue.officialUrl || first?.url || null,
+    href: src.primary?.href ?? null,
     excerpt: clamp(issue.summary, 150),
-    articles: issue.articles.slice(0, 3).map((a) => ({ publisher: a.publisher, date: a.date, title: a.title, url: a.url })),
+    articles: src.related.map(toBriefArticle),
+    count: issue.articles.filter((a) => a.url).length,
   };
 }
 
@@ -268,20 +324,18 @@ export function buildBrokerBrief(issues: Issue[], office: Office, market: Market
       main: "AI는 중개사를 대체하지 못합니다.\nAI를 아는 중개사가 대체합니다.",
       sub: "정부 발표와 시장 뉴스를 발표 주체·단계·주제·대상·지역으로 정리했습니다. 확정과 논의를 구분해 상담하세요.",
     },
-    eyebrow: `중개사용 ${PERIOD_TITLE[period]} · ${edition}`,
+    eyebrow: `${PERIOD_EYEBROW[period]} · ${edition}`,
     headline: lead ? lead.title : "이 기간에 새로 수집된 이슈가 없습니다",
     policy: {
-      title: period === "daily" ? "오늘 꼭 알아야 할 정책" : period === "weekly" ? "이번 주 정책 핵심" : "이달의 정책 총정리",
-      sub: "추천 등급 순 · 검수 전 이슈는 '검수 필요' 표시",
+      title: POLICY_TITLE[period],
+      sub: "공식 고시·발표 종합 · 추천 등급 순 · 검수 전 이슈는 '검수 필요' 표시",
       cards: policyIssues.map(brokerCard),
       empty: "표시할 이슈가 없습니다. 인박스에서 '지금 수집'을 눌러 보세요.",
     },
-    news: newsIssues.length
-      ? { title: period === "daily" ? "오늘의 주요 뉴스" : "부동산 뉴스 브리핑", sub: "제목을 누르면 원문으로 이동합니다", items: newsIssues.map(brokerNews) }
-      : undefined,
+    news: newsIssues.length ? { title: NEWS_TITLE[period], sub: "기사 제목을 누르면 원문으로 이동합니다", items: newsIssues.map(brokerNews) } : undefined,
     numbers: {
-      title: "오늘의 숫자",
-      sub: `${office.areaLabel} · 출처·기준일이 확인된 수치만`,
+      title: NUMBERS_TITLE[period],
+      sub: `${office.areaLabel} · 출처·기준일이 확인된 수치만 게시`,
       tiles,
       history,
       historyLabel,
@@ -289,19 +343,15 @@ export function buildBrokerBrief(issues: Issue[], office: Office, market: Market
     },
     persona: lead
       ? {
-          title: "그래서 내 부동산에는?",
+          title: PERSONA_TITLE,
           sub: clamp(lead.title, 40),
-          rows: PERSONAS.map((p) => {
-            const seg = (Object.keys(SEGMENTS) as (keyof typeof SEGMENTS)[]).find((s) => SEGMENTS[s].personas.includes(p));
-            const note = seg ? lead.customer.forMe[seg] || "" : "중개사 실무 영향 · 이슈 상세의 상담 스크립트 참고";
-            return { label: p, level: lead.personas[p] ?? 0, note };
-          }),
+          rows: personaRows(lead.personas, lead.customer.forMe, PERSONAS),
           note: "※ 영향도는 분류기 초안입니다. 이슈 상세에서 수정하면 레터에도 반영됩니다.",
+          glossary: lead.customer.glossary,
         }
       : undefined,
-    glossary: lead?.customer.glossary ?? null,
     comment: office.defaultComment
-      ? { name: office.repName ? `${office.repName} 공인중개사의 한마디` : `${office.officeName}의 한마디`, tag: "레터에 실을 기본 코멘트 · 설정에서 수정", body: office.defaultComment }
+      ? { name: office.repName ? `${office.repName} 공인중개사의 한마디` : `${office.officeName}의 한마디`, tag: "전문가 코멘트 · 레터에 실을 기본 문구, 설정에서 수정", body: office.defaultComment }
       : undefined,
     cta: {
       title: "고객용 레터를 만들 준비가 됐습니다",

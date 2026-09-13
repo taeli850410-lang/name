@@ -55,7 +55,7 @@ export function routeIssue(issue: Issue): RouteResult {
     }
     return { customer: "body", rules, reasons };
   }
-  reasons.push(`${STATUS_LABEL[issue.status]} 단계라 고객용에서는 '지켜볼 이슈' 한 줄로만 다룹니다.`);
+  reasons.push(`${STATUS_LABEL[issue.status]} 단계라 고객용에서는 '주요 뉴스' 카드(제목·기사 링크)로만 다룹니다.`);
   return { customer: "watch", rules, reasons };
 }
 
@@ -86,7 +86,7 @@ export function gradeIssue(issue: Issue, now = Date.now()): Grade {
 export const GRADE_LABEL: Record<Grade, string> = { star: "★ 발송 권장", ref: "◎ 참고", keep: "○ 보관" };
 export const ROUTE_LABEL: Record<CustomerRoute, string> = {
   body: "고객 본문",
-  watch: "지켜볼 이슈",
+  watch: "주요 뉴스",
   target: "동네 타깃",
   exclude: "중개사 전용",
 };

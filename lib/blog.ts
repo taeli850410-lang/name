@@ -1,6 +1,7 @@
 import { clamp, dots, fmtDate, newId } from "./format";
 import { computeTiles } from "./market";
 import { findForbidden, segmentImpact } from "./routing";
+import { sortArticles } from "./source";
 import { PERSONAS, SEGMENTS, SEGMENT_KEYS, STATUS_LABEL, TOPIC_GLOSSARY, TOPIC_LABEL } from "./taxonomy";
 import type { BlogPost, Issue, MarketDoc, Office } from "./types";
 
@@ -37,7 +38,8 @@ export function generateBlogPost(issue: Issue, office: Office, market: MarketDoc
   const title = `${base} — 내집마련·보유·임대 상황별 영향과 상담 전 체크리스트`;
   const meta = clamp(`${base}. 무주택자·1주택자·다주택자에게 각각 어떤 의미인지, 매수·매도 전 확인할 점을 현직 공인중개사가 실무 관점에서 정리했습니다.`, 158);
   const facts = b.facts.length ? b.facts : c.actions;
-  const arts = issue.articles.filter((a) => a.url).slice(0, 4);
+  const [lead, ...rest] = issue.articles.filter((a) => a.url);
+  const arts = (lead ? [lead, ...sortArticles(rest)] : []).slice(0, 4);
   const artLines = arts.length ? arts.map((a) => `- [${a.publisher} · ${a.title}](${a.url})`).join("\n") : "- (참고 보도 링크를 추가하세요)";
   const glossary = c.glossary ?? TOPIC_GLOSSARY[issue.topic];
   const extraGlossary = c.glossary && c.glossary.term !== TOPIC_GLOSSARY[issue.topic].term ? TOPIC_GLOSSARY[issue.topic] : null;

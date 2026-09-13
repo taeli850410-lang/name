@@ -7,6 +7,7 @@ import { LetterIssueCard } from "@/components/LetterView";
 import { fmtDate } from "@/lib/format";
 import { links, TOPIC_LINKS } from "@/lib/links";
 import { findForbidden, gradeIssue, routeIssue, segmentImpact } from "@/lib/routing";
+import { newsSearchLinks, searchQuery, sortArticles } from "@/lib/source";
 import { AGENCY_GROUPS, AGENCY_GROUP_LABEL, PERSONAS, REGIONS, REGION_LABEL, SEGMENTS, SEGMENT_KEYS, STATUSES, STATUS_LABEL, TOPICS, TOPIC_LABEL } from "@/lib/taxonomy";
 import type { AgencyGroup, Issue, LetterIssue, Persona, Region, Segment, Status, Topic } from "@/lib/types";
 
@@ -30,7 +31,9 @@ export default function IssueEditor({ issue: initial, llm }: { issue: Issue; llm
 
   const preview: LetterIssue = useMemo(() => {
     const forMe = issue.customer.forMe[segment] || "";
-    const first = issue.articles[0];
+    const [lead, ...rest] = issue.articles.filter((a) => a.url);
+    const arts = lead ? [lead, ...sortArticles(rest)].slice(0, 5) : [];
+    const first = arts[0];
     return {
       issueId: issue.id,
       agency: issue.agency,
@@ -41,6 +44,8 @@ export default function IssueEditor({ issue: initial, llm }: { issue: Issue; llm
       officialUrl: issue.officialUrl,
       articleUrl: first?.url ?? null,
       articleLabel: first ? `${first.publisher} 기사` : null,
+      title: issue.title,
+      articles: arts,
       customer: issue.customer,
       forMe,
       impact: segmentImpact(issue, segment),
@@ -140,8 +145,9 @@ export default function IssueEditor({ issue: initial, llm }: { issue: Issue; llm
           </div>
           {issue.articles.length > 0 && (
             <ul className="small" style={{ marginTop: 10 }}>
-              {issue.articles.map((a) => (
+              {issue.articles.map((a, i) => (
                 <li key={a.url}>
+                  {i === 0 && <span className="muted">대표 · </span>}
                   <a href={a.url} target="_blank" rel="noreferrer noopener">
                     {a.publisher} · {a.title}
                   </a>{" "}
@@ -150,6 +156,17 @@ export default function IssueEditor({ issue: initial, llm }: { issue: Issue; llm
               ))}
             </ul>
           )}
+          <div className="small muted" style={{ marginTop: 8 }}>
+            최신 뉴스 검색:{" "}
+            {newsSearchLinks(searchQuery(issue.title)).map((l, i) => (
+              <span key={l.href}>
+                {i > 0 && " · "}
+                <a href={l.href} target="_blank" rel="noreferrer noopener">
+                  {l.label} ↗
+                </a>
+              </span>
+            ))}
+          </div>
         </div>
 
         {msg && <div className={`alert alert-${msg.tone} banner`}>{msg.text}</div>}
@@ -332,7 +349,7 @@ export default function IssueEditor({ issue: initial, llm }: { issue: Issue; llm
             {route.customer === "exclude"
               ? "중개사 전용으로 분류되어 고객 레터에는 실리지 않습니다."
               : route.customer === "watch"
-                ? "고객 레터에는 '지켜볼 이슈' 한 줄로만 실립니다. 아래는 본문에 실릴 경우의 모습입니다."
+                ? "고객 레터에는 '주요 뉴스' 카드(제목·기사 링크)로만 실립니다. 아래는 본문에 실릴 경우의 모습입니다."
                 : route.customer === "target"
                   ? "해당 동을 지정한 레터에만 실립니다."
                   : "검수 완료 후 이 세그먼트 영향도가 3 이상이면 본문에 실립니다."}

@@ -1,5 +1,6 @@
 import { newId } from "./format";
 import { links, TOPIC_LINKS } from "./links";
+import { sortArticles, sourceLinks } from "./source";
 import { computeTiles } from "./market";
 import { findForbidden, gradeIssue, isFresh, routeIssue, segmentImpact } from "./routing";
 import { PERIOD_LIMIT, PERIOD_TITLE, SEGMENTS, STATUS_LABEL, TOPIC_GLOSSARY } from "./taxonomy";
@@ -34,7 +35,10 @@ export interface BuildOptions {
 
 function toLetterIssue(issue: Issue, segment: Segment, targeted: boolean): LetterIssue {
   const forMe = issue.customer.forMe[segment] || issue.customer.forMe.first || issue.customer.forMe.move || issue.customer.forMe.asset || "";
-  const first = issue.articles[0];
+  // 대표 기사(첫 항목)는 그대로, 나머지는 최신순으로 스냅샷에 담습니다
+  const [lead, ...rest] = issue.articles.filter((a) => a.url);
+  const arts = (lead ? [lead, ...sortArticles(rest)] : []).slice(0, 5).map(({ publisher, title, url, date }) => ({ publisher, title, url, date }));
+  const first = arts[0];
   return {
     issueId: issue.id,
     agency: issue.agency,
@@ -45,6 +49,9 @@ function toLetterIssue(issue: Issue, segment: Segment, targeted: boolean): Lette
     officialUrl: issue.officialUrl,
     articleUrl: first?.url ?? null,
     articleLabel: first ? `${first.publisher} 기사` : null,
+    title: issue.title,
+    articles: arts,
+    personas: issue.personas,
     customer: issue.customer,
     forMe,
     impact: segmentImpact(issue, segment),
@@ -93,20 +100,23 @@ export function buildDraft(issues: Issue[], office: Office, market: MarketDoc, o
     if (picked.length >= PERIOD_LIMIT[period]) break;
   }
 
-  const watch: WatchItem[] =
-    period === "daily"
-      ? []
-      : routed
-          .filter((x) => x.r.customer === "watch" && !seen.has(x.i.id))
-          .sort((a, b) => new Date(b.i.publishedAt).getTime() - new Date(a.i.publishedAt).getTime())
-          .slice(0, 5)
-          .map((x) => ({
-            issueId: x.i.id,
-            title: x.i.customer.headline || x.i.title,
-            statusLabel: STATUS_LABEL[x.i.status],
-            date: x.i.publishedAt,
-            url: x.i.officialUrl || x.i.articles[0]?.url || null,
-          }));
+  // 확정 전 사안은 '주요 뉴스' 카드(제목·기사 링크만)로 싣습니다. DAILY 3 · WEEKLY/MONTHLY 5
+  const watch: WatchItem[] = routed
+    .filter((x) => x.r.customer === "watch" && !seen.has(x.i.id))
+    .sort((a, b) => new Date(b.i.publishedAt).getTime() - new Date(a.i.publishedAt).getTime())
+    .slice(0, period === "daily" ? 3 : 5)
+    .map((x) => {
+      const src = sourceLinks({ title: x.i.title, officialUrl: x.i.officialUrl, articles: x.i.articles });
+      return {
+        issueId: x.i.id,
+        title: x.i.customer.headline || x.i.title,
+        statusLabel: STATUS_LABEL[x.i.status],
+        date: x.i.publishedAt,
+        url: src.primary?.href ?? null,
+        articles: src.related.map(({ publisher, title, url, date }) => ({ publisher, title, url, date })),
+        count: x.i.articles.filter((a) => a.url).length,
+      };
+    });
 
   const { tiles, history, historyLabel } = computeTiles(market, segment);
   const withGlossary = picked.find((p) => p.customer.glossary);
@@ -165,7 +175,7 @@ export function validateLetter(letter: Letter): Validation {
   if (!o.kakaoUrl) warnings.push("카카오톡 채널 주소가 없어 상담 버튼은 전화만 표시됩니다.");
   if (letter.tiles.some((t) => t.provisional)) warnings.push("우리 동네 숫자 중 잠정치(신고 기한 미도래 월)가 포함되어 '잠정' 표시가 붙습니다.");
   if (letter.issues.length < PERIOD_LIMIT[letter.period]) warnings.push(`분량 상한(${PERIOD_LIMIT[letter.period]}개)보다 적은 ${letter.issues.length}개 이슈입니다.`);
-  if (letter.period !== "daily" && letter.watch.length === 0) warnings.push("'지켜볼 이슈'가 비어 있습니다.");
+  if (letter.period !== "daily" && letter.watch.length === 0) warnings.push("'주요 뉴스'(확정 전 사안)가 비어 있습니다.");
   return { errors, warnings };
 }
 

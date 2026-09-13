@@ -20,10 +20,15 @@ function LinkButton({ l }: { l: BriefLink }) {
   );
 }
 
-function ArticleList({ articles }: { articles: BriefCardModel["articles"] }) {
+function ArticleList({ articles, title }: { articles: BriefCardModel["articles"]; title?: string }) {
   if (!articles.length) return null;
   return (
     <div className="artlist">
+      {title && (
+        <div className="artlist-lbl">
+          {title} {articles.length}건
+        </div>
+      )}
       {articles.map((a) => (
         <a className="art" key={a.url} href={a.url} target="_blank" rel="noreferrer noopener">
           <div className="art-meta">
@@ -70,7 +75,6 @@ export function BriefCard({ card, index }: { card: BriefCardModel; index: number
         {card.title}
       </h4>
       {card.lead && <p className="pcard-lead">{card.lead}</p>}
-      {card.impactFirst && <Impact card={card} />}
       {card.bullets && card.bullets.items.length > 0 && (
         <div className="pcard-bullets">
           <div className="lbl">{card.bullets.title}</div>
@@ -102,7 +106,7 @@ export function BriefCard({ card, index }: { card: BriefCardModel; index: number
           </ul>
         </div>
       )}
-      {!card.impactFirst && <Impact card={card} />}
+      <Impact card={card} />
       {card.links.length > 0 && (
         <div className="srcrow">
           {card.links.map((l, i) => (
@@ -110,7 +114,31 @@ export function BriefCard({ card, index }: { card: BriefCardModel; index: number
           ))}
         </div>
       )}
-      <ArticleList articles={card.articles} />
+      <ArticleList articles={card.articles} title="관련 보도" />
+      {(card.search.length > 0 || card.refs.length > 0) && (
+        <div className="srcmeta">
+          {card.search.length > 0 && (
+            <div className="srcmeta-row">
+              <span className="srcmeta-lbl">최신 뉴스 검색</span>
+              {card.search.map((l) => (
+                <a key={l.href} href={l.href} target="_blank" rel="noreferrer noopener">
+                  {l.label} ↗
+                </a>
+              ))}
+            </div>
+          )}
+          {card.refs.length > 0 && (
+            <div className="srcmeta-row">
+              <span className="srcmeta-lbl">참고 사이트</span>
+              {card.refs.map((l) => (
+                <a key={l.href} href={l.href} target="_blank" rel="noreferrer noopener">
+                  {l.label} ↗
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </article>
   );
 }
@@ -122,7 +150,7 @@ function NewsCard({ item }: { item: BriefNewsModel }) {
         {item.badges.map((b, i) => (
           <Badge key={i} b={b} />
         ))}
-        {item.articles.length > 0 && <span className="ncard-cnt">관련 기사 {item.articles.length}건</span>}
+        {item.count > 0 && <span className="ncard-cnt">관련 기사 {item.count}건</span>}
       </div>
       {item.href ? (
         <a className="ncard-title" href={item.href} target="_blank" rel="noreferrer noopener">
@@ -132,7 +160,7 @@ function NewsCard({ item }: { item: BriefNewsModel }) {
         <span className="ncard-title">{item.title}</span>
       )}
       {item.excerpt && <p className="ncard-ex">{item.excerpt}</p>}
-      <ArticleList articles={item.articles} />
+      <ArticleList articles={item.articles} title="관련 보도" />
     </article>
   );
 }
@@ -291,39 +319,11 @@ export default function BriefView({ model }: { model: BriefModel }) {
                 </div>
               ))}
               <p className="note">{model.persona.note}</p>
-            </div>
-          </section>
-        )}
-
-        {model.watch && model.watch.items.length > 0 && (
-          <section className="sec">
-            <SectionHead title={model.watch.title} sub={model.watch.sub} />
-            <div className="card">
-              <ul className="watch">
-                {model.watch.items.map((w) => (
-                  <li key={w.issueId}>
-                    <span className="badge warn">{w.statusLabel}</span>
-                    {w.url ? (
-                      <a href={w.url} target="_blank" rel="noreferrer noopener">
-                        {w.title}
-                      </a>
-                    ) : (
-                      <span>{w.title}</span>
-                    )}
-                    <span className="date">{fmtDate(w.date)}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-        )}
-
-        {model.glossary && (
-          <section className="sec">
-            <SectionHead title="용어 하나" />
-            <div className="card glossary">
-              <div className="term">{model.glossary.term}</div>
-              <p>{model.glossary.def}</p>
+              {model.persona.glossary && (
+                <p className="prow-gloss">
+                  <b>용어 하나 · {model.persona.glossary.term}</b> {model.persona.glossary.def}
+                </p>
+              )}
             </div>
           </section>
         )}

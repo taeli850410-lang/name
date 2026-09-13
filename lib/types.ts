@@ -136,6 +136,8 @@ export interface Office {
   email: string;
   kakaoUrl: string;
   unsubscribeUrl: string;
+  /** 푸터 '수신거부·개인정보처리방침' 링크. 이전 설정에는 없을 수 있음 */
+  privacyUrl?: string;
   slogan: string;
   defaultComment: string;
   areaLabel: string;
@@ -195,6 +197,12 @@ export interface LetterIssue {
   officialUrl: string | null;
   articleUrl: string | null;
   articleLabel: string | null;
+  /** 원 제목(뉴스 검색어용). 이전 스냅샷에는 없을 수 있음 */
+  title?: string;
+  /** 관련 보도 스냅샷(대표 기사 먼저). 이전 스냅샷에는 없을 수 있음 */
+  articles?: Article[];
+  /** 영향 대상별 영향도(그래서 내 부동산에는?). 이전 스냅샷에는 없을 수 있음 */
+  personas?: Record<Persona, number>;
   customer: CustomerFields;
   forMe: string;
   impact: number;
@@ -209,6 +217,10 @@ export interface WatchItem {
   statusLabel: string;
   date: string;
   url: string | null;
+  /** 관련 보도(대표 기사 제외, 최신순). 이전 스냅샷에는 없을 수 있음 */
+  articles?: Article[];
+  /** 전체 기사 수 */
+  count?: number;
 }
 
 export interface Letter {

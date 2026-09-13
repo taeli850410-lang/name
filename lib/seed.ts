@@ -18,9 +18,10 @@ export const DEFAULT_OFFICE: Office = {
   email: "hello@example.com",
   kakaoUrl: "",
   unsubscribeUrl: "",
+  privacyUrl: "",
   slogan: "안양 부동산 소식, 3분 브리핑",
   defaultComment:
-    "정책은 '발표'보다 '적용 대상'과 '시행 시점'이 중요합니다. 이번 호에는 확정된 내용만 본문에 담고, 논의 중인 사안은 '지켜볼 이슈'로 따로 두었습니다. 내 상황에 어떻게 적용되는지 궁금하시면 편하게 연락 주세요.",
+    "정책은 '발표'보다 '적용 대상'과 '시행 시점'이 중요합니다. 이번 호에는 확정된 내용만 본문에 담고, 논의 중인 사안은 '주요 뉴스'에 따로 두었습니다. 내 상황에 어떻게 적용되는지 궁금하시면 편하게 연락 주세요.",
   areaLabel: "안양 만안·동안구",
 };
 
@@ -91,7 +92,11 @@ export function seedIssues(): Issue[] {
       publishedAt: "2026-08-27T10:00:00+09:00",
       officialUrl: "https://www.bok.or.kr/portal/singl/baseRate/list.do?dataSeCd=01&menuNo=200643",
       articles: [
-        { publisher: "한국은행", title: "한국은행 기준금리 추이 — 2026.08.27 3.00%", url: "https://www.bok.or.kr/portal/singl/baseRate/list.do?dataSeCd=01&menuNo=200643", date: "2026-08-27" },
+        { publisher: "더구루", title: "한은, 두 달 연속 기준금리 인상…부동산 시장 관망세 짙어지나", url: "https://www.theguru.co.kr/news/article.html?no=106340", date: "2026-08-27" },
+        { publisher: "연합뉴스", title: "기준금리 연속 인상에 주택 거래 더 위축…\"집값 하락은 제한적\"", url: "https://www.yna.co.kr/view/AKR20260827094000003", date: "2026-08-27" },
+        { publisher: "한국일보", title: "금리 2연속 인상에 부동산 시장 멈칫?... '외곽 강세' 잦아들까", url: "https://www.hankookilbo.com/news/article/A2026082713390001494", date: "2026-08-27" },
+        { publisher: "MS투데이", title: "금리 3% 시대…거래 얼고 집값은 버틴다", url: "https://www.mstoday.co.kr/news/articleView.html?idxno=102446", date: "2026-08-28" },
+        { publisher: "뉴스핌", title: "내년 기준금리 3.5% 오나...\"거래 위축에도 집값 급락은 제한적\"", url: "https://www.newspim.com/news/view/20260901000973", date: "2026-09-01" },
         { publisher: "YTN", title: "거래 절벽에 \"민간 살아나야\"...대출 규제 '딜레마'", url: "https://www.ytn.co.kr/_ln/0102_202609120526240840", date: "2026-09-12" },
       ],
       customer: {
@@ -132,8 +137,13 @@ export function seedIssues(): Issue[] {
       topic: "supply",
       region: "national",
       publishedAt: "2026-09-12T11:01:00+09:00",
-      officialUrl: "https://www.molit.go.kr/USR/NEWS/m_71/lst.jsp",
-      articles: [{ publisher: "헤럴드경제", title: "\"땅 놀리지 말고 집 지어라\"…내년 말까지 착공 땐 부담금 면제", url: "https://biz.heraldcorp.com/article/10871052", date: "2026-09-12" }],
+      officialUrl: null,
+      articles: [
+        { publisher: "헤럴드경제", title: "\"땅 놀리지 말고 집 지어라\"…내년 말까지 착공 땐 부담금 면제", url: "https://biz.heraldcorp.com/article/10871052", date: "2026-09-12" },
+        { publisher: "이투데이", title: "다가구 4층까지 짓고 부담금 면제⋯'사라진 빌라' 공급 되살린다 [8·13 대책]", url: "https://www.etoday.co.kr/news/view/2614230", date: "2026-08-13" },
+        { publisher: "더팩트", title: "[8·13 대책] '결혼 페널티' 없애고 민간 공급 밀어준다…금융·세제 지원", url: "https://news.tf.co.kr/read/economy/2353696.htm", date: "2026-08-13" },
+        { publisher: "머니투데이", title: "강남·용산은 빠졌다…수도권 23만가구+α 첫 타자는 어디", url: "https://www.mt.co.kr/estate/2026/08/14/2026081322080769942", date: "2026-08-14" },
+      ],
       customer: {
         headline: "내년 말까지 착공하면 개발부담금이 면제돼요",
         what: "정부가 8·13 공급대책 후속으로, 2027년 말까지 착공하는 주택사업의 개발부담금을 면제하기로 했습니다. 사업자가 땅을 놀리지 말고 빨리 집을 짓게 하려는 조치입니다.",
@@ -164,11 +174,14 @@ export function seedIssues(): Issue[] {
       status: "STAT",
       topic: "lease",
       region: "seoul",
-      publishedAt: "2026-09-11T12:30:00+09:00",
-      officialUrl: "https://www.reb.or.kr/r-one/portal/stat/easyStatPage.do",
+      publishedAt: "2026-09-12T12:30:00+09:00",
+      officialUrl: null,
       articles: [
-        { publisher: "뉴시스", title: "전세 사라질수록 월세 오른다…서울 월세 160만원 시대", url: "https://www.newsis.com/view/NISX20260911_0003786400", date: "2026-09-11" },
+        { publisher: "뉴시스", title: "전세 사라질수록 월세 오른다…서울 월세 160만원 시대", url: "https://www.newsis.com/view/NISX20260911_0003786400", date: "2026-09-12" },
         { publisher: "데일리안", title: "집은 나중에, 전월세는 지금…국토위 국감, '주거정책' 공방 예고", url: "https://www.dailian.co.kr/news/view/1687316/", date: "2026-09-08" },
+        { publisher: "조선일보", title: "공급 겉도는 사이 집값 더 뛰어… 전세 규제에 월세도 14% 올라", url: "https://www.chosun.com/economy/real_estate/2026/09/07/3DEACJUJYJAWVCUADFXK6DI7II/", date: "2026-09-07" },
+        { publisher: "뉴시스", title: "\"월급보다 월세가 더 올라\"…서울 아파트 월세 160만원 돌파[월세시대①]", url: "https://www.newsis.com/view/NISX20260904_0003776967", date: "2026-09-05" },
+        { publisher: "뉴스1", title: "[8·3 세제개편 한 달]② 서울 전세 매물 13%↓…전셋값 역대 최고 7.1억", url: "https://www.news1.kr/realestate/general/6275218", date: "2026-09-01" },
       ],
       customer: {
         headline: "월세가 계속 오르고 있어요. 전세를 찾는다면 서두르세요",
@@ -203,7 +216,11 @@ export function seedIssues(): Issue[] {
       publishedAt: "2026-09-10T06:02:00+09:00",
       articles: [
         { publisher: "이투데이", title: "\"집 보여주면 돈 내라\"⋯공인중개사 '임장비' 법적 근거 논란", url: "https://www.etoday.co.kr/news/view/2623578", date: "2026-09-10" },
+        { publisher: "스마트비즈앤", title: "집 보려면 돈 내라고? '임장비' 논란에 부동산 시장 시끌", url: "https://www.smartbizn.com/news/articleView.html?idxno=153623", date: "2026-09-11" },
+        { publisher: "뉴스핌", title: "\"집 보려면 돈 내세요\"…부동산 시장 다시 번진 '임장비' 논란", url: "https://www.newspim.com/news/view/20260909000246", date: "2026-09-09" },
         { publisher: "뉴시스", title: "\"매물 보러 가는데 돈 내라고?\"…다시 불붙은 '임장비' 논란", url: "https://www.newsis.com/view/NISX20260908_0003780557", date: "2026-09-08" },
+        { publisher: "경기일보", title: "\"계약 안 해도 돈 내라니\"…공인중개사 '임장비' 논란 재점화", url: "https://www.kyeonggi.com/article/20260908580214", date: "2026-09-08" },
+        { publisher: "TV조선", title: "[티조챗] 복비도 비싼데 집 구경비까지 내라고?…부동산 '임장비' 추진 논란", url: "https://news.tvchosun.com/site/data/html_dir/2026/09/08/2026090890127.html", date: "2026-09-08" },
       ],
       customer: {
         headline: "'임장비' 논의는 아직 확정된 것이 없습니다",
@@ -233,7 +250,12 @@ export function seedIssues(): Issue[] {
       region: "national",
       publishedAt: "2026-08-27T09:00:00+09:00",
       effectiveAt: "2026-08-28",
-      articles: [{ publisher: "뉴스1", title: "'법정단체' 공인중개사협회 \"카르텔 감시센터 운영…임장비도 추진\"", url: "https://www.news1.kr/realestate/general/6270419", date: "2026-08-27" }],
+      articles: [
+        { publisher: "뉴스1", title: "'법정단체' 공인중개사협회 \"카르텔 감시센터 운영…임장비도 추진\"", url: "https://www.news1.kr/realestate/general/6270419", date: "2026-08-27" },
+        { publisher: "뉴시스", title: "'법정단체' 중개사협회 \"중개보수 정률제·임장비 필요\"", url: "https://www.newsis.com/view/NISX20260826_0003764162", date: "2026-08-27" },
+        { publisher: "파이낸셜뉴스", title: "김종호 공인중개사협회장 \"법정단체, 권한 아닌 책임…자정 기능 강화할 것\"", url: "https://www.fnnews.com/news/202608262121199744", date: "2026-08-27" },
+        { publisher: "서울경제", title: "법정단체 출범 앞둔 공인중개사협회…\"전세사기·불법 중개 근절\"", url: "https://www.sedaily.com/article/20083586", date: "2026-08-27" },
+      ],
       customer: {
         headline: "공인중개사협회가 법정단체가 됐어요. 등록된 중개사무소인지 확인하고 계약하세요",
         what: "8월 28일부터 한국공인중개사협회가 법정단체로 바뀌었습니다. 무등록 중개와 확인·설명서 오류에 대한 감시가 강화됩니다.",
@@ -265,8 +287,13 @@ export function seedIssues(): Issue[] {
       topic: "broker",
       region: "national",
       publishedAt: "2026-08-14T13:00:00+09:00",
-      officialUrl: "https://www.molit.go.kr/USR/law/m_46/lst.jsp",
-      articles: [{ publisher: "한국아파트신문", title: "공인중개사, 원룸ㆍ오피스텔 계약 전 공동관리비 설명 의무화", url: "https://www.hapt.co.kr/news/articleView.html?idxno=169254", date: "2026-08-14" }],
+      officialUrl: null,
+      articles: [
+        { publisher: "한국아파트신문", title: "공인중개사, 원룸ㆍ오피스텔 계약 전 공동관리비 설명 의무화", url: "https://www.hapt.co.kr/news/articleView.html?idxno=169254", date: "2026-08-14" },
+        { publisher: "조선비즈", title: "원룸·오피스텔 '깜깜이 공동 관리비' 손본다… 중개사 설명 의무화", url: "https://biz.chosun.com/real_estate/real_estate_general/2026/08/11/S6ZHFQVVZVEN3G4HWKRY6R6IKI/", date: "2026-08-11" },
+        { publisher: "MBC", title: "원룸·오피스텔 '깜깜이 관리비' 막는다‥공인중개사 설명 의무화", url: "https://imnews.imbc.com/news/2026/econo/article/6843914_36932.html", date: "2026-08-11" },
+        { publisher: "뉴스1", title: "원룸·오피스텔 '깜깜이 관리비' 막는다…공인중개사 설명 의무화", url: "https://www.news1.kr/realestate/general/6254952", date: "2026-08-11" },
+      ],
       customer: {
         headline: "원룸·오피스텔 계약 전에 관리비 내역을 설명받게 됩니다",
         what: "국토교통부가 공인중개사가 관리비 총액 외에 공동관리비 금액까지 확인·설명하도록 하는 개정안을 내놓았습니다. 확정되면 원룸·오피스텔 계약 전에 관리비 내역을 요구할 수 있습니다.",
@@ -336,6 +363,9 @@ export function seedIssues(): Issue[] {
       articles: [
         { publisher: "안양시 고시공고", title: "수촌마을(A블럭) 재개발사업 정비계획 결정 및 정비구역 지정(안) 주민공람·공고", url: "https://www.anyang.go.kr/newtown/selectEminwonView.do?not_ancmt_mgt_no=84313&key=2558", date: "2026-07-22" },
         { publisher: "에너지경제", title: "[패트롤] 군포시의회-부천시의회-안양시의회-하남시의회", url: "https://www.ekn.kr/web/view.php?key=20260908029051762", date: "2026-09-08" },
+        { publisher: "이뉴스투데이", title: "안양시의회, 의장 직무대리 체제에서 임시회 개회", url: "http://www.enewstoday.co.kr/news/articleView.html?idxno=2467576", date: "2026-09-07" },
+        { publisher: "뉴시스", title: "'파행' 안양시의회, 주민 반발에 일단 진정…정상화까진 아직", url: "https://www.newsis.com/view/NISX20260810_0003742912", date: "2026-08-10" },
+        { publisher: "아루뉴스", title: "안양 수촌마을(A블럭), 하반기 재개발 구역지정 가시화", url: "https://www.arunews.com/news/articleView.html?idxno=65250", date: "2026-07-23" },
       ],
       personas: { "매수 예정자": 4, "1주택자": 4, 임차인: 3, 공인중개사: 5 },
       customer: {
@@ -359,21 +389,26 @@ export function seedIssues(): Issue[] {
     }),
     mk({
       id: "sample-chunghun-lotte",
-      title: "롯데건설, 안양 충훈부 일원 공공재개발 시공권 확보…공사비 7,567억",
-      summary: "롯데건설이 안양 충훈부 일원 공공재개발(7,567억 원) 시공권을 확보했다. 성수4지구, 도곡우성 등과 함께 올해 정비사업 누적 수주 4조 원을 넘겼다.",
+      title: "롯데·현대건설 컨소시엄, 안양 충훈부 일원 공공재개발 시공사 선정…공사비 1.4조",
+      summary: "충훈부 일원 공공재개발 조합이 8월 29일 총회에서 롯데건설·현대건설 컨소시엄을 시공사로 선정했다. 총 공사비 약 1조 4천억 원, 롯데건설 지분 7,567억 원.",
       sourceKind: "sample",
-      sourceName: "뉴스1",
+      sourceName: "연합뉴스",
       agency: "업계",
       agencyGroup: "industry",
       status: "PRESS_REPORTED",
       topic: "redev",
       region: "anyang",
       dong: ["충훈동"],
-      publishedAt: "2026-09-08T18:35:00+09:00",
-      articles: [{ publisher: "뉴스1", title: "롯데건설, 도곡우성 재건축 수주…올해 정비사업 4조 돌파", url: "https://www.news1.kr/realestate/general/6284088", date: "2026-09-08" }],
+      publishedAt: "2026-08-30T10:26:00+09:00",
+      articles: [
+        { publisher: "연합뉴스", title: "롯데·현대건설, 안양 충훈부 공공재개발 수주…공사비 1.4조", url: "https://www.yna.co.kr/view/AKR20260830020300003", date: "2026-08-30" },
+        { publisher: "아시아경제", title: "롯데·현대건설 컨소, 1.4조 안양 충훈부 일원 공공재개발 수주", url: "https://view.asiae.co.kr/article/2026083010473115622", date: "2026-08-30" },
+        { publisher: "뉴스1", title: "롯데건설, 도곡우성 재건축 수주…올해 정비사업 4조 돌파", url: "https://www.news1.kr/realestate/general/6284088", date: "2026-09-08" },
+        { publisher: "한국경제", title: "롯데건설, 도곡우성아파트 '도곡 르엘'로 바꾼다", url: "https://www.hankyung.com/article/2026090776566", date: "2026-09-07" },
+      ],
       customer: {
         headline: "충훈부 공공재개발 시공사가 정해졌어요",
-        what: "만안구 충훈부 일원 공공재개발 사업의 시공사로 롯데건설이 선정됐습니다(공사비 7,567억 원 규모). 시공사 선정은 사업이 실행 단계로 넘어간다는 신호입니다.",
+        what: "만안구 충훈부 일원 공공재개발 사업의 시공사로 롯데건설·현대건설 컨소시엄이 선정됐습니다(총 공사비 약 1조 4천억 원). 시공사 선정은 사업이 실행 단계로 넘어간다는 신호입니다.",
         forMe: {
           first: "이 일대 전세·월세는 이주 시점이 다가오면 물건이 줄 수 있어요.",
           move: "구역 내 보유자라면 분담금 추정치와 이주 일정이 곧 구체화됩니다.",
@@ -383,7 +418,7 @@ export function seedIssues(): Issue[] {
         glossary: null,
       },
       broker: {
-        facts: ["시공사: 롯데건설, 공사비 7,567억 원(보도 기준)", "사업 형태: 공공재개발", "정비계획 변경 고시 이력: 충훈부 일원 정비구역 지정 변경"],
+        facts: ["시공사: 롯데건설·현대건설 컨소시엄, 총 공사비 약 1.4조 원(롯데 지분 7,567억 원, 보도 기준)", "조합원 총회 2026-08-29(안양시청 대강당)에서 선정", "사업 형태: 공공재개발", "정비계획 변경 고시 이력: 충훈부 일원 정비구역 지정 변경"],
         script: ["공사비가 정해져도 분담금은 감정평가·일반분양가에 따라 달라진다고 설명합니다."],
         checklist: ["조합 총회 의결 내용·계약 조건 확인", "구역 내 매물의 권리산정기준일·조합원 지위 확인"],
         faq: [],
@@ -402,7 +437,12 @@ export function seedIssues(): Issue[] {
       topic: "lease",
       region: "gyeonggi",
       publishedAt: "2026-09-07T16:42:00+09:00",
-      articles: [{ publisher: "아시아타임즈", title: "전세사기, 계약 전에 AI로 잡는다⋯ 경기도의회 민생·교육·안전 조례", url: "https://www.asiatime.co.kr/article/20260907500350", date: "2026-09-07" }],
+      articles: [
+        { publisher: "아시아타임즈", title: "전세사기, 계약 전에 AI로 잡는다⋯ 경기도의회 민생·교육·안전 조례", url: "https://www.asiatime.co.kr/article/20260907500350", date: "2026-09-07" },
+        { publisher: "이투데이", title: "전세사기 피해 최다 수원…주소 넣으면 AI가 거래 위험 진단", url: "https://www.etoday.co.kr/news/view/2622813", date: "2026-09-07" },
+        { publisher: "서울신문", title: "경기도의회 도시환경위원회, 제393회 임시회 제1차 회의 개최", url: "https://www.seoul.co.kr/news/publicnews/local_govern/kyungki_do/2026/09/07/20260907500257", date: "2026-09-07" },
+        { publisher: "경기매일", title: "김태희 경기도의원, \"전세사기 사후 대응보다 거래 단계 예방 중요\"", url: "https://www.kmaeil.com/news/articleView.html?idxno=649935", date: "2026-08-28" },
+      ],
       customer: {
         headline: "경기도가 계약 전 전세사기 위험을 분석해 주는 안전망을 준비 중이에요",
         what: "경기도의회에 전세사기 예방 AI 권리분석 안전망 조례안이 올라왔습니다. 통과되면 계약 전 권리분석 서비스를 이용할 수 있습니다.",
