@@ -1,5 +1,5 @@
 /* ==========================================================================
-   중개톡 대시보드 — 디자인 토큰과 공통 컴포넌트
+   부동산TALK 대시보드 — 디자인 토큰과 공통 컴포넌트
    (색 8종 · 글자 5단계 · 간격 4/8/12/16/24 · 상태색 4종)
    ========================================================================== */
 
@@ -619,7 +619,7 @@ a.list__item:hover { background: var(--surface-2); }
 .login { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
 .login__side { background: var(--brand); color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 14px; padding: 40px; }
 .login__side .mark { width: 88px; height: 88px; border-radius: 26px; background: #fff; color: var(--brand); display: grid; place-items: center; font-weight: 800; font-size: 44px; }
-.login__side .name { font-size: 28px; font-weight: 800; letter-spacing: 0.3em; margin-left: 0.3em; }
+.login__side .name { font-size: 28px; font-weight: 800; letter-spacing: 0.06em; margin-left: 0.06em; }
 .login__side .tag { opacity: 0.85; font-size: 14px; }
 .login__form { display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
 .login__form form { width: 100%; max-width: 360px; display: grid; gap: 14px; }

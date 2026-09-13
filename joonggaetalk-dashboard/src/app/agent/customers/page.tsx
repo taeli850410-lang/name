@@ -331,7 +331,7 @@ function Customers() {
         onClose={() => setConfirm(null)}
         title={`${confirm?.c?.name} 님에게 환영 알림톡을 다시 보냅니다`}
         description="이미 받은 고객에게 같은 내용이 한 번 더 갑니다."
-        summary={[{ k: "템플릿", v: "[중개톡] 신규" }, { k: "예상 비용", v: "6.5원" }, { k: "발송 시점", v: "지금" }]}
+        summary={[{ k: "템플릿", v: "[부동산TALK] 신규" }, { k: "예상 비용", v: "6.5원" }, { k: "발송 시점", v: "지금" }]}
         confirmLabel="다시 보내기"
         onConfirm={() => { setConfirm(null); toast(`${confirm?.c?.name} 님에게 환영 알림톡을 보냈습니다.`); }}
       />

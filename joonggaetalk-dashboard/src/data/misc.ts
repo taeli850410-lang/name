@@ -13,7 +13,7 @@ export const logs: LogEntry[] = [
   { id: "l7", at: "2026-09-09 11:30", actor: "이서연", action: "수정", target: "약속", summary: "윤채원 임장 · 결과 '노쇼' 처리" },
   { id: "l8", at: "2026-09-08 10:02", actor: "이서연", action: "설정", target: "자동발송", summary: "잔금일 알림 시점 1일 전 → 3일 전" },
   { id: "l9", at: "2026-09-07 20:35", actor: "이서연", action: "등록", target: "고객", summary: "고객 대량등록 (엑셀) · 75명 · 환영 알림톡 75건 예약", count: 75, details: ["변영균 외 74명 등록", "중복 번호 3건 건너뜀", "환영 알림톡 75건 1분 뒤 발송 예약"] },
-  { id: "l10", at: "2026-09-07 11:05", actor: "이서연", action: "발송", target: "알림톡", summary: "지금 발송 · 중개톡 회원 알림 · 163명 → 성공 161 · 실패 2" },
+  { id: "l10", at: "2026-09-07 11:05", actor: "이서연", action: "발송", target: "알림톡", summary: "지금 발송 · 부동산TALK 회원 알림 · 163명 → 성공 161 · 실패 2" },
   { id: "l11", at: "2026-09-07 09:39", actor: "이서연", action: "발송", target: "알림톡", summary: "지금 발송 · 전문가 칼럼 알림 · 29명 → 실패 29 (결과확인 시간초과)" },
   { id: "l12", at: "2026-09-07 09:00", actor: "시스템", action: "발송", target: "알림톡", summary: "정기 발송 · 매주시세 · 24명 → 성공 23 · 거부 1" },
   { id: "l13", at: "2026-09-02 09:00", actor: "시스템", action: "발송", target: "알림톡", summary: "자동발송 · 잔금일 3일 전 · 정하은 → 성공" },
@@ -35,7 +35,7 @@ export const billing = {
   priceUrl: "https://smartstore.naver.com/",
 };
 
-export const termsHistory = [{ version: "v1", title: "중개톡 이용약관", agreedAt: "2026-07-23 16:25" }];
+export const termsHistory = [{ version: "v1", title: "부동산TALK 이용약관", agreedAt: "2026-07-23 16:25" }];
 
 export const profile = {
   name: "이서연",

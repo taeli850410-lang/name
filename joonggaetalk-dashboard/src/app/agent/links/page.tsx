@@ -8,7 +8,7 @@ const GROUPS: { key: LinkItem["group"]; icon: IconName; desc: string }[] = [
   { key: "공공·행정", icon: "globe", desc: "등기·대장·실거래가·민원" },
   { key: "업무 도구", icon: "zap", desc: "매물·시세·문자" },
   { key: "커뮤니티·교육", icon: "users", desc: "카페·강의·법률" },
-  { key: "중개톡", icon: "star", desc: "안내·문의·결제" },
+  { key: "부동산TALK", icon: "star", desc: "안내·문의·결제" },
 ];
 
 export default function LinksPage() {

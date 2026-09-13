@@ -25,11 +25,11 @@ export default function LoginPage() {
   return (
     <main className="login">
       <section className="login__side">
-        <Link href="/" className="stack" style={{ alignItems: "center", gap: 14 }} title="중개톡 메인 화면으로">
+        <Link href="/" className="stack" style={{ alignItems: "center", gap: 14 }} title="부동산TALK 메인 화면으로">
           <span className="mark" aria-hidden>
-            J
+            부
           </span>
-          <span className="name">중개톡</span>
+          <span className="name">부동산TALK</span>
         </Link>
         <div className="tag">고객과 중개사를 이어주는 바로 그 시스템</div>
       </section>

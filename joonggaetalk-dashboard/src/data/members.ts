@@ -52,7 +52,7 @@ function make(count: number): Member[] {
     });
   }
   out[0] = { ...out[0], name: "이서연", office: "서연공인중개사사무소", plan: "운영자", region: "인천", customers: 188, sends30d: 593, integrations: { balsongking: true, calendar: false, telegram: true } };
-  out[1] = { ...out[1], name: "박준서", office: "중개톡 운영팀", plan: "운영자", region: "서울" };
+  out[1] = { ...out[1], name: "박준서", office: "부동산TALK 운영팀", plan: "운영자", region: "서울" };
   // 승인 대기 3명: 최근 가입
   [2, 3, 4].forEach((i, k) => {
     out[i] = { ...out[i], plan: "미승인", joinedAt: addDays(TODAY, -k), customers: 0, sends30d: 0, expiresAt: undefined };
@@ -114,11 +114,11 @@ export const dailySignups: { date: string; count: number }[] = (() => {
 })();
 
 export const publicTemplates = [
-  { id: "pt1", name: "[중개톡] 신규", users: 141, updatedAt: "2026-06-24" },
-  { id: "pt2", name: "[중개톡] 계약일정", users: 138, updatedAt: "2026-06-24" },
-  { id: "pt3", name: "[중개톡] 중도금 도래", users: 120, updatedAt: "2026-06-24" },
-  { id: "pt4", name: "[중개톡] 입주 후 알림", users: 97, updatedAt: "2026-06-25" },
-  { id: "pt5", name: "[중개톡] 계약 만료 3개월전", users: 133, updatedAt: "2026-06-25" },
-  { id: "pt6", name: "[중개톡] 계약 만료일", users: 130, updatedAt: "2026-06-24" },
+  { id: "pt1", name: "[부동산TALK] 신규", users: 141, updatedAt: "2026-06-24" },
+  { id: "pt2", name: "[부동산TALK] 계약일정", users: 138, updatedAt: "2026-06-24" },
+  { id: "pt3", name: "[부동산TALK] 중도금 도래", users: 120, updatedAt: "2026-06-24" },
+  { id: "pt4", name: "[부동산TALK] 입주 후 알림", users: 97, updatedAt: "2026-06-25" },
+  { id: "pt5", name: "[부동산TALK] 계약 만료 3개월전", users: 133, updatedAt: "2026-06-25" },
+  { id: "pt6", name: "[부동산TALK] 계약 만료일", users: 130, updatedAt: "2026-06-24" },
   { id: "pt7", name: "등기부 변동 알리미", users: 88, updatedAt: "2026-07-11" },
 ];

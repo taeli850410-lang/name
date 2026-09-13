@@ -302,7 +302,7 @@ export default function BillingPage() {
             </div>
           )}
           <p className="help mt-12">
-            <Icon name="lock" size={12} /> 카드번호·유효기간·CVC 는 결제 대행사 화면에서 직접 입력하고, 중개톡 서버는 대행사가 돌려준 결제키만 보관합니다.
+            <Icon name="lock" size={12} /> 카드번호·유효기간·CVC 는 결제 대행사 화면에서 직접 입력하고, 부동산TALK 서버는 대행사가 돌려준 결제키만 보관합니다.
             법으로 가맹점이 카드 정보를 저장할 수 없게 되어 있습니다.
           </p>
         </div>
@@ -442,8 +442,8 @@ export default function BillingPage() {
           <Banner
             tone="info"
             icon="lock"
-            title="카드 정보는 중개톡을 거치지 않습니다"
-            body="다음 화면은 결제 대행사(포트원·토스페이먼츠)가 띄우는 창입니다. 카드번호는 그쪽에 바로 들어가고, 중개톡은 결제에 쓸 키와 카드사·뒤 4자리만 돌려받습니다."
+            title="카드 정보는 부동산TALK을 거치지 않습니다"
+            body="다음 화면은 결제 대행사(포트원·토스페이먼츠)가 띄우는 창입니다. 카드번호는 그쪽에 바로 들어가고, 부동산TALK은 결제에 쓸 키와 카드사·뒤 4자리만 돌려받습니다."
           />
           <dl className="kv">
             <dt>정기결제 방식</dt>

@@ -247,7 +247,7 @@ function Settings() {
               <section className="card">
                 <div className="card__head"><h2>구글 캘린더</h2><Badge tone="neutral">미연결</Badge></div>
                 <div className="card__body row row--between">
-                  <div className="muted small" style={{ maxWidth: 520 }}>계약 시점 일정(계약일·중도금일·잔금일·입주일·만료일)과 약속을 '중개톡 일정' 전용 캘린더에 자동 반영합니다. 기존 일정과 섞이지 않습니다.</div>
+                  <div className="muted small" style={{ maxWidth: 520 }}>계약 시점 일정(계약일·중도금일·잔금일·입주일·만료일)과 약속을 '부동산TALK 일정' 전용 캘린더에 자동 반영합니다. 기존 일정과 섞이지 않습니다.</div>
                   <button type="button" className="btn btn--primary" onClick={() => toast({ tone: "info", message: "구글 로그인 창이 열립니다. (프로토타입)" })}><Icon name="calendar" size={15} /> 구글 캘린더 연동</button>
                 </div>
               </section>

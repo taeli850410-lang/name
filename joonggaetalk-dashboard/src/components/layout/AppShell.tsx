@@ -39,11 +39,11 @@ export function AppShell({ role, children }: Props) {
       <aside className={`side${open ? " is-open" : ""}`} aria-label="주 메뉴">
         <div className="side__brand">
           {/* 브랜드를 누르면 첫 화면(역할 선택)으로 — 관례대로 로고가 홈 링크다 */}
-          <Link href="/" className="side__brand-link" title="중개톡 메인 화면으로">
+          <Link href="/" className="side__brand-link" title="부동산TALK 메인 화면으로">
             <span className="mark" aria-hidden>
-              J
+              부
             </span>
-            <span className="name">중개톡</span>
+            <span className="name">부동산TALK</span>
           </Link>
           <span className={`role${role === "admin" ? " role--admin" : ""}`}>{role === "admin" ? "운영자" : "중개사"}</span>
         </div>

@@ -6,9 +6,9 @@ export default function Landing() {
   return (
     <main className="landing">
       <div className="brandmark" aria-hidden>
-        J
+        부
       </div>
-      <h1>중개톡 대시보드 프로토타입</h1>
+      <h1>부동산TALK 대시보드 프로토타입</h1>
       <p className="desc">고객용 · 중개사용 · 운영자용 화면을 역할별로 분리했습니다. 모든 데이터는 예시이며, 기준일은 2026년 9월 12일(토)입니다.</p>
       <div className="roles">
         <Link href="/customer" className="role">

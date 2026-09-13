@@ -101,7 +101,7 @@ export async function POST(req: Request) {
   const chargeDate = String(body.chargeDate ?? "").slice(0, 10);
   const amount = priceOf(planId, cycle); // ← 가격표에서. 요청 본문에서 읽지 않는다.
   const id = orderId(memberId, planId, cycle, chargeDate, body.attempt ?? 0);
-  const orderName = `중개톡 ${plan.name} ${cycle} 이용권`;
+  const orderName = `부동산TALK ${plan.name} ${cycle} 이용권`;
 
   const r =
     name === "portone"

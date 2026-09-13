@@ -62,9 +62,9 @@ export default function AdminSettingsPage() {
                 <div className="row row--between"><div><div className="strong">자동승인</div><div className="muted small">켜면 새 가입자가 즉시 활성화되고 무료 기간을 받습니다. 끄면 승인 대기 목록에 쌓입니다.</div></div><Switch checked={autoApprove} onChange={(v) => { setAutoApprove(v); mark(); }} label={autoApprove ? "켜짐" : "꺼짐"} /></div>
                 <div className="form-grid-2">
                   <div className="field"><label className="label" htmlFor="su-days">자동승인 무료 일수</label><div className="input-group"><input id="su-days" className="input" inputMode="numeric" defaultValue="7" onChange={mark} /><span className="unit">일</span></div></div>
-                  <div className="field"><label className="label" htmlFor="su-admin">알림 받을 운영자</label><select id="su-admin" className="select" defaultValue="이서연" onChange={mark}><option>이서연 (서연공인중개사사무소)</option><option>박준서 (중개톡 운영팀)</option></select><div className="help">텔레그램을 연결한 운영자만 고를 수 있습니다.</div></div>
+                  <div className="field"><label className="label" htmlFor="su-admin">알림 받을 운영자</label><select id="su-admin" className="select" defaultValue="이서연" onChange={mark}><option>이서연 (서연공인중개사사무소)</option><option>박준서 (부동산TALK 운영팀)</option></select><div className="help">텔레그램을 연결한 운영자만 고를 수 있습니다.</div></div>
                 </div>
-                <div className="field"><label className="label" htmlFor="su-sms">가입 인증 SMS 본문</label><input id="su-sms" className="input" defaultValue="[중개톡] 인증번호 {code}를 입력해 주세요." onChange={mark} /><div className="help">{"{code}"} 자리에 4자리 인증번호가 들어갑니다. 발신번호는 발송킹에 등록된 번호를 씁니다.</div></div>
+                <div className="field"><label className="label" htmlFor="su-sms">가입 인증 SMS 본문</label><input id="su-sms" className="input" defaultValue="[부동산TALK] 인증번호 {code}를 입력해 주세요." onChange={mark} /><div className="help">{"{code}"} 자리에 4자리 인증번호가 들어갑니다. 발신번호는 발송킹에 등록된 번호를 씁니다.</div></div>
               </div>
             </section>
           )}
@@ -131,7 +131,7 @@ export default function AdminSettingsPage() {
             <section className="card">
               <div className="card__head"><h2>일반</h2></div>
               <div className="card__body form" style={{ maxWidth: 560 }}>
-                <div className="field"><label className="label" htmlFor="gn-name">서비스 이름</label><input id="gn-name" className="input" defaultValue="중개톡" onChange={mark} /></div>
+                <div className="field"><label className="label" htmlFor="gn-name">서비스 이름</label><input id="gn-name" className="input" defaultValue="부동산TALK" onChange={mark} /></div>
                 <div className="field"><label className="label" htmlFor="gn-buy">구매 페이지 URL</label><input id="gn-buy" className="input" defaultValue="https://smartstore.naver.com/…" onChange={mark} /><div className="help">사용기한 만료 임박 안내와 구매내역 화면의 '연장하기'에 쓰입니다.</div></div>
                 <div className="field"><label className="label" htmlFor="gn-help">도움말 URL</label><input id="gn-help" className="input" defaultValue="https://…notion.site/…" onChange={mark} /><div className="help">비우면 도움말 버튼이 숨겨집니다. 화면별 도움말은 각 화면 제목 옆 물음표에서 편집합니다.</div></div>
                 <div className="field"><label className="label" htmlFor="gn-log">작업 로그 보관 기간</label><div className="input-group"><input id="gn-log" className="input" inputMode="numeric" defaultValue="90" onChange={mark} /><span className="unit">일 (0이면 영구 보관)</span></div></div>

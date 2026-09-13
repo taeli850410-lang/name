@@ -4,8 +4,8 @@ export const notices: Notice[] = [
   {
     id: "no1",
     title: "[알림] 발송 대행사 장애로 알림톡 발송이 보류되고 있습니다",
-    body: "안녕하세요, 중개톡입니다.\n9월 12일 12:35부터 알림톡 발송 대행사(발송킹) 서버의 보안 인증서 만료로 발송이 실패하고 있습니다.\n보류된 발송은 복구 즉시 자동으로 다시 시도되며, 별도로 하실 일은 없습니다.\n복구되면 이 공지를 갱신하겠습니다.",
-    author: "중개톡 운영팀",
+    body: "안녕하세요, 부동산TALK입니다.\n9월 12일 12:35부터 알림톡 발송 대행사(발송킹) 서버의 보안 인증서 만료로 발송이 실패하고 있습니다.\n보류된 발송은 복구 즉시 자동으로 다시 시도되며, 별도로 하실 일은 없습니다.\n복구되면 이 공지를 갱신하겠습니다.",
+    author: "부동산TALK 운영팀",
     createdAt: "2026-09-12",
     important: true,
     unread: true,
@@ -15,17 +15,17 @@ export const notices: Notice[] = [
     id: "no2",
     title: "채널 품앗이가 선팔·맞팔 방식으로 바뀌었습니다",
     body: "다른 회원의 카카오채널을 먼저 추가하면(선팔) 상대의 '받은 선팔' 목록에 뜨고, 상대도 내 채널을 추가해야(맞팔) 서로친구가 완성됩니다.\n받은 선팔을 오래 방치하면 미응대 랭킹에 오르니 되도록 빨리 응대해 주세요.",
-    author: "중개톡 운영팀",
+    author: "부동산TALK 운영팀",
     createdAt: "2026-09-08",
     unread: true,
     visible: true,
   },
-  { id: "no3", title: "[안내] 자동발송 알림톡 — 템플릿 교체 시 발송 실패 문제 수정", body: "자동발송 설정에서 템플릿을 다른 것으로 바꾼 경우, 이미 예약된 발송이 옛 템플릿을 참조해 실패하던 문제를 수정했습니다.", author: "중개톡 운영팀", createdAt: "2026-09-05", visible: true },
-  { id: "no4", title: "고객 대량등록 기능 개선 안내", body: "엑셀 대량등록 시 전화번호 형식이 달라도(하이픈 유무) 자동으로 정리되며, 중복 번호는 건너뛰고 결과를 표로 보여 줍니다.", author: "중개톡 운영팀", createdAt: "2026-08-26", visible: true },
-  { id: "no5", title: "10만 공인중개사의 고객관리, 중개톡", body: "중개톡은 공인중개사를 위한 고객·물건·계약 관리와 알림톡 자동발송 서비스입니다.", author: "중개톡 운영팀", createdAt: "2026-06-27", visible: true },
+  { id: "no3", title: "[안내] 자동발송 알림톡 — 템플릿 교체 시 발송 실패 문제 수정", body: "자동발송 설정에서 템플릿을 다른 것으로 바꾼 경우, 이미 예약된 발송이 옛 템플릿을 참조해 실패하던 문제를 수정했습니다.", author: "부동산TALK 운영팀", createdAt: "2026-09-05", visible: true },
+  { id: "no4", title: "고객 대량등록 기능 개선 안내", body: "엑셀 대량등록 시 전화번호 형식이 달라도(하이픈 유무) 자동으로 정리되며, 중복 번호는 건너뛰고 결과를 표로 보여 줍니다.", author: "부동산TALK 운영팀", createdAt: "2026-08-26", visible: true },
+  { id: "no5", title: "10만 공인중개사의 고객관리, 부동산TALK", body: "부동산TALK은 공인중개사를 위한 고객·물건·계약 관리와 알림톡 자동발송 서비스입니다.", author: "부동산TALK 운영팀", createdAt: "2026-06-27", visible: true },
 ];
 
-export type LinkItem = { title: string; url: string; desc: string; group: "공공·행정" | "커뮤니티·교육" | "업무 도구" | "중개톡" };
+export type LinkItem = { title: string; url: string; desc: string; group: "공공·행정" | "커뮤니티·교육" | "업무 도구" | "부동산TALK" };
 
 export const usefulLinks: LinkItem[] = [
   { title: "인터넷등기소", url: "https://www.iros.go.kr/", desc: "등기부등본 열람·발급", group: "공공·행정" },
@@ -46,9 +46,9 @@ export const usefulLinks: LinkItem[] = [
   { title: "밸류맵", url: "https://www.valueupmap.com/", desc: "토지·건물 실거래", group: "업무 도구" },
   { title: "모아톡", url: "https://moatalk.kr/", desc: "카톡 자동 발송", group: "업무 도구" },
   { title: "오토문자", url: "https://automunja.qshop.ai/", desc: "자동 문자메시지", group: "업무 도구" },
-  { title: "중개톡 홈페이지", url: "https://www.joonggaetalk.com/", desc: "서비스 안내", group: "중개톡" },
-  { title: "중개톡 카톡채널", url: "https://pf.kakao.com/", desc: "카톡 채널로 문의", group: "중개톡" },
-  { title: "중개톡 결제", url: "https://smartstore.naver.com/", desc: "이용권 결제", group: "중개톡" },
+  { title: "부동산TALK 홈페이지", url: "https://www.joonggaetalk.com/", desc: "서비스 안내", group: "부동산TALK" },
+  { title: "부동산TALK 카톡채널", url: "https://pf.kakao.com/", desc: "카톡 채널로 문의", group: "부동산TALK" },
+  { title: "부동산TALK 결제", url: "https://smartstore.naver.com/", desc: "이용권 결제", group: "부동산TALK" },
 ];
 
 export type Inquiry = { id: string; kind: "문의" | "제안" | "오류"; title: string; body: string; status: "답변대기" | "답변완료"; createdAt: string; updatedAt: string; answer?: string; member?: string };

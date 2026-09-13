@@ -2,7 +2,7 @@
   "name": "joonggaetalk-dashboard",
   "version": "0.1.0",
   "private": true,
-  "description": "중개톡 대시보드 프로토타입 — 고객용 · 중개사용 · 관리자용 (Next.js, Vercel 배포용)",
+  "description": "부동산TALK 대시보드 프로토타입 — 고객용 · 중개사용 · 관리자용 (Next.js, Vercel 배포용)",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

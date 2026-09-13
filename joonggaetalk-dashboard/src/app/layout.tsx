@@ -3,7 +3,7 @@ import { ToastProvider } from "@/components/ui/Toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "중개톡", template: "%s · 중개톡" },
+  title: { default: "부동산TALK", template: "%s · 부동산TALK" },
   description: "공인중개사를 위한 고객·물건·계약 관리와 알림톡 자동발송 — 대시보드 프로토타입",
   icons: { icon: "/favicon.svg" },
 };

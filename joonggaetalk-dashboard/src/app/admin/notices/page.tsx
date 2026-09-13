@@ -22,7 +22,7 @@ export default function AdminNoticesPage() {
   const save = () => {
     if (draft.title.trim().length < 2) return toast({ tone: "danger", message: "제목을 입력해 주세요." });
     if (edit) { setList((xs) => xs.map((x) => (x.id === edit.id ? { ...x, ...draft } : x))); toast("공지를 수정했습니다."); }
-    else { setList((xs) => [{ id: `no${Date.now()}`, ...draft, author: "중개톡 운영팀", createdAt: TODAY, unread: true }, ...xs]); toast("공지를 등록했습니다. 7일간 NEW 표시됩니다."); }
+    else { setList((xs) => [{ id: `no${Date.now()}`, ...draft, author: "부동산TALK 운영팀", createdAt: TODAY, unread: true }, ...xs]); toast("공지를 등록했습니다. 7일간 NEW 표시됩니다."); }
     setEdit(null); setCreating(false);
   };
 
