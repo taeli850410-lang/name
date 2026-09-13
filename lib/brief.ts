@@ -260,7 +260,7 @@ export function letterToBrief(letter: Letter): BriefModel {
 
 /** 영상 기사 → 브리핑 모델. 주제와 지역을 함께 보여 줘야 무슨 영상인지 열기 전에 압니다 */
 export function videoSection(videos: VideoItem[] | undefined, period: Period): BriefModel["video"] {
-  const items = pickVideos(videos ?? []).map((v) => ({
+  const items = pickVideos(videos ?? [], period).map((v) => ({
     id: v.id,
     title: v.title,
     channel: v.channel,

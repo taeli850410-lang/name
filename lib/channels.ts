@@ -1,5 +1,5 @@
 import { VIDEO_IN_BRIEF } from "./taxonomy";
-import type { VideoItem } from "./types";
+import type { Period, VideoItem } from "./types";
 
 /**
  * 영상 기사 기본 채널. 설정(영상 채널)을 비우면 이 목록으로 돕니다.
@@ -13,8 +13,10 @@ import type { VideoItem } from "./types";
 export type ChannelTier = "estate" | "econ" | "news";
 
 export interface DefaultChannel {
-  /** UC 아이디 또는 @핸들. 핸들은 수집할 때 한 번 조회해 UC 로 바꿉니다 */
+  /** UC 아이디 · @핸들 · 재생목록 주소. 핸들은 수집할 때 한 번 조회해 UC 로 바꿉니다 */
   id: string;
+  /** id 가 재생목록·핸들이라 UC 를 알 수 없을 때, 그 목록을 만든 채널의 UC 아이디 */
+  channelId?: string;
   name: string;
   tier: ChannelTier;
   /** 무엇을 기대하고 넣었는지 */
@@ -29,7 +31,15 @@ export const TIER_LABEL: Record<ChannelTier, string> = {
 
 export const DEFAULT_CHANNELS: DefaultChannel[] = [
   // 부동산만 올리는 채널 — 피드 15편이 거의 그대로 쓰입니다
-  { id: "UCAVdqlngIAxHtwlCA2hjv3A", name: "집코노미", tier: "estate", note: "한국경제 부동산 채널. 청약·재개발·재건축·세금" },
+  // 채널 전체가 아니라 '집코노미 타임즈' 재생목록입니다. 채널에는 30초 쇼츠가 많이 섞이는데
+  // 이 목록은 주간 부동산뉴스 총정리 본편만 담겨 있어 브리핑에 그대로 쓸 수 있습니다.
+  {
+    id: "https://www.youtube.com/playlist?list=PLZtm8tjZjNV6jjvdmjZ-zc9jz1qKHUInQ",
+    channelId: "UCAVdqlngIAxHtwlCA2hjv3A",
+    name: "집코노미 타임즈",
+    tier: "estate",
+    note: "한국경제 주간 부동산뉴스 총정리 (재생목록)",
+  },
   { id: "UCCt6iN6nJemSe_OHRihYBAQ", name: "매부리TV", tier: "estate", note: "매일경제 부동산 채널. 시장 해석과 투자자 관점" },
   { id: "UCXiDk1r8MDRqTD0j2BxNWWQ", name: "한국부동산원", tier: "estate", note: "주간 가격동향·청약 제도 공식 해설" },
   { id: "@korealand", name: "국토교통부", tier: "estate", note: "제도 시행 안내 영상" },
@@ -66,41 +76,67 @@ export const DEFAULT_CHANNELS_TEXT = DEFAULT_VIDEO_SOURCES.join("\n");
 const CLIP_SUMMARY = 25;
 
 /**
- * 채널을 돌아가며 한 편씩 고릅니다. 부동산만 올리는 채널이 가장 많이 걸리기 때문에
- * 최신순으로만 자르면 세 칸이 한 채널로 채워집니다.
- *
- * 채널 안에서는 설명문이 제대로 붙은 편을 앞에 둡니다. 피드에는 영상 길이가 없지만,
- * 쇼츠는 설명이 해시태그와 구독 링크뿐이라 홍보 문구를 걷어내면 거의 남지 않습니다.
- * 그게 사실상 길이 구분이 됩니다. 거르지는 않습니다 — 긴 영상이 없으면 쇼츠라도 싣습니다.
+ * 브리핑에 실을 수 있는 최대 나이(일). 집코노미 타임즈처럼 주 1회 올리는 목록도 있어서
+ * 넉넉히 잡되, 지난달 영상이 오늘 브리핑에 남아 있지는 않게 합니다.
  */
-export function pickVideos(videos: VideoItem[], limit = VIDEO_IN_BRIEF): VideoItem[] {
-  const byChannel = new Map<string, VideoItem[]>();
-  for (const v of videos) {
-    const key = v.channelId || v.channel;
-    const cur = byChannel.get(key);
-    if (cur) cur.push(v);
-    else byChannel.set(key, [v]);
-  }
-  const queues = [...byChannel.values()].map((q) =>
-    [...q].sort((a, b) => {
-      const sa = a.summary.trim().length >= CLIP_SUMMARY ? 0 : 1;
-      const sb = b.summary.trim().length >= CLIP_SUMMARY ? 0 : 1;
-      if (sa !== sb) return sa - sb;
-      return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
-    }),
-  );
-  const out: VideoItem[] = [];
-  for (let round = 0; out.length < limit; round++) {
-    let took = false;
-    for (const q of queues) {
-      if (out.length >= limit) break;
-      if (q.length > round) {
-        out.push(q[round]);
-        took = true;
-      }
-    }
-    if (!took) break;
-  }
-  return out.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
-}
+export const VIDEO_MAX_AGE: Record<Period, number> = { daily: 10, weekly: 21, monthly: 60 };
 
+/** 기본 목록에 있는 채널의 순서와 구분 — 브리핑 세 칸을 무엇으로 채울지 정할 때 씁니다 */
+const CHANNEL_META = new Map<string, { rank: number; tier: ChannelTier }>();
+DEFAULT_CHANNELS.forEach((c, rank) => {
+  const uc = c.channelId ?? c.id.match(/UC[\w-]{22}/)?.[0];
+  if (uc) CHANNEL_META.set(uc, { rank, tier: c.tier });
+  CHANNEL_META.set(c.name, { rank, tier: c.tier });
+});
+
+const channelKey = (v: VideoItem) => v.channelId || v.channel;
+const isClip = (v: VideoItem) => v.summary.trim().length < CLIP_SUMMARY;
+const newest = (a: VideoItem, b: VideoItem) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+
+/**
+ * 브리핑 상단 세 칸을 고릅니다.
+ *
+ * 최신순으로만 자르면 하루에 여러 편 올리는 채널이 세 칸을 다 가져갑니다. 집코노미 타임즈처럼
+ * 주 1회 올리는 목록은 영영 못 올라옵니다. 그래서 이렇게 뽑습니다.
+ *
+ *   ① 기간에 맞는 신선도 안에서
+ *   ② 채널마다 대표 한 편 — 쇼츠·클립보다 본편을 먼저(설명문 길이로 가름)
+ *   ③ 설정에 적은 채널 순서대로, 구분(부동산 전문·경제·종합뉴스)이 겹치지 않게 한 편씩
+ *   ④ 그래도 자리가 남으면 남은 대표들 중에서 순서대로
+ *
+ * 그래서 한 줄이 "부동산 전문 + 경제 + 종합뉴스"로 서고, 목록 맨 위에 둔 채널이 우선합니다.
+ * 기본 목록에 없는 채널은 저마다 다른 구분으로 쳐서, 그 사무소가 적은 순서대로 채워집니다.
+ */
+export function pickVideos(videos: VideoItem[], period: Period = "weekly", limit = VIDEO_IN_BRIEF, now = Date.now()): VideoItem[] {
+  const cutoff = now - VIDEO_MAX_AGE[period] * 86400000;
+  const fresh = videos.filter((v) => new Date(v.publishedAt).getTime() >= cutoff);
+
+  const best = new Map<string, VideoItem>();
+  for (const v of fresh) {
+    const cur = best.get(channelKey(v));
+    if (!cur) best.set(channelKey(v), v);
+    else if (isClip(cur) && !isClip(v)) best.set(channelKey(v), v);
+  }
+
+  const meta = (v: VideoItem) => CHANNEL_META.get(v.channelId) ?? CHANNEL_META.get(v.channel);
+  const reps = [...best.values()].sort((a, b) => {
+    const ra = meta(a)?.rank ?? Number.MAX_SAFE_INTEGER;
+    const rb = meta(b)?.rank ?? Number.MAX_SAFE_INTEGER;
+    return ra !== rb ? ra - rb : newest(a, b);
+  });
+
+  const out: VideoItem[] = [];
+  const usedTier = new Set<string>();
+  for (const v of reps) {
+    if (out.length >= limit) break;
+    const tier = meta(v)?.tier ?? channelKey(v);
+    if (usedTier.has(tier)) continue;
+    usedTier.add(tier);
+    out.push(v);
+  }
+  for (const v of reps) {
+    if (out.length >= limit) break;
+    if (!out.includes(v)) out.push(v);
+  }
+  return out.sort(newest);
+}

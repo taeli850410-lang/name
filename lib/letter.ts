@@ -148,7 +148,7 @@ export function buildDraft(issues: Issue[], office: Office, market: MarketDoc, o
     historyLabel,
     comment: opts.comment ?? office.defaultComment,
     glossary,
-    videos: pickVideos(opts.videos ?? []),
+    videos: pickVideos(opts.videos ?? [], period, undefined, now),
   };
 }
 
