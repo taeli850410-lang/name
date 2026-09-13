@@ -4,6 +4,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Badge, Banner, PageHead, StatTile } from "@/components/ui/Bits";
 import { useToast } from "@/components/ui/Toast";
 import { systemStatus } from "@/data/system";
+import { IntegrationHelp, IntegrationList, IntegrationTile, useIntegrationProbe } from "@/components/admin/IntegrationStatus";
 import { formatNumber } from "@/lib/format";
 
 const agents = [
@@ -25,9 +26,10 @@ export default function MonitorPage() {
   const toast = useToast();
   const bk = systemStatus.balsongking;
   const rg = systemStatus.registry;
+  const probe = useIntegrationProbe();
   return (
     <>
-      <PageHead title="서버·연동 상태" desc="앱 서버, 발송 대행사, 등기 감시 로컬 프로그램, 외부 API 연동의 현재 상태입니다. 이상은 텔레그램으로도 통보됩니다." actions={<button type="button" className="btn" onClick={() => toast("모든 연동을 다시 확인했습니다. 발송 대행사 장애 지속.")}><Icon name="refresh" size={15} /> 전체 다시 확인</button>} />
+      <PageHead title="서버·연동 상태" desc="앱 서버, 발송 대행사, 등기 감시 로컬 프로그램, 외부 API 연동의 현재 상태입니다. 이상은 텔레그램으로도 통보됩니다." actions={<button type="button" className="btn" disabled={probe.checking} onClick={() => { void probe.probe(); toast(bk.status === "ok" ? "연동 상태를 다시 확인했습니다." : "연동 상태를 다시 확인했습니다. 발송 대행사 장애는 계속됩니다."); }}><Icon name="refresh" size={15} /> {probe.checking ? "확인 중…" : "전체 다시 확인"}</button>} />
       {bk.status !== "ok" && (
         <div className="mb-16">
           <Banner tone="danger" title={`발송 대행사 장애 진행 중 · ${bk.since}부터`} body={<>{bk.reason} 영향: 전체 회원 발송 보류. 기술 원문: <code>{bk.detail}</code></>} actions={<button type="button" className="btn btn--sm" onClick={() => toast({ tone: "info", message: "대행사 고객센터에 장애 문의를 접수했습니다. (프로토타입)" })}>대행사 문의</button>} />
@@ -37,8 +39,19 @@ export default function MonitorPage() {
         <StatTile label="앱 서버" icon="monitor" value="정상" tone="good" sub={`응답 120ms · 오류율 0.1% · 확인 ${systemStatus.server.checkedAt.slice(11)}`} />
         <StatTile label="발송 대행사" icon="send" value={bk.status === "ok" ? "정상" : "장애"} tone={bk.status === "ok" ? "good" : "danger"} sub={bk.status === "ok" ? "정상 응답" : `보류 누적 · 예치금 조회 불가 (마지막 ${bk.balanceCheckedAt.slice(11)})`} />
         <StatTile label="등기 감시 PC" icon="shield" value={rg.running} unit="대" tone={rg.failed ? "warn" : "good"} sub={`감시 ${formatNumber(rg.watching)} · 대기 ${formatNumber(rg.queued)} · 실패 ${rg.failed}`} />
-        <StatTile label="외부 API" icon="globe" value="4/4" tone="good" sub="국토부 실거래가 · 카카오맵 · 네이버 커머스 · 텔레그램" />
+        <IntegrationTile probe={probe} />
       </div>
+
+      <section className="card mb-16">
+        <div className="card__head">
+          <h2>외부 연동</h2>
+          <span className="muted small">각 연동의 서버 설정 여부를 지금 확인한 값입니다</span>
+        </div>
+        <IntegrationList probe={probe} />
+        <div className="card__body" style={{ paddingTop: 0 }}>
+          <IntegrationHelp probe={probe} />
+        </div>
+      </section>
 
       <div className="split">
         <section className="card">
