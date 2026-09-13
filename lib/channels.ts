@@ -10,7 +10,7 @@ import type { Period, Persona, VideoItem } from "./types";
  * 아이디는 2026-09-13 에 YouTube Data API(channels.list)로 확인했습니다.
  */
 
-export type ChannelTier = "estate" | "econ" | "news";
+export type ChannelTier = "estate" | "guide" | "econ" | "news";
 
 export interface DefaultChannel {
   /** UC 아이디 · @핸들 · 재생목록 주소. 핸들은 수집할 때 한 번 조회해 UC 로 바꿉니다 */
@@ -25,6 +25,7 @@ export interface DefaultChannel {
 
 export const TIER_LABEL: Record<ChannelTier, string> = {
   estate: "부동산 전문",
+  guide: "생활·제도 안내",
   econ: "경제 전문",
   news: "종합뉴스",
 };
@@ -47,6 +48,20 @@ export const DEFAULT_CHANNELS: DefaultChannel[] = [
   { id: "UCAVdqlngIAxHtwlCA2hjv3A", name: "집코노미", tier: "estate", note: "한국경제 부동산 채널. 주간 '집코노미 타임즈' 총정리도 여기 올라옵니다" },
   { id: "UCXiDk1r8MDRqTD0j2BxNWWQ", name: "한국부동산원", tier: "estate", note: "주간 가격동향·청약 제도 공식 해설" },
   { id: "@korealand", name: "국토교통부", tier: "estate", note: "제도 시행 안내 영상" },
+  // 생활·제도 안내 — 고객용 EDM 의 대표 영상이 여기서 나옵니다.
+  //
+  // 중개사에게 필요한 건 '시장이 어떻게 움직이나'이고, 고객에게 필요한 건 '내 계약에서 뭘 확인하나'입니다.
+  // 앞의 부동산 전문 채널은 앞엣것을, 이 세 곳은 뒤엣것을 답합니다. 2026-09-13 에 각 채널 최신 15편을
+  // 실제 필터에 통과시켜 본 값(통과 편수 / 15):
+  //
+  //   HUG 주택도시보증공사  10편 · 하루 0.29편 · 피드가 1.8개월치를 덮음
+  //   청약홈TV              9편 · 하루 0.13편 · 3.7개월치
+  //   SH 서울주택도시공사    6편 · 하루 0.29편 · 1.8개월치
+  //
+  // 올리는 양이 적어 보이지만 제도 설명은 2주 지나도 유효합니다. 그래서 이 구분만 신선도 창을 길게 둡니다.
+  { id: "UCXXERp2lKuALHbyuXIpLqzw", name: "HUG 주택도시보증공사", tier: "guide", note: "전세보증·전세사기 예방·안심전세앱. 계약 전에 확인할 것을 다룹니다" },
+  { id: "UCPmI5ygQuHcDsb_HZDxBhWA", name: "청약홈TV", tier: "guide", note: "한국부동산원 청약홈이 운영. 모집공고·분양가·청약 제도 해설" },
+  { id: "UCD_GS8VmhbRvNrCn3plPX9A", name: "SH 서울주택도시공사", tier: "guide", note: "서울 장기전세·행복주택·미리내집 공고와 신청 절차" },
   // 경제 전문 — 금리·대출·정비사업 해설이 꾸준합니다
   { id: "UCF8AeLlUbEpKju6v1H6p8Eg", name: "한국경제TV", tier: "econ", note: "금리·대출·증시·경제정책" },
   { id: "UC3p-0EWA8OXko2EUDUXAy5w", name: "서울경제TV", tier: "econ", note: "경제·부동산 시장 동향" },
@@ -85,6 +100,13 @@ const CLIP_SUMMARY = 25;
  * 제목 앞머리의 `[속보]` 같은 건 코너가 아니라서, 막대 뒤 또는 제목 끝 괄호만 봅니다.
  */
 const PROGRAM_MARK = /[|｜]\s*\S|[[［【][^\]］】]{2,}[\]］】]\s*$/;
+/**
+ * 공공기관 채널은 코너 이름을 제목 앞에 답니다 — [SH 주거브리핑], [공고매거진], [N월의 SH공고].
+ * 뒤에 붙는 경우만 보다가 이런 본편을 설명문 길이만으로 쇼츠로 내렸습니다.
+ */
+const PROGRAM_HEAD = /^\s*[[［【][^\]］】]{2,}[\]］】]/;
+/** 스스로 쇼츠라고 밝힌 것 — 코너 이름이 앞에 붙어 있어도 쇼츠입니다 */
+const SHORTS_MARK = /#\s*shorts?\b|[[［【][^\]］】]*(?:쇼츠|숏폼|shorts)[^\]］】]*[\]］】]/i;
 
 /** 제목 끝에 해시태그가 줄줄이 달린 건 쇼츠입니다 — `#청약 #부동산 #다자녀 #청약전략` */
 const HASHTAG_TAIL = /#[^\s#]+(?:\s+#[^\s#]+){1,}\s*$/;
@@ -97,7 +119,19 @@ const HASHTAG_TAIL = /#[^\s#]+(?:\s+#[^\s#]+){1,}\s*$/;
  * 대표 자리를 다툴 수 있는 최대 나이. 이 안에 올라온 게 하나라도 있으면 그중에서만 고릅니다.
  * 주제가 아무리 알맞아도 사흘 지난 영상이 오늘 아침 브리핑 맨 위에 서면 안 됩니다.
  */
-const HEAD_FRESH_MS = 48 * 3600000;
+/**
+ * 대표 자리를 고를 때 '아직 새것'으로 치는 기간. 구분마다 다릅니다.
+ *
+ * 시장 소식은 오늘 것이 아니면 의미가 없지만, 제도 안내는 그렇지 않습니다 —
+ * 전세계약 전 확인할 것, 청약 자격, 보증 가입 절차는 2주 전 영상도 그대로 맞습니다.
+ * 생활·제도 안내 채널은 올리는 양이 하루 0.3편꼴이라, 48시간으로 재면 거의 매일 비어 버립니다.
+ */
+const HEAD_FRESH: Record<ChannelTier, number> = {
+  estate: 48 * 3600000,
+  guide: 21 * 86400000,
+  econ: 48 * 3600000,
+  news: 48 * 3600000,
+};
 
 export const VIDEO_MAX_AGE: Record<Period, number> = { daily: 10, weekly: 21, monthly: 60 };
 
@@ -118,7 +152,8 @@ const channelKey = (v: VideoItem) => v.channelId || v.channel;
  * 유튜브에서 재생 시간을 받아 15편을 맞춰 보고 이 순서로 정했습니다.
  */
 export const isClipVideo = (v: VideoItem) => {
-  if (PROGRAM_MARK.test(v.title)) return false;
+  if (SHORTS_MARK.test(v.title)) return true;
+  if (PROGRAM_MARK.test(v.title) || PROGRAM_HEAD.test(v.title)) return false;
   if (HASHTAG_TAIL.test(v.title)) return true;
   return v.summary.trim().length < CLIP_SUMMARY;
 };
@@ -132,10 +167,10 @@ const newest = (a: VideoItem, b: VideoItem) => new Date(b.publishedAt).getTime()
  *
  *   ① 기간에 맞는 신선도 안에서
  *   ② 채널마다 대표 한 편 — 쇼츠·클립보다 본편을 먼저(설명문 길이로 가름)
- *   ③ 설정에 적은 채널 순서대로, 구분(부동산 전문·경제·종합뉴스)이 겹치지 않게 한 편씩
+ *   ③ 설정에 적은 채널 순서대로, 구분(부동산 전문·생활 안내·경제·종합뉴스)이 겹치지 않게 한 편씩
  *   ④ 그래도 자리가 남으면 남은 대표들 중에서 순서대로
  *
- * 그래서 한 줄이 "부동산 전문 + 경제 + 종합뉴스"로 서고, 목록 맨 위에 둔 채널이 우선합니다.
+ * 그래서 한 줄이 서로 다른 구분으로 서고, 목록 맨 위에 둔 채널이 우선합니다.
  * 기본 목록에 없는 채널은 저마다 다른 구분으로 쳐서, 그 사무소가 적은 순서대로 채워집니다.
  */
 export function pickVideos(
@@ -145,6 +180,8 @@ export function pickVideos(
   now = Date.now(),
   /** 이 브리핑을 볼 사람에게 그 영상 주제가 얼마나 중요한가(0~5). 중개사용과 고객용이 다른 값을 줍니다 */
   weigh?: (v: VideoItem) => number,
+  /** 대표(플레이어가 붙는 자리)를 먼저 노리는 구분. 중개사용은 부동산 전문, 고객용은 생활·제도 안내 */
+  lead: ChannelTier = "estate",
 ): VideoItem[] {
   const cutoff = now - VIDEO_MAX_AGE[period] * 86400000;
   const fresh = videos.filter((v) => new Date(v.publishedAt).getTime() >= cutoff);
@@ -180,15 +217,23 @@ export function pickVideos(
   //                   올리니 어쩌다 하나 나온 부동산 영상도 늘 제일 새것이라서요.
   // 부동산 전문 채널로 범위를 좁혀 최신순으로 고르면 둘 다 피합니다 — 대표는 늘 오늘 것이고,
   // 그날 누가 먼저 올렸느냐에 따라 채널이 자연스럽게 돌아갑니다.
-  const estate = reps.filter((v) => meta(v)?.tier === "estate");
-  // ① 오늘 것 먼저 — 이틀 안에 올라온 게 있으면 그중에서만 고릅니다
+  //
+  // 고객용은 같은 규칙을 '생활·제도 안내' 구분에 적용합니다. 중개사는 시장이 어떻게 움직이는지를,
+  // 고객은 내 계약에서 무엇을 확인해야 하는지를 먼저 봐야 해서입니다. 그 구분이 비어 있는 날에는
+  // 부동산 전문 채널로 내려갑니다 — 빈 칸을 내보내는 것보다 낫습니다.
+  //
+  // ① 새것 먼저 — 그 구분의 신선도 창(HEAD_FRESH) 안에 있는 것 중에서만
   // ② 그중에서 보는 사람에게 중요한 주제 먼저 — 중개사에게는 규제지역·중개업 제도가 5점, 청약이 3점
   // ③ 같으면 새것
-  const sameDay = estate.filter((v) => now - new Date(v.publishedAt).getTime() <= HEAD_FRESH_MS);
-  const head = (sameDay.length ? sameDay : estate).sort((a, b) => {
-    const w = (weigh?.(b) ?? 0) - (weigh?.(a) ?? 0);
-    return w !== 0 ? w : newest(a, b);
-  })[0];
+  const headOf = (tier: ChannelTier): VideoItem | undefined => {
+    const pool = reps.filter((v) => meta(v)?.tier === tier);
+    const recent = pool.filter((v) => now - new Date(v.publishedAt).getTime() <= HEAD_FRESH[tier]);
+    return (recent.length ? recent : pool).sort((a, b) => {
+      const w = (weigh?.(b) ?? 0) - (weigh?.(a) ?? 0);
+      return w !== 0 ? w : newest(a, b);
+    })[0];
+  };
+  const head = headOf(lead) ?? (lead === "estate" ? undefined : headOf("estate"));
   if (head) take(head);
 
   for (const v of reps) {

@@ -207,7 +207,8 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
               </button>
             )}
             <ul className="small muted" style={{ margin: "6px 0 0", paddingLeft: 18 }}>
-              {(["estate", "econ", "news"] as ChannelTier[]).map((t) => (
+              {/* 구분을 손으로 적어 두면 새 구분을 더한 날 조용히 빠집니다 — 표에서 그대로 읽습니다 */}
+              {(Object.keys(TIER_LABEL) as ChannelTier[]).map((t) => (
                 <li key={t}>
                   <b>{TIER_LABEL[t]}</b> — {DEFAULT_CHANNELS.filter((c) => c.tier === t).map((c) => c.name).join(" · ")}
                 </li>

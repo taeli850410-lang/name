@@ -461,7 +461,8 @@ export function videoSection(
    */
   now?: number,
 ): BriefModel["video"] {
-  const picked = pickVideos(videos ?? [], period, undefined, now, weigh);
+  // 고객용 대표는 '생활·제도 안내', 중개사용 대표는 '부동산 전문'에서 먼저 찾습니다
+  const picked = pickVideos(videos ?? [], period, undefined, now, weigh, forCustomer ? "guide" : "estate");
   if (!picked.length) return undefined;
   return {
     brand,

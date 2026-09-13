@@ -157,7 +157,7 @@ export function buildDraft(issues: Issue[], office: Office, market: MarketDoc, o
      * 아무 일도 못 했습니다 — 내집마련·보유·자산 세 호가 모두 중개사용과 같은 영상을
      * 대표로 달았습니다. 고를 것이 남아 있을 때 골라야 합니다.
      */
-    videos: pickVideos(opts.videos ?? [], period, undefined, now, videoWeigh(SEGMENTS[segment].personas)),
+    videos: pickVideos(opts.videos ?? [], period, undefined, now, videoWeigh(SEGMENTS[segment].personas), "guide"),
   };
 }
 
