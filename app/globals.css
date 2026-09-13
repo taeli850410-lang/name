@@ -136,14 +136,15 @@ tr:last-child td { border-bottom: 0; }
 .chrome-status.off { border-color: rgba(255, 255, 255, 0.3); color: var(--chrome-ink); }
 /* 사무소 정보 입력 창 — 화면을 떠나지 않고 그 자리에서 고칩니다 */
 .odlg-back { position: fixed; inset: 0; z-index: 60; background: rgba(15, 22, 34, 0.5); display: flex; align-items: flex-start; justify-content: center; padding: 6vh 16px 24px; overflow: auto; }
-.odlg { width: 100%; max-width: 520px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28); padding: 18px 20px 16px; }
+.odlg { width: 100%; max-width: 520px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28); padding: 18px 20px 16px; display: flex; flex-direction: column; max-height: 88vh; }
 .odlg-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .odlg-head h2 { font-size: 17px; font-weight: 800; letter-spacing: -0.01em; }
 .odlg-x { border: 0; background: transparent; color: var(--ink-3); font-size: 15px; cursor: pointer; padding: 4px 6px; border-radius: 6px; }
 .odlg-x:hover { background: var(--surface-2); color: var(--ink); }
 .odlg-sub { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; line-height: 1.6; }
 .odlg-loading { font-size: 13px; color: var(--ink-3); padding: 18px 0; }
-.odlg-body { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; margin-top: 14px; }
+/* 칸이 많아 화면을 넘기면 여기 안에서만 스크롤합니다. 바깥이 스크롤하면 머리말과 저장 버튼까지 같이 흘러갑니다 */
+.odlg-body { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; margin-top: 14px; overflow-y: auto; min-height: 0; padding-right: 4px; scroll-padding: 8px; }
 .odlg-body .field:first-child, .odlg-body .field:nth-child(8) { grid-column: 1 / -1; }
 @media (max-width: 520px) { .odlg-body { grid-template-columns: 1fr; } .odlg-body .field:nth-child(8) { grid-column: auto; } }
 .odlg-req { display: inline-block; margin-left: 5px; font-size: 10px; font-weight: 700; color: var(--warn); background: var(--warn-soft); border-radius: 4px; padding: 1px 5px; vertical-align: 1px; }

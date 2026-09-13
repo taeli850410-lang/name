@@ -12,14 +12,14 @@ import type { Office } from "@/lib/types";
  * 나머지 설정(지역·주력 주제·영상 채널)은 양이 많아 설정 화면에 그대로 둡니다.
  */
 
-const FIELDS: { key: keyof Office; label: string; hint?: string; type?: string; required?: boolean }[] = [
-  { key: "officeName", label: "중개사무소 상호", hint: "마스트헤드에 가장 크게 나옵니다", required: true },
-  { key: "repName", label: "대표 공인중개사", required: true },
+const FIELDS: { key: keyof Office; label: string; hint?: string; type?: string; required?: boolean; auto?: string }[] = [
+  { key: "officeName", label: "중개사무소 상호", hint: "마스트헤드에 가장 크게 나옵니다", required: true, auto: "organization" },
+  { key: "repName", label: "대표 공인중개사", required: true, auto: "name" },
   { key: "registrationNo", label: "중개사무소 등록번호", required: true },
-  { key: "phone", label: "연락처(휴대전화)", type: "tel", hint: "고객용 레터의 전화 버튼에 걸립니다", required: true },
+  { key: "phone", label: "연락처(휴대전화)", type: "tel", hint: "고객용 레터의 전화 버튼에 걸립니다", required: true, auto: "tel" },
   { key: "brandName", label: "브랜드 표기", hint: "마스트헤드 아래 작은 글씨" },
   { key: "areaLabel", label: "지역 표기", hint: '전국구면 "전국", 지역 밀착이면 "인천 부평구" 처럼' },
-  { key: "kakaoUrl", label: "카카오톡 채널 URL", type: "url", hint: "비우면 상담 버튼이 전화만 표시됩니다" },
+  { key: "kakaoUrl", label: "카카오톡 채널 URL", type: "url", hint: "비우면 상담 버튼이 전화만 표시됩니다", auto: "url" },
   { key: "slogan", label: "레터 슬로건", hint: "고객에게 보이는 문구입니다" },
 ];
 
@@ -118,6 +118,10 @@ export default function OfficeDialog({ onClose }: { onClose: () => void }) {
                     id={`od-${f.key}`}
                     ref={i === 0 ? firstRef : undefined}
                     type={f.type ?? "text"}
+                    name={`office-${f.key}`}
+                    // 값의 뜻을 아는 칸만 자동완성을 켭니다. 나머지는 예전에 친 글자가 목록으로 뜨면서
+                    // 아래 칸들을 가리고, 브라우저가 그 목록 자리를 만들려고 화면을 밀어 올립니다.
+                    autoComplete={f.auto ?? "off"}
                     value={String(office[f.key] ?? "")}
                     onChange={(e) => setOffice({ ...office, [f.key]: e.target.value })}
                   />
@@ -126,7 +130,10 @@ export default function OfficeDialog({ onClose }: { onClose: () => void }) {
               ))}
             </div>
             {msg && <div className={`alert alert-${msg.tone} odlg-msg`}>{msg.text}</div>}
-            {missing.length > 0 && <div className="alert alert-warn odlg-msg">발행 전 필수: {missing.join(" · ")}</div>}
+            {/* 있다가 없어지면 창이 그만큼 짧아지고, 그 순간 커서를 둔 칸이 따라 움직입니다. 늘 자리를 지킵니다 */}
+            <div className={`alert ${missing.length ? "alert-warn" : "alert-ok"} odlg-msg`}>
+              {missing.length ? `발행 전 필수: ${missing.join(" · ")}` : "발행에 필요한 항목이 모두 채워졌습니다."}
+            </div>
             <div className="odlg-foot">
               <a className="odlg-more" href="/studio/settings">
                 지역·주력 주제·영상 채널 설정 →
