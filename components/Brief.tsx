@@ -17,6 +17,7 @@ import {
   type BriefVideoModel,
 } from "@/lib/brief";
 import VideoPlayer from "@/components/VideoPlayer";
+import { CUSTOMER_VIDEO_LABELS as L } from "@/lib/videoGuide";
 
 /**
  * 브리핑 렌더러. 원본 EDM 구조를 그대로 따르고, audience 에 따라 그린(중개사)·남색(고객) 테마를 씁니다.
@@ -78,6 +79,62 @@ function Impact({ card }: { card: BriefCardModel }) {
   );
 }
 
+/** ●●●○○ — 숫자만 두면 몇 점 만점인지 모르니 말로도 적습니다 */
+function Dots({ level, label }: { level: number; label: string }) {
+  return (
+    <span className="vdots" aria-label={`영향도 ${level} / 5 · ${label}`}>
+      <b aria-hidden="true">{dots(level)}</b>
+      <i>{label}</i>
+    </span>
+  );
+}
+
+/**
+ * 고객용 대표 영상에만 붙는 안내. 중개사용에는 없습니다 — 중개사는 제도만 보면 되고,
+ * 고객은 그 앞에서 "그래서 내가 뭘 해야 하지?"에서 막힙니다.
+ */
+function VideoGuideTop({ g }: { g: NonNullable<BriefVideoModel["guide"]> }) {
+  return (
+    <>
+      <div className="vguide">
+        <div className="vguide-lbl">{L.audience}</div>
+        {g.audiences.map((a) => (
+          <div className="vaud" key={a.key}>
+            <div className="vaud-top">
+              <span className="vaud-name">{a.label}</span>
+              <Dots level={a.level} label={a.levelLabel} />
+            </div>
+            <p>{a.note}</p>
+          </div>
+        ))}
+        <p className="vguide-note">{L.impactNote}</p>
+      </div>
+
+      <div className="vsettle">
+        <span className="vsettle-lbl">{L.notSettled}</span>
+        <p>{g.notSettled}</p>
+      </div>
+    </>
+  );
+}
+
+/** 계약 전 확인 목록. FACT/ANALYSIS 를 읽은 다음에 옵니다 — 무엇인지 알고 나서 무엇을 확인할지 */
+function VideoChecklist({ g }: { g: NonNullable<BriefVideoModel["guide"]> }) {
+  return (
+      <div className="vcheck">
+        <div className="vcheck-lbl">{L.checklist}</div>
+        <ol>
+          {g.checkpoints.map((c, i) => (
+            <li key={i}>
+              <span className="vcheck-n">{String(i + 1).padStart(2, "0")}</span>
+              {c}
+            </li>
+          ))}
+        </ol>
+      </div>
+  );
+}
+
 /** 번호가 붙는 관련 기사 카드 — ARTICLE 01 · 02 · 03 */
 function NumberedArticles({ articles, id }: { articles: BriefVideoModel["articles"]; id: string }) {
   if (!articles.length) return null;
@@ -128,6 +185,7 @@ function VideoHead({ v }: { v: BriefVideoModel }) {
           {v.title}
         </a>
       </h4>
+      {v.guide && <p className="vquestion">{v.guide.question}</p>}
 
       <div className="vhero-stage">
         <VideoPlayer id={v.id} title={v.title} thumb={v.thumb} url={v.url} tag={VIDEO_TAG} aside={VIDEO_ASIDE} />
@@ -145,7 +203,7 @@ function VideoHead({ v }: { v: BriefVideoModel }) {
 
       {v.points.length > 0 ? (
         <div className="pcard-bullets">
-          <div className="lbl">{VIDEO_POINTS_TITLE}</div>
+          <div className="lbl">{v.guide ? L.summary : VIDEO_POINTS_TITLE}</div>
           {v.points.map((t, i) => (
             <div className="bl" key={i}>
               <span className="bl-ic">✓</span>
@@ -156,6 +214,8 @@ function VideoHead({ v }: { v: BriefVideoModel }) {
       ) : (
         v.lead && <p className="pcard-lead">{v.lead}</p>
       )}
+
+      {v.guide && <VideoGuideTop g={v.guide} />}
 
       {(v.fact || v.analysis) && (
         <div className="va-split">
@@ -174,6 +234,8 @@ function VideoHead({ v }: { v: BriefVideoModel }) {
           )}
         </div>
       )}
+
+      {v.guide && <VideoChecklist g={v.guide} />}
 
       <div className="srcrow">
         {/* 붙일 보도가 있을 때만 아래로 내려보냅니다. 없으면 같은 자리에서 영상으로 보냅니다 */}
@@ -200,6 +262,7 @@ function VideoHead({ v }: { v: BriefVideoModel }) {
         )}
       </div>
 
+      {v.guide && v.articles.length > 0 && <p className="vcta-note">{L.ctaNote}</p>}
       <NumberedArticles articles={v.articles} id={v.id} />
     </article>
   );

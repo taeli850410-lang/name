@@ -5,6 +5,7 @@ import { applyArea, computeTiles, regionRows } from "./market";
 import { focusRank, gradeIssue, isFresh, maxSegmentImpact, ROUTE_LABEL, routeIssue } from "./routing";
 import { pickVideos, VIDEO_MAX_AGE } from "./channels";
 import { isRealEstateRelevant } from "./classify";
+import { AUDIENCE_NOTE, AUDIENCES, audienceImpact, AUDIENCE_LABEL, CHECKPOINTS, EASY_QUESTION, impactLabel, NOT_SETTLED, type Audience as VideoAudience } from "./videoGuide";
 import { descriptionPoints } from "./video";
 import { sourceLinks, type SourceLink } from "./source";
 import { PERIOD_LABEL, PERSONA_MATRIX, PERSONAS, regionLabel, SEGMENTS, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL } from "./taxonomy";
@@ -91,6 +92,17 @@ export interface BriefVideoModel {
   fact?: string;
   /** 중개사가 판단할 것. 사실이 아니라 해석이라는 걸 화면에서 갈라 보여 줍니다 */
   analysis?: string;
+  /** 고객용에만 붙는 안내. 중개사용 브리핑에는 없습니다 — 중개사는 제도만 보면 됩니다 */
+  guide?: {
+    /** 헤드라인 아래 한 줄 — 고객이 속으로 하는 질문 */
+    question: string;
+    /** 나는 해당될까요? — 전세·월세 / 내 집 마련 / 투자·임대 */
+    audiences: { key: VideoAudience; label: string; note: string; level: number; levelLabel: string }[];
+    /** 아직 확정이 아닌 부분 */
+    notSettled: string;
+    /** 계약 전 확인할 것 */
+    checkpoints: string[];
+  };
 }
 
 /** 영상 한 편에 딸리는 보도 묶음을 찾을 때 쓰는 최소 정보 */
@@ -303,6 +315,7 @@ export function letterToBrief(letter: Letter): BriefModel {
       // EDM 스냅샷에는 지역이 실리지 않습니다. 주제만으로 묶고, 지역 가산점은 중개사용에서만 씁니다
       letter.issues.map((i) => ({ topic: i.topic, publishedAt: i.publishedAt, articles: i.articles ?? [] })),
       videoWeigh(SEGMENTS[letter.segment].personas),
+      true,
     ),
     policy: {
       title: POLICY_TITLE[period],
@@ -388,7 +401,20 @@ function relatedForVideo(v: VideoItem, pool: VideoNewsSource[], period: Period, 
  * 출처를 남기고, ANALYSIS 는 주제별로 '무엇부터 확인할 것' 한 줄입니다. 둘을 한 칸에 섞으면
  * 방송이 말한 사실과 중개사의 해석이 구분되지 않습니다.
  */
-function toBriefVideo(v: VideoItem, full: boolean, period: Period, pool: VideoNewsSource[] = []): BriefVideoModel {
+/** 고객용 대표 영상에 붙는 안내 묶음. 주제 하나로 전부 결정되므로 영상 내용을 지어내지 않습니다 */
+function videoGuide(topic: Topic): NonNullable<BriefVideoModel["guide"]> {
+  return {
+    question: EASY_QUESTION[topic],
+    audiences: AUDIENCES.map((key) => {
+      const level = audienceImpact(topic, key);
+      return { key, label: AUDIENCE_LABEL[key], note: AUDIENCE_NOTE[topic][key], level, levelLabel: impactLabel(level) };
+    }),
+    notSettled: NOT_SETTLED[topic],
+    checkpoints: CHECKPOINTS[topic],
+  };
+}
+
+function toBriefVideo(v: VideoItem, full: boolean, period: Period, pool: VideoNewsSource[] = [], forCustomer = false): BriefVideoModel {
   const { lead, points } = descriptionPoints(v.summary);
   const leadText = clamp(lead || v.summary, full ? 200 : 110);
   return {
@@ -408,6 +434,7 @@ function toBriefVideo(v: VideoItem, full: boolean, period: Period, pool: VideoNe
     // 채널 이름 뒤에 조사를 붙이면 받침에 따라 이/가가 갈립니다. 받침을 안 가리는 "에서"를 씁니다
     fact: full ? `${v.channel}에서 ${fmtDate(v.publishedAt)}에 보도한 내용입니다. ${leadText}`.trim() : undefined,
     analysis: full ? VIDEO_ANALYSIS[v.topic] : undefined,
+    guide: full && forCustomer ? videoGuide(v.topic) : undefined,
   };
 }
 
@@ -429,6 +456,7 @@ export function videoSection(
   brand = VIDEO_BRAND,
   pool: VideoNewsSource[] = [],
   weigh?: (v: VideoItem) => number,
+  forCustomer = false,
 ): BriefModel["video"] {
   const picked = pickVideos(videos ?? [], period, undefined, undefined, weigh);
   if (!picked.length) return undefined;
@@ -436,7 +464,7 @@ export function videoSection(
     brand,
     title: VIDEO_TITLE[period],
     sub: VIDEO_SUB,
-    head: toBriefVideo(picked[0], true, period, pool),
+    head: toBriefVideo(picked[0], true, period, pool, forCustomer),
     items: picked.slice(1).map((v) => toBriefVideo(v, false, period)),
   };
 }
