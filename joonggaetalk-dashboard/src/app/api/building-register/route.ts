@@ -2,7 +2,7 @@
  * 건축물대장 조회 — 국토교통부 BldRgstHubService 프록시.
  *
  * 인증키는 서버에만 두고 브라우저로 내보내지 않는다.
- * GET  : 키가 설정돼 있는지만 알려 준다 (한도를 쓰지 않는다)
+ * GET  : 키가 설정돼 있는지만 알려 준다 (한도를 쓰지 않는다) · ?check=1 실제 호출 한 번
  * POST : 표제부(기본) · 층별개요(floors=true) 조회
  */
 import { NextResponse } from "next/server";
@@ -27,12 +27,15 @@ export const dynamic = "force-dynamic";
 const BASE = process.env.BLD_RGST_BASE || "https://apis.data.go.kr/1613000/BldRgstHubService";
 const TIMEOUT_MS = 10_000;
 
+/** ?check=1 이 실제로 조회해 보는 지번 — 인천 부평구 십정동 630 */
+const CHECK_KEY: RegisterKey = { sigunguCd: "28237", bjdongCd: "10200", platGbCd: "0", bun: "0630", ji: "0000" };
+
 function serviceKey(): string {
   return normalizeServiceKey(process.env.DATA_GO_KR_API_KEY || process.env.BUILDING_REGISTER_API_KEY || "");
 }
 
-function fail(code: RegisterErrorCode, status = 400) {
-  return NextResponse.json({ ok: false, code, ...REGISTER_ERRORS[code] }, { status });
+function fail(code: RegisterErrorCode, status = 400, extra?: Record<string, unknown>) {
+  return NextResponse.json({ ok: false, code, ...REGISTER_ERRORS[code], ...extra }, { status });
 }
 
 async function callOperation(op: string, key: RegisterKey, numOfRows: number): Promise<{ payload: unknown } | { code: RegisterErrorCode }> {
@@ -80,8 +83,9 @@ async function callOperation(op: string, key: RegisterKey, numOfRows: number): P
 }
 
 export async function GET(req: Request) {
+  const sp = new URL(req.url).searchParams;
   // ?demo=1 — 인증키 없이 화면을 확인할 때. 실제로 받아 둔 응답 한 건을 같은 정규화로 돌려준다.
-  if (new URL(req.url).searchParams.get("demo") === "1") {
+  if (sp.get("demo") === "1") {
     return NextResponse.json({
       ok: true,
       demo: true,
@@ -92,6 +96,22 @@ export async function GET(req: Request) {
       dongs: normalizeDongs(unwrapItems(BR_SAMPLE_TITLE)),
     });
   }
+  // 키가 환경 변수에 있다고 조회가 되는 건 아니다. 공공데이터포털은 서비스마다
+  // 활용 신청을 따로 받고, 승인 전에는 같은 키라도 이 서비스만 거절한다.
+  // 한도를 쓰므로 운영자가 누를 때만 돈다. 1건만 받아 온다.
+  if (sp.get("check") === "1") {
+    if (!serviceKey()) return fail("NO_KEY", 503, { live: true });
+    const r = await callOperation("getBrTitleInfo", CHECK_KEY, 1);
+    if ("code" in r) {
+      // 자료가 없다는 응답은 키가 거절된 게 아니다 — 서버까지 갔다 왔다는 뜻이다.
+      if (r.code === "NO_DATA") {
+        return NextResponse.json({ ok: true, live: true, key: CHECK_KEY, totalCount: 0, note: "응답은 정상입니다. 이 지번에 대장이 없을 뿐입니다." });
+      }
+      return fail(r.code, r.code === "UPSTREAM" ? 502 : 400, { live: true, key: CHECK_KEY });
+    }
+    return NextResponse.json({ ok: true, live: true, key: CHECK_KEY, totalCount: readTotalCount(r.payload) });
+  }
+
   return NextResponse.json({ configured: Boolean(serviceKey()), base: BASE });
 }
 

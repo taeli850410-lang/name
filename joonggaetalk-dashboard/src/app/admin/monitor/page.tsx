@@ -4,7 +4,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Badge, Banner, PageHead, StatTile } from "@/components/ui/Bits";
 import { useToast } from "@/components/ui/Toast";
 import { systemStatus } from "@/data/system";
-import { IntegrationHelp, IntegrationList, IntegrationTile, useIntegrationProbe } from "@/components/admin/IntegrationStatus";
+import { IntegrationHelp, IntegrationList, IntegrationTile, LiveCheckButton, useIntegrationProbe } from "@/components/admin/IntegrationStatus";
 import { formatNumber } from "@/lib/format";
 
 const agents = [
@@ -45,7 +45,8 @@ export default function MonitorPage() {
       <section className="card mb-16">
         <div className="card__head">
           <h2>외부 연동</h2>
-          <span className="muted small">각 연동의 서버 설정 여부를 지금 확인한 값입니다</span>
+          <span className="muted small">각 연동의 서버 설정 여부를 지금 확인한 값입니다. 키가 실제로 통하는지는 오른쪽에서 직접 불러 봅니다.</span>
+          <LiveCheckButton probe={probe} />
         </div>
         <IntegrationList probe={probe} />
         <div className="card__body" style={{ paddingTop: 0 }}>
