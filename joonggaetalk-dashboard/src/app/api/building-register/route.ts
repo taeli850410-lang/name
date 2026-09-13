@@ -111,7 +111,7 @@ export async function GET(req: Request) {
       }
       return fail(r.code, r.code === "UPSTREAM" ? 502 : 400, { live: true, key: CHECK_KEY });
     }
-    return NextResponse.json({ ok: true, live: true, key: CHECK_KEY, totalCount: readTotalCount(r.payload) });
+    return NextResponse.json({ ok: true, live: true, region: process.env.VERCEL_REGION || "unknown", key: CHECK_KEY, totalCount: readTotalCount(r.payload) });
   }
 
   return NextResponse.json({ configured: Boolean(serviceKey()), base: BASE });

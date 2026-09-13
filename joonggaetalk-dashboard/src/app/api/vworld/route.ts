@@ -71,6 +71,11 @@ function referer(): string {
   return (process.env.VWORLD_REFERER || "").trim();
 }
 
+/** 이 함수가 실제로 도는 리전. icn1 이 서울, iad1 이 워싱턴. */
+function region(): string {
+  return process.env.VERCEL_REGION || "unknown";
+}
+
 function fail(code: VworldErrorCode, status = 400, extra?: Record<string, unknown>) {
   return NextResponse.json({ ok: false, code, ...VWORLD_ERRORS[code], ...extra }, { status });
 }
@@ -184,7 +189,7 @@ export async function GET(req: Request) {
     const ref = referer();
     const r = await geocode(CHECK_ADDRESS, "parcel");
     if (!("code" in r)) {
-      return NextResponse.json({ ok: true, live: true, address: CHECK_ADDRESS, referer: ref || null, pnu: r.hit.pnu ?? null, point: r.hit.point });
+      return NextResponse.json({ ok: true, live: true, region: region(), address: CHECK_ADDRESS, referer: ref || null, pnu: r.hit.pnu ?? null, point: r.hit.point });
     }
 
     // 실패했으면 Referer 를 빼고 한 번 더. 이것만으로 되면 원인은 키도
@@ -199,6 +204,9 @@ export async function GET(req: Request) {
     // 보여 주면 도메인 문제인지 시간 초과인지 영영 알 수 없다.
     return fail(r.code, r.code === "UPSTREAM" ? 502 : 400, {
       live: true,
+      // 어느 리전에서 부른 것인지. 추측하지 않고 실제 값을 읽는다 —
+      // VWorld 는 미국 리전에서 온 요청을 거절하므로 이게 곧 원인이다.
+      region: region(),
       address: CHECK_ADDRESS,
       referer: ref || null,
       withoutReferer,
