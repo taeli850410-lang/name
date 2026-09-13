@@ -233,6 +233,25 @@ const YT = {
       "UCCt6iN6nJemSe_OHRihYBAQ",
     ),
   ]),
+  // 재생목록 피드 — 그 목록에 담긴 영상만 옵니다 (KBS News 의 '부동산' 재생목록이라 가정)
+  PLkbsRealEstateTest00000: ytFeed("KBS News", "UCcQTRi69dsVYHN3exePtZ1A", [
+    ytEntry(
+      "yt0601",
+      "[뉴스9] 공시가격 현실화율 동결…보유세는 얼마나",
+      "정부가 내년 공시가격 현실화율을 올해 수준으로 동결하기로 했습니다. 보유세 부담 변화를 짚었습니다.",
+      "2026-09-12T12:00:00+00:00",
+      "KBS News",
+      "UCcQTRi69dsVYHN3exePtZ1A",
+    ),
+    ytEntry(
+      "yt0602",
+      "[집중취재] 지방 미분양 6만호…빈집 되는 새 아파트",
+      "지방 미분양 물량이 6만 호를 넘었습니다. 준공 후에도 비어 있는 단지를 취재했습니다.",
+      "2026-09-10T12:00:00+00:00",
+      "KBS News",
+      "UCcQTRi69dsVYHN3exePtZ1A",
+    ),
+  ]),
   UCmolitKOREALANDtest0000: ytFeed("국토교통부", "UCmolitKOREALANDtest0000", [
     ytEntry(
       "yt0301",
@@ -261,7 +280,8 @@ http
       return;
     }
     if (url.startsWith("/yt")) {
-      const id = new URL(url, "http://x").searchParams.get("channel_id") ?? "";
+      const sp = new URL(url, "http://x").searchParams;
+      const id = sp.get("channel_id") ?? sp.get("playlist_id") ?? "";
       res.writeHead(200, { "Content-Type": "application/atom+xml; charset=utf-8" });
       res.end(YT[id] ?? ytFeed("빈 채널", id, []));
       return;

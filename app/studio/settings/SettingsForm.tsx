@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { DEFAULT_CHANNELS, DEFAULT_CHANNELS_TEXT, TIER_LABEL, type ChannelTier } from "@/lib/channels";
+import { DEFAULT_CHANNELS, DEFAULT_CHANNELS_TEXT, SOURCE_EXAMPLES_TEXT, TIER_LABEL, type ChannelTier } from "@/lib/channels";
 import { TOPICS, TOPIC_LABEL, VIDEO_IN_BRIEF } from "@/lib/taxonomy";
 
 import type { Office, Topic } from "@/lib/types";
@@ -168,10 +168,15 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
         {showVideos && (
           <div className="field">
             <label htmlFor="f-channels">영상 채널 (한 줄에 하나)</label>
-            <textarea id="f-channels" rows={6} placeholder={DEFAULT_CHANNELS_TEXT} value={channels} onChange={(e) => setChannels(e.target.value)} />
+            <textarea id="f-channels" rows={6} placeholder={SOURCE_EXAMPLES_TEXT} value={channels} onChange={(e) => setChannels(e.target.value)} />
             <span className="hint">
-              채널 주소 · @핸들 · UC 아이디 · 재생목록 주소를 넣을 수 있습니다. <b>비워 두면 아래 기본 채널 {DEFAULT_CHANNELS.length}곳으로 돕니다.</b> 유튜브 채널 피드는 최신 15편만
-              주므로, 하루에 수백 편을 올리는 종합뉴스 채널은 부동산 영상이 방금 올라왔을 때만 걸립니다. 부동산·경제 전문 채널이나 그 채널의 부동산 재생목록이 훨씬 잘 걸립니다.
+              위 칸의 흐린 글씨가 넣을 수 있는 네 가지 형태입니다 — <b>UC 아이디 · @핸들 · 채널 주소 · 재생목록 주소</b>. <b>비워 두면 아래 기본 채널 {DEFAULT_CHANNELS.length}곳으로
+              돕니다.</b>
+            </span>
+            <span className="hint">
+              <b>재생목록을 넣으면 더 잘 걸립니다.</b> 채널 피드는 업로드 최신 15편만 주므로 하루에 수백 편을 올리는 종합뉴스 채널은 부동산 영상이 방금 올라왔을 때만 잡힙니다. 유튜브에서
+              그 채널의 <b>재생목록 탭 → 부동산 목록을 열고 주소창을 그대로 복사</b>해 붙이면(<code>youtube.com/playlist?list=PL…</code>) 그 목록의 최신 15편만 들어옵니다. 직접 만든
+              재생목록에 쓸 만한 영상을 모아 두고 그 주소를 넣어도 됩니다.
             </span>
             {channels.trim() === "" && (
               <button className="btn btn-sm" type="button" style={{ alignSelf: "flex-start", marginTop: 4 }} onClick={() => setChannels(DEFAULT_CHANNELS_TEXT)}>

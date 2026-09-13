@@ -46,6 +46,19 @@ export const DEFAULT_CHANNELS: DefaultChannel[] = [
 
 export const DEFAULT_VIDEO_SOURCES = DEFAULT_CHANNELS.map((c) => c.id);
 
+/**
+ * 설정 칸에 넣을 수 있는 네 가지 형태를 한 번에 보여 주는 예시입니다(입력 안내용, 저장되지 않습니다).
+ * 마지막 줄이 재생목록 주소입니다 — 유튜브에서 재생목록을 열고 주소창을 그대로 복사하면 됩니다.
+ * 재생목록 피드도 키 없이 열리고, 그 목록에 담긴 최신 15편을 줍니다.
+ */
+export const SOURCE_EXAMPLES = [
+  "UCAVdqlngIAxHtwlCA2hjv3A",
+  "@korealand",
+  "https://www.youtube.com/channel/UCTHCOPwqNfZ0uiKOvFyhGwg",
+  "https://www.youtube.com/playlist?list=PL0Uzao5umnToeNR6m0wYRd2Td-QJcO1oh",
+];
+export const SOURCE_EXAMPLES_TEXT = SOURCE_EXAMPLES.join("\n");
+
 /** 채널 목록을 설정 칸에 넣을 여러 줄 문자열로. 아이디 뒤에 이름을 주석처럼 붙이지 않습니다(그대로 저장되므로) */
 export const DEFAULT_CHANNELS_TEXT = DEFAULT_VIDEO_SOURCES.join("\n");
 
