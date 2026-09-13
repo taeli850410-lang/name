@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AgencyBadge, GradeChip, RegionChip, ReviewChip, RouteChip, StatusPill, TopicChip } from "@/components/Badges";
 import { fmtDate, relTime } from "@/lib/format";
 import { focusRank, gradeIssue, isFresh, routeIssue } from "@/lib/routing";
+import { SIDO_ORDER, sidoOf } from "@/lib/classify";
 import { REGION_LABEL, regionLabel, STATUS_LABEL, TOPICS, TOPIC_LABEL } from "@/lib/taxonomy";
 import type { CollectStats, Issue, Topic } from "@/lib/types";
 
@@ -71,12 +72,17 @@ export default function InboxClient({
     if (axis === "topic") return { key: i.topic, label: TOPIC_LABEL[i.topic] };
     if (axis === "agency") return { key: i.agency, label: i.agency };
     if (axis === "status") return { key: i.status, label: STATUS_LABEL[i.status] };
-    const label = regionLabel(i.region, i.place);
+    // 지역 축은 시도 단위로 묶습니다 — 안양·동탄이 따로 서지 않고 경기도 한 칸에 들어가게
+    const label = sidoOf(i.place) ?? (i.place ? REGION_LABEL.other : regionLabel(i.region, null));
     return { key: label, label };
   };
 
-  /** 지역 축은 전국·우리 지역을 앞에 두고 나머지는 건수 순으로 */
-  const regionRank = (k: string) => (k === REGION_LABEL.national ? 0 : k === REGION_LABEL.local ? 1 : 2);
+  /** 지역 축은 전국을 맨 앞에, 그다음 수도권 → 광역시·도 순서로 */
+  const regionRank = (k: string) => {
+    if (k === REGION_LABEL.national) return 0;
+    const i = SIDO_ORDER.indexOf(k);
+    return i >= 0 ? 1 + i : 1 + SIDO_ORDER.length;
+  };
 
   const buckets = useMemo(() => {
     const m = new Map<string, { label: string; n: number }>();
@@ -92,7 +98,7 @@ export default function InboxClient({
         : axis === "status"
           ? Object.keys(STATUS_LABEL)
           : [...m.keys()].sort((a, b) => {
-              if (axis === "region" && regionRank(a) !== regionRank(b)) return regionRank(a) - regionRank(b);
+              if (axis === "region") return regionRank(a) - regionRank(b);
               return (m.get(b)?.n ?? 0) - (m.get(a)?.n ?? 0);
             });
     return order.filter((k) => m.has(k)).map((k) => ({ key: k, label: m.get(k)!.label, n: m.get(k)!.n }));
