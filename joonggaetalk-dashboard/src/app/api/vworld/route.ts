@@ -205,7 +205,28 @@ export async function GET(req: Request) {
     const ref = referer();
     const r = await geocode(CHECK_ADDRESS, "parcel");
     if (!("code" in r)) {
-      return NextResponse.json({ ok: true, live: true, region: region(req), address: CHECK_ADDRESS, referer: ref || null, pnu: r.hit.pnu ?? null, point: r.hit.point });
+      // 지오코더만 되는 것으로는 모자란다. 중개사가 [필지 조회]를 누르면
+      // 연속지적도와 용도지역까지 부르고, 그 둘은 실패해도 조용히 빈칸이 된다.
+      // 확인은 실제로 쓰는 경로를 그대로 타야 의미가 있다.
+      const [parcelProps, zoningProps] = await Promise.all([
+        featureAt(LAYER_PARCEL, r.hit.point.lon, r.hit.point.lat),
+        featureAt(LAYER_ZONING, r.hit.point.lon, r.hit.point.lat),
+      ]);
+      const parcel = parcelProps ? parseParcel(parcelProps) : null;
+      const zoning = zoningProps ? parseZoning(zoningProps) : null;
+      return NextResponse.json({
+        ok: true,
+        live: true,
+        region: region(req),
+        address: CHECK_ADDRESS,
+        referer: ref || null,
+        pnu: r.hit.pnu ?? parcel?.pnu ?? null,
+        point: r.hit.point,
+        // 레이어별로 따로 낸다 — 하나만 안 되는 것도 그대로 보여야 한다
+        layers: { 지오코더: true, 연속지적도: Boolean(parcel), 용도지역: Boolean(zoning) },
+        jimok: parcel?.jimok ?? null,
+        zoning: zoning?.name ?? null,
+      });
     }
 
     // 실패했으면 Referer 를 빼고 한 번 더. 이것만으로 되면 원인은 키도
