@@ -56,6 +56,7 @@ function summarize(key: string, data: Record<string, unknown>): string {
     const bucket = typeof data.bucket === "string" ? data.bucket : "";
     return `${bucket ? `${bucket} 에 ` : ""}올렸다 되읽고 지웠습니다 · 브라우저 업로드 허용됨`;
   }
+  if (key === "files-skipped") return "";
   return "호출 성공";
 }
 
@@ -97,11 +98,15 @@ export function useIntegrationProbe() {
           const res = await fetch(i.check!, { cache: "no-store" });
           const data = (await res.json()) as Record<string, unknown>;
           if (data.ok === true) return [i.key, { ok: true, message: summarize(i.key, data) }];
+          // 확인하지 못한 단계는 실패와 나눠서 적는다
+          const skipped = Array.isArray(data.skipped) ? (data.skipped as string[]) : [];
           return [
             i.key,
             {
               ok: false,
-              message: String(data.message ?? "조회하지 못했습니다."),
+              message:
+                String(data.message ?? "조회하지 못했습니다.") +
+                (skipped.length ? ` (${skipped.join(" · ")} 는 확인하지 못했습니다)` : ""),
               hint: typeof data.hint === "string" ? data.hint : undefined,
             },
           ];

@@ -127,7 +127,9 @@ async function selfCheck(cfg: S3Config, req: Request) {
   const key = `_점검/${randomBytes(8).toString("base64url")}.txt`;
   const body = `budongsan-talk storage check ${new Date().toISOString()}`;
 
-  const steps: Record<string, boolean> = {};
+  // true = 됨, false = 안 됨, null = 확인 못 함.
+  // 셋을 구분하지 않으면 "못 본 것"이 "안 되는 것"으로 둔갑한다.
+  const steps: Record<string, boolean | null> = {};
   const detail: Record<string, string> = {};
 
   // 1. 올리기
@@ -156,9 +158,19 @@ async function selfCheck(cfg: S3Config, req: Request) {
       detail["되읽기"] = "저장소에 닿지 못했습니다.";
     }
   }
-  steps["되읽기"] = readBack;
+  steps["되읽기"] = uploaded ? readBack : null;
 
-  // 3. 브라우저에서 올리기 (CORS) — 올리기가 실패해도 따로 본다
+  // 3. 브라우저에서 올리기 (CORS)
+  //
+  // 버킷 자체를 못 찾았으면 여기서 나온 값은 의미가 없다. 없는 버킷에 예비
+  // 요청을 보내면 CORS 헤더가 안 붙어 오는데, 그걸 "CORS 설정이 없다"로
+  // 읽으면 멀쩡히 설정해 둔 사람에게 다시 설정하라고 시키게 된다.
+  // 실제로 그렇게 잘못 안내한 적이 있다.
+  const bucketBroken = /^(NoSuchBucket|InvalidAccessKeyId|SignatureDoesNotMatch|AccessDenied)/.test(detail["올리기"] || "");
+  if (bucketBroken) {
+    steps["브라우저에서 올리기"] = null;
+    detail["브라우저에서 올리기"] = "버킷 문제를 먼저 고쳐야 확인할 수 있습니다.";
+  } else {
   let cors = false;
   try {
     const pre = await fetch(presign(cfg, "PUT", key, 60), {
@@ -176,6 +188,7 @@ async function selfCheck(cfg: S3Config, req: Request) {
     detail["브라우저에서 올리기"] = "예비 요청(preflight)에 실패했습니다.";
   }
   steps["브라우저에서 올리기"] = cors;
+  }
 
   // 4. 지우기 — 점검 파일을 남겨 두지 않는다
   let removed = false;
@@ -188,9 +201,11 @@ async function selfCheck(cfg: S3Config, req: Request) {
       detail["지우기"] = "저장소에 닿지 못했습니다.";
     }
   }
-  steps["지우기"] = removed;
+  steps["지우기"] = uploaded ? removed : null;
 
-  const failed = Object.keys(steps).filter((k) => !steps[k]);
+  // null(확인 못 함)은 실패로 세지 않는다 — 못 본 것을 안 된다고 하지 않는다
+  const failed = Object.keys(steps).filter((k) => steps[k] === false);
+  const skipped = Object.keys(steps).filter((k) => steps[k] === null);
   const bucket = cfg.bucket;
   const host = new URL(cfg.endpoint).host;
 
@@ -221,6 +236,7 @@ async function selfCheck(cfg: S3Config, req: Request) {
       bucket,
       endpoint: host,
       steps,
+      skipped,
       detail,
       ...(buckets ? { buckets } : {}),
     },
