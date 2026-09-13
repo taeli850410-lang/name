@@ -76,7 +76,7 @@ export function newId(prefix = ""): string {
   return `${prefix}${t}${r}`;
 }
 
-/** 안양 실거래 월 키 "2026-06" → "26.06" */
+/** 실거래 월 키 "2026-06" → "26.06" */
 export function monthLabel(month: string): string {
   const [y, m] = month.split("-");
   return `${y.slice(2)}.${m}`;

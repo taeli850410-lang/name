@@ -90,6 +90,12 @@ export const AD_FOOTER =
   "본 자료는 일반적인 부동산 정보 제공을 목적으로 작성되었으며 개별적인 투자·세무·법률 판단을 대신하지 않습니다. 광고성 정보 수신에 동의한 고객에게 발송되었습니다.";
 export const NUMBERS_NOTE = "※ 실거래 신고 기한이 30일이라 최근 두 달 수치는 잠정치이며 이후 늘어날 수 있습니다. 출처와 기준일이 확인되지 않은 수치는 표시하지 않습니다.";
 
+/** 실거래 타일이 어느 지역 집계인지 밝히고, 아직 설정하지 않았으면 안내합니다 */
+export function numbersNote(office: Office, marketArea: string): string {
+  if ((office.lawdCodes ?? []).length > 0) return `${NUMBERS_NOTE} 실거래 집계 대상: ${marketArea}.`;
+  return `${NUMBERS_NOTE} 지금 실거래 집계는 샘플(${marketArea})입니다. 설정 → 지역에서 시군구와 법정동코드 5자리를 넣으면 그 지역 수치로 갱신됩니다.`;
+}
+
 /** 원본 EDM 의 섹션 제목·부제. 주기에 따라 '오늘/이번 주/이달'만 바뀝니다 */
 export const PERIOD_EYEBROW: Record<Period, string> = { daily: "TODAY'S REAL ESTATE BRIEF", weekly: "THIS WEEK'S REAL ESTATE BRIEF", monthly: "THIS MONTH'S REAL ESTATE BRIEF" };
 export const POLICY_TITLE: Record<Period, string> = { daily: "오늘 꼭 알아야 할 정책", weekly: "이번 주 꼭 알아야 할 정책", monthly: "이달 꼭 알아야 할 정책" };
@@ -206,7 +212,7 @@ export function letterToBrief(letter: Letter): BriefModel {
       tiles: letter.tiles,
       history: letter.history,
       historyLabel: letter.historyLabel,
-      note: NUMBERS_NOTE,
+      note: numbersNote(o, letter.historyLabel.replace(/ 매매 중위가.*$/, "")),
     },
     persona: lead
       ? {
@@ -245,7 +251,7 @@ function brokerCard(issue: Issue): BriefCardModel {
     { label: STATUS_LABEL[issue.status], tone: STATUS_TONE[issue.status] },
     { label: ROUTE_LABEL[route.customer], tone: "route" },
   ];
-  if (issue.region === "anyang") badges.push({ label: issue.dong.length ? `안양 · ${issue.dong.join("·")}` : "안양", tone: "target" });
+  if (issue.region === "local") badges.push({ label: issue.dong.length ? `우리 지역 · ${issue.dong.join("·")}` : "우리 지역", tone: "target" });
   else if (issue.region !== "national") badges.push({ label: REGION_LABEL[issue.region], tone: "neutral" });
   if (issue.review === "draft") badges.push({ label: "검수 필요", tone: "warn" });
 
@@ -288,7 +294,7 @@ function brokerNews(issue: Issue): BriefNewsModel {
     badges: [
       { label: STATUS_LABEL[issue.status], tone: STATUS_TONE[issue.status] },
       { label: ROUTE_LABEL[route.customer], tone: "route" },
-      ...(issue.region === "anyang" ? [{ label: "안양", tone: "target" as BadgeTone }] : []),
+      ...(issue.region === "local" ? [{ label: "우리 지역", tone: "target" as BadgeTone }] : []),
     ],
     title: issue.title,
     href: src.primary?.href ?? null,
@@ -343,7 +349,7 @@ export function buildBrokerBrief(issues: Issue[], office: Office, market: Market
       tiles,
       history,
       historyLabel,
-      note: NUMBERS_NOTE,
+      note: numbersNote(office, market.area),
     },
     persona: lead
       ? {

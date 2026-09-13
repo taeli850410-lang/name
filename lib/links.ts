@@ -3,6 +3,9 @@ import type { LinkRef, Topic } from "./types";
 /**
  * 공공데이터 바로가기. verified=true 는 기획 검토 시 검색 결과로 URL을 확인한 사이트,
  * false 는 널리 쓰이는 공식 도메인이지만 검토 세션에서 접속 검증을 하지 못한 사이트입니다.
+ *
+ * 전국 공통 사이트만 둡니다. 시군구 고시공고·지역 포털은 주소가 지자체마다 달라 카드에 자동으로 붙이지 않고,
+ * 카드 아래 '최신 뉴스 검색'과 설정의 지역 이름으로 찾도록 했습니다. 온누리(경기)·정보몽땅(서울)·GRIS(경기)는 시도 단위 예시로 남깁니다.
  */
 const L = (id: string, label: string, url: string, desc: string, verified = true): LinkRef => ({ id, label, url, desc, verified });
 
@@ -36,12 +39,8 @@ export const LINKS: Record<string, LinkRef> = Object.fromEntries(
     L("statMolit", "국토교통 통계누리", "https://stat.molit.go.kr/", "거래량·미분양·인허가 통계"),
     L("mtc", "대도시권광역교통위원회", "https://www.molit.go.kr/mtc/", "GTX·광역철도 사업 현황"),
     L("gnews", "경기도뉴스포털 보도자료", "https://gnews.gg.go.kr/briefing/brief_gongbo.do", "경기도 주택·교통 정책"),
-    // 정비사업·지역
-    L("anyangNotice", "안양시 고시공고", "https://www.anyang.go.kr/newtown/emwsWebList.do?key=2558", "정비구역 지정·공람 원문"),
-    L("anyangRedev", "안양시 재개발 추진현황", "https://www.anyang.go.kr/newtown/contents.do?key=2516", "구역별 위치·면적·단계"),
-    L("anyangRebuild", "안양시 재건축 아파트지구 현황", "https://www.anyang.go.kr/newtown/contents.do?key=2535", "재건축 추진 단지"),
-    L("anyangPromo", "안양시 촉진지구 현황", "https://www.anyang.go.kr/newtown/contents.do?key=2525", "재정비촉진지구 현황"),
-    L("onnuri", "경기도 정비사업 온누리", "https://www.gg.go.kr/onnuri/index.do", "조합 정보 공개"),
+    // 정비사업 — 전국 공통 + 시도 포털(내 지역 포털은 설정의 시군구 이름으로 검색)
+    L("onnuri", "경기도 정비사업 온누리", "https://www.gg.go.kr/onnuri/index.do", "경기도 조합 정보 공개"),
     L("onnuriSearch", "온누리 사업장 검색", "https://www.gg.go.kr/onnuri/view.do?no=109", "구역별 조합·추진 단계"),
     L("cleanup", "서울 정비사업 정보몽땅", "https://cleanup.seoul.go.kr/", "서울 정비사업 현황", false),
     // 물건 조사
@@ -103,11 +102,11 @@ export const TOPIC_LINKS: Record<Topic, { customer: string[]; broker: string[] }
   tax: { customer: ["hometax", "wetax", "realtyprice"], broker: ["mofe", "nts", "lawgo", "lawmaking"] },
   subs: { customer: ["applyhome", "lhApply", "myhome"], broker: ["molitNews", "statMolit", "molitLaw"] },
   supply: { customer: ["myhome", "lhApply"], broker: ["molitNews", "gnews", "mtc"] },
-  redev: { customer: ["anyangRedev", "onnuri"], broker: ["anyangNotice", "onnuriSearch", "eais", "eum"] },
+  redev: { customer: ["seereal", "eum"], broker: ["molitLaw", "eais", "eum", "onnuriSearch"] },
   lease: { customer: ["hugLandlord", "iros", "adr"], broker: ["rtms", "hugBrokerCheck", "lawgo"] },
-  transit: { customer: ["anyangNotice", "grisPermit"], broker: ["mtc", "gnews", "molitNews"] },
+  transit: { customer: ["mtc", "seereal"], broker: ["mtc", "statMolit", "molitNews"] },
   stat: { customer: ["rtGis", "kb", "rone"], broker: ["rtXls", "roneReport", "dataIros", "statMolit"] },
-  regulation: { customer: ["grisPermit"], broker: ["molitNews", "gris", "lawgo"] },
+  regulation: { customer: ["eum", "molitNews"], broker: ["molitNews", "eum", "lawgo"] },
   broker: { customer: ["vworldBroker"], broker: ["kar", "molitNews", "lawgo", "irts"] },
 };
 
@@ -118,11 +117,11 @@ export interface LinkGroup {
 
 /** 4.2 고객용 바로가기 (필요한 순간별) */
 export const CUSTOMER_LINK_GROUPS: LinkGroup[] = [
-  { title: "집을 고를 때", ids: ["rt", "rtGis", "kb", "rone", "gris", "grisPermit", "realtyprice", "kapt", "schoolzone", "safemap"] },
+  { title: "집을 고를 때", ids: ["rt", "rtGis", "kb", "rone", "realtyprice", "kapt", "schoolzone", "safemap"] },
   { title: "청약·주거지원", ids: ["applyhome", "lhApply", "myhome", "nhuf", "enhuf"] },
   { title: "전세·월세 계약 전", ids: ["hugJeonse", "hugLandlord", "hugBrokerCheck", "iros", "vworldBroker", "adr", "hldcc"] },
   { title: "대출·세금", ids: ["bokRate", "finlifeMortgage", "finlifeJeonse", "hf", "hometax", "wetax"] },
-  { title: "우리 동네(안양)", ids: ["anyangRedev", "anyangRebuild", "anyangPromo", "anyangNotice", "onnuri", "onnuriSearch", "seereal"] },
+  { title: "우리 지역·정비사업", ids: ["seereal", "eum", "onnuri", "cleanup", "gris"] },
 ];
 
 /** 4.3 중개사용 바로가기 (업무별) */
@@ -131,7 +130,7 @@ export const BROKER_LINK_GROUPS: LinkGroup[] = [
   { title: "신고·계약", ids: ["rtms", "irts", "adr"] },
   { title: "시장 데이터", ids: ["rtXls", "statMolit", "dataIros", "kb", "roneReport", "roneWeekly", "kosis", "ecos"] },
   { title: "법령·규제", ids: ["lawgo", "lawmaking", "moleg", "molitLaw", "molitNews", "mtc", "likms"] },
-  { title: "정비사업", ids: ["anyangNotice", "anyangRedev", "anyangRebuild", "onnuri", "onnuriSearch", "cleanup"] },
+  { title: "정비사업", ids: ["molitLaw", "onnuri", "onnuriSearch", "cleanup", "eais", "eum"] },
   { title: "경·공매·업계", ids: ["courtauction", "onbid", "kar"] },
   { title: "보도자료 소스", ids: ["koreaPress", "koreaRss", "molitNews", "fsc", "mofe", "nts", "bokMpc", "roneWeekly", "gnews", "hugJeonse", "dataGoKr"] },
 ];

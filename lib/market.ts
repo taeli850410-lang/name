@@ -1,11 +1,10 @@
 import { XMLParser } from "fast-xml-parser";
 import { fmtManwon, fmtPct, monthLabel } from "./format";
-import type { HistoryPoint, MarketDoc, MarketTile, MonthRow, Segment } from "./types";
+import type { HistoryPoint, MarketDoc, MarketTile, MonthRow, Office, Segment } from "./types";
 
-/** "우리 동네 숫자" — 안양(만안·동안) 실거래 집계와 기준금리 타일 */
+/** "우리 동네 숫자" — 설정한 지역의 실거래 집계와 기준금리 타일. 지역은 MarketDoc.areaCodes 가 정합니다. */
 
 const RT_URL = "https://rt.molit.go.kr/";
-const AREA_CODES = ["41171", "41173"];
 
 function monthStart(month: string): number {
   return new Date(`${month}-01T00:00:00+09:00`).getTime();
@@ -23,11 +22,38 @@ function pctDelta(cur: number | null, prev: number | null): { delta: string; dir
   return { delta: `${fmtPct(d)} 전월 대비`, dir: d > 0 ? "up" : "down" };
 }
 
+/**
+ * 설정의 법정동코드를 시장 문서에 적용합니다. 지역이 바뀌면 이전 지역의 월별 집계를 비웁니다.
+ * 서로 다른 지역 수치가 한 표에 섞이지 않게 하기 위해서입니다.
+ */
+export function applyArea(doc: MarketDoc, office: Office): MarketDoc {
+  const codes = (office.lawdCodes ?? []).filter(Boolean);
+  if (codes.length === 0) return doc;
+  const same = codes.length === doc.areaCodes.length && codes.every((c, i) => c === doc.areaCodes[i]);
+  if (same) return doc;
+  return { ...doc, areaCodes: codes, area: office.areaLabel?.trim() || codes.join("·"), monthly: [] };
+}
+
+function rateTile(market: MarketDoc): MarketTile {
+  return {
+    key: "rate",
+    label: "한국은행 기준금리",
+    value: `${market.rate.value.toFixed(2)}%`,
+    delta: `기준일 ${market.rate.asOf}`,
+    deltaDir: "flat",
+    asOf: market.rate.asOf,
+    source: "한국은행",
+    sourceUrl: market.rate.sourceUrl,
+    provisional: false,
+  };
+}
+
 export function computeTiles(market: MarketDoc, segment: Segment): { tiles: MarketTile[]; history: HistoryPoint[]; historyLabel: string } {
   const rows = [...market.monthly].sort((a, b) => a.month.localeCompare(b.month));
   const latest = rows[rows.length - 1];
   const prev = rows[rows.length - 2];
-  if (!latest) return { tiles: [], history: [], historyLabel: "" };
+  // 실거래 집계가 아직 없으면 기준금리 타일만 보여 줍니다
+  if (!latest) return { tiles: [rateTile(market)], history: [], historyLabel: "" };
   const asOf = `${latest.month} 계약분`;
   const prov = isProvisional(latest.month, market.generatedAt);
   const src = "국토교통부 실거래가 공개시스템";
@@ -42,7 +68,7 @@ export function computeTiles(market: MarketDoc, segment: Segment): { tiles: Mark
     jeonse: { key: "jeonse", label: "아파트 전세 중위가", value: fmtManwon(latest.jeonse), delta: jeonse.delta, deltaDir: jeonse.dir, asOf, source: src, sourceUrl: RT_URL, provisional: prov },
     wolse: { key: "wolse", label: "아파트 월세 평균", value: latest.wolse == null ? "산출 불가" : `${Math.round(latest.wolse)}만원`, delta: wolse.delta, deltaDir: wolse.dir, asOf, source: src, sourceUrl: RT_URL, provisional: prov },
     count: { key: "count", label: "매매 신고 건수", value: `${latest.saleN.toLocaleString("ko-KR")}건`, delta: n.delta, deltaDir: n.dir, asOf, source: src, sourceUrl: RT_URL, provisional: prov },
-    rate: { key: "rate", label: "한국은행 기준금리", value: `${market.rate.value.toFixed(2)}%`, delta: `기준일 ${market.rate.asOf}`, deltaDir: "flat", asOf: market.rate.asOf, source: "한국은행", sourceUrl: market.rate.sourceUrl, provisional: false },
+    rate: rateTile(market),
   };
 
   const order: Record<Segment, string[]> = {
@@ -129,14 +155,16 @@ export async function refreshMarket(current: MarketDoc): Promise<{ doc: MarketDo
   const doc: MarketDoc = { ...current, monthly: [...current.monthly], rate: { ...current.rate } };
   const key = process.env.DATA_GO_KR_KEY;
 
-  if (key) {
+  const areaCodes = (doc.areaCodes ?? []).filter(Boolean);
+  if (key && areaCodes.length === 0) notes.push("설정에 법정동코드가 없어 실거래 집계를 건너뜁니다. 설정 → 지역에서 5자리 코드를 넣으세요.");
+  if (key && areaCodes.length > 0) {
     const months = lastMonths(3);
     for (const ym of months) {
       const monthKey = `${ym.slice(0, 4)}-${ym.slice(4)}`;
       try {
         const trades: RawTrade[] = [];
         const rents: RawRent[] = [];
-        for (const lawd of AREA_CODES) {
+        for (const lawd of areaCodes) {
           trades.push(...(await fetchTrades(key, lawd, ym)));
           rents.push(...(await fetchRents(key, lawd, ym)));
         }
@@ -163,7 +191,7 @@ export async function refreshMarket(current: MarketDoc): Promise<{ doc: MarketDo
     }
     doc.monthly.sort((a, b) => a.month.localeCompare(b.month));
     doc.generatedAt = new Date().toISOString();
-  } else {
+  } else if (!key) {
     notes.push("DATA_GO_KR_KEY 가 없어 실거래 집계는 저장된 값을 유지합니다.");
   }
 

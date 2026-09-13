@@ -46,11 +46,19 @@ export const TOPICS = Object.keys(TOPIC_LABEL) as Topic[];
 export const REGION_LABEL: Record<Region, string> = {
   national: "전국",
   metro: "수도권",
-  gyeonggi: "경기",
-  anyang: "안양",
-  seoul: "서울",
+  local: "우리 지역",
   other: "타 지역",
 };
+
+/** 구버전 저장본의 지역 값을 현재 4종으로 옮깁니다 */
+const LEGACY_REGION: Record<string, Region> = { seoul: "metro", gyeonggi: "metro", anyang: "local" };
+export function normalizeRegion(r: unknown): Region {
+  if (typeof r === "string") {
+    if (r in REGION_LABEL) return r as Region;
+    if (r in LEGACY_REGION) return LEGACY_REGION[r];
+  }
+  return "national";
+}
 export const REGIONS = Object.keys(REGION_LABEL) as Region[];
 
 /** A축 발표 주체 */
@@ -62,8 +70,7 @@ export const AGENCY_GROUP_LABEL: Record<AgencyGroup, string> = {
   bok: "한국은행",
   reb: "부동산원·HUG·LH",
   law: "법제처·국회",
-  gyeonggi: "경기도",
-  anyang: "안양시",
+  local: "지자체",
   industry: "협회·업계",
   press: "언론",
   other: "기타",

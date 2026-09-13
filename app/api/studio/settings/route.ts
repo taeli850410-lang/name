@@ -6,8 +6,11 @@ import type { Office, Topic } from "@/lib/types";
 export const dynamic = "force-dynamic";
 
 /** 문자열 필드만 화이트리스트로 받습니다. focusTopics(배열)는 아래에서 따로 검증합니다. */
-type TextKey = Extract<{ [K in keyof Office]-?: NonNullable<Office[K]> extends string ? K : never }[keyof Office], string>;
-const KEYS: TextKey[] = ["officeName", "brandName", "repName", "registrationNo", "phone", "address", "email", "kakaoUrl", "unsubscribeUrl", "privacyUrl", "slogan", "defaultComment", "areaLabel"];
+type TextKey = Extract<{ [K in keyof Office]-?: string extends NonNullable<Office[K]> ? K : never }[keyof Office], string>;
+const KEYS: TextKey[] = ["officeName", "brandName", "repName", "registrationNo", "phone", "address", "email", "kakaoUrl", "unsubscribeUrl", "privacyUrl", "sido", "sigungu", "slogan", "defaultComment", "areaLabel"];
+
+const strings = (v: unknown, re: RegExp): string[] =>
+  Array.isArray(v) ? Array.from(new Set(v.map((x) => String(x ?? "").trim()).filter((x) => re.test(x)))) : [];
 
 export async function GET() {
   return NextResponse.json({ office: await getSettings() });
@@ -25,6 +28,15 @@ export async function PUT(req: Request) {
   for (const k of KEYS) if (typeof body[k] === "string") next[k] = (body[k] as string).trim();
   if (Array.isArray(body.focusTopics)) {
     next.focusTopics = Array.from(new Set(body.focusTopics.filter((t): t is Topic => TOPICS.includes(t as Topic))));
+  }
+  if (body.scope === "national" || body.scope === "local") next.scope = body.scope;
+  if (Array.isArray(body.dongs)) next.dongs = strings(body.dongs, /^.{1,20}$/);
+  if (Array.isArray(body.lawdCodes)) next.lawdCodes = strings(body.lawdCodes, /^\d{5}$/);
+  // 전국구로 돌리면 지역 값은 비워 둡니다 — '우리 지역' 분류가 생기지 않게
+  if (next.scope !== "local") {
+    next.sido = "";
+    next.sigungu = "";
+    next.dongs = [];
   }
   await saveSettings(next);
   return NextResponse.json({ office: next });

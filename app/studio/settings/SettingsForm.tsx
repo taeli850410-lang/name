@@ -5,13 +5,18 @@ import { useState } from "react";
 import { TOPICS, TOPIC_LABEL } from "@/lib/taxonomy";
 import type { Office, Topic } from "@/lib/types";
 
-/** 안양 만안·동안 동네 사무소 기준 추천 조합 */
-const RECOMMENDED: Topic[] = ["redev", "lease", "rate"];
+/** 전국구 기본 추천 조합 */
+const RECOMMENDED_NATIONAL: Topic[] = ["rate", "lease", "subs"];
+/** 지역 밀착으로 바꿨을 때 추천 조합 */
+const RECOMMENDED_LOCAL: Topic[] = ["redev", "lease", "rate"];
 const WHY: Partial<Record<Topic, string>> = {
-  redev: "동네 독점 정보 — 수촌마을·충훈부 같은 구역 소식은 전국 매체가 다루지 않습니다",
-  lease: "거래 빈도 최고 — 임차인·임대인 양쪽이 모두 고객입니다",
   rate: "세 세그먼트 공통 — 내집마련·갈아타기·자산 모두 영향도 3 이상입니다",
+  lease: "거래 빈도 최고 — 임차인·임대인 양쪽이 모두 고객입니다",
+  subs: "무주택 수요의 출발점 — 청약·분양 일정은 검색량이 가장 큰 주제입니다",
+  redev: "지역 독점 정보 — 구역 소식은 전국 매체가 다루지 않아 검색 경쟁이 낮습니다",
 };
+const list = (v?: string[]) => (v ?? []).join(", ");
+const parseList = (s: string) => s.split(/[,\s]+/).map((x) => x.trim()).filter(Boolean);
 
 const FIELDS: { key: keyof Office; label: string; hint?: string; type?: string; textarea?: boolean }[] = [
   { key: "officeName", label: "중개사무소 상호" },
@@ -24,7 +29,7 @@ const FIELDS: { key: keyof Office; label: string; hint?: string; type?: string; 
   { key: "kakaoUrl", label: "카카오톡 채널 URL", hint: "예: https://pf.kakao.com/_xxxx", type: "url" },
   { key: "unsubscribeUrl", label: "수신거부 링크", hint: "발송 서비스(스티비 등)의 수신거부 URL. 없으면 이메일로 대체", type: "url" },
   { key: "privacyUrl", label: "개인정보처리방침 링크", hint: "푸터 '수신거부·개인정보처리방침'에 연결. 비우면 수신거부만 표시", type: "url" },
-  { key: "areaLabel", label: "동네 표기", hint: "우리 동네 숫자 섹션 제목 옆" },
+  { key: "areaLabel", label: "지역 표기", hint: "마스트헤드와 숫자 섹션에 쓰는 이름. 전국구면 \"전국\", 지역 밀착이면 \"안양 만안·동안구\" 처럼" },
   { key: "slogan", label: "레터 슬로건", hint: "고객에게 보이는 문구입니다. 중개사 대상 문구는 쓰지 마세요" },
   { key: "defaultComment", label: "한마디 기본 문구", textarea: true },
 ];
@@ -33,6 +38,9 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
   const router = useRouter();
   const [office, setOffice] = useState<Office>(initial);
   const [focus, setFocus] = useState<Topic[]>(initial.focusTopics ?? []);
+  const [scope, setScope] = useState<"national" | "local">(initial.scope === "local" ? "local" : "national");
+  const [dongs, setDongs] = useState(list(initial.dongs));
+  const [codes, setCodes] = useState(list(initial.lawdCodes));
   const [busy, setBusy] = useState<"save" | "reset" | null>(null);
   const [msg, setMsg] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
 
@@ -40,11 +48,14 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
     setBusy("save");
     setMsg(null);
     try {
-      const res = await fetch("/api/studio/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...office, focusTopics: focus }) });
+      const res = await fetch("/api/studio/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...office, focusTopics: focus, scope, dongs: parseList(dongs), lawdCodes: parseList(codes) }) });
       const data = (await res.json()) as { office?: Office; error?: string };
       if (!res.ok || !data.office) throw new Error(data.error || res.statusText);
       setOffice(data.office);
       setFocus(data.office.focusTopics ?? []);
+      setScope(data.office.scope === "local" ? "local" : "national");
+      setDongs(list(data.office.dongs));
+      setCodes(list(data.office.lawdCodes));
       setMsg({ tone: "ok", text: "저장되었습니다. 다음 발행부터 반영됩니다." });
       router.refresh();
     } catch (e) {
@@ -84,6 +95,51 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
           </div>
         ))}
         <div className="field">
+          <label>지역 범위</label>
+          <div className="seg" role="group" aria-label="지역 범위">
+            <button type="button" aria-pressed={scope === "national"} onClick={() => setScope("national")}>
+              전국구
+            </button>
+            <button type="button" aria-pressed={scope === "local"} onClick={() => setScope("local")}>
+              지역 밀착
+            </button>
+          </div>
+          <span className="hint">
+            {scope === "national"
+              ? "전국 정책·시장 뉴스를 그대로 싣습니다. 특정 지자체 고시와 다른 지역의 구역·교통·규제 사안은 고객용에서 빠지고 중개사용 참고로만 남습니다."
+              : "아래 시군구가 기사에 걸리면 '우리 지역'으로 분류해 앞세우고, 그 지역 고시는 동네 타깃(R3)이 됩니다. 지역 뉴스 피드도 하나 더 돕니다."}
+          </span>
+        </div>
+        {scope === "local" && (
+          <>
+            <div className="field">
+              <label htmlFor="f-sido">시도</label>
+              <input id="f-sido" type="text" placeholder="예: 경기도" value={office.sido ?? ""} onChange={(e) => setOffice({ ...office, sido: e.target.value })} />
+            </div>
+            <div className="field">
+              <label htmlFor="f-sigungu">시군구</label>
+              <input id="f-sigungu" type="text" placeholder="예: 안양시" value={office.sigungu ?? ""} onChange={(e) => setOffice({ ...office, sigungu: e.target.value })} />
+              <span className="hint">이 이름(과 접미사를 뗀 짧은 이름)이 제목·요약에 있으면 '우리 지역'으로 잡습니다.</span>
+            </div>
+            <div className="field">
+              <label htmlFor="f-dongs">행정동 (쉼표 구분)</label>
+              <input id="f-dongs" type="text" placeholder="예: 관양동, 비산동, 석수동" value={dongs} onChange={(e) => setDongs(e.target.value)} />
+              <span className="hint">레터 빌더의 동네 타깃과 지역 뉴스 피드에 씁니다.</span>
+            </div>
+          </>
+        )}
+        <div className="field">
+          <label htmlFor="f-codes">법정동코드 (쉼표 구분, 5자리)</label>
+          <input id="f-codes" type="text" placeholder="예: 41171, 41173" value={codes} onChange={(e) => setCodes(e.target.value)} />
+          <span className="hint">
+            '우리 동네 숫자'의 실거래 집계 대상입니다. 코드는{" "}
+            <a href="https://www.code.go.kr/stdcode/regCodeL.do" target="_blank" rel="noreferrer noopener">
+              행정표준코드관리시스템
+            </a>{" "}
+            에서 시군구까지 5자리로 확인합니다. 비우면 기준금리만 갱신되고 실거래는 샘플 값이 남습니다.
+          </span>
+        </div>
+        <div className="field">
           <label>주력 주제</label>
           <div className="chipbar">
             {TOPICS.map((t) => (
@@ -103,8 +159,13 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
             가중치 없이 최신순으로만 정렬합니다.
           </span>
           {focus.length === 0 && (
-            <button className="btn btn-sm" type="button" style={{ alignSelf: "flex-start", marginTop: 4 }} onClick={() => setFocus(RECOMMENDED)}>
-              추천 조합 넣기 · {RECOMMENDED.map((t) => TOPIC_LABEL[t]).join(" · ")}
+            <button
+              className="btn btn-sm"
+              type="button"
+              style={{ alignSelf: "flex-start", marginTop: 4 }}
+              onClick={() => setFocus(scope === "local" ? RECOMMENDED_LOCAL : RECOMMENDED_NATIONAL)}
+            >
+              추천 조합 넣기 · {(scope === "local" ? RECOMMENDED_LOCAL : RECOMMENDED_NATIONAL).map((t) => TOPIC_LABEL[t]).join(" · ")}
             </button>
           )}
           {focus.length > 0 && (
@@ -131,6 +192,7 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
             <li>고객용 문장의 금지 표현: 고객에게 · 안내하세요 · 설명하세요 · 상담 시 · 영업 · 경쟁 · 수주 · 협회 · DEMO · 입력해 주세요 · 미설정</li>
             <li>검수 완료된 이슈만, 신선도 창 안에서, 세그먼트 영향도 3 이상</li>
             <li>주력 주제는 순서만 당기고 R1~R8 을 덮어쓰지 않습니다</li>
+            <li>전국구에서는 특정 지자체 고시와 타 지역 구역·교통·규제 사안이 고객용에서 빠집니다</li>
           </ul>
         </div>
         <div className="card">

@@ -244,7 +244,7 @@ export default function IssueEditor({ issue: initial, llm }: { issue: Issue; llm
               </select>
             </div>
             <div className="field">
-              <label>안양 행정동 (쉼표 구분)</label>
+              <label>행정동 (쉼표 구분)</label>
               <input type="text" value={issue.dong.join(", ")} onChange={(e) => setIssue({ ...issue, dong: e.target.value.split(",").map((x) => x.trim()).filter(Boolean) })} />
               <span className="hint">동이 있으면 해당 동 고객에게만 타깃 발송됩니다(R3).</span>
             </div>
@@ -327,7 +327,7 @@ export default function IssueEditor({ issue: initial, llm }: { issue: Issue; llm
             <textarea value={faqText} onChange={(e) => setFaqText(e.target.value)} />
           </div>
           <div className="field">
-            <label>안양 지역 영향</label>
+            <label>우리 지역 영향</label>
             <textarea value={issue.broker.local} onChange={(e) => setB("local", e.target.value)} />
           </div>
         </div>

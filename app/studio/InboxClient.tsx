@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AgencyBadge, GradeChip, RegionChip, ReviewChip, RouteChip, StatusPill, TopicChip } from "@/components/Badges";
 import { fmtDate, relTime } from "@/lib/format";
 import { focusRank, gradeIssue, isFresh, routeIssue } from "@/lib/routing";
@@ -30,7 +30,7 @@ export default function InboxClient({
   const router = useRouter();
   const [period, setPeriod] = useState<Filter>("all");
   const [topic, setTopic] = useState<Topic | "all">("all");
-  const [anyangOnly, setAnyangOnly] = useState(false);
+  const [localOnly, setLocalOnly] = useState(false);
   const [bodyOnly, setBodyOnly] = useState(false);
   const [draftOnly, setDraftOnly] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
@@ -39,6 +39,9 @@ export default function InboxClient({
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const now = Date.now();
+  // "21시간 전" 은 서버와 브라우저의 시각이 달라 하이드레이션 경고를 냅니다. 마운트 뒤에만 그립니다.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   // 주제 칩의 건수는 주제 외 조건만 적용한 모집단에서 셉니다(칩을 눌러도 다른 칩의 수가 변하지 않게)
   const pool = useMemo(
@@ -49,14 +52,14 @@ export default function InboxClient({
           if (!showArchived && i.review === "archived") return false;
           if (period === "today" && !isFresh(i, "daily", now)) return false;
           if (period === "week" && !isFresh(i, "weekly", now)) return false;
-          if (anyangOnly && i.region !== "anyang") return false;
+          if (localOnly && i.region !== "local") return false;
           if (bodyOnly && route.customer !== "body" && route.customer !== "target") return false;
           if (draftOnly && i.review !== "draft") return false;
           if (focusOnly && focusTopics.length > 0 && !focusTopics.includes(i.topic)) return false;
           if (q && !(i.title + i.summary + i.agency + i.dong.join(" ")).toLowerCase().includes(q.toLowerCase())) return false;
           return true;
         }),
-    [issues, period, anyangOnly, bodyOnly, draftOnly, showArchived, focusOnly, focusTopics, q, now],
+    [issues, period, localOnly, bodyOnly, draftOnly, showArchived, focusOnly, focusTopics, q, now],
   );
 
   const topicCounts = useMemo(() => {
@@ -124,8 +127,8 @@ export default function InboxClient({
               </button>
             ))}
           </div>
-          <label className="row small">
-            <input type="checkbox" checked={anyangOnly} onChange={(e) => setAnyangOnly(e.target.checked)} /> 안양만
+          <label className="row small" title="설정에서 시군구를 지정하면 그 지역 기사만 남깁니다">
+            <input type="checkbox" checked={localOnly} onChange={(e) => setLocalOnly(e.target.checked)} /> 우리 지역만
           </label>
           <label className="row small">
             <input type="checkbox" checked={bodyOnly} onChange={(e) => setBodyOnly(e.target.checked)} /> 고객 본문·타깃만
@@ -205,8 +208,9 @@ export default function InboxClient({
                 <Link href={`/studio/issues/${i.id}`}>{i.customer.headline && i.enrichedBy !== "rules" ? i.customer.headline : i.title}</Link>
               </div>
               <div className="meta">
-                <span>
-                  {fmtDate(i.publishedAt)} · {relTime(i.publishedAt)}
+                <span suppressHydrationWarning>
+                  {fmtDate(i.publishedAt)}
+                  {mounted ? ` · ${relTime(i.publishedAt)}` : ""}
                 </span>
                 <span>{i.sourceName}</span>
                 <span>관련 기사 {i.articles.length}건</span>

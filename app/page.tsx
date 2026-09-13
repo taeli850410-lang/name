@@ -9,10 +9,10 @@ export default async function Home() {
   const letters = (await getLetters()).filter((l) => l.status === "published").slice(0, 5);
   return (
     <main className="landing">
-      <div className="kicker">LAND LANGUAGE · 안양 부동산 브리핑</div>
+      <div className="kicker">LAND LANGUAGE · 전국 부동산 브리핑</div>
       <h1>하나의 이슈 레코드, 두 개의 렌더링</h1>
       <p style={{ color: "var(--ink-2)", maxWidth: "64ch", marginTop: 12 }}>
-        정부 보도자료와 뉴스, 안양시 고시를 모아 5축(발표 주체·정책 단계·주제·영향 대상·지역)으로 태깅하고, 중개사는 스튜디오에서
+        정부 보도자료와 뉴스, 지자체 고시를 모아 5축(발표 주체·정책 단계·주제·영향 대상·지역)으로 태깅하고, 중개사는 스튜디오에서
         선택·검수하며, 고객은 세그먼트별로 3~8개 이슈만 쉬운 말로 받아 봅니다.
       </p>
       <div className="doors">
@@ -40,7 +40,7 @@ export default async function Home() {
         </section>
       )}
       <p className="small muted" style={{ marginTop: 40 }}>
-        기존 안양 실거래 대시보드는 <a href="/anyang-dashboard/index.html">/anyang-dashboard</a> 에서 그대로 볼 수 있습니다.
+        기존 안양 실거래 대시보드(예시)는 <a href="/anyang-dashboard/index.html">/anyang-dashboard</a> 에서 그대로 볼 수 있습니다.
       </p>
     </main>
   );

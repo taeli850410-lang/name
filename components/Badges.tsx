@@ -12,7 +12,7 @@ export function TopicChip({ topic }: { topic: Topic }) {
 
 export function RegionChip({ region, dong }: { region: Region; dong?: string[] }) {
   const label = dong && dong.length ? `${REGION_LABEL[region]} · ${dong.join("·")}` : REGION_LABEL[region];
-  return <span className={`chip ${region === "anyang" ? "chip-c" : "chip-neutral"}`}>{label}</span>;
+  return <span className={`chip ${region === "local" ? "chip-c" : "chip-neutral"}`}>{label}</span>;
 }
 
 export function AgencyBadge({ agency }: { agency: string }) {

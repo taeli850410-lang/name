@@ -1,11 +1,13 @@
 import { buildDraft, publishLetter } from "./letter";
 import { PERSONA_MATRIX, TOPIC_GLOSSARY } from "./taxonomy";
 import { titleHash } from "./classify";
-import type { AgencyGroup, Article, BrokerFields, CustomerFields, Issue, Letter, MarketDoc, Office, Persona, Region, Status, Topic } from "./types";
+import type { AgencyGroup, AreaConfig, Article, BrokerFields, CustomerFields, Issue, Letter, MarketDoc, Office, Persona, Region, Status, Topic } from "./types";
 
 /**
- * 샘플 데이터. 2026년 9월 둘째 주 실제 보도·안양시 고시를 바탕으로 손으로 쓴 초안이며,
+ * 샘플 데이터. 2026년 9월 둘째 주 실제 보도를 바탕으로 손으로 쓴 초안이며,
  * 수집 파이프라인이 채우기 전에도 스튜디오와 레터가 어떻게 보이는지 보여 줍니다.
+ * 기본은 전국구입니다. 안양 사례 2건(수촌마을·충훈부)은 설정에서 시군구를 '안양시'로 두면
+ * '우리 지역'으로 잡혀 동네 타깃이 되고, 그 밖에는 타 지역 참고로만 남습니다.
  */
 
 export const DEFAULT_OFFICE: Office = {
@@ -14,17 +16,22 @@ export const DEFAULT_OFFICE: Office = {
   repName: "홍길동",
   registrationNo: "41171-2026-00000",
   phone: "010-0000-0000",
-  address: "경기도 안양시 만안구 안양로 000, 1층",
+  address: "",
   email: "hello@example.com",
   kakaoUrl: "",
   unsubscribeUrl: "",
   privacyUrl: "",
-  // 안양 만안·동안 동네 사무소 기준 추천 조합 — 동네 독점 정보(정비사업) · 거래 빈도(임대차) · 모든 세그먼트 공통(금리)
-  focusTopics: ["redev", "lease", "rate"],
-  slogan: "안양 부동산 소식, 3분 브리핑",
+  // 전국구 기본 추천 조합 — 세 세그먼트 공통(금리) · 거래 빈도(임대차) · 무주택 수요(청약·분양)
+  focusTopics: ["rate", "lease", "subs"],
+  scope: "national",
+  sido: "",
+  sigungu: "",
+  dongs: [],
+  lawdCodes: [],
+  slogan: "부동산 소식, 3분 브리핑",
   defaultComment:
     "정책은 '발표'보다 '적용 대상'과 '시행 시점'이 중요합니다. 이번 호에는 확정된 내용만 본문에 담고, 논의 중인 사안은 '주요 뉴스'에 따로 두었습니다. 내 상황에 어떻게 적용되는지 궁금하시면 편하게 연락 주세요.",
-  areaLabel: "안양 만안·동안구",
+  areaLabel: "전국",
 };
 
 interface SeedSpec {
@@ -47,9 +54,13 @@ interface SeedSpec {
   customer: CustomerFields;
   broker: BrokerFields;
   review?: Issue["review"];
+  /** 이 시군구를 맡은 사무소에서는 '우리 지역'으로 잡히는 샘플 (예: 안양시) */
+  localArea?: string;
 }
 
-function mk(s: SeedSpec): Issue {
+function mk(s: SeedSpec, area?: AreaConfig): Issue {
+  const isLocal = Boolean(s.localArea && area?.sigungu && (area.sigungu.includes(s.localArea) || s.localArea.includes(area.sigungu)));
+  const region: Region = s.localArea ? (isLocal ? "local" : "other") : s.region;
   const personas = { ...PERSONA_MATRIX[s.topic], ...(s.personas ?? {}) } as Record<Persona, number>;
   return {
     id: s.id,
@@ -63,8 +74,8 @@ function mk(s: SeedSpec): Issue {
     agencyGroup: s.agencyGroup,
     status: s.status,
     topic: s.topic,
-    region: s.region,
-    dong: s.dong ?? [],
+    region,
+    dong: isLocal ? s.dong ?? [] : [],
     publishedAt: s.publishedAt,
     effectiveAt: s.effectiveAt ?? null,
     officialUrl: s.officialUrl ?? null,
@@ -78,9 +89,11 @@ function mk(s: SeedSpec): Issue {
   };
 }
 
-export function seedIssues(): Issue[] {
+/** 샘플 이슈 10건. 설정에 시군구가 있으면 그 지역 샘플이 '우리 지역'으로 잡힙니다. */
+export function seedIssues(area?: AreaConfig): Issue[] {
+  const m = (s: SeedSpec) => mk(s, area);
   return [
-    mk({
+    m({
       id: "sample-bok-rate",
       title: "한국은행, 기준금리 연 3.00%로 인상…두 달 연속",
       summary: "한국은행 금융통화위원회가 8월 27일 기준금리를 2.75%에서 3.00%로 0.25%p 올렸다. 7월 16일 인상에 이어 두 달 연속 인상이다.",
@@ -124,10 +137,10 @@ export function seedIssues(): Issue[] {
         ],
         checklist: ["잔금일 전 대출 승인 조건 재확인 특약 문구 준비", "전세대출 이용 임차인의 갱신 시점·상환 시나리오 정리", "정책대출 자격 변경 여부 확인(기금e든든)"],
         faq: [{ q: "지금 사도 되나요?", a: "금리 방향만으로 답하지 않습니다. 한도·상환 여력·보유 기간을 함께 보고, 확정된 숫자로 시나리오를 비교해 드립니다." }],
-        local: "안양(만안·동안) 6월 매매 중위가 7.2억(실거래 잠정). 4억 대출 기준 0.25%p 인상 시 연 이자 약 100만 원 증가.",
+        local: "4억 대출 기준 0.25%p 인상 시 연 이자 약 100만 원 증가. 우리 지역 매매 중위가는 아래 실거래 집계 타일 참고.",
       },
     }),
-    mk({
+    m({
       id: "sample-supply-levy",
       title: "\"땅 놀리지 말고 집 지어라\"…내년 말까지 착공 땐 개발부담금 면제",
       summary: "정부가 8·13 공급대책 후속으로 2027년 말까지 착공하는 주택사업의 개발부담금을 면제한다. 1990년 도입된 개발부담금은 지가 상승분을 환수하는 제도다.",
@@ -161,11 +174,11 @@ export function seedIssues(): Issue[] {
         facts: ["개발부담금: 1990년 도입, 지가 상승분 환수 제도", "면제 요건: 2027년 12월 31일까지 착공(세부 요건은 시행령 확정 시 확인)", "8·13 공급대책 후속 인센티브 중 하나"],
         script: ["고객이 '공급이 늘어 집값이 내리나'라고 물으면, 착공에서 입주까지 3년 안팎이 걸리고 지역별 편차가 크다고 설명합니다."],
         checklist: ["토지주 고객: 착공 계획과 인허가 일정 확인", "시행령 개정 원문 확인 후 요건 재안내"],
-        faq: [{ q: "우리 동네에도 해당되나요?", a: "전국 공통 제도이지만 실제 효과는 착공 가능한 사업지가 있는 곳에 한정됩니다. 안양은 정비사업 구역이 주 대상입니다." }],
-        local: "안양 정비구역(수촌마을·충훈부 등)의 착공 시점이 앞당겨질 수 있음. 조합 일정 확인 필요.",
+        faq: [{ q: "우리 동네에도 해당되나요?", a: "전국 공통 제도이지만 실제 효과는 착공 가능한 사업지가 있는 곳에 한정됩니다. 정비사업 구역과 미착공 택지가 주 대상입니다." }],
+        local: "관할 정비구역의 착공 시점이 앞당겨질 수 있음. 조합 일정과 인허가 단계 확인 필요.",
       },
     }),
-    mk({
+    m({
       id: "sample-rent-stat",
       title: "전세 사라질수록 월세 오른다…서울 월세 160만원 시대",
       summary: "한국부동산원 집계로 서울 아파트 평균 월세가 160만 원을 넘었다. 올해 1~5월 전국 임대차 거래 중 월세 비중은 68.6%로 전년 대비 7.6%p 늘었다.",
@@ -175,7 +188,7 @@ export function seedIssues(): Issue[] {
       agencyGroup: "reb",
       status: "STAT",
       topic: "lease",
-      region: "seoul",
+      region: "metro",
       publishedAt: "2026-09-12T12:30:00+09:00",
       officialUrl: null,
       articles: [
@@ -193,18 +206,18 @@ export function seedIssues(): Issue[] {
           move: "임대 중인 집이 있다면 재계약 조건을 시장 흐름에 맞게 다시 볼 때예요.",
           asset: "월세 수요가 늘어 임대 수익 구조가 바뀌고 있어요. 전월세 전환율을 확인하세요.",
         },
-        actions: ["안양 전세·월세 실거래 확인하기(아래 '우리 동네 숫자' 참고)", "전세보증보험 가입 가능 여부 확인하기", "재계약 예정이라면 갱신요구권 사용 여부 정하기"],
+        actions: ["우리 지역 전세·월세 실거래 확인하기(아래 '우리 동네 숫자' 참고)", "전세보증보험 가입 가능 여부 확인하기", "재계약 예정이라면 갱신요구권 사용 여부 정하기"],
         glossary: { term: "전월세 전환율", def: "전세보증금을 월세로 바꿀 때 적용하는 비율이에요. 법정 상한(기준금리+2%p)이 있어 그 이상을 요구하면 거절할 수 있습니다." },
       },
       broker: {
-        facts: ["서울 아파트 평균 월세 160만 원 초과(부동산원 집계 이후 최초), 올해 월세 누적 상승률 5.73%", "올해 1~5월 전국 임대차 거래 중 월세 비중 68.6%(전년 대비 +7.6%p)", "안양 수치는 실거래 API 집계(우리 동네 숫자)로 대체"],
+        facts: ["서울 아파트 평균 월세 160만 원 초과(부동산원 집계 이후 최초), 올해 월세 누적 상승률 5.73%", "올해 1~5월 전국 임대차 거래 중 월세 비중 68.6%(전년 대비 +7.6%p)", "우리 지역 수치는 실거래 API 집계(우리 동네 숫자)로 대체"],
         script: ["전세 → 월세 전환 요구 시 법정 전환율(기준금리+2%p)을 계산해 보여 줍니다.", "임차인 고객에게는 보증보험 가입 요건(전세가율·공시가격)을 먼저 확인합니다."],
         checklist: ["임대차 신고(rtms) 30일 내 이행 안내", "갱신 계약 시 5% 상한·전환율 계산 근거를 계약서 특약에 기재"],
         faq: [{ q: "월세로 바꾸자는데 얼마가 적정한가요?", a: "법정 전환율로 계산한 값을 상한선으로 두고, 주변 실거래 월세와 비교해 제시합니다." }],
-        local: "안양 월세 평균과 전세 중위가는 실거래 집계 타일 참고. 평촌·범계 역세권 소형 월세 수요 증가.",
+        local: "우리 지역 월세 평균과 전세 중위가는 실거래 집계 타일 참고. 역세권 소형 월세 수요가 특히 빠르게 늡니다.",
       },
     }),
-    mk({
+    m({
       id: "sample-broker-fee",
       title: "\"집 보여주면 돈 내라\"…공인중개사 '임장비' 법적 근거 논란",
       summary: "한국공인중개사협회가 매물 현장 확인에 대한 기본보수(임장비)를 추진할 여지를 남기자 논란이 일었다. 국토교통부는 현행 공인중개사법령상 중개보수와 실비 외에 별도 수수료 근거가 없다고 설명했다.",
@@ -239,7 +252,7 @@ export function seedIssues(): Issue[] {
         local: "",
       },
     }),
-    mk({
+    m({
       id: "sample-kar-statutory",
       title: "'법정단체' 공인중개사협회 \"카르텔 감시센터 운영…임장비도 추진\"",
       summary: "공인중개사법 개정으로 8월 28일부터 한국공인중개사협회가 법정단체 지위를 갖는다. 확인·설명서 오기 등 과태료 체계 조정을 추진하며, 의무가입과 지도·징계권은 이번 개정에서 빠졌다.",
@@ -277,7 +290,7 @@ export function seedIssues(): Issue[] {
         local: "",
       },
     }),
-    mk({
+    m({
       id: "sample-mgmt-fee",
       title: "공인중개사, 원룸·오피스텔 계약 전 공동관리비 설명 의무화",
       summary: "국토교통부 개정안은 공인중개사가 기존 관리비 총액 외에 공동관리비 금액을 확인·설명하도록 했다. 전용 85㎡ 이하 주거용 오피스텔 중개보수는 상한요율 이내에서 정한다.",
@@ -315,7 +328,7 @@ export function seedIssues(): Issue[] {
         local: "",
       },
     }),
-    mk({
+    m({
       id: "sample-tax-notice",
       title: "소득세법 시행령 일부개정령안 입법예고 — 주택 수 제외 적용기한 2027년 말까지 연장",
       summary: "양도소득세 특례 및 주택 수 제외의 적용기한을 2027년 12월 31일로 1년 연장하는 소득세법 시행령 개정안이 입법예고됐다. 의견제출 기한은 2026년 9월 10일.",
@@ -348,17 +361,18 @@ export function seedIssues(): Issue[] {
         local: "",
       },
     }),
-    mk({
+    m({
       id: "sample-suchon-redev",
       title: "수촌마을(A블럭) 재개발사업 정비계획 결정 및 정비구역 지정(안) 주민공람·시의회 의견청취",
       summary: "안양시가 동안구 관양동 1392번지 일원 수촌마을(A블럭) 재개발 정비계획 결정 및 정비구역 지정(안)을 주민공람(공고 제2026-1260호, 7월 22일)했고, 9월 7일 제314회 임시회에서 의견청취 안건으로 다뤄졌다.",
       sourceKind: "sample",
       sourceName: "안양시",
       agency: "안양시",
-      agencyGroup: "anyang",
+      agencyGroup: "local",
       status: "LOCAL_NOTICE",
       topic: "redev",
-      region: "anyang",
+      region: "other",
+      localArea: "안양시",
       dong: ["관양동"],
       publishedAt: "2026-09-07T09:00:00+09:00",
       officialUrl: "https://www.anyang.go.kr/newtown/selectEminwonView.do?not_ancmt_mgt_no=84313&key=2558",
@@ -389,7 +403,7 @@ export function seedIssues(): Issue[] {
         local: "관양동 1392번지 일원. 인덕원역세권·중촌마을과 함께 동안구 정비 축.",
       },
     }),
-    mk({
+    m({
       id: "sample-chunghun-lotte",
       title: "롯데·현대건설 컨소시엄, 안양 충훈부 일원 공공재개발 시공사 선정…공사비 1.4조",
       summary: "충훈부 일원 공공재개발 조합이 8월 29일 총회에서 롯데건설·현대건설 컨소시엄을 시공사로 선정했다. 총 공사비 약 1조 4천억 원, 롯데건설 지분 7,567억 원.",
@@ -399,7 +413,8 @@ export function seedIssues(): Issue[] {
       agencyGroup: "industry",
       status: "PRESS_REPORTED",
       topic: "redev",
-      region: "anyang",
+      region: "other",
+      localArea: "안양시",
       dong: ["충훈동"],
       publishedAt: "2026-08-30T10:26:00+09:00",
       articles: [
@@ -427,17 +442,17 @@ export function seedIssues(): Issue[] {
         local: "만안구 충훈부 일원(충훈동). 석수지구 지구단위계획과 연계.",
       },
     }),
-    mk({
+    m({
       id: "sample-gg-jeonse-ai",
       title: "전세사기, 계약 전에 AI로 잡는다…경기도의회 안전망 조례안",
       summary: "경기도의회에 전세사기 예방 AI 권리분석 안전망 구축·운영 조례안이 올라왔다. 개업공인중개사와 거래 당사자 등 누구나 이용할 수 있도록 하고, 관계기관 업무협약과 정보 수집 근거를 담았다.",
       sourceKind: "sample",
       sourceName: "아시아타임즈",
       agency: "경기도",
-      agencyGroup: "gyeonggi",
+      agencyGroup: "local",
       status: "IN_ASSEMBLY",
       topic: "lease",
-      region: "gyeonggi",
+      region: "metro",
       publishedAt: "2026-09-07T16:42:00+09:00",
       articles: [
         { publisher: "아시아타임즈", title: "전세사기, 계약 전에 AI로 잡는다⋯ 경기도의회 민생·교육·안전 조례", url: "https://www.asiatime.co.kr/article/20260907500350", date: "2026-09-07" },

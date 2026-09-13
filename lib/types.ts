@@ -23,7 +23,15 @@ export type Topic =
   | "regulation"
   | "broker";
 
-export type Region = "national" | "metro" | "gyeonggi" | "anyang" | "seoul" | "other";
+/** E축 지역. local 은 설정에서 지정한 우리 시군구, other 는 그 밖의 특정 지역 */
+export type Region = "national" | "metro" | "local" | "other";
+
+/** 사무소가 맡은 지역. 비우면 전국구로 동작합니다. */
+export interface AreaConfig {
+  sido?: string;
+  sigungu?: string;
+  dongs?: string[];
+}
 
 export type Persona =
   | "무주택자"
@@ -45,8 +53,7 @@ export type AgencyGroup =
   | "bok"
   | "reb"
   | "law"
-  | "gyeonggi"
-  | "anyang"
+  | "local"
   | "industry"
   | "press"
   | "other";
@@ -96,7 +103,7 @@ export interface BrokerFields {
   /** 계약서 특약·확인설명서·신고 의무 */
   checklist: string[];
   faq: FaqItem[];
-  /** 안양 만안·동안 관련 구역·단지·규제 */
+  /** 우리 지역 관련 구역·단지·규제. 전국구면 지역별 편차 메모 */
   local: string;
 }
 
@@ -140,6 +147,16 @@ export interface Office {
   privacyUrl?: string;
   /** 주력 주제. 같은 등급 안에서 이 주제를 앞으로 당깁니다(규칙 R1~R8을 덮어쓰지는 않음). 비우면 가중치 없음 */
   focusTopics?: Topic[];
+  /** 서비스 범위. national = 전국구(기본), local = 지역 밀착 */
+  scope?: "national" | "local";
+  /** 지역 밀착일 때 시도 (예: 경기도) */
+  sido?: string;
+  /** 지역 밀착일 때 시군구 (예: 안양시). 이 이름이 걸리는 기사는 '우리 지역'으로 분류됩니다 */
+  sigungu?: string;
+  /** 동네 타깃(R3)에 쓸 행정동 목록 */
+  dongs?: string[];
+  /** 실거래가 API 법정동코드 5자리. 우리 지역 숫자를 여기서 집계합니다 */
+  lawdCodes?: string[];
   slogan: string;
   defaultComment: string;
   areaLabel: string;

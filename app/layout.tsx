@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: { default: "LAND LANGUAGE 브리핑", template: "%s · LAND LANGUAGE" },
-  description: "안양 공인중개사무소를 위한 부동산 정책·시장 브리핑. 중개사용 스튜디오와 고객용 레터.",
+  description: "공인중개사무소를 위한 전국 부동산 정책·시장 브리핑. 중개사용 스튜디오와 고객용 레터.",
   robots: { index: false, follow: false },
 };
 

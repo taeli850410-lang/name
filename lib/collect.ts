@@ -2,8 +2,8 @@ import { XMLParser } from "fast-xml-parser";
 import { classify, titleHash, titleSimilarity } from "./classify";
 import { enrichIssue, llmEnabled } from "./enrich";
 import { clamp, newId, stripHtml } from "./format";
-import { getIssues, getMeta, saveIssues, saveMeta } from "./repo";
-import type { BrokerFields, CollectStats, CustomerFields, Issue, SourceKind } from "./types";
+import { getArea, getIssues, getMeta, getSettings, saveIssues, saveMeta } from "./repo";
+import type { AreaConfig, BrokerFields, CollectStats, CustomerFields, Issue, SourceKind } from "./types";
 
 /**
  * 수집 파이프라인 ①: 정부 보도자료 RSS(1차 소스)와 주제별 언론 기사(보강)를 읽어
@@ -29,22 +29,33 @@ export const FEEDS: Feed[] = [
   { id: "gn-lease", name: "언론 · 임대차", kind: "press", url: gn("전세 OR 월세 OR 임대차 OR 전세사기") },
   { id: "gn-subs", name: "언론 · 청약·분양", kind: "press", url: gn("청약 OR 분양 OR 미분양") },
   { id: "gn-redev", name: "언론 · 정비사업", kind: "press", url: gn("재개발 OR 재건축 OR 정비구역 OR 노후계획도시") },
-  { id: "gn-anyang", name: "언론 · 안양", kind: "press", url: gn("안양시 OR 평촌 OR 인덕원 OR 안양 재개발") },
   { id: "gn-broker", name: "언론 · 중개업", kind: "press", url: gn("공인중개사 OR 중개보수") },
 ];
 
+/** 지역 밀착 사무소면 그 시군구 뉴스 피드를 하나 더 붙입니다. 전국구면 주제 피드만 돕니다. */
+export function localFeed(area?: AreaConfig): Feed | null {
+  const name = area?.sigungu?.trim();
+  if (!name) return null;
+  const short = name.replace(/(특별자치시|특별자치도|특별시|광역시|시|군|구|도)$/, "") || name;
+  const dongs = (area?.dongs ?? []).filter(Boolean).slice(0, 3);
+  const q = [name, `${short} 재개발`, `${short} 아파트`, ...dongs].join(" OR ");
+  return { id: "gn-local", name: `언론 · ${name}`, kind: "press", url: gn(q) };
+}
+
 /** FEEDS_JSON 환경변수(JSON 배열)로 피드 목록을 통째로 바꿀 수 있습니다. 테스트나 사무소별 관심 피드 지정용. */
-export function activeFeeds(): Feed[] {
+export function activeFeeds(area?: AreaConfig): Feed[] {
+  const local = localFeed(area);
+  const withLocal = (list: Feed[]) => (local ? [...list, local] : list);
   const raw = process.env.FEEDS_JSON;
-  if (!raw) return FEEDS;
+  if (!raw) return withLocal(FEEDS);
   try {
     const parsed = JSON.parse(raw) as Partial<Feed>[];
     const list = parsed
       .filter((f) => f && typeof f.url === "string" && typeof f.id === "string")
       .map((f) => ({ id: f.id as string, name: f.name || (f.id as string), kind: (f.kind as SourceKind) || "press", url: f.url as string, relevanceFilter: Boolean(f.relevanceFilter) }));
-    return list.length ? list : FEEDS;
+    return withLocal(list.length ? list : FEEDS);
   } catch {
-    return FEEDS;
+    return withLocal(FEEDS);
   }
 }
 
@@ -123,7 +134,7 @@ export function emptyBroker(): BrokerFields {
   return { facts: [], script: [], checklist: [], faq: [], local: "" };
 }
 
-export function mergeItems(existing: Issue[], items: RawItem[], now = Date.now()): { issues: Issue[]; added: number; merged: number; skipped: number } {
+export function mergeItems(existing: Issue[], items: RawItem[], now = Date.now(), area?: AreaConfig): { issues: Issue[]; added: number; merged: number; skipped: number } {
   const issues = [...existing];
   let added = 0;
   let merged = 0;
@@ -150,7 +161,7 @@ export function mergeItems(existing: Issue[], items: RawItem[], now = Date.now()
       }
       continue;
     }
-    const c = classify({ title: item.title, summary: item.summary, sourceKind: item.feed.kind, sourceName: item.publisher });
+    const c = classify({ title: item.title, summary: item.summary, sourceKind: item.feed.kind, sourceName: item.publisher }, area);
     if (item.feed.relevanceFilter && !c.relevant) {
       skipped++;
       continue;
@@ -195,8 +206,9 @@ export interface CollectOptions {
 export async function runCollect(opts: CollectOptions = {}): Promise<CollectStats> {
   const stats: CollectStats = { fetched: 0, added: 0, merged: 0, skipped: 0, enriched: 0, errors: [], feeds: [] };
   const items: RawItem[] = [];
+  const area = await getArea();
   await Promise.all(
-    activeFeeds().map(async (feed) => {
+    activeFeeds(area).map(async (feed) => {
       try {
         const xml = await fetchText(feed.url);
         const parsedItems = parseFeed(xml, feed);
@@ -211,18 +223,19 @@ export async function runCollect(opts: CollectOptions = {}): Promise<CollectStat
   stats.fetched = items.length;
 
   const existing = await getIssues();
-  const merged = mergeItems(existing, items);
+  const merged = mergeItems(existing, items, Date.now(), area);
   stats.added = merged.added;
   stats.merged = merged.merged;
   stats.skipped = merged.skipped;
   const issues = merged.issues;
 
   if (opts.enrich !== false && llmEnabled()) {
+    const office = await getSettings();
     const limit = opts.enrichLimit ?? 3;
     const targets = issues.filter((i) => i.review === "draft" && i.enrichedBy === "rules").slice(0, limit);
     for (const t of targets) {
       try {
-        const patch = await enrichIssue(t);
+        const patch = await enrichIssue(t, office);
         if (patch) {
           Object.assign(t, patch);
           stats.enriched++;

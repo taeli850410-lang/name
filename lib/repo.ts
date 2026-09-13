@@ -1,7 +1,8 @@
-import bundledMarket from "@/data/market-anyang.json";
+import bundledMarket from "@/data/market-sample.json";
 import { DEFAULT_OFFICE, seedIssues, seedLetters } from "./seed";
 import { getStore } from "./store";
-import type { BlogPost, InstaSave, Issue, Letter, MarketDoc, Meta, Office } from "./types";
+import { normalizeRegion } from "./taxonomy";
+import type { AreaConfig, BlogPost, InstaSave, Issue, Letter, MarketDoc, Meta, Office } from "./types";
 
 /** 저장소 접근 계층. 컬렉션 단위 문서(issues, letters, settings, market, meta, insta, blog)로 저장합니다. */
 
@@ -10,10 +11,18 @@ const KEYS = { issues: "issues", letters: "letters", settings: "settings", marke
 export async function getIssues(): Promise<Issue[]> {
   const store = getStore();
   const list = await store.get<Issue[]>(KEYS.issues);
-  if (list) return list;
-  const seeded = seedIssues();
+  // 구버전 저장본의 지역 값(seoul·gyeonggi·anyang)을 현재 4종으로 옮겨 읽습니다
+  if (list) return list.map((i) => ({ ...i, region: normalizeRegion(i.region) }));
+  const seeded = seedIssues(await getArea());
   await store.set(KEYS.issues, seeded);
   return seeded;
+}
+
+/** 설정에서 이 사무소가 맡은 지역을 꺼냅니다. 전국구면 빈 값 */
+export async function getArea(): Promise<AreaConfig> {
+  const o = await getSettings();
+  if (o.scope !== "local") return {};
+  return { sido: o.sido, sigungu: o.sigungu, dongs: o.dongs ?? [] };
 }
 
 export async function saveIssues(list: Issue[]): Promise<void> {
@@ -35,7 +44,7 @@ export async function updateIssue(id: string, patch: Partial<Issue>): Promise<Is
 }
 
 export async function resetIssuesToSeed(): Promise<Issue[]> {
-  const seeded = seedIssues();
+  const seeded = seedIssues(await getArea());
   await saveIssues(seeded);
   return seeded;
 }

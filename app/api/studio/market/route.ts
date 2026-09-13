@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
-import { refreshMarket } from "@/lib/market";
-import { getMarket, getMeta, saveMarket, saveMeta } from "@/lib/repo";
+import { applyArea, refreshMarket } from "@/lib/market";
+import { getMarket, getMeta, getSettings, saveMarket, saveMeta } from "@/lib/repo";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 export async function POST() {
   try {
-    const current = await getMarket();
-    const { doc, notes } = await refreshMarket(current);
+    const [current, office] = await Promise.all([getMarket(), getSettings()]);
+    const { doc, notes } = await refreshMarket(applyArea(current, office));
     await saveMarket(doc);
     const meta = await getMeta();
     await saveMeta({ ...meta, lastMarketAt: new Date().toISOString() });

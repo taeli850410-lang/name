@@ -1,5 +1,5 @@
 import { PERSONA_MATRIX } from "./taxonomy";
-import type { AgencyGroup, Persona, Region, SourceKind, Status, Topic } from "./types";
+import type { AgencyGroup, AreaConfig, Persona, Region, SourceKind, Status, Topic } from "./types";
 
 /**
  * 규칙 기반 5축 분류기. LLM 초안이 없어도 인박스에서 필터·라우팅이 되도록
@@ -12,35 +12,45 @@ export function isRealEstateRelevant(text: string): boolean {
   return RELEVANT.test(text);
 }
 
-const ANYANG_DONGS = [
-  "안양동", "석수동", "박달동", "호계동", "평촌동", "관양동", "비산동", "부흥동", "달안동", "갈산동", "신촌동", "범계동", "부림동", "귀인동", "평안동", "충훈동",
-  "인덕원", "만안구", "동안구", "평촌", "충훈부", "수촌마을", "중촌마을", "뉴타운맨션", "삼호아파트",
-];
-/** 별칭 → 행정동 */
-const DONG_ALIAS: Record<string, string> = {
-  평촌: "평촌동",
-  충훈부: "충훈동",
-  인덕원: "관양동",
-  수촌마을: "관양동",
-};
-const GYEONGGI = /경기도|경기\s|수원|성남|용인|고양|화성|군포|의왕|과천|광명|부천|안산|시흥|김포|파주|남양주|하남|구리|의정부|양주|평택|오산|이천|여주|광주시|동탄|판교|분당/;
-const METRO = /수도권|인천/;
-const OTHER = /대전|부산|대구|광주광역|울산|세종|강원|충북|충남|전북|전남|경북|경남|제주|창원|청주|천안|전주|포항|김해|구미|둔산|해운대|수성구/;
+/** 수도권 광역 단위 — 전국 독자에게도 의미 있는 시장 기사 */
+const METRO = /수도권|서울시|서울특별시|서울\s|서울은|서울의|서울\b|인천|경기도|경기\s|경기권/;
+/** 특정 시군구 — 그 지역 사람에게만 의미 있는 사안 */
+const CITY =
+  /수원|성남|용인|고양|화성|안양|군포|의왕|과천|광명|부천|안산|시흥|김포|파주|남양주|하남|구리|의정부|양주|평택|오산|이천|여주|동탄|판교|분당|평촌|인덕원|창원|청주|천안|전주|포항|김해|구미|진주|목포|여수|원주|춘천|강릉|서귀포|둔산|해운대/;
+/** 지방 광역시·도 */
+const WIDE = /부산|대구|광주광역|대전|울산|세종|강원|충청북도|충북|충청남도|충남|전라북도|전북|전라남도|전남|경상북도|경북|경상남도|경남|제주/;
+/** 정부 부처·전국 단위 신호 */
+const NATIONWIDE = /전국|정부|국토교통부|국토부|한국은행|금융위|금융당국|기획재정부|재정경제부|기재부|국세청|법제처|국회|한국부동산원|부동산원/;
 
-export function detectRegion(text: string): { region: Region; dong: string[] } {
-  const hits = ANYANG_DONGS.filter((d) => text.includes(d));
-  const dong = hits.map((d) => DONG_ALIAS[d] ?? d).filter((d) => d.endsWith("동") || d.endsWith("마을") || d.endsWith("아파트") || d.endsWith("맨션"));
-  if (/안양/.test(text) || hits.length) return { region: "anyang", dong: Array.from(new Set(dong)) };
-  if (GYEONGGI.test(text)) return { region: "gyeonggi", dong: [] };
-  if (/서울/.test(text) && !/전국/.test(text)) return { region: "seoul", dong: [] };
+const SIDO_NAMES = [
+  "서울특별시", "부산광역시", "대구광역시", "인천광역시", "광주광역시", "대전광역시", "울산광역시", "세종특별자치시",
+  "경기도", "강원특별자치도", "충청북도", "충청남도", "전북특별자치도", "전라남도", "경상북도", "경상남도", "제주특별자치도",
+];
+
+/** "안양시" → "안양" 처럼 행정 접미사를 뗀 짧은 이름 */
+function shortName(name: string): string {
+  return name.replace(/(특별자치시|특별자치도|특별시|광역시|시|군|구|도)$/, "");
+}
+
+/**
+ * 지역 판정. 설정한 시군구·동이 걸리면 '우리 지역', 수도권 광역 기사는 '수도권',
+ * 특정 타 시군구·지방은 '타 지역', 정부 발표는 '전국'입니다. 설정이 비면(전국구) '우리 지역'은 나오지 않습니다.
+ */
+export function detectRegion(text: string, area?: AreaConfig): { region: Region; dong: string[] } {
+  const dongs = (area?.dongs ?? []).filter(Boolean);
+  const dongHits = dongs.filter((d) => text.includes(d));
+  const sigungu = area?.sigungu?.trim();
+  const shortSigungu = sigungu ? shortName(sigungu) : "";
+  const localHit = Boolean((sigungu && text.includes(sigungu)) || (shortSigungu.length >= 2 && text.includes(shortSigungu)) || dongHits.length);
+  if (localHit) return { region: "local", dong: Array.from(new Set(dongHits)) };
+  if (NATIONWIDE.test(text) && !CITY.test(text)) return { region: "national", dong: [] };
+  if (CITY.test(text)) return { region: "other", dong: [] };
+  if (WIDE.test(text)) return { region: "other", dong: [] };
   if (METRO.test(text)) return { region: "metro", dong: [] };
-  if (OTHER.test(text) && !/전국|정부|국토교통부|국토부|한국은행|금융위/.test(text)) return { region: "other", dong: [] };
   return { region: "national", dong: [] };
 }
 
 const AGENCY_RULES: { re: RegExp; group: AgencyGroup; name: string }[] = [
-  { re: /안양시의회|안양시청|안양시/, group: "anyang", name: "안양시" },
-  { re: /경기도의회|경기도청|경기도/, group: "gyeonggi", name: "경기도" },
   { re: /국토교통부|국토부/, group: "molit", name: "국토교통부" },
   { re: /금융위원회|금융위|금융감독원|금감원|금융당국/, group: "fsc", name: "금융위원회" },
   { re: /재정경제부|재경부|기획재정부|기재부/, group: "mofe", name: "재정경제부" },
@@ -54,10 +64,26 @@ const AGENCY_RULES: { re: RegExp; group: AgencyGroup; name: string }[] = [
   { re: /건설|시공사|수주|조합/, group: "industry", name: "업계" },
 ];
 
-export function detectAgency(text: string, sourceKind: SourceKind, sourceName: string): { agency: string; agencyGroup: AgencyGroup } {
+/** "안양시의회", "경기도청" 처럼 지자체 이름을 뽑습니다 */
+function detectLocalGov(text: string, area?: AreaConfig): string | null {
+  const m = text.match(/([가-힣]{2,7}(?:특별자치시|특별자치도|특별시|광역시|시|군|구|도))(?:의회|청)/);
+  if (m) return m[1];
+  for (const name of [area?.sigungu, area?.sido, ...SIDO_NAMES]) {
+    if (name && text.includes(name)) return name;
+  }
+  return null;
+}
+
+export function detectAgency(text: string, sourceKind: SourceKind, sourceName: string, area?: AreaConfig): { agency: string; agencyGroup: AgencyGroup } {
+  const gov = detectLocalGov(text, area);
+  // 지자체 이름이 기사 앞머리(발표 주체 자리)에 있으면 부처 규칙보다 먼저
+  if (gov && /(의회|청)/.test(text.slice(0, Math.max(0, text.indexOf(gov)) + gov.length + 2))) {
+    return { agency: gov, agencyGroup: "local" };
+  }
   for (const r of AGENCY_RULES) {
     if (r.re.test(text)) return { agency: r.name, agencyGroup: r.group };
   }
+  if (gov) return { agency: gov, agencyGroup: "local" };
   if (sourceKind === "press") return { agency: sourceName || "언론", agencyGroup: "press" };
   if (sourceKind === "notice") return { agency: sourceName || "지자체", agencyGroup: "other" };
   return { agency: sourceName || "정부", agencyGroup: "other" };
@@ -65,8 +91,7 @@ export function detectAgency(text: string, sourceKind: SourceKind, sourceName: s
 
 export function detectStatus(text: string, sourceKind: SourceKind, region: Region): Status {
   if (/입법예고|의견제출|시행령 개정안|시행규칙 개정안|개정령안/.test(text)) return "LEGISLATIVE_NOTICE";
-  if (sourceKind === "notice" || ((region === "anyang" || region === "gyeonggi") && /고시|공고|공람|정비구역 지정|추진위원회 승인|조합설립|특별정비/.test(text)))
-    return "LOCAL_NOTICE";
+  if (sourceKind === "notice" || (region !== "national" && /고시|공고|공람|정비구역 지정|추진위원회 승인|조합설립|특별정비/.test(text))) return "LOCAL_NOTICE";
   if (/국회|본회의|상임위|국토위|법안|발의|법률안|조례안|의결/.test(text)) {
     return /통과|가결|의결됐|처리됐|공포/.test(text) ? "CONFIRMED" : "IN_ASSEMBLY";
   }
@@ -161,14 +186,14 @@ export interface Classification {
   relevant: boolean;
 }
 
-export function classify(input: ClassifyInput): Classification {
+export function classify(input: ClassifyInput, area?: AreaConfig): Classification {
   const text = `${input.title} ${input.summary}`;
-  const { region, dong } = detectRegion(text);
-  const { agency, agencyGroup } = detectAgency(text, input.sourceKind, input.sourceName);
+  const { region, dong } = detectRegion(text, area);
+  const { agency, agencyGroup } = detectAgency(text, input.sourceKind, input.sourceName, area);
   const topic = detectTopic(input.title, input.summary);
   const status = detectStatus(text, input.sourceKind, region);
   const personas = { ...PERSONA_MATRIX[topic] };
-  if (region === "anyang") {
+  if (region === "local") {
     personas["매수 예정자"] = Math.min(5, personas["매수 예정자"] + 1);
     personas["공인중개사"] = 5;
   }

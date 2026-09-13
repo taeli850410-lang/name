@@ -26,32 +26,33 @@ export function routeIssue(issue: Issue): RouteResult {
     return { customer: "exclude", rules, reasons };
   }
 
-  // E축: 타 지역 기사는 고객용에서 자동 제외
-  if (issue.region === "other") {
-    rules.push("E");
-    reasons.push("안양 고객과 무관한 타 지역 사안이라 중개사용 참고로만 둡니다.");
-    return { customer: "exclude", rules, reasons };
+  const localTopic = issue.topic === "redev" || issue.topic === "transit" || issue.topic === "regulation";
+
+  // R3 지자체 고시·동네 사안은 우리 지역 고객에게만. 전국구(지역 미설정)면 '우리 지역'이 없어 자동으로 꺼집니다.
+  if (issue.status === "LOCAL_NOTICE" || (issue.region === "local" && issue.dong.length > 0 && localTopic)) {
+    rules.push("R3");
+    if (issue.region !== "local") {
+      reasons.push("우리 지역이 아닌 지자체 고시·공고라 중개사용 참고로만 둡니다. 설정에서 시군구를 지정하면 그 지역 고시가 동네 타깃이 됩니다.");
+      return { customer: "exclude", rules, reasons };
+    }
+    reasons.push(issue.dong.length ? `${issue.dong.join("·")} 거주·보유 고객에게만 발송합니다.` : "우리 지역 사안입니다. 동 정보를 채우면 해당 고객에게만 발송됩니다.");
+    return { customer: "target", rules, reasons };
   }
 
-  // R3 지자체 고시·동네 사안은 해당 동 고객에게만
-  const localTopic = issue.topic === "redev" || issue.topic === "transit" || issue.topic === "regulation";
-  if (issue.status === "LOCAL_NOTICE" || (issue.region === "anyang" && issue.dong.length > 0 && localTopic)) {
-    rules.push("R3");
-    reasons.push(
-      issue.dong.length
-        ? `${issue.dong.join("·")} 거주·보유 고객에게만 발송합니다.`
-        : "안양 동네 사안입니다. 동 정보를 채우면 해당 고객에게만 발송됩니다.",
-    );
-    return { customer: "target", rules, reasons };
+  // E축: 특정 타 지역의 구역·교통·규제 사안은 고객용에서 제외. 통계·세금·금리처럼 지역과 무관한 주제는 그대로 둡니다.
+  if (issue.region === "other" && localTopic) {
+    rules.push("E");
+    reasons.push("다른 지역의 구역·교통·규제 사안이라 중개사용 참고로만 둡니다.");
+    return { customer: "exclude", rules, reasons };
   }
 
   // R1 단계로 1차 결정
   rules.push("R1");
   if (CUSTOMER_BODY_STATUSES.includes(issue.status)) {
     reasons.push(`${STATUS_LABEL[issue.status]} 단계라 고객용 본문에 실을 수 있습니다.`);
-    if (issue.topic === "stat" && issue.region === "seoul") {
+    if (issue.topic === "stat" && issue.region !== "national" && issue.region !== "local") {
       rules.push("R5");
-      reasons.push("서울 통계는 안양 숫자로 바꿔 전달합니다. 우리 동네 숫자 타일이 함께 실립니다.");
+      reasons.push("다른 지역 통계라 우리 지역 숫자 타일을 함께 싣습니다.");
     }
     return { customer: "body", rules, reasons };
   }

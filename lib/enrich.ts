@@ -19,7 +19,7 @@ export function llmModel(): string {
 
 const STATUS_VALUES = ["CONFIRMED", "SCHEDULED", "LEGISLATIVE_NOTICE", "IN_ASSEMBLY", "UNDER_REVIEW", "PRESS_REPORTED", "OUTLOOK", "STAT", "LOCAL_NOTICE"] as const;
 const TOPIC_VALUES = ["rate", "tax", "subs", "supply", "redev", "lease", "transit", "stat", "regulation", "broker"] as const;
-const REGION_VALUES = ["national", "metro", "gyeonggi", "anyang", "seoul", "other"] as const;
+const REGION_VALUES = ["national", "metro", "local", "other"] as const;
 
 const EnrichSchema = z.object({
   headline: z.string().describe("고객용 제목. 30자 안팎, 존댓말, 원문에 있는 숫자·기관명만 사용"),
@@ -37,7 +37,7 @@ const EnrichSchema = z.object({
   script: z.array(z.string()).describe("중개사용 상담 스크립트: 고객이 물으면 이렇게 설명"),
   checklist: z.array(z.string()).describe("중개사용 실무 체크리스트: 특약·확인설명서·신고 의무·세무 연계"),
   faq: z.array(z.object({ q: z.string(), a: z.string() })).describe("예상 질문과 답 가이드 1~3개"),
-  local: z.string().describe("안양 만안·동안구 관련 구역·단지·규제 영향. 근거 없으면 빈 문자열"),
+  local: z.string().describe("담당 지역 관련 구역·단지·규제 영향, 또는 지역별 편차 메모. 근거 없으면 빈 문자열"),
   personas: z
     .object({
       무주택자: z.number(),
@@ -53,14 +53,19 @@ const EnrichSchema = z.object({
   status: z.enum(STATUS_VALUES).describe("정책 단계"),
   topic: z.enum(TOPIC_VALUES).describe("주제"),
   region: z.enum(REGION_VALUES).describe("지역 범위"),
-  agency: z.string().describe("실제 발표 주체 표시명 (예: 국토교통부, 한국은행, 안양시, 언론사명)"),
-  dong: z.array(z.string()).describe("안양시 관련 행정동 이름 목록. 없으면 빈 배열"),
+  agency: z.string().describe("실제 발표 주체 표시명 (예: 국토교통부, 한국은행, 지자체명, 언론사명)"),
+  dong: z.array(z.string()).describe("담당 지역의 행정동 이름 목록. 담당 지역과 무관하면 빈 배열"),
   effectiveAt: z.string().nullable().describe("시행일 YYYY-MM-DD. 원문에 명시된 경우만, 아니면 null"),
 });
 
 export type EnrichResult = z.infer<typeof EnrichSchema>;
 
-const SYSTEM = `당신은 경기도 안양시 공인중개사무소가 발행하는 부동산 브리핑의 편집자입니다.
+function systemPrompt(areaLabel: string, sigungu?: string): string {
+  const scopeLine = sigungu
+    ? `이 사무소는 ${sigungu}(표기: ${areaLabel})를 맡습니다. ${sigungu} 관련 기사만 region=local 로 잡고, dong 은 ${sigungu}의 행정동만 적습니다.`
+    : `이 사무소는 전국을 대상으로 합니다. region 은 national·metro·other 중에서 고르고, local 은 쓰지 않으며 dong 은 항상 빈 배열입니다.`;
+  return `당신은 공인중개사무소가 발행하는 부동산 브리핑의 편집자입니다.
+${scopeLine}
 보도자료·기사 하나를 받아 두 독자를 위한 초안을 씁니다.
 
 [고객용 규칙]
@@ -84,6 +89,7 @@ const SYSTEM = `당신은 경기도 안양시 공인중개사무소가 발행하
   .map(([k, v]) => `${k}=${v}`)
   .join(", ")}
 - personas 는 0~5 정수. 이 이슈가 그 대상에게 얼마나 중요한지.`;
+}
 
 function clampInt(v: unknown): number {
   const n = Math.round(Number(v));
@@ -121,7 +127,9 @@ export function applyEnrichment(issue: Issue, r: EnrichResult): Partial<Issue> {
   };
 }
 
-export async function enrichIssue(issue: Issue): Promise<Partial<Issue> | null> {
+export async function enrichIssue(issue: Issue, office?: { areaLabel: string; sigungu?: string; scope?: "national" | "local" }): Promise<Partial<Issue> | null> {
+  const areaLabel = office?.areaLabel || "전국";
+  const sigungu = office?.scope === "local" ? office.sigungu?.trim() || undefined : undefined;
   if (!llmEnabled()) return null;
   const client = new Anthropic();
   const payload = {
@@ -140,7 +148,7 @@ export async function enrichIssue(issue: Issue): Promise<Partial<Issue> | null> 
     betas: ["server-side-fallback-2026-07-01"],
     fallbacks: "default",
     output_config: { effort: "medium", format: betaZodOutputFormat(EnrichSchema) },
-    system: SYSTEM,
+    system: systemPrompt(areaLabel, sigungu),
     messages: [
       {
         role: "user",
