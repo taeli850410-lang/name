@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { DEFAULT_CHANNELS, DEFAULT_CHANNELS_TEXT, TIER_LABEL, type ChannelTier } from "@/lib/channels";
 import { TOPICS, TOPIC_LABEL, VIDEO_IN_BRIEF } from "@/lib/taxonomy";
 
 import type { Office, Topic } from "@/lib/types";
@@ -19,8 +20,7 @@ const WHY: Partial<Record<Topic, string>> = {
 const list = (v?: string[]) => (v ?? []).join(", ");
 const lines = (v?: string[]) => (v ?? []).join("\n");
 const parseLines = (s: string) => s.split(/[\n,]+/).map((x) => x.trim()).filter(Boolean);
-/** 기본 채널 — 설정을 비우면 이 목록으로 돕니다 */
-const DEFAULT_CHANNELS = ["한국부동산원", "한국경제TV", "연합뉴스TV", "국토교통부"];
+
 const parseList = (s: string) => s.split(/[,\s]+/).map((x) => x.trim()).filter(Boolean);
 
 /** 자유 입력 칸으로 다룰 수 있는 문자열 필드만 (스위치·목록 필드는 아래에서 따로 그립니다) */
@@ -168,11 +168,23 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
         {showVideos && (
           <div className="field">
             <label htmlFor="f-channels">영상 채널 (한 줄에 하나)</label>
-            <textarea id="f-channels" rows={4} placeholder={"@korealand\nhttps://www.youtube.com/channel/UCTHCOPwqNfZ0uiKOvFyhGwg"} value={channels} onChange={(e) => setChannels(e.target.value)} />
+            <textarea id="f-channels" rows={6} placeholder={DEFAULT_CHANNELS_TEXT} value={channels} onChange={(e) => setChannels(e.target.value)} />
             <span className="hint">
-              채널 주소 · @핸들 · UC 아이디 · 재생목록 주소를 넣을 수 있습니다. 비우면 기본 채널({DEFAULT_CHANNELS.join(" · ")})로 돕니다. 유튜브 채널 피드는 최신 15편만 주므로, 업로드가
-              잦은 종합뉴스 채널보다 부동산·경제 전문 채널이나 그 채널의 부동산 재생목록을 넣는 편이 잘 걸립니다.
+              채널 주소 · @핸들 · UC 아이디 · 재생목록 주소를 넣을 수 있습니다. <b>비워 두면 아래 기본 채널 {DEFAULT_CHANNELS.length}곳으로 돕니다.</b> 유튜브 채널 피드는 최신 15편만
+              주므로, 하루에 수백 편을 올리는 종합뉴스 채널은 부동산 영상이 방금 올라왔을 때만 걸립니다. 부동산·경제 전문 채널이나 그 채널의 부동산 재생목록이 훨씬 잘 걸립니다.
             </span>
+            {channels.trim() === "" && (
+              <button className="btn btn-sm" type="button" style={{ alignSelf: "flex-start", marginTop: 4 }} onClick={() => setChannels(DEFAULT_CHANNELS_TEXT)}>
+                기본 채널 {DEFAULT_CHANNELS.length}곳 넣고 편집하기
+              </button>
+            )}
+            <ul className="small muted" style={{ margin: "6px 0 0", paddingLeft: 18 }}>
+              {(["estate", "econ", "news"] as ChannelTier[]).map((t) => (
+                <li key={t}>
+                  <b>{TIER_LABEL[t]}</b> — {DEFAULT_CHANNELS.filter((c) => c.tier === t).map((c) => c.name).join(" · ")}
+                </li>
+              ))}
+            </ul>
           </div>
         )}
         <div className="field">

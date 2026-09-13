@@ -205,6 +205,34 @@ const YT = {
       "UCXiDk1r8MDRqTD0j2BxNWWQ",
     ),
   ]),
+  UCAVdqlngIAxHtwlCA2hjv3A: ytFeed("집코노미", "UCAVdqlngIAxHtwlCA2hjv3A", [
+    ytEntry(
+      "yt0401",
+      "신속통합기획 후보지 24곳…내 구역은 몇 년 걸릴까",
+      "서울시가 신속통합기획 재개발 후보지 24곳을 선정했습니다. 구역별 예상 일정과 분담금을 정리했습니다.",
+      "2026-09-12T23:00:00+00:00",
+      "집코노미",
+      "UCAVdqlngIAxHtwlCA2hjv3A",
+    ),
+    ytEntry(
+      "yt0402",
+      "9월 청약 일정 총정리…특별공급 가점 계산법",
+      "이번 달 분양 단지와 특별공급 요건, 청약 가점 계산 방법을 짚었습니다.",
+      "2026-09-11T23:00:00+00:00",
+      "집코노미",
+      "UCAVdqlngIAxHtwlCA2hjv3A",
+    ),
+  ]),
+  UCCt6iN6nJemSe_OHRihYBAQ: ytFeed("매부리TV", "UCCt6iN6nJemSe_OHRihYBAQ", [
+    ytEntry(
+      "yt0501",
+      "DSR 산정 바뀐다…내년 1월부터 대출 한도 얼마나 줄까",
+      "금융위원회의 가계부채 관리방안으로 주택담보대출 한도가 어떻게 달라지는지 사례로 계산했습니다.",
+      "2026-09-12T22:00:00+00:00",
+      "매부리TV",
+      "UCCt6iN6nJemSe_OHRihYBAQ",
+    ),
+  ]),
   UCmolitKOREALANDtest0000: ytFeed("국토교통부", "UCmolitKOREALANDtest0000", [
     ytEntry(
       "yt0301",

@@ -3,7 +3,8 @@ import { links, TOPIC_LINKS } from "./links";
 import { sortArticles, sourceLinks } from "./source";
 import { computeTiles } from "./market";
 import { findForbidden, focusRank, gradeIssue, isFresh, routeIssue, segmentImpact } from "./routing";
-import { PERIOD_LIMIT, PERIOD_TITLE, SEGMENTS, STATUS_LABEL, TOPIC_GLOSSARY, VIDEO_IN_BRIEF } from "./taxonomy";
+import { pickVideos } from "./channels";
+import { PERIOD_LIMIT, PERIOD_TITLE, SEGMENTS, STATUS_LABEL, TOPIC_GLOSSARY } from "./taxonomy";
 import type { Issue, Letter, LetterIssue, MarketDoc, Office, Period, Segment, Validation, VideoItem, WatchItem } from "./types";
 
 /** 고객용 레터 생성·검증·발행. 모두 순수 함수이며 저장은 호출자가 합니다. */
@@ -147,7 +148,7 @@ export function buildDraft(issues: Issue[], office: Office, market: MarketDoc, o
     historyLabel,
     comment: opts.comment ?? office.defaultComment,
     glossary,
-    videos: (opts.videos ?? []).slice(0, VIDEO_IN_BRIEF),
+    videos: pickVideos(opts.videos ?? []),
   };
 }
 

@@ -2,6 +2,7 @@ import { XMLParser } from "fast-xml-parser";
 import { detectPlace, detectTopic, isRealEstateRelevant } from "./classify";
 import { clamp, stripHtml } from "./format";
 import { VIDEO_KEEP } from "./taxonomy";
+export { DEFAULT_VIDEO_SOURCES } from "./channels";
 import type { VideoItem } from "./types";
 
 /**
@@ -13,13 +14,8 @@ import type { VideoItem } from "./types";
  * 사무소가 설정에서 채널을 더하거나 뺄 수 있게 했습니다.
  */
 
-/** 기본 채널 — 부동산 전문 공공기관, 경제 전문 방송, 종합뉴스 순 */
-export const DEFAULT_VIDEO_SOURCES = [
-  "UCXiDk1r8MDRqTD0j2BxNWWQ", // 한국부동산원
-  "UCF8AeLlUbEpKju6v1H6p8Eg", // 한국경제TV
-  "UCTHCOPwqNfZ0uiKOvFyhGwg", // 연합뉴스TV
-  "@korealand", // 국토교통부
-];
+/** 한 채널에서 한 번에 담는 최대 편수 — 부동산만 올리는 채널이 목록을 덮지 않게 */
+const PER_CHANNEL = 5;
 
 /** 24시간 라이브 루프·다시보기 모음은 기사로 쓰지 않습니다 */
 const NOT_A_REPORT = /24시간|다시보기|풀영상 모음|전체 다시|LIVE 스트리밍/i;
@@ -130,7 +126,9 @@ export function parseVideoFeed(xml: string): VideoItem[] {
       place: detectPlace(title),
     });
   }
-  return out;
+  // 최신순으로 자른 뒤 돌려줍니다
+  out.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+  return out.slice(0, PER_CHANNEL);
 }
 
 function toIso(s: string): string {
@@ -166,23 +164,26 @@ export async function collectVideos(
   const nextCache = { ...cache };
   const incoming: VideoItem[] = [];
 
-  for (const input of inputs) {
-    const src = await resolveSource(input, nextCache);
-    if (!src) {
-      stats.sources.push({ input, key: null, items: 0, ok: false, error: "채널을 찾지 못했습니다" });
-      continue;
-    }
-    nextCache[input.trim()] = src.key;
-    try {
-      const res = await fetch(feedUrl(src), { headers: { "user-agent": "Mozilla/5.0 (compatible; RealEstateReportAlert/1.0)" }, cache: "no-store" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const items = parseVideoFeed(await res.text());
-      incoming.push(...items);
-      stats.fetched += items.length;
-      stats.sources.push({ input, key: src.key, items: items.length, ok: true });
-    } catch (e) {
-      stats.sources.push({ input, key: src.key, items: 0, ok: false, error: e instanceof Error ? e.message : String(e) });
-    }
+  // 채널이 열 개를 넘으므로 한 줄씩 기다리지 않고 같이 받습니다
+  const results = await Promise.all(
+    inputs.map(async (input) => {
+      const src = await resolveSource(input, cache);
+      if (!src) return { input, key: null, items: [] as VideoItem[], ok: false, error: "채널을 찾지 못했습니다" };
+      try {
+        const res = await fetch(feedUrl(src), { headers: { "user-agent": "Mozilla/5.0 (compatible; RealEstateReportAlert/1.0)" }, cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return { input, key: src.key, items: parseVideoFeed(await res.text()), ok: true };
+      } catch (e) {
+        return { input, key: src.key, items: [] as VideoItem[], ok: false, error: e instanceof Error ? e.message : String(e) };
+      }
+    }),
+  );
+
+  for (const r of results) {
+    if (r.key) nextCache[r.input.trim()] = r.key;
+    incoming.push(...r.items);
+    stats.fetched += r.items.length;
+    stats.sources.push({ input: r.input, key: r.key, items: r.items.length, ok: r.ok, error: r.error });
   }
 
   const { videos, added } = mergeVideos(existing, incoming);

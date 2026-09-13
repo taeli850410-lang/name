@@ -3,8 +3,9 @@ import { editionLabel, letterTitle } from "./letter";
 import { links, TOPIC_LINKS } from "./links";
 import { computeTiles } from "./market";
 import { focusRank, gradeIssue, isFresh, maxSegmentImpact, ROUTE_LABEL, routeIssue } from "./routing";
+import { pickVideos } from "./channels";
 import { sourceLinks, type SourceLink } from "./source";
-import { PERIOD_LABEL, PERSONAS, regionLabel, SEGMENTS, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL, VIDEO_IN_BRIEF } from "./taxonomy";
+import { PERIOD_LABEL, PERSONAS, regionLabel, SEGMENTS, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL } from "./taxonomy";
 import type { Article, Glossary, HistoryPoint, Issue, Letter, LetterIssue, MarketDoc, MarketTile, Office, Period, Persona, Segment, VideoItem } from "./types";
 
 /**
@@ -259,7 +260,7 @@ export function letterToBrief(letter: Letter): BriefModel {
 
 /** 영상 기사 → 브리핑 모델. 주제와 지역을 함께 보여 줘야 무슨 영상인지 열기 전에 압니다 */
 export function videoSection(videos: VideoItem[] | undefined, period: Period): BriefModel["video"] {
-  const items = (videos ?? []).slice(0, VIDEO_IN_BRIEF).map((v) => ({
+  const items = pickVideos(videos ?? []).map((v) => ({
     id: v.id,
     title: v.title,
     channel: v.channel,
