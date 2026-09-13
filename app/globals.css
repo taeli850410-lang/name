@@ -114,8 +114,7 @@ tr:last-child td { border-bottom: 0; }
 .door:hover { text-decoration: none; border-color: var(--ink-3); }
 .door.b { border-top: 4px solid var(--brok); }
 .door.c { border-top: 4px solid var(--cust); }
-.door h2 { margin-bottom: 6px; }
-.door p { color: var(--ink-2); margin: 0; }
+.door p { color: var(--ink-2); margin: 10px 0 0; }
 
 /* ── 스튜디오 셸 ── */
 .studio { min-height: 100vh; display: flex; flex-direction: column; }

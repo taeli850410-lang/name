@@ -18,12 +18,10 @@ export default async function Home() {
       <div className="doors">
         <Link href="/studio/brief" className="door b">
           <span className="chip chip-b">중개사용 · 그린</span>
-          <h2 style={{ marginTop: 10 }}>STUDIO 브리핑</h2>
           <p>팩트·상담 포인트·실무 체크가 담긴 중개사용 브리핑. 인박스 검수 · 레터 빌더 · 우리 동네 숫자 · 설정.</p>
         </Link>
         <Link href="/l/demo" className="door c">
           <span className="chip chip-c">고객용 · 남색</span>
-          <h2 style={{ marginTop: 10 }}>LETTER</h2>
           <p>같은 구조를 고객 눈높이로 줄인 읽기 전용 브리핑. 샘플 레터(MONTHLY · 내집마련)를 열어 봅니다.</p>
         </Link>
       </div>
