@@ -32,7 +32,7 @@ export const INTEGRATIONS: Integration[] = [
   { key: "bldrgst", label: "건축물대장", endpoint: "/api/building-register", env: "DATA_GO_KR_API_KEY", check: "/api/building-register?check=1" },
   { key: "vworld", label: "주소·필지 (VWorld)", endpoint: "/api/vworld", env: "VWORLD_API_KEY", check: "/api/vworld?check=1" },
   { key: "billing", label: "정기결제", endpoint: "/api/billing", env: "PORTONE_API_SECRET 또는 TOSS_SECRET_KEY" },
-  { key: "files", label: "첨부 파일 저장소", endpoint: "/api/files", env: "S3_ENDPOINT · S3_BUCKET · S3_ACCESS_KEY_ID · S3_SECRET_ACCESS_KEY" },
+  { key: "files", label: "첨부 파일 저장소", endpoint: "/api/files", env: "S3_ENDPOINT · S3_BUCKET · S3_ACCESS_KEY_ID · S3_SECRET_ACCESS_KEY", check: "/api/files?check=1" },
 ];
 
 /** 확인 전 · 설정됨 · 미설정 · 확인 실패를 구분한다. "모름"을 "정상"으로 뭉개지 않는다. */
@@ -50,6 +50,11 @@ function summarize(key: string, data: Record<string, unknown>): string {
   if (key === "bldrgst") {
     const n = Number(data.totalCount ?? 0);
     return n > 0 ? `십정동 630 대장 ${n}건 확인` : String(data.note ?? "응답 정상");
+  }
+  if (key === "files") {
+    // 무엇을 해 봤는지 그대로 적는다. "성공"만으로는 뭘 확인했는지 알 수 없다.
+    const bucket = typeof data.bucket === "string" ? data.bucket : "";
+    return `${bucket ? `${bucket} 에 ` : ""}올렸다 되읽고 지웠습니다 · 브라우저 업로드 허용됨`;
   }
   return "호출 성공";
 }

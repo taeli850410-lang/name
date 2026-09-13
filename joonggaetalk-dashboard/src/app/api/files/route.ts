@@ -14,7 +14,7 @@
  */
 import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
-import { presign, readConfig } from "@/lib/s3sign";
+import { presign, readConfig, type S3Config } from "@/lib/s3sign";
 import { FILE_KINDS, KIND_RULES, extMatches, extOf, safeName, sniff, storageKey, validateUpload, type FileKind } from "@/lib/storage";
 
 export const runtime = "nodejs";
@@ -35,6 +35,7 @@ const ERRORS = {
   REJECTED: { message: "올릴 수 없는 파일입니다.", hint: "" },
   NOT_FOUND: { message: "파일을 찾을 수 없습니다.", hint: "이미 지워졌거나 보존기간이 지나 파기되었을 수 있습니다." },
   UPSTREAM: { message: "저장소가 응답하지 않습니다.", hint: "잠시 뒤 다시 시도해 주세요." },
+  CHECK_FAILED: { message: "저장소 점검에 실패했습니다.", hint: "" },
 } as const;
 
 function fail(code: keyof typeof ERRORS, status: number, extra?: Record<string, unknown>) {
@@ -53,10 +54,118 @@ function mayRead(_key: string): boolean {
   return true;
 }
 
+/**
+ * 저장소가 진짜로 도는지 — 작은 파일 하나를 올렸다, 되읽고, 지운다.
+ *
+ * "설정됨"은 환경 변수에 글자가 있다는 뜻일 뿐이다. 열쇠가 틀렸는지,
+ * 버킷 이름이 다른지, 권한이 읽기 전용인지는 실제로 해 봐야 안다.
+ *
+ * CORS 까지 여기서 본다. 파일은 브라우저에서 저장소로 바로 가므로
+ * CORS 가 없으면 서버는 멀쩡한데 화면에서만 조용히 실패한다.
+ * 브라우저가 보내는 것과 똑같은 예비 요청(preflight)을 그대로 보내 확인한다.
+ */
+async function selfCheck(cfg: S3Config, req: Request) {
+  const origin = `https://${req.headers.get("host") || new URL(req.url).host}`;
+  // 점검용 파일은 계약·물건과 섞이지 않게 따로 둔다. 어차피 바로 지운다.
+  const key = `_점검/${randomBytes(8).toString("base64url")}.txt`;
+  const body = `budongsan-talk storage check ${new Date().toISOString()}`;
+
+  const steps: Record<string, boolean> = {};
+  const detail: Record<string, string> = {};
+
+  // 1. 올리기
+  let uploaded = false;
+  try {
+    const put = await fetch(presign(cfg, "PUT", key, 60), { method: "PUT", body });
+    uploaded = put.ok;
+    if (!put.ok) detail["올리기"] = `저장소가 HTTP ${put.status} 로 거절했습니다.`;
+  } catch {
+    detail["올리기"] = "저장소에 닿지 못했습니다.";
+  }
+  steps["올리기"] = uploaded;
+
+  // 2. 되읽기 — 올린 내용이 그대로 돌아오는가
+  let readBack = false;
+  if (uploaded) {
+    try {
+      const got = await fetch(presign(cfg, "GET", key, 60), { cache: "no-store" });
+      if (got.ok) {
+        readBack = (await got.text()) === body;
+        if (!readBack) detail["되읽기"] = "올린 내용과 다른 것이 돌아왔습니다.";
+      } else {
+        detail["되읽기"] = `저장소가 HTTP ${got.status} 로 답했습니다.`;
+      }
+    } catch {
+      detail["되읽기"] = "저장소에 닿지 못했습니다.";
+    }
+  }
+  steps["되읽기"] = readBack;
+
+  // 3. 브라우저에서 올리기 (CORS) — 올리기가 실패해도 따로 본다
+  let cors = false;
+  try {
+    const pre = await fetch(presign(cfg, "PUT", key, 60), {
+      method: "OPTIONS",
+      headers: { Origin: origin, "Access-Control-Request-Method": "PUT" },
+    });
+    const allow = (pre.headers.get("access-control-allow-origin") || "").trim();
+    cors = allow === "*" || allow === origin;
+    if (!cors) {
+      detail["브라우저에서 올리기"] = allow
+        ? `허용된 주소가 다릅니다 — 저장소는 "${allow}" 만 받습니다.`
+        : "버킷에 CORS 설정이 없습니다. 서버에서는 되지만 화면에서 올리면 실패합니다.";
+    }
+  } catch {
+    detail["브라우저에서 올리기"] = "예비 요청(preflight)에 실패했습니다.";
+  }
+  steps["브라우저에서 올리기"] = cors;
+
+  // 4. 지우기 — 점검 파일을 남겨 두지 않는다
+  let removed = false;
+  if (uploaded) {
+    try {
+      const del = await fetch(presign(cfg, "DELETE", key, 60), { method: "DELETE" });
+      removed = del.ok || del.status === 204 || del.status === 404;
+      if (!removed) detail["지우기"] = `저장소가 HTTP ${del.status} 로 거절했습니다. 쓰기 권한을 확인하세요.`;
+    } catch {
+      detail["지우기"] = "저장소에 닿지 못했습니다.";
+    }
+  }
+  steps["지우기"] = removed;
+
+  const failed = Object.keys(steps).filter((k) => !steps[k]);
+  const bucket = cfg.bucket;
+  const host = new URL(cfg.endpoint).host;
+
+  if (failed.length === 0) {
+    return NextResponse.json({ ok: true, live: true, bucket, endpoint: host, steps });
+  }
+  return NextResponse.json(
+    {
+      ok: false,
+      live: true,
+      code: "CHECK_FAILED",
+      message: `${failed.join(" · ")} 에서 막혔습니다.`,
+      hint: detail[failed[0]] ?? "",
+      bucket,
+      endpoint: host,
+      steps,
+      detail,
+    },
+    { status: 502 },
+  );
+}
+
 export async function GET(req: Request) {
   const cfg = readConfig(process.env);
   const url = new URL(req.url);
   const key = url.searchParams.get("key");
+
+  // 실제로 올렸다 지워 본다. 운영자가 누를 때만 돈다.
+  if (url.searchParams.get("check") === "1") {
+    if (!cfg) return fail("NO_STORE", 503, { live: true });
+    return selfCheck(cfg, req);
+  }
 
   if (!key) {
     return NextResponse.json({
