@@ -75,7 +75,7 @@ export function isFresh(issue: Issue, period: Period, now = Date.now()): boolean
   return now - t <= PERIOD_WINDOW_MS[period];
 }
 
-/** 인박스 추천 등급: ★ 발송 권장 · ◎ 참고 · ○ 보관 */
+/** Pocket 추천 등급: ★ 발송 권장 · ◎ 참고 · ○ 보관 */
 export function gradeIssue(issue: Issue, now = Date.now()): Grade {
   const route = routeIssue(issue).customer;
   if (route === "exclude" || issue.review === "archived") return "keep";

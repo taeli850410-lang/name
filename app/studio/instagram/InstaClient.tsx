@@ -351,7 +351,7 @@ export default function InstaClient({
             </h2>
             <p className="panel-sub">주제를 선택하면 카드 장수(1~{INSTA_MAX_CARDS}장)를 골라 카드뉴스를 만듭니다. 상단 바에서 주기를 바꾸면 주제 목록이 바뀝니다.</p>
             <div className="stack">
-              {sorted.length === 0 && <div className="card">이 기간에 수집된 주제가 없습니다. 상단 바에서 WEEKLY·MONTHLY 로 바꾸거나 인박스에서 '지금 수집'을 눌러 보세요.</div>}
+              {sorted.length === 0 && <div className="card">이 기간에 수집된 주제가 없습니다. 상단 바에서 WEEKLY·MONTHLY 로 바꾸거나 Pocket에서 '지금 수집'을 눌러 보세요.</div>}
               {sorted.map((i) => (
                 <button className="topic-row" key={i.id} onClick={() => setIssueId(i.id)} title={`${i.title} · ${fmtDate(i.publishedAt)}`}>
                   <AgencyBadge agency={i.agency} />

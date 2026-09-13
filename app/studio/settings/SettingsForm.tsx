@@ -231,7 +231,7 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
             ))}
           </div>
           <span className="hint">
-            고른 주제를 인박스·브리핑·EDM에서 같은 조건일 때 앞으로 당깁니다. 규칙 R1~R8(고객 본문 여부·분량·신선도)은 그대로라 다른 주제가 사라지지는 않습니다. 2~4개가 적당하고, 비우면
+            고른 주제를 Pocket·브리핑·EDM에서 같은 조건일 때 앞으로 당깁니다. 규칙 R1~R8(고객 본문 여부·분량·신선도)은 그대로라 다른 주제가 사라지지는 않습니다. 2~4개가 적당하고, 비우면
             가중치 없이 최신순으로만 정렬합니다.
           </span>
           {focus.length === 0 && (

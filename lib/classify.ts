@@ -2,7 +2,7 @@ import { PERSONA_MATRIX } from "./taxonomy";
 import type { AgencyGroup, AreaConfig, Persona, Region, SourceKind, Status, Topic } from "./types";
 
 /**
- * 규칙 기반 5축 분류기. LLM 초안이 없어도 인박스에서 필터·라우팅이 되도록
+ * 규칙 기반 5축 분류기. LLM 초안이 없어도 Pocket에서 필터·라우팅이 되도록
  * 제목·요약의 키워드로 발표 주체(A)·단계(B)·주제(C)·지역(E)과 영향도(D) 초안을 만듭니다.
  */
 
@@ -82,7 +82,7 @@ export function detectPlace(title: string): string | null {
 }
 
 /**
- * 지명 → 시도. 인박스 '지역' 축을 시도 단위로 묶을 때 씁니다.
+ * 지명 → 시도. Pocket '지역' 축을 시도 단위로 묶을 때 씁니다.
  * 뱃지에는 여전히 좁은 지명(안양·동탄)이 뜨고, 칸만 시도로 말아 올립니다.
  */
 const SIDO_OF: Record<string, string> = {
@@ -102,7 +102,7 @@ const SIDO_OF: Record<string, string> = {
   원주: "강원특별자치도", 춘천: "강원특별자치도", 서귀포: "제주특별자치도",
 };
 
-/** 인박스 '지역' 축 칸 순서 — 수도권 먼저, 그다음 광역시·도 */
+/** Pocket '지역' 축 칸 순서 — 수도권 먼저, 그다음 광역시·도 */
 export const SIDO_ORDER = [
   "서울특별시", "경기도", "인천광역시", "수도권",
   "부산광역시", "대구광역시", "광주광역시", "대전광역시", "울산광역시", "세종특별자치시",

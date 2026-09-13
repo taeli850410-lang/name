@@ -18,7 +18,7 @@ export interface Feed {
   url: string;
   /** 부동산과 무관한 항목을 걸러낼지 (전 부처 통합 피드용) */
   relevanceFilter?: boolean;
-  /** 한 번에 가져올 최대 건수. 피드 하나가 인박스를 덮지 않게 합니다 */
+  /** 한 번에 가져올 최대 건수. 피드 하나가 Pocket을 덮지 않게 합니다 */
   limit?: number;
 }
 
@@ -31,7 +31,7 @@ const gn = (q: string) => `https://news.google.com/rss/search?q=${encodeURICompo
 /**
  * 피드 구성. 주제만으로 검색하면 국토교통부·부동산원 기사에 쏠리므로,
  * 발표 주체(한국은행·금융위·재정경제부·국세청·부동산원·국회)와 정책 단계(입법예고·국회 심의·통계 발표)를
- * 각각 겨냥한 질의를 따로 둡니다. 그래야 인박스에 주체 × 단계 조합이 고루 들어옵니다.
+ * 각각 겨냥한 질의를 따로 둡니다. 그래야 Pocket에 주체 × 단계 조합이 고루 들어옵니다.
  */
 export const FEEDS: Feed[] = [
   // 1차 소스 — 전 부처 보도자료
@@ -136,7 +136,7 @@ export function parseFeed(xml: string, feed: Feed): RawItem[] {
     const date = toIso(txt(it.pubDate ?? it.published ?? it.updated ?? it["dc:date"]));
     out.push({ title, url, date, summary, publisher: publisher || feed.name, feed });
   }
-  // 최신순으로 자른 뒤 돌려줍니다 — 피드 하나가 인박스를 덮지 않게
+  // 최신순으로 자른 뒤 돌려줍니다 — 피드 하나가 Pocket을 덮지 않게
   out.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   return out.slice(0, feed.limit ?? (feed.kind === "official" ? LIMIT_OFFICIAL : LIMIT_PRESS));
 }

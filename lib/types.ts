@@ -187,6 +187,25 @@ export interface MarketDoc {
   source: string;
   monthly: MonthRow[];
   rate: { value: number; asOf: string; sourceUrl: string; note?: string };
+  /** 시도 단위 비교 — 서울·경기·인천. 실거래 집계(monthly)와 달리 한국부동산원 공표 통계입니다 */
+  regions?: RegionRow[];
+}
+
+/**
+ * 시도 한 칸. 실거래 API 는 시군구(법정동코드 5자리) 단위라 시도 전체를 받으려면
+ * 서울만 25개 구를 돌아야 합니다 — 한 번 수집에 수백 번을 부를 수 없습니다.
+ * 그래서 시도 값은 한국부동산원이 이미 집계해 공표한 평균가격을 씁니다. 단위는 만원/㎡.
+ */
+export interface RegionRow {
+  name: string;
+  /** 한국부동산원 통계표의 지역 분류 ID */
+  cls: string;
+  /** 기준 월 (YYYY-MM) */
+  month: string;
+  sale: number | null;
+  salePrev: number | null;
+  jeonse: number | null;
+  jeonsePrev: number | null;
 }
 
 export interface MarketTile {
@@ -266,6 +285,8 @@ export interface Letter {
   tiles: MarketTile[];
   history: HistoryPoint[];
   historyLabel: string;
+  /** 발행 시점의 시도 비교(서울·경기·인천). 이전 스냅샷에는 없을 수 있음 */
+  regions?: RegionRow[];
   comment: string;
   glossary: Glossary | null;
   /** 발행 시점의 영상 기사 스냅샷. 이전 스냅샷에는 없을 수 있음 */

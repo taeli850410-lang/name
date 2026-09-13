@@ -519,6 +519,23 @@ tr:last-child td { border-bottom: 0; }
 .brief .srcbtn.primary { background: var(--p); color: #fff; padding: 10px 16px; font-size: 13px; border-radius: 9px; }
 .brief .srcbtn.ghost { background: var(--card-b); color: var(--p); border: 1.5px solid var(--p); }
 .brief .srcbtn.link { background: var(--tint); color: var(--p); border: 1px solid var(--line-b); font-weight: 600; }
+/* 시도 비교 — 서울·경기·인천. 사무소가 지역을 안 정했을 때 이 표가 시장 그림을 대신합니다 */
+.brief .regions { margin-top: 12px; border: 1px solid var(--line-b); border-radius: 10px; overflow: hidden; }
+.brief .regions-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; background: var(--tint); padding: 7px 11px; border-bottom: 1px solid var(--line-b); font-size: 11px; font-weight: 800; color: var(--p); letter-spacing: 0.02em; }
+.brief .regions-head span:last-child { font-weight: 600; color: var(--muted-b); letter-spacing: 0; }
+.brief .region-row { display: grid; grid-template-columns: 74px 1fr 1fr; align-items: baseline; gap: 8px; padding: 8px 11px; }
+.brief .region-row + .region-row { border-top: 1px dashed var(--line-b); }
+.brief .region-name { font-size: 12.5px; font-weight: 800; color: var(--ink-b); }
+.brief .region-cell { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px; font-size: 12px; }
+.brief .region-cell i { font-style: normal; color: var(--dim-b); font-size: 10.5px; }
+.brief .region-cell b { font-size: 13px; color: var(--ink-b); }
+.brief .region-cell em { font-style: normal; font-size: 10.5px; font-weight: 700; }
+.brief .region-cell em.up { color: var(--up); }
+.brief .region-cell em.down { color: var(--down); }
+.brief .region-cell em.flat { color: var(--dim-b); }
+.brief .regions-src { padding: 6px 11px 8px; font-size: 10.5px; color: var(--dim-b); border-top: 1px solid var(--tint-2); }
+@media (max-width: 520px) { .brief .region-row { grid-template-columns: 1fr; gap: 3px; } }
+
 .brief .artlist { display: flex; flex-direction: column; gap: 6px; margin-top: 11px; border-top: 1px solid var(--tint-2); padding-top: 10px; }
 .brief .art { display: block; background: var(--surface-b); border: 1px solid var(--tint-2); border-radius: 9px; padding: 9px 10px; text-decoration: none; }
 .brief .art-meta { display: flex; align-items: center; gap: 6px; font-size: 10.5px; color: var(--muted-b); font-weight: 600; }

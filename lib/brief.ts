@@ -1,7 +1,7 @@
 import { clamp, fmtDate } from "./format";
 import { editionLabel, letterTitle } from "./letter";
 import { links, TOPIC_LINKS } from "./links";
-import { computeTiles } from "./market";
+import { applyArea, computeTiles, regionRows } from "./market";
 import { focusRank, gradeIssue, isFresh, maxSegmentImpact, ROUTE_LABEL, routeIssue } from "./routing";
 import { pickVideos, VIDEO_MAX_AGE } from "./channels";
 import { isRealEstateRelevant } from "./classify";
@@ -113,7 +113,16 @@ export interface BriefModel {
   video?: { brand: string; title: string; sub: string; head: BriefVideoModel; items: BriefVideoModel[] };
   policy: { title: string; sub: string; cards: BriefCardModel[]; empty: string };
   news?: { title: string; sub: string; items: BriefNewsModel[] };
-  numbers: { title: string; sub: string; tiles: MarketTile[]; history: HistoryPoint[]; historyLabel: string; note: string };
+  numbers: {
+    title: string;
+    sub: string;
+    tiles: MarketTile[];
+    history: HistoryPoint[];
+    historyLabel: string;
+    note: string;
+    /** 시도 비교 표 — 서울·경기·인천. 사무소가 지역을 안 정했을 때 이 표가 시장 그림을 대신합니다 */
+    regions?: { title: string; unit: string; source: string; rows: ReturnType<typeof regionRows> };
+  };
   persona?: { title: string; sub: string; rows: { label: string; level: number; note: string }[]; note: string; glossary?: Glossary | null };
   comment?: { name: string; tag: string; body: string };
   cta: { title: string; sub: string; buttons: BriefLink[] };
@@ -125,6 +134,20 @@ export const DISCLAIMER =
 export const AD_FOOTER =
   "본 자료는 일반적인 부동산 정보 제공을 목적으로 작성되었으며 개별적인 투자·세무·법률 판단을 대신하지 않습니다. 광고성 정보 수신에 동의한 고객에게 발송되었습니다.";
 export const NUMBERS_NOTE = "※ 실거래 신고 기한이 30일이라 최근 두 달 수치는 잠정치이며 이후 늘어날 수 있습니다. 출처와 기준일이 확인되지 않은 수치는 표시하지 않습니다.";
+
+/**
+ * 시도 비교 표. 실거래 집계는 시군구 단위라 시도 전체를 받으려면 서울만 25개 구를 돌아야 합니다 —
+ * 한 번 수집에 그만큼 부를 수 없어서, 시도 값은 한국부동산원이 이미 집계해 낸 평균가격을 씁니다.
+ */
+export const REGION_TITLE = "서울·경기·인천 아파트 평균가격";
+export const REGION_UNIT = "전용면적 1㎡당 · 전월 대비";
+export const REGION_SOURCE = "한국부동산원 (월) 지역별 매매·전세 평균가격";
+
+function regionBlock(regions: MarketDoc["regions"]): BriefModel["numbers"]["regions"] {
+  const rows = regionRows({ regions } as MarketDoc);
+  if (!rows.length) return undefined;
+  return { title: REGION_TITLE, unit: REGION_UNIT, source: REGION_SOURCE, rows };
+}
 
 /** 실거래 타일이 어느 지역 집계인지 밝히고, 아직 설정하지 않았으면 안내합니다 */
 export function numbersNote(office: Office, marketArea: string): string {
@@ -295,6 +318,7 @@ export function letterToBrief(letter: Letter): BriefModel {
       history: letter.history,
       historyLabel: letter.historyLabel,
       note: numbersNote(o, letter.historyLabel.replace(/ 매매 중위가.*$/, "")),
+      regions: regionBlock(letter.regions),
     },
     persona: lead
       ? {
@@ -417,7 +441,7 @@ export function videoSection(
   };
 }
 
-/* ───────── 중개사용: 인박스 이슈 → 브리핑 모델 ───────── */
+/* ───────── 중개사용: Pocket 이슈 → 브리핑 모델 ───────── */
 
 const POLICY_LIMIT: Record<Period, number> = { daily: 4, weekly: 6, monthly: 8 };
 const NEWS_LIMIT: Record<Period, number> = { daily: 8, weekly: 12, monthly: 12 };
@@ -500,7 +524,8 @@ export function buildBrokerBrief(issues: Issue[], office: Office, market: Market
   const policyIssues = fresh.slice(0, POLICY_LIMIT[period]);
   const newsIssues = fresh.slice(POLICY_LIMIT[period], POLICY_LIMIT[period] + NEWS_LIMIT[period]);
   const lead = policyIssues[0];
-  const { tiles, history, historyLabel } = computeTiles(market, "move");
+  // 지역을 안 정한 사무소에 남의 동네 실거래를 '우리 동네'로 보여 주면 안 됩니다
+  const { tiles, history, historyLabel } = computeTiles(applyArea(market, office), "move");
   const edition = editionLabel(period, now);
 
   return {
@@ -526,7 +551,7 @@ export function buildBrokerBrief(issues: Issue[], office: Office, market: Market
       title: POLICY_TITLE[period],
       sub: "공식 고시·발표 종합 · 추천 등급 순 · 검수 전 이슈는 '검수 필요' 표시",
       cards: policyIssues.map(brokerCard),
-      empty: "표시할 이슈가 없습니다. 인박스에서 '지금 수집'을 눌러 보세요.",
+      empty: "표시할 이슈가 없습니다. Pocket에서 '지금 수집'을 눌러 보세요.",
     },
     news: newsIssues.length ? { title: NEWS_TITLE[period], sub: "기사 제목을 누르면 원문으로 이동합니다", items: newsIssues.map(brokerNews) } : undefined,
     numbers: {
@@ -536,6 +561,7 @@ export function buildBrokerBrief(issues: Issue[], office: Office, market: Market
       history,
       historyLabel,
       note: numbersNote(office, market.area),
+      regions: regionBlock(market.regions),
     },
     persona: lead
       ? {
@@ -554,7 +580,7 @@ export function buildBrokerBrief(issues: Issue[], office: Office, market: Market
       sub: "검수 완료된 이슈만 규칙 R1~R8을 거쳐 세그먼트별 EDM으로 발행됩니다.",
       buttons: [
         { label: "EDM 빌더 열기", href: "/studio/letters", kind: "primary" },
-        { label: "인박스에서 검수하기", href: "/studio", kind: "ghost" },
+        { label: "Pocket에서 검수하기", href: "/studio", kind: "ghost" },
       ],
     },
     footer: {
@@ -562,7 +588,7 @@ export function buildBrokerBrief(issues: Issue[], office: Office, market: Market
       rows: officeRows(office),
       legal: ["중개사 내부용 자료입니다. 이 화면을 고객에게 그대로 전달하지 마세요. 고객용은 EDM 빌더에서 금지 표현 검사와 분량 규칙을 거쳐 발행됩니다."],
       links: [
-        { label: "인박스", href: "/studio" },
+        { label: "Pocket", href: "/studio" },
         { label: "우리 동네 숫자", href: "/studio/data" },
       ],
     },

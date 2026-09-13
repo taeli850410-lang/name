@@ -15,7 +15,9 @@ function isProvisional(month: string, generatedAt: string): boolean {
   return gen - monthStart(month) < 62 * 24 * 3600 * 1000;
 }
 
-function pctDelta(cur: number | null, prev: number | null): { delta: string; dir: "up" | "down" | "flat" } {
+type Dir = "up" | "down" | "flat";
+
+function pctDelta(cur: number | null, prev: number | null): { delta: string; dir: Dir } {
   if (cur == null || prev == null || prev === 0) return { delta: "", dir: "flat" };
   const d = ((cur - prev) / prev) * 100;
   if (Math.abs(d) < 0.05) return { delta: "보합", dir: "flat" };
@@ -28,7 +30,11 @@ function pctDelta(cur: number | null, prev: number | null): { delta: string; dir
  */
 export function applyArea(doc: MarketDoc, office: Office): MarketDoc {
   const codes = (office.lawdCodes ?? []).filter(Boolean);
-  if (codes.length === 0) return doc;
+  // 지역을 비우면(전국구) 이전 지역 수치가 '우리 동네'로 남아 있으면 안 됩니다
+  if (codes.length === 0) {
+    if (doc.areaCodes.length === 0) return doc;
+    return { ...doc, areaCodes: [], area: office.areaLabel?.trim() || "전국", monthly: [] };
+  }
   const same = codes.length === doc.areaCodes.length && codes.every((c, i) => c === doc.areaCodes[i]);
   if (same) return doc;
   return { ...doc, areaCodes: codes, area: office.areaLabel?.trim() || codes.join("·"), monthly: [] };
@@ -46,6 +52,28 @@ function rateTile(market: MarketDoc): MarketTile {
     sourceUrl: market.rate.sourceUrl,
     provisional: false,
   };
+}
+
+/** 시도 비교 표 한 줄 — 최신 값과 전월 대비. 값이 없으면 그 줄은 빼고 냅니다 */
+export function regionRows(market: MarketDoc): { name: string; month: string; sale: string; saleDelta: string; saleDir: Dir; jeonse: string; jeonseDelta: string; jeonseDir: Dir }[] {
+  return (market.regions ?? [])
+    .filter((r) => r.sale != null || r.jeonse != null)
+    .map((r) => {
+      const s = pctDelta(r.sale, r.salePrev ?? null);
+      const j = pctDelta(r.jeonse, r.jeonsePrev ?? null);
+      // 단위를 값에 붙입니다. 줄만 따로 읽으면 1,614만원이 집값으로 보입니다
+      const won = (v: number | null) => (v == null ? "산출 불가" : `${v.toLocaleString("ko-KR", { maximumFractionDigits: 0 })}만원/㎡`);
+      return {
+        name: r.name,
+        month: monthLabel(r.month),
+        sale: won(r.sale),
+        saleDelta: s.delta,
+        saleDir: s.dir,
+        jeonse: won(r.jeonse),
+        jeonseDelta: j.delta,
+        jeonseDir: j.dir,
+      };
+    });
 }
 
 export function computeTiles(market: MarketDoc, segment: Segment): { tiles: MarketTile[]; history: HistoryPoint[]; historyLabel: string } {

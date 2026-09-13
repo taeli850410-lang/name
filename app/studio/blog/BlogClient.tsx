@@ -182,7 +182,7 @@ export default function BlogClient({
               바뀝니다.
             </p>
             <div className="stack">
-              {sorted.length === 0 && <div className="card">이 기간에 수집된 주제가 없습니다. 상단 바에서 WEEKLY·MONTHLY 로 바꾸거나 인박스에서 '지금 수집'을 눌러 보세요.</div>}
+              {sorted.length === 0 && <div className="card">이 기간에 수집된 주제가 없습니다. 상단 바에서 WEEKLY·MONTHLY 로 바꾸거나 Pocket에서 '지금 수집'을 눌러 보세요.</div>}
               {sorted.map((i) => (
                 <button className="topic-row" key={i.id} disabled={busy} onClick={() => createFrom(i)} title={`${i.title} · ${fmtDate(i.publishedAt)}`}>
                   <AgencyBadge agency={i.agency} />

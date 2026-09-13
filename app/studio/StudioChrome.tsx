@@ -10,7 +10,7 @@ import OfficeDialog from "./OfficeDialog";
 /**
  * 원본 EDM 스튜디오의 상단 뼈대. 짙은 남색 바 한 줄에
  * 브랜드 · DAILY/WEEKLY/MONTHLY · 이메일/모바일/인스타 카드/블로그 포스팅 · 사무소/메일/PDF·인쇄/카카오톡/링크 · 실시간 뉴스 수집 시각.
- * 그 아래 얇은 줄에 이 서비스에만 있는 인박스·EDM 빌더·우리 동네 숫자·설정과 상태 칩을 둡니다.
+ * 그 아래 얇은 줄에 이 서비스에만 있는 Pocket·EDM 빌더·우리 동네 숫자·설정과 상태 칩을 둡니다.
  */
 
 export interface ChromeLetter {
@@ -165,7 +165,7 @@ export default function StudioChrome({
       <div className="studio-sub">
         <div className="inner">
           <Link href="/studio" {...cur(pathname === "/studio" || pathname.startsWith("/studio/issues"))}>
-            📥 인박스
+            📥 Pocket
           </Link>
           <Link href="/studio/letters" {...cur(pathname.startsWith("/studio/letters"))}>
             ✉ EDM 빌더

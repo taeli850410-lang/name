@@ -11,12 +11,12 @@ import { REGION_LABEL, regionLabel, STATUS_LABEL, TOPICS, TOPIC_LABEL } from "@/
 import type { CollectStats, Issue, Topic } from "@/lib/types";
 
 /**
- * 인박스. 다른 화면과 같은 뼈대(흰 패널 + 제목 + 설명 + 목록)를 씁니다.
+ * Pocket. 다른 화면과 같은 뼈대(흰 패널 + 제목 + 설명 + 목록)를 씁니다.
  * 1차 축은 주제(C축)입니다. 주제 칩으로 먼저 좁히고, 기간·지역·검수 상태로 다시 걸러냅니다.
  */
 
 type Filter = "all" | "today" | "week";
-/** 칩 줄이 보여 줄 축. 주제뿐 아니라 발표 주체·정책 단계·지역으로도 인박스를 나눠 봅니다. */
+/** 칩 줄이 보여 줄 축. 주제뿐 아니라 발표 주체·정책 단계·지역으로도 Pocket을 나눠 봅니다. */
 type Axis = "topic" | "agency" | "status" | "region";
 const AXIS_LABEL: Record<Axis, string> = { topic: "주제", agency: "발표 주체", status: "정책 단계", region: "지역" };
 
@@ -219,7 +219,7 @@ export default function InboxClient({
       </div>
 
       <h2 className="panel-title">
-        인박스 — {bucket === "all" ? "전체" : buckets.find((b) => b.key === bucket)?.label ?? bucket} ({rows.length})
+        Pocket — {bucket === "all" ? "전체" : buckets.find((b) => b.key === bucket)?.label ?? bucket} ({rows.length})
       </h2>
       <p className="panel-sub">
         수집된 보도자료·기사·고시에 5축(발표 주체 · 정책 단계 · 주제 · 영향 대상 · 지역) 태그가 붙습니다. 주제로 먼저 묶고, 기관은 확정 여부 판단에만 씁니다.{" "}

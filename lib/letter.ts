@@ -146,6 +146,7 @@ export function buildDraft(issues: Issue[], office: Office, market: MarketDoc, o
     tiles,
     history,
     historyLabel,
+    regions: market.regions,
     comment: opts.comment ?? office.defaultComment,
     glossary,
     videos: pickVideos(opts.videos ?? [], period, undefined, now),

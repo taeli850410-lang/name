@@ -319,8 +319,8 @@ function SectionHead({ title, sub }: { title: string; sub?: string }) {
 }
 
 function Numbers({ model }: { model: BriefModel }) {
-  const { tiles, history, historyLabel, note, title, sub } = model.numbers;
-  if (!tiles.length) return null;
+  const { tiles, history, historyLabel, note, title, sub, regions } = model.numbers;
+  if (!tiles.length && !regions) return null;
   const vals = history.map((h) => h.value);
   const max = Math.max(...vals, 1);
   const min = Math.min(...vals, max);
@@ -362,6 +362,32 @@ function Numbers({ model }: { model: BriefModel }) {
                   <span className="bar-x">{h.label}</span>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+        {regions && (
+          <div className="regions">
+            <div className="regions-head">
+              <span>{regions.title}</span>
+              <span>{regions.unit}</span>
+            </div>
+            {regions.rows.map((r) => (
+              <div className="region-row" key={r.name}>
+                <span className="region-name">{r.name}</span>
+                <span className="region-cell">
+                  <i>매매</i>
+                  <b>{r.sale}</b>
+                  {r.saleDelta && <em className={r.saleDir}>{r.saleDelta}</em>}
+                </span>
+                <span className="region-cell">
+                  <i>전세</i>
+                  <b>{r.jeonse}</b>
+                  {r.jeonseDelta && <em className={r.jeonseDir}>{r.jeonseDelta}</em>}
+                </span>
+              </div>
+            ))}
+            <div className="regions-src">
+              {regions.rows[0]?.month} 기준 · {regions.source}
             </div>
           </div>
         )}
