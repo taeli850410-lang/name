@@ -6,6 +6,8 @@ import { Icon } from "@/components/ui/Icon";
 import { Badge, EmptyState, Kw, MoreMenu, PageHead, Pager, SearchBox, type Tone } from "@/components/ui/Bits";
 import { ConfirmModal } from "@/components/ui/Modal";
 import { Drawer } from "@/components/ui/Drawer";
+import { Attachments } from "@/components/files/Attachments";
+import { attachmentsOf } from "@/data/files";
 import { useToast } from "@/components/ui/Toast";
 import { deals as seed, type Deal, type DealStatus } from "@/data/deals";
 import { properties } from "@/data/properties";
@@ -255,6 +257,7 @@ function Deals() {
 function DealDetail({ d }: { d: Deal }) {
   const total = (d.down ?? 0) + (d.interim ?? 0) + (d.balance ?? 0);
   const sends = sendBatches.filter((b) => b.dealName === d.name);
+  const [files, setFiles] = useState(() => attachmentsOf("deals", d.id));
   return (
     <div className="stack" style={{ gap: 20 }}>
       <dl className="kv">
@@ -332,6 +335,10 @@ function DealDetail({ d }: { d: Deal }) {
             </div>
           ))
         )}
+      </div>
+      <div>
+        <div className="section-label">서류</div>
+        <Attachments scope="deals" ownerId={d.id} items={files} onChange={setFiles} />
       </div>
       <div>
         <div className="section-label">메모</div>

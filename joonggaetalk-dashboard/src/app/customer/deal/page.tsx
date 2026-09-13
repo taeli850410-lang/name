@@ -6,12 +6,16 @@ import { Icon } from "@/components/ui/Icon";
 import { Badge } from "@/components/ui/Bits";
 import { useToast } from "@/components/ui/Toast";
 import { portal } from "@/data/portal";
+import { attachmentsOf } from "@/data/files";
+import { formatBytes } from "@/lib/storage";
 import { dday, formatKoDate, formatManwon, TODAY } from "@/lib/format";
 
 export default function CustomerDeal() {
   const toast = useToast();
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const nextKey = portal.deal.steps.find((s) => !s.done)?.key;
+  // 중개사가 "고객에게 보이기"를 켠 서류만 내려온다. 신분증 같은 건 여기 오지 않는다.
+  const docs = attachmentsOf("deals", portal.deal.id).filter((f) => f.sharedWithCustomer);
   return (
     <CustomerShell title="내 계약">
       <div className="pcard">
@@ -54,13 +58,28 @@ export default function CustomerDeal() {
 
       <div className="pcard">
         <h2>서류</h2>
-        <div className="stack">
-          {["계약서 사본 (PDF)", "중개대상물 확인·설명서", "공제증서"].map((f) => (
-            <button key={f} type="button" className="btn" style={{ justifyContent: "space-between" }} onClick={() => toast({ tone: "info", message: `${f} 열기 (프로토타입)` })}>
-              {f} <Icon name="download" size={15} />
-            </button>
-          ))}
-        </div>
+        {docs.length === 0 ? (
+          <p className="muted small">아직 공유된 서류가 없습니다. 계약이 끝나면 담당 중개사가 올려 드립니다.</p>
+        ) : (
+          <div className="stack">
+            {docs.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                className="btn"
+                style={{ justifyContent: "space-between" }}
+                onClick={() => toast({ tone: "info", message: `${f.name} 열기 — 저장소가 설정되면 2분간만 유효한 주소로 내려받습니다. (프로토타입)` })}
+              >
+                <span className="stack" style={{ gap: 2, alignItems: "flex-start" }}>
+                  <span>{f.name}</span>
+                  <span className="muted small">{f.kind} · {formatBytes(f.bytes)}</span>
+                </span>
+                <Icon name="download" size={15} />
+              </button>
+            ))}
+          </div>
+        )}
+        <p className="help mt-12">담당 중개사가 공유한 서류만 보입니다. 링크는 이 화면을 열 때마다 새로 만들어지고 2분 뒤 만료됩니다.</p>
       </div>
     </CustomerShell>
   );
