@@ -51,9 +51,28 @@ export async function resetIssuesToSeed(): Promise<Issue[]> {
   return seeded;
 }
 
+/**
+ * 예전 기본값이 그대로 저장돼 있으면 새 기본값으로 넘깁니다.
+ *
+ * 사무소가 직접 고른 값이 아니라 그때의 기본값이 저장된 것뿐인데, 한번 저장되고 나면
+ * 코드에서 기본값을 바꿔도 영영 예전 값이 이깁니다. 사무소가 직접 다른 이름을 넣어 두었으면
+ * 그건 건드리지 않습니다 — 정확히 예전 기본값일 때만 넘어갑니다.
+ */
+const RETIRED_DEFAULTS: Partial<Record<keyof Office, string[]>> = {
+  videoBrand: ["REPORT K"],
+};
+
+function migrateDefaults(office: Office): Office {
+  const next = { ...office };
+  for (const [key, retired] of Object.entries(RETIRED_DEFAULTS) as [keyof Office, string[]][]) {
+    if (retired.includes(String(next[key] ?? ""))) (next[key] as string) = String(DEFAULT_OFFICE[key] ?? "");
+  }
+  return next;
+}
+
 export async function getSettings(): Promise<Office> {
   const stored = await getStore().get<Partial<Office>>(KEYS.settings);
-  return { ...DEFAULT_OFFICE, ...(stored ?? {}) };
+  return migrateDefaults({ ...DEFAULT_OFFICE, ...(stored ?? {}) });
 }
 
 export async function saveSettings(office: Office): Promise<void> {
