@@ -55,6 +55,37 @@ function mayRead(_key: string): boolean {
 }
 
 /**
+ * S3 호환 저장소는 실패할 때 사유를 XML 로 같이 보낸다.
+ *
+ *   <Error><Code>NoSuchBucket</Code><Message>...</Message></Error>
+ *
+ * 이걸 안 읽으면 "HTTP 404" 만 남아서, 창고 이름이 틀린 건지 주소가 틀린
+ * 건지 사람이 추측해야 한다. 404 를 보고 "창고가 없나 봅니다" 라고 말하는
+ * 것과 상대가 NoSuchBucket 이라고 답한 걸 그대로 옮기는 건 다르다.
+ */
+const S3_REASONS: Record<string, string> = {
+  NoSuchBucket: "그런 이름의 버킷이 없습니다. S3_BUCKET 을 확인하세요.",
+  InvalidAccessKeyId: "Access Key ID 가 저장소에 등록돼 있지 않습니다.",
+  SignatureDoesNotMatch: "Secret Access Key 가 맞지 않습니다. 붙여넣을 때 잘리지 않았는지 보세요.",
+  AccessDenied: "열쇠는 맞는데 권한이 없습니다. 토큰이 Object Read & Write 인지, 이 버킷을 포함하는지 보세요.",
+  NoSuchKey: "그 자리에 파일이 없습니다.",
+  RequestTimeTooSkewed: "서버 시계가 저장소와 어긋나 있습니다.",
+};
+
+async function s3Error(res: Response): Promise<string> {
+  let code = "";
+  try {
+    const text = await res.text();
+    code = (/<Code>([^<]+)<\/Code>/.exec(text) || [])[1] || "";
+  } catch {
+    /* 본문을 못 읽어도 상태 코드는 남는다 */
+  }
+  if (!code) return `저장소가 HTTP ${res.status} 로 거절했습니다.`;
+  const why = S3_REASONS[code];
+  return why ? `${code} — ${why}` : `저장소가 ${code} (HTTP ${res.status}) 로 거절했습니다.`;
+}
+
+/**
  * 어느 환경 변수가 비어 있는지. **값은 절대 내보내지 않는다** — 이름과
  * 들어 있는지 여부, 글자 수까지만.
  *
@@ -104,7 +135,7 @@ async function selfCheck(cfg: S3Config, req: Request) {
   try {
     const put = await fetch(presign(cfg, "PUT", key, 60), { method: "PUT", body });
     uploaded = put.ok;
-    if (!put.ok) detail["올리기"] = `저장소가 HTTP ${put.status} 로 거절했습니다.`;
+    if (!put.ok) detail["올리기"] = await s3Error(put);
   } catch {
     detail["올리기"] = "저장소에 닿지 못했습니다.";
   }
@@ -119,7 +150,7 @@ async function selfCheck(cfg: S3Config, req: Request) {
         readBack = (await got.text()) === body;
         if (!readBack) detail["되읽기"] = "올린 내용과 다른 것이 돌아왔습니다.";
       } else {
-        detail["되읽기"] = `저장소가 HTTP ${got.status} 로 답했습니다.`;
+        detail["되읽기"] = await s3Error(got);
       }
     } catch {
       detail["되읽기"] = "저장소에 닿지 못했습니다.";
@@ -152,7 +183,7 @@ async function selfCheck(cfg: S3Config, req: Request) {
     try {
       const del = await fetch(presign(cfg, "DELETE", key, 60), { method: "DELETE" });
       removed = del.ok || del.status === 204 || del.status === 404;
-      if (!removed) detail["지우기"] = `저장소가 HTTP ${del.status} 로 거절했습니다. 쓰기 권한을 확인하세요.`;
+      if (!removed) detail["지우기"] = await s3Error(del);
     } catch {
       detail["지우기"] = "저장소에 닿지 못했습니다.";
     }
