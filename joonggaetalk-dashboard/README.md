@@ -36,30 +36,50 @@ Node.js 18.18 이상이 필요합니다.
 
 ## Vercel 배포
 
-환경 변수는 필요 없습니다. 글꼴(Pretendard)은 jsDelivr CDN에서 불러옵니다. 세 가지 방법 중 하나를 고릅니다.
+라이브: **https://joonggaetalk-dashboard.vercel.app**
 
-**방법 1 · CLI (가장 빠름, 2분)**
+GitHub `main` 에 푸시하면 Vercel 이 자동으로 배포합니다
+(`taeli850410-lang/name` ↔ 프로젝트 `joonggaetalk-dashboard`).
+
+### Root Directory 를 반드시 지정해야 합니다
+
+이 저장소는 앱이 최상단이 아니라 `joonggaetalk-dashboard/` 폴더 안에 있습니다.
+**Settings → General → Root Directory** 에 `joonggaetalk-dashboard` 를 넣지 않으면
+빌드가 이렇게 끝납니다.
+
+```
+[Error: > Couldn't find any `pages` or `app` directory. Please create one under the project root]
+```
+
+클론도 의존성 설치도 다 성공한 뒤 마지막에 터지기 때문에, 로그 맨 아래만 보면
+코드 문제로 오해하기 쉽습니다. 저장소를 연결하기 **전에** 이 칸을 채우면
+첫 빌드부터 통과합니다.
+
+### 환경 변수
+
+Settings → Environment Variables 에 넣습니다. 하나도 없어도 앱은 뜨고,
+각 연동 화면이 "설정되지 않음"과 발급 방법을 안내합니다.
+
+| 연동 | 변수 |
+|---|---|
+| 건축물대장 | `DATA_GO_KR_API_KEY` |
+| 주소·필지 (VWorld) | `VWORLD_API_KEY`, `VWORLD_REFERER` |
+| 정기결제 | `PORTONE_API_SECRET` + `PORTONE_WEBHOOK_SECRET`, 또는 `TOSS_SECRET_KEY` |
+| 첨부 파일 | `S3_ENDPOINT`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` |
+
+`VWORLD_REFERER` 는 VWorld 에 등록한 서비스 URL 과 **글자 그대로 같아야** 합니다.
+키가 맞아도 도메인이 다르면 거절됩니다.
+
+### 저장소를 거치지 않고 올리고 싶을 때
 
 ```bash
 cd joonggaetalk-dashboard
-npx vercel login
-npx vercel --prod      # 질문에는 모두 기본값(Enter) — 프레임워크 Next.js 자동 감지
+npx vercel --prod      # 이 폴더에서 실행하므로 Root Directory 설정과 무관합니다
 ```
 
-**방법 2 · GitHub 저장소 가져오기**
-
-1. Vercel 대시보드 → **Add New → Project → Import** 에서 `taeli850410-lang/name` 을 고릅니다.
-2. **Root Directory** 를 `joonggaetalk-dashboard` 로 지정하고 Deploy 합니다.
-3. 소스가 `main` 이 아닌 브랜치(`claude/modest-bohr-bhbc4b`)에 있으면 **Settings → Git → Production Branch** 를 그 브랜치로 바꾸고 Redeploy 하거나, 브랜치를 `main` 에 합칩니다.
-
-**방법 3 · 부트스트랩 배포 (`deploy/` 폴더)**
-
-소스 전체를 올리지 않고 `deploy/package.json` 과 `deploy/fetch-source.js` 두 파일만 배포하면, 빌드 단계에서 공개 저장소의 브랜치를 내려받아 `next build` 합니다. Vercel MCP나 API처럼 파일을 직접 올리는 도구에 적합하고, 같은 두 파일을 다시 배포하면 그 시점의 최신 커밋이 빌드됩니다. 저장소·브랜치·폴더는 환경 변수 `SOURCE_REPO`, `SOURCE_BRANCH`, `SOURCE_DIR` 로 바꿉니다.
-
-```bash
-cd joonggaetalk-dashboard/deploy
-npx vercel --prod --name joonggaetalk-dashboard
-```
+`deploy/` 폴더에는 소스를 올리지 않고 빌드 때 저장소에서 내려받는 부트스트랩이
+들어 있습니다. 파일을 직접 올리는 도구로만 배포할 수 있을 때 쓰며,
+지금처럼 저장소가 연결돼 있으면 필요 없습니다.
 
 ## 외부 연동 — 건축물대장 (국토교통부)
 
