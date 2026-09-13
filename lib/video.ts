@@ -28,11 +28,23 @@ const DECOR_LINE = /^[\s✅📰📌▶️▶◆◇■□※·\-–—=*]+$/u;
 // 이메일만 덩그러니 있는 줄은 연락처지 내용이 아닙니다 — 매부리TV 쇼츠가 이 한 줄 때문에 본편으로 잡혔습니다
 const PROMO_LINE = /[\w.+-]+@[\w-]+\.[\w.]+|https?:\/\/|바로가기|구독하기|구독 신청|채널 가입|멤버십|제보|무단\s*전재|저작권|앱에서도|자동이체|광고\s*문의|협업\s*문의|비즈니스\s*문의|출연\s*문의|문의는/;
 
+/**
+ * 홍보 문구는 한 줄씩 걸러내다 끝이 없습니다. 낱말로 잡아 보니 이런 것들이 남았습니다.
+ *
+ *   프리미엄9만 가입하면 월 2만원(첫 6개월 1만원), 연 10만원입니다
+ *   영상 내 일부 이미지는 게티이미지뱅크의 정식 라이선스를 받아 사용했습니다
+ *   '매부리TV' 에서 최신 부동산 트렌드를 확인하세요!
+ *
+ * 낱말을 계속 더하는 대신 자리로 끊습니다. 유튜브 설명문은 본문이 위에 오고 홍보가 아래에
+ * 붙습니다 — 구독 안내가 시작되면 그 아래는 전부 홍보입니다. 그래서 홍보 줄을 만나면
+ * 거기서 멈춥니다. 해시태그·목차·장식 줄은 그냥 건너뜁니다(본문이 그 아래 또 올 수 있어서).
+ */
 export function cleanDescription(raw: string): string {
   const kept: string[] = [];
   for (const line of raw.split(/\r?\n/)) {
     const t = line.trim();
-    if (!t || HASHTAG_LINE.test(t) || CHAPTER_LINE.test(t) || DECOR_LINE.test(t) || PROMO_LINE.test(t)) continue;
+    if (PROMO_LINE.test(t)) break;
+    if (!t || HASHTAG_LINE.test(t) || CHAPTER_LINE.test(t) || DECOR_LINE.test(t)) continue;
     const body = t.replace(/#[^\s#]+/g, "").trim();
     if (body) kept.push(body);
   }
