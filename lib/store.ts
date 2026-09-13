@@ -150,6 +150,18 @@ class MemoryStore implements KV {
   }
 }
 
+/** 저장소가 찾아 보는 환경변수 이름들. 순서는 getStore() 가 보는 순서와 같습니다 */
+const STORE_ENV = ["KV_REST_API_URL", "KV_REST_API_TOKEN", "UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN"] as const;
+
+/**
+ * 그중 실제로 값이 들어와 있는 이름만 돌려줍니다. **이름만** 냅니다 — 값은 나가지 않습니다.
+ * 변수를 Production 에만 체크해 두면 미리보기 배포에서 이 목록이 비어 있고,
+ * 그게 "연결했는데 왜 메모리 저장이지?" 의 거의 유일한 원인입니다.
+ */
+export function storeEnvNames(): string[] {
+  return STORE_ENV.filter((n) => !!process.env[n]);
+}
+
 let instance: KV | null = null;
 
 export function getStore(): KV {
