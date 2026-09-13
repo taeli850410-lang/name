@@ -31,6 +31,7 @@ export type Integration = {
 export const INTEGRATIONS: Integration[] = [
   { key: "bldrgst", label: "건축물대장", endpoint: "/api/building-register", env: "DATA_GO_KR_API_KEY", check: "/api/building-register?check=1" },
   { key: "vworld", label: "주소·필지 (VWorld)", endpoint: "/api/vworld", env: "VWORLD_API_KEY", check: "/api/vworld?check=1" },
+  { key: "telegram", label: "운영자 알림 (텔레그램)", endpoint: "/api/telegram", env: "TELEGRAM_BOT_TOKEN · TELEGRAM_CHAT_ID", check: "/api/telegram?check=1" },
   { key: "billing", label: "정기결제", endpoint: "/api/billing", env: "PORTONE_API_SECRET 또는 TOSS_SECRET_KEY" },
   { key: "files", label: "첨부 파일 저장소", endpoint: "/api/files", env: "S3_ENDPOINT · S3_BUCKET · S3_ACCESS_KEY_ID · S3_SECRET_ACCESS_KEY", check: "/api/files?check=1" },
 ];
@@ -50,6 +51,10 @@ function summarize(key: string, data: Record<string, unknown>): string {
   if (key === "bldrgst") {
     const n = Number(data.totalCount ?? 0);
     return n > 0 ? `십정동 630 대장 ${n}건 확인` : String(data.note ?? "응답 정상");
+  }
+  if (key === "telegram") {
+    // 실제로 한 통 갔다는 뜻이다. 휴대폰을 보면 확인할 수 있다.
+    return "시험 메시지를 보냈습니다 · 텔레그램에서 확인하세요";
   }
   if (key === "files") {
     // 무엇을 해 봤는지 그대로 적는다. "성공"만으로는 뭘 확인했는지 알 수 없다.
