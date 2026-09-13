@@ -1,47 +1,30 @@
-import Link from "next/link";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { studioProtected } from "@/lib/auth";
 import { llmEnabled, llmModel } from "@/lib/enrich";
-import { fmtDateTime } from "@/lib/format";
-import { getMeta } from "@/lib/repo";
+import { fmtCollect } from "@/lib/format";
+import { letterTitle, shareText } from "@/lib/letter";
+import { getLetters, getMeta } from "@/lib/repo";
 import { storeStatus } from "@/lib/store";
+import StudioChrome, { type ChromeLetter } from "./StudioChrome";
 
 export const dynamic = "force-dynamic";
 
 export default async function StudioLayout({ children }: { children: ReactNode }) {
   const store = storeStatus();
-  const meta = await getMeta();
+  const [meta, letters] = await Promise.all([getMeta(), getLetters()]);
   const llm = llmEnabled();
   const guarded = studioProtected();
+  const published: ChromeLetter[] = letters
+    .filter((l) => l.status === "published")
+    .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""))
+    .slice(0, 9)
+    .map((l) => ({ id: l.id, period: l.period, title: letterTitle(l), headline: l.headline, share: shareText(l, "{{URL}}") }));
+
   return (
     <div className="studio">
-      <header className="studio-top">
-        <div className="inner">
-          <Link href="/studio" className="studio-brand" style={{ color: "var(--ink)" }}>
-            LAND LANGUAGE<small>STUDIO · 중개사용</small>
-          </Link>
-          <nav className="studio-nav" aria-label="스튜디오 메뉴">
-            <Link href="/studio/brief">브리핑</Link>
-            <Link href="/studio">인박스</Link>
-            <Link href="/studio/letters">레터 빌더</Link>
-            <Link href="/studio/instagram">인스타 카드</Link>
-            <Link href="/studio/blog">블로그</Link>
-            <Link href="/studio/data">우리 동네 숫자</Link>
-            <Link href="/studio/settings">설정</Link>
-          </nav>
-          <div className="studio-status">
-            <span className={`chip ${store.persistent ? "chip-ok" : "chip-warn"}`} title="저장소 상태">
-              {store.label}
-            </span>
-            <span className={`chip ${llm ? "chip-ok" : "chip-neutral"}`} title="자동 초안">
-              {llm ? `자동 초안 · ${llmModel()}` : "자동 초안 꺼짐"}
-            </span>
-            <span className="chip chip-neutral" title="마지막 수집">
-              {meta.lastCollectAt ? `수집 ${fmtDateTime(meta.lastCollectAt)}` : "수집 이력 없음"}
-            </span>
-          </div>
-        </div>
-      </header>
+      <Suspense fallback={<header className="studio-top" style={{ minHeight: 52 }} />}>
+        <StudioChrome collectLabel={fmtCollect(meta.lastCollectAt)} letters={published} storeLabel={store.label} storePersistent={store.persistent} llmLabel={llm ? llmModel() : null} />
+      </Suspense>
       <main className="studio-main">
         {!guarded && (
           <div className="alert alert-warn banner">

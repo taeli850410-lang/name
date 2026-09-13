@@ -1,20 +1,19 @@
 import { getInstaSaves, getIssues, getMarket, getSettings } from "@/lib/repo";
+import { isFresh } from "@/lib/routing";
+import type { Period } from "@/lib/types";
 import InstaClient from "./InstaClient";
 
 export const dynamic = "force-dynamic";
 
-export default async function InstagramPage({ searchParams }: { searchParams: Promise<{ issue?: string }> }) {
-  const { issue } = await searchParams;
+const PERIODS: Period[] = ["daily", "weekly", "monthly"];
+
+/** 인스타 카드뉴스. 상단 바의 주기(DAILY/WEEKLY/MONTHLY)에 맞는 주제만 보여 줍니다. */
+export default async function InstagramPage({ searchParams }: { searchParams: Promise<{ issue?: string; period?: string }> }) {
+  const sp = await searchParams;
+  const period: Period = PERIODS.includes(sp.period as Period) ? (sp.period as Period) : "daily";
   const [issues, office, market, saves] = await Promise.all([getIssues(), getSettings(), getMarket(), getInstaSaves()]);
-  return (
-    <>
-      <div className="page-head">
-        <div>
-          <h1>인스타 카드뉴스</h1>
-          <p>주제를 고르면 1080×1350 카드 1~8장을 만듭니다. 본문은 고객용 문장(무슨 일·나에게는·지금 할 일·용어·우리 동네 숫자)으로 채워지며, PNG 개별 저장과 ZIP 일괄 저장, 구성 저장을 지원합니다.</p>
-        </div>
-      </div>
-      <InstaClient issues={issues.filter((i) => i.review !== "archived")} office={office} market={market} initialSaves={saves} initialIssueId={issue ?? null} />
-    </>
-  );
+  const live = issues.filter((i) => i.review !== "archived");
+  // 주제 목록은 주기 창 안의 이슈. 이슈 상세에서 넘어온 경우(?issue=)는 창 밖이어도 포함
+  const topics = live.filter((i) => isFresh(i, period) || i.id === sp.issue);
+  return <InstaClient issues={topics} office={office} market={market} initialSaves={saves} initialIssueId={sp.issue ?? null} period={period} />;
 }

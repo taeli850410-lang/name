@@ -3,14 +3,27 @@
 import { toPng } from "html-to-image";
 import JSZip from "jszip";
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { AgencyBadge, ReviewChip, StatusPill, TopicChip } from "@/components/Badges";
+import { AgencyBadge, ReviewChip } from "@/components/Badges";
 import { dots, fmtDate, fmtDateTime } from "@/lib/format";
-import { buildSlides, INSTA_TEMPLATES, INSTA_TEMPLATE_KEYS, INSTA_THEMES, INSTA_THEME_KEYS, slidesForbidden, themeStyle, type InstaTemplateKey, type InstaThemeKey, type Slide } from "@/lib/insta";
+import {
+  buildSlides,
+  INSTA_MAX_CARDS,
+  INSTA_TEMPLATES,
+  INSTA_TEMPLATE_KEYS,
+  INSTA_THEMES,
+  INSTA_THEME_KEYS,
+  slidesForbidden,
+  themeStyle,
+  type InstaTemplateKey,
+  type InstaThemeKey,
+  type Slide,
+} from "@/lib/insta";
 import { SEGMENTS, SEGMENT_KEYS } from "@/lib/taxonomy";
-import type { InstaSave, Issue, MarketDoc, Office, Segment } from "@/lib/types";
+import type { InstaSave, Issue, MarketDoc, Office, Period, Segment } from "@/lib/types";
 
 const W = 1080;
 const H = 1350;
+const PERIOD_KO: Record<Period, string> = { daily: "일간", weekly: "주간", monthly: "월간" };
 
 function ScaledCard({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -162,18 +175,24 @@ async function cardToPng(card: HTMLElement): Promise<string> {
   }
 }
 
+/**
+ * 인스타 카드뉴스 화면. 원본 스튜디오의 뼈대를 따릅니다:
+ * 저장목록 → "{주기} 카드뉴스 — 주제 (N)" 목록 → 주제 선택 → 장수(1~10)·색상 테마·템플릿 → 카드가 세로로 쌓이고 카드마다 저장 버튼.
+ */
 export default function InstaClient({
   issues,
   office,
   market,
   initialSaves,
   initialIssueId = null,
+  period = "daily",
 }: {
   issues: Issue[];
   office: Office;
   market: MarketDoc;
   initialSaves: InstaSave[];
   initialIssueId?: string | null;
+  period?: Period;
 }) {
   const [issueId, setIssueId] = useState<string | null>(initialIssueId && issues.some((i) => i.id === initialIssueId) ? initialIssueId : null);
   const [count, setCount] = useState(5);
@@ -187,7 +206,7 @@ export default function InstaClient({
   const deckRef = useRef<HTMLDivElement>(null);
 
   const issue = useMemo(() => issues.find((i) => i.id === issueId) ?? null, [issues, issueId]);
-  const slides = useMemo(() => (issue ? buildSlides(issue, office, market, count, segment) : []), [issue, office, market, count, segment]);
+  const slides = useMemo(() => (issue ? buildSlides(issue, office, market, count, segment, period) : []), [issue, office, market, count, segment, period]);
   const forbidden = useMemo(() => slidesForbidden(slides), [slides]);
   const sorted = useMemo(() => [...issues].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()), [issues]);
 
@@ -271,11 +290,11 @@ export default function InstaClient({
 
   function openSave(s: InstaSave) {
     if (!issues.some((i) => i.id === s.issueId)) {
-      setMsg({ tone: "error", text: "저장된 구성의 이슈가 더 이상 없습니다." });
+      setMsg({ tone: "error", text: "저장된 구성의 이슈가 이 기간 목록에 없습니다. 상단 바에서 주기를 바꿔 보세요." });
       return;
     }
     setIssueId(s.issueId);
-    setCount(s.count);
+    setCount(Math.min(INSTA_MAX_CARDS, s.count));
     setTheme((INSTA_THEME_KEYS.includes(s.theme as InstaThemeKey) ? s.theme : "navy") as InstaThemeKey);
     setTemplate((INSTA_TEMPLATE_KEYS.includes(s.template as InstaTemplateKey) ? s.template : "editorial") as InstaTemplateKey);
     setSegment(s.segment);
@@ -285,15 +304,15 @@ export default function InstaClient({
   /* ── 주제 선택 / 저장목록 ── */
   if (!issue) {
     return (
-      <div className="insta">
-        <div className="row between" style={{ marginBottom: 12 }}>
-          <button className="btn" onClick={() => setListOpen(!listOpen)}>
+      <div className="panel">
+        <div className="row between">
+          <button className="btn" onClick={() => setListOpen(!listOpen)} aria-pressed={listOpen}>
             {listOpen ? "← 주제 선택" : `저장목록 (${saves.length})`}
           </button>
         </div>
-        {msg && <div className={`alert alert-${msg.tone} banner`}>{msg.text}</div>}
+        {msg && <div className={`alert alert-${msg.tone} banner`} style={{ marginTop: 10 }}>{msg.text}</div>}
         {listOpen ? (
-          <div className="stack">
+          <div className="stack" style={{ marginTop: 14 }}>
             {saves.length === 0 && <div className="card">저장된 구성이 없습니다. 주제·장수·테마를 고른 뒤 '현재 구성 저장'을 눌러 보세요.</div>}
             {saves.map((s) => (
               <div className="card row between" key={s.id}>
@@ -315,23 +334,23 @@ export default function InstaClient({
             ))}
           </div>
         ) : (
-          <div className="stack">
-            <p className="small muted" style={{ margin: 0 }}>
-              주제 {sorted.length}개 · 검수 완료된 이슈를 권장합니다. 초안 이슈는 문장을 확인한 뒤 쓰세요.
-            </p>
-            {sorted.map((i) => (
-              <button className="topic-row" key={i.id} onClick={() => setIssueId(i.id)}>
-                <span className="row" style={{ gap: 5 }}>
+          <>
+            <h2 className="panel-title">
+              {PERIOD_KO[period]} 카드뉴스 — 주제 ({sorted.length})
+            </h2>
+            <p className="panel-sub">주제를 선택하면 카드 장수(1~{INSTA_MAX_CARDS}장)를 골라 카드뉴스를 만듭니다. 상단 바에서 주기를 바꾸면 주제 목록이 바뀝니다.</p>
+            <div className="stack">
+              {sorted.length === 0 && <div className="card">이 기간에 수집된 주제가 없습니다. 상단 바에서 WEEKLY·MONTHLY 로 바꾸거나 인박스에서 '지금 수집'을 눌러 보세요.</div>}
+              {sorted.map((i) => (
+                <button className="topic-row" key={i.id} onClick={() => setIssueId(i.id)} title={`${i.title} · ${fmtDate(i.publishedAt)}`}>
                   <AgencyBadge agency={i.agency} />
-                  <StatusPill status={i.status} />
-                  <TopicChip topic={i.topic} />
-                  <ReviewChip review={i.review} />
-                </span>
-                <span className="topic-title">{i.customer.headline || i.title}</span>
-                <span className="small muted">{fmtDate(i.publishedAt)}</span>
-              </button>
-            ))}
-          </div>
+                  <span className="topic-title">{i.customer.headline || i.title}</span>
+                  {i.review !== "reviewed" && <ReviewChip review={i.review} />}
+                  <span className="topic-arrow">→</span>
+                </button>
+              ))}
+            </div>
+          </>
         )}
       </div>
     );
@@ -339,89 +358,85 @@ export default function InstaClient({
 
   /* ── 카드 구성 ── */
   return (
-    <div className="insta">
-      <div className="insta-layout">
-        <div className="card insta-controls">
-          <button className="btn btn-sm" onClick={() => setIssueId(null)}>
-            ← 주제 다시 선택
-          </button>
-          <div className="small" style={{ margin: "10px 0 4px", fontWeight: 600 }}>
-            {issue.customer.headline || issue.title}
-          </div>
-          {issue.review !== "reviewed" && <div className="alert alert-warn small">검수 전 이슈입니다. 문장을 확인한 뒤 배포하세요.</div>}
-          {forbidden.length > 0 && <div className="alert alert-error small">카드에 고객용 금지 표현이 있습니다: {forbidden.join(", ")}. 이슈 상세에서 고치세요.</div>}
+    <div className="panel insta-layout">
+      <div className="card insta-controls">
+        <button className="btn btn-sm" onClick={() => setIssueId(null)}>
+          ← 주제 다시 선택
+        </button>
+        {issue.review !== "reviewed" && <div className="alert alert-warn small" style={{ marginTop: 10 }}>검수 전 이슈입니다. 문장을 확인한 뒤 배포하세요.</div>}
+        {forbidden.length > 0 && <div className="alert alert-error small" style={{ marginTop: 10 }}>카드에 고객용 금지 표현이 있습니다: {forbidden.join(", ")}. 이슈 상세에서 고치세요.</div>}
 
-          <div className="field" style={{ marginTop: 12 }}>
-            <label>카드 장수 — {slides.length}장 생성됨</label>
-            <div className="count-seg">
-              {Array.from({ length: 8 }, (_, i) => i + 1).map((n) => (
-                <button key={n} aria-pressed={count === n} onClick={() => setCount(n)}>
-                  {n}
-                </button>
-              ))}
-            </div>
-            {count >= 3 && slides.length < count && <span className="hint">이 주제는 내용 기준 최대 {slides.length}장까지 구성됩니다.</span>}
-          </div>
-          <div className="field">
-            <label>먼저 보여줄 세그먼트</label>
-            <div className="seg">
-              {SEGMENT_KEYS.map((s) => (
-                <button key={s} aria-pressed={segment === s} onClick={() => setSegment(s)}>
-                  {SEGMENTS[s].label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="field">
-            <label>색상 테마</label>
-            <div className="theme-seg">
-              {INSTA_THEME_KEYS.map((k) => (
-                <button key={k} aria-pressed={theme === k} title={INSTA_THEMES[k].label} onClick={() => setTheme(k)} style={{ background: `linear-gradient(165deg, ${INSTA_THEMES[k].bg2}, ${INSTA_THEMES[k].bg})` }}>
-                  <i style={{ background: INSTA_THEMES[k].accent }} />
-                </button>
-              ))}
-              <span className="small muted">{INSTA_THEMES[theme].label}</span>
-            </div>
-          </div>
-          <div className="field">
-            <label>템플릿</label>
-            <div className="seg">
-              {INSTA_TEMPLATE_KEYS.map((k) => (
-                <button key={k} aria-pressed={template === k} onClick={() => setTemplate(k)}>
-                  {INSTA_TEMPLATES[k]}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="row" style={{ marginTop: 6 }}>
-            <button className="btn btn-primary" disabled={busy !== null} onClick={() => saveAll(true)}>
-              {busy === "zip" ? "만드는 중…" : `전체 저장 (ZIP · ${slides.length}장)`}
-            </button>
-            <button className="btn" disabled={busy !== null} onClick={() => saveAll(false)}>
-              개별 저장
-            </button>
-            <button className="btn" disabled={busy !== null} onClick={saveConfig}>
-              현재 구성 저장
-            </button>
-          </div>
-          <p className="hint small muted" style={{ marginTop: 8 }}>
-            PNG 는 1080×1350 원본 크기로 저장됩니다. 웹폰트가 이미지에 포함되지 않으면 브라우저 기본 글꼴로 저장될 수 있습니다.
-          </p>
-          {msg && <div className={`alert alert-${msg.tone} small`} style={{ marginTop: 8 }}>{msg.text}</div>}
-        </div>
-
-        <div className="insta-deck" ref={deckRef}>
-          {slides.map((s, i) => (
-            <div className="insta-item" key={i}>
-              <button className="card-save btn btn-sm" disabled={busy !== null} onClick={() => saveOne(i)}>
-                저장
+        <div className="field" style={{ marginTop: 12 }}>
+          <label>카드 장수 — {slides.length}장 생성됨</label>
+          <div className="count-seg">
+            {Array.from({ length: INSTA_MAX_CARDS }, (_, i) => i + 1).map((n) => (
+              <button key={n} aria-pressed={count === n} onClick={() => setCount(n)}>
+                {n}
               </button>
-              <ScaledCard>
-                <Card slide={s} idx={i} total={slides.length} office={office} theme={theme} template={template} />
-              </ScaledCard>
-            </div>
-          ))}
+            ))}
+          </div>
+          {count >= 3 && slides.length < count && <span className="hint">이 주제는 내용 기준 최대 {slides.length}장까지 구성됩니다.</span>}
         </div>
+        <div className="field">
+          <label>색상 테마</label>
+          <div className="theme-seg">
+            {INSTA_THEME_KEYS.map((k) => (
+              <button key={k} aria-pressed={theme === k} title={INSTA_THEMES[k].label} onClick={() => setTheme(k)} style={{ background: `linear-gradient(165deg, ${INSTA_THEMES[k].bg2}, ${INSTA_THEMES[k].bg})` }}>
+                <i style={{ background: INSTA_THEMES[k].accent }} />
+              </button>
+            ))}
+            <span className="small muted">{INSTA_THEMES[theme].label}</span>
+          </div>
+        </div>
+        <div className="field">
+          <label>템플릿</label>
+          <div className="seg">
+            {INSTA_TEMPLATE_KEYS.map((k) => (
+              <button key={k} aria-pressed={template === k} onClick={() => setTemplate(k)}>
+                {INSTA_TEMPLATES[k]}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="field">
+          <label>먼저 보여줄 대상</label>
+          <div className="seg">
+            {SEGMENT_KEYS.map((s) => (
+              <button key={s} aria-pressed={segment === s} onClick={() => setSegment(s)}>
+                {SEGMENTS[s].label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="row" style={{ marginTop: 6 }}>
+          <button className="btn btn-primary" disabled={busy !== null} onClick={() => saveAll(true)}>
+            {busy === "zip" ? "만드는 중…" : `전체 이미지 한번에 저장 (ZIP · ${slides.length}장)`}
+          </button>
+          <button className="btn" disabled={busy !== null} onClick={() => saveAll(false)}>
+            개별 저장
+          </button>
+          <button className="btn" disabled={busy !== null} onClick={saveConfig}>
+            현재 구성 저장
+          </button>
+        </div>
+        <p className="hint small muted" style={{ marginTop: 8 }}>
+          선택 주제: {issue.customer.headline || issue.title} · 전체 저장(ZIP)은 카드 {slides.length}장을 하나의 압축 파일로 내려받습니다. 각 카드의 저장 버튼으로 개별 저장도 가능합니다. PNG 는
+          1080×1350 원본 크기입니다.
+        </p>
+        {msg && <div className={`alert alert-${msg.tone} small`} style={{ marginTop: 8 }}>{msg.text}</div>}
+      </div>
+
+      <div className="insta-deck" ref={deckRef}>
+        {slides.map((s, i) => (
+          <div className="insta-item" key={i}>
+            <button className="card-save btn btn-sm" disabled={busy !== null} onClick={() => saveOne(i)}>
+              저장
+            </button>
+            <ScaledCard>
+              <Card slide={s} idx={i} total={slides.length} office={office} theme={theme} template={template} />
+            </ScaledCard>
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AgencyBadge, ReviewChip, StatusPill, TopicChip } from "@/components/Badges";
+import { AgencyBadge, ReviewChip } from "@/components/Badges";
 import { blogForbidden, generateBlogPost } from "@/lib/blog";
 import { fmtDate, fmtDateTime } from "@/lib/format";
 import { mdToHtml } from "@/lib/markdown";
-import type { BlogPost, Issue, MarketDoc, Office } from "@/lib/types";
+import type { BlogPost, Issue, MarketDoc, Office, Period } from "@/lib/types";
 
 type Mode = "topics" | "list" | "view" | "edit";
+const PERIOD_KO: Record<Period, string> = { daily: "일간", weekly: "주간", monthly: "월간" };
 
 export default function BlogClient({
   issues,
@@ -16,6 +17,7 @@ export default function BlogClient({
   initialPosts,
   initialIssueId = null,
   initialPostId = null,
+  period = "daily",
 }: {
   issues: Issue[];
   office: Office;
@@ -23,6 +25,7 @@ export default function BlogClient({
   initialPosts: BlogPost[];
   initialIssueId?: string | null;
   initialPostId?: string | null;
+  period?: Period;
 }) {
   const openPost = initialPostId ? initialPosts.find((p) => p.id === initialPostId) ?? null : null;
   const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
@@ -107,10 +110,12 @@ export default function BlogClient({
 
   const toolbar = (
     <div className="row" style={{ marginBottom: 10 }}>
-      <button className="btn" onClick={() => setMode("topics")} aria-pressed={mode === "topics"}>
-        + 새 포스팅
-      </button>
-      <button className="btn" onClick={() => setMode("list")} aria-pressed={mode === "list"}>
+      {mode !== "topics" && (
+        <button className="btn" onClick={() => setMode("topics")}>
+          ← 주제 선택
+        </button>
+      )}
+      <button className="btn" onClick={() => setMode(mode === "list" ? "topics" : "list")} aria-pressed={mode === "list"}>
         저장목록 ({posts.length})
       </button>
       {current && (mode === "view" || mode === "edit") && (
@@ -151,28 +156,28 @@ export default function BlogClient({
   );
 
   return (
-    <div className="blog">
+    <div className={mode === "topics" || mode === "list" ? "panel" : "blog"}>
       {toolbar}
       {msg && <div className={`alert alert-${msg.tone} banner`}>{msg.text}</div>}
 
       {mode === "topics" && (
-        <div className="stack">
-          <p className="small muted" style={{ margin: 0 }}>
-            주제 {sorted.length}개. 선택하면 초안을 만들어 저장목록에 넣습니다.
-          </p>
-          {sorted.map((i) => (
-            <button className="topic-row" key={i.id} disabled={busy} onClick={() => createFrom(i)}>
-              <span className="row" style={{ gap: 5 }}>
+        <>
+          <h2 className="panel-title">
+            {PERIOD_KO[period]} 블로그 포스팅 — 주제 ({sorted.length})
+          </h2>
+          <p className="panel-sub">주제를 선택하면 SEO 골격(제목·메타·목차·소제목 8개·이미지 위치·직접 경험 슬롯·표·차트·FAQ)의 초안을 만들어 저장목록에 넣습니다. 상단 바에서 주기를 바꾸면 주제 목록이 바뀝니다.</p>
+          <div className="stack">
+            {sorted.length === 0 && <div className="card">이 기간에 수집된 주제가 없습니다. 상단 바에서 WEEKLY·MONTHLY 로 바꾸거나 인박스에서 '지금 수집'을 눌러 보세요.</div>}
+            {sorted.map((i) => (
+              <button className="topic-row" key={i.id} disabled={busy} onClick={() => createFrom(i)} title={`${i.title} · ${fmtDate(i.publishedAt)}`}>
                 <AgencyBadge agency={i.agency} />
-                <StatusPill status={i.status} />
-                <TopicChip topic={i.topic} />
-                <ReviewChip review={i.review} />
-              </span>
-              <span className="topic-title">{i.customer.headline || i.title}</span>
-              <span className="small muted">{fmtDate(i.publishedAt)}</span>
-            </button>
-          ))}
-        </div>
+                <span className="topic-title">{i.customer.headline || i.title}</span>
+                {i.review !== "reviewed" && <ReviewChip review={i.review} />}
+                <span className="topic-arrow">→</span>
+              </button>
+            ))}
+          </div>
+        </>
       )}
 
       {mode === "list" && (

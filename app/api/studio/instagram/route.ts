@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     id: newId("ig"),
     issueId: body.issueId,
     title: String(body.title || "").slice(0, 120),
-    count: Math.max(1, Math.min(8, Number(body.count) || 5)),
+    count: Math.max(1, Math.min(10, Number(body.count) || 5)),
     theme: String(body.theme || "navy"),
     template: String(body.template || "editorial"),
     segment: (["first", "move", "asset"].includes(String(body.segment)) ? body.segment : "first") as Segment,

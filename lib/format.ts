@@ -81,3 +81,15 @@ export function monthLabel(month: string): string {
   const [y, m] = month.split("-");
   return `${y.slice(2)}.${m}`;
 }
+
+/** 상단 바의 수집 시각: "09. 12. 오후 07:45" (한국 시간, ICU 로캘 데이터에 의존하지 않음) */
+export function fmtCollect(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  const k = new Date(d.getTime() + 9 * 3600 * 1000); // KST = UTC+9, 서머타임 없음
+  const p2 = (n: number) => String(n).padStart(2, "0");
+  const h = k.getUTCHours();
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${p2(k.getUTCMonth() + 1)}. ${p2(k.getUTCDate())}. ${h < 12 ? "오전" : "오후"} ${p2(h12)}:${p2(k.getUTCMinutes())}`;
+}
