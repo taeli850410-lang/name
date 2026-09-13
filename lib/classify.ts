@@ -18,6 +18,23 @@ export function isRealEstateRelevant(text: string): boolean {
   return RELEVANT.test(text);
 }
 
+/**
+ * 위 낱말 중 부동산에서만 쓰는 것들. 금리·대출·세제·매물·호가·등기는 뺐습니다 —
+ * 증시 영상 제목에도 그대로 나오는 말이라 그것만으로는 부동산 기사라고 볼 수 없습니다.
+ * ("FOMC 앞둔 증시… 금리·유가 불확실성" 이 이 한 단어로 브리핑에 올라왔습니다.)
+ */
+const STRONG =
+  /주택|부동산|아파트|청약|전세|월세|임대|재개발|재건축|정비사업|분양|택지|양도세|종부세|취득세|공시가격|실거래|집값|GTX|역세권|중개|규제지역|거래허가|토지|DSR|LTV|신도시|공급대책|주거|영끌|주담대|빌라|오피스텔|다세대|연립주택|단독주택|입주권|분양권|조합원|분담금|전월세|보증금|특별공급|청약통장|갭투자|전용면적|보유세|재산세|공시지가/;
+
+export function isStrongRealEstate(text: string): boolean {
+  return STRONG.test(text);
+}
+
+/** 설명문에서 해시태그만 뽑습니다. #재건축 같은 건 글쓴이가 직접 단 주제 표시라 홍보 문구보다 믿을 만합니다 */
+export function hashtagsOf(text: string): string {
+  return (text.match(/#[^\s#<>]{1,30}/g) ?? []).join(" ");
+}
+
 /** 수도권 광역 단위 — 전국 독자에게도 의미 있는 시장 기사 */
 const METRO = /수도권|서울시|서울특별시|서울\s|서울은|서울의|서울\b|인천|경기도|경기\s|경기권/;
 /** 특정 시군구 — 그 지역 사람에게만 의미 있는 사안 */

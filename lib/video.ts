@@ -1,5 +1,5 @@
 import { XMLParser } from "fast-xml-parser";
-import { detectPlace, detectTopic, isRealEstateRelevant } from "./classify";
+import { detectPlace, detectTopic, hashtagsOf, isStrongRealEstate } from "./classify";
 import { clamp, stripHtml } from "./format";
 import { VIDEO_KEEP } from "./taxonomy";
 export { DEFAULT_VIDEO_SOURCES } from "./channels";
@@ -133,8 +133,12 @@ export function parseVideoFeed(xml: string): VideoItem[] {
     // 줄 단위로 걸러야 하므로 줄바꿈이 살아 있는 원문에서 먼저 정리하고, 그 다음에 태그·엔티티를 풉니다
     const raw = txt(group["media:description"]);
     const summary = clamp(stripHtml(cleanDescription(raw)), 320);
-    // 관련 여부는 홍보 문구를 걷어내기 전 원문으로 봅니다 — 해시태그(#재건축)도 단서라서
-    if (!isRealEstateRelevant(`${title} ${stripHtml(raw)}`)) continue;
+    // 제목이나 해시태그에 부동산 낱말이 있어야 싣습니다.
+    //
+    // 설명문 전체를 보면 안 됩니다. 종합뉴스 채널은 설명문 끝에 채널 소개·구독 안내를 길게 붙이는데
+    // 거기 '부동산' 한 번만 들어 있어도 증시·정치 영상이 통과합니다. 실제로 그렇게 올라왔습니다.
+    // 금리·대출 같은 말도 제목에 있다고 부동산은 아니라서(→ isStrongRealEstate) 따로 가릅니다.
+    if (!isStrongRealEstate(title) && !isStrongRealEstate(hashtagsOf(raw))) continue;
 
     const channel = stripHtml(txt(e.author)) || feedTitle;
     out.push({
