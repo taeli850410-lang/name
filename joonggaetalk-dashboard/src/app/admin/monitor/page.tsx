@@ -29,7 +29,7 @@ export default function MonitorPage() {
   const probe = useIntegrationProbe();
   return (
     <>
-      <PageHead title="서버·연동 상태" desc="앱 서버, 발송 대행사, 등기 감시 로컬 프로그램, 외부 API 연동의 현재 상태입니다. 이상은 텔레그램으로도 통보됩니다." actions={<button type="button" className="btn" disabled={probe.checking} onClick={() => { void probe.probe(); toast(bk.status === "ok" ? "연동 상태를 다시 확인했습니다." : "연동 상태를 다시 확인했습니다. 발송 대행사 장애는 계속됩니다."); }}><Icon name="refresh" size={15} /> {probe.checking ? "확인 중…" : "전체 다시 확인"}</button>} />
+      <PageHead title="서버·연동 상태" desc="앱 서버, 발송 대행사, 등기 감시 로컬 프로그램, 외부 API 연동의 현재 상태입니다." actions={<button type="button" className="btn" disabled={probe.checking} onClick={() => { void probe.probe(); toast(bk.status === "ok" ? "연동 상태를 다시 확인했습니다." : "연동 상태를 다시 확인했습니다. 발송 대행사 장애는 계속됩니다."); }}><Icon name="refresh" size={15} /> {probe.checking ? "확인 중…" : "전체 다시 확인"}</button>} />
       {bk.status !== "ok" && (
         <div className="mb-16">
           <Banner tone="danger" title={`발송 대행사 장애 진행 중 · ${bk.since}부터`} body={<>{bk.reason} 영향: 전체 회원 발송 보류. 기술 원문: <code>{bk.detail}</code></>} actions={<button type="button" className="btn btn--sm" onClick={() => toast({ tone: "info", message: "대행사 고객센터에 장애 문의를 접수했습니다. (프로토타입)" })}>대행사 문의</button>} />

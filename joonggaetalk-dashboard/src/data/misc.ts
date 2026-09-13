@@ -51,7 +51,8 @@ export const profile = {
   balsongkingId: "seoyeon_bk",
   kakaoChannelId: "@서연부동산",
   kakaoChannelUrl: "http://pf.kakao.com/_example",
-  telegram: { connected: true, account: "@seoyeon_jt", lastAlert: "2026-09-12 12:36" },
+  /** 텔레그램은 아직 붙이지 않았다. 연결된 척하면 화면이 거짓말을 한다. */
+  telegram: { connected: false, account: "", lastAlert: "" },
   /**
    * 알림톡 대체발송(문자) — 계정 단위 설정.
    * dailyCap 은 안전장치다. 문자는 알림톡의 3~8배라 대량 발송에서

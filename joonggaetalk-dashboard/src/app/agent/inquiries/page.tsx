@@ -24,7 +24,7 @@ export default function InquiriesPage() {
     setTitle("");
     setBody("");
     setErr("");
-    toast("접수했습니다. 답변이 오면 텔레그램과 대시보드 알림으로 알려 드립니다.");
+    toast("접수했습니다. 답변이 오면 대시보드 알림으로 알려 드립니다.");
   };
 
   return (

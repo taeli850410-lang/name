@@ -180,8 +180,8 @@ export default function AdminDashboard() {
                 <span><div className="t">네이버 스마트스토어 동기화</div><div className="s">{systemStatus.naverSync.every}분마다 · 마지막 {systemStatus.naverSync.lastAt.slice(11)} · 미적용 주문 0건</div></span>
               </div>
               <div className="alert-i">
-                <span className="ic ic--good"><Icon name="chat" size={15} /></span>
-                <span><div className="t">텔레그램 알림 봇 정상</div><div className="s">운영자 알림 수신 중</div></span>
+                <span className="ic"><Icon name="chat" size={15} /></span>
+                <span><div className="t">텔레그램 알림 봇 미연결</div><div className="s">붙이기 전입니다. 이상이 생겨도 텔레그램으로는 가지 않습니다.</div></span>
               </div>
             </div>
           </section>

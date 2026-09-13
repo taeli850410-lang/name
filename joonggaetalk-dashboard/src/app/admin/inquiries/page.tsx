@@ -27,7 +27,7 @@ function AdminInquiries() {
 
   return (
     <>
-      <PageHead title="문의 관리" desc="회원의 문의·제안·오류 신고입니다. 답변하면 회원의 텔레그램과 대시보드 알림으로 전달됩니다." />
+      <PageHead title="문의 관리" desc="회원의 문의·제안·오류 신고입니다. 답변하면 회원의 대시보드 알림으로 전달됩니다." />
       <div className="tabs" role="tablist">
         {(["답변대기", "답변완료"] as const).map((t) => (
           <button key={t} type="button" role="tab" className={`tab${tab === t ? " is-active" : ""}`} aria-selected={tab === t} onClick={() => setTab(t)}>{t} <span className="n">{list.filter((q) => q.status === t).length}</span></button>
