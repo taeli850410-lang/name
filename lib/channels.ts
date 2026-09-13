@@ -30,17 +30,21 @@ export const TIER_LABEL: Record<ChannelTier, string> = {
 };
 
 export const DEFAULT_CHANNELS: DefaultChannel[] = [
-  // 부동산만 올리는 채널 — 피드 15편이 거의 그대로 쓰입니다
-  // 채널 전체가 아니라 '집코노미 타임즈' 재생목록입니다. 채널에는 30초 쇼츠가 많이 섞이는데
-  // 이 목록은 주간 부동산뉴스 총정리 본편만 담겨 있어 브리핑에 그대로 쓸 수 있습니다.
-  {
-    id: "https://www.youtube.com/playlist?list=PLZtm8tjZjNV6jjvdmjZ-zc9jz1qKHUInQ",
-    channelId: "UCAVdqlngIAxHtwlCA2hjv3A",
-    name: "집코노미 타임즈",
-    tier: "estate",
-    note: "한국경제 주간 부동산뉴스 총정리 (재생목록)",
-  },
-  { id: "UCCt6iN6nJemSe_OHRihYBAQ", name: "매부리TV", tier: "estate", note: "매일경제 부동산 채널. 시장 해석과 투자자 관점" },
+  // 부동산만 올리는 채널 — 피드 15편이 거의 그대로 쓰입니다.
+  //
+  // 맨 위가 대표 영상 자리를 가져갑니다. 그래서 '자주 올리면서 부동산만 올리는' 채널이 와야 합니다.
+  // 2026-09-13 에 유튜브에서 최근 업로드를 세어 본 값(제목 기준):
+  //
+  //   매부리TV        하루 2.1편 · 부동산 85% · 피드가 7.3일치를 덮음
+  //   집코노미(채널)   하루 1.4편 · 부동산 60% · 10.9일치
+  //   연합뉴스TV      하루 293편 · 부동산  3% · 1.2시간치
+  //
+  // 종합뉴스는 올리는 양이 너무 많아 피드 15편이 한두 시간치밖에 안 됩니다.
+  // 하루 한 번 수집으로는 그 사이에 부동산 영상이 떠 있어야 하는데 그럴 일이 드뭅니다.
+  { id: "UCCt6iN6nJemSe_OHRihYBAQ", name: "매부리TV", tier: "estate", note: "매일경제 부동산 채널. 하루 2편꼴로 꾸준하고 거의 다 부동산" },
+  // 재생목록('집코노미 타임즈')이 아니라 채널입니다. 목록은 주 1회라 대표 영상이 며칠씩 묵었습니다.
+  // 채널은 매일 올라오고, 30초 쇼츠는 pickVideos 가 본편보다 뒤로 미룹니다.
+  { id: "UCAVdqlngIAxHtwlCA2hjv3A", name: "집코노미", tier: "estate", note: "한국경제 부동산 채널. 주간 '집코노미 타임즈' 총정리도 여기 올라옵니다" },
   { id: "UCXiDk1r8MDRqTD0j2BxNWWQ", name: "한국부동산원", tier: "estate", note: "주간 가격동향·청약 제도 공식 해설" },
   { id: "@korealand", name: "국토교통부", tier: "estate", note: "제도 시행 안내 영상" },
   // 경제 전문 — 금리·대출·정비사업 해설이 꾸준합니다
@@ -49,7 +53,7 @@ export const DEFAULT_CHANNELS: DefaultChannel[] = [
   { id: "UCnfwIKyFYRuqZzzKBDt6JOA", name: "매일경제TV", tier: "econ", note: "경제·금융·부동산 기사형 콘텐츠" },
   { id: "@mtn", name: "MTN 머니투데이방송", tier: "econ", note: "금리·투자·부동산" },
   // 종합뉴스 — 정부 발표·속보의 원자료. 걸리는 빈도는 낮지만 확정 여부 판정에 씁니다
-  { id: "UCTHCOPwqNfZ0uiKOvFyhGwg", name: "연합뉴스TV", tier: "news", note: "정부 발표·규제 속보" },
+  { id: "UCTHCOPwqNfZ0uiKOvFyhGwg", name: "연합뉴스TV", tier: "news", note: "정부 발표 속보의 원자료. 올리는 양이 많아 걸리는 날이 드뭅니다" },
   { id: "UChlgI3UHCOnwUGzWzbJ3H5w", name: "YTN", tier: "news", note: "정책·부동산 속보" },
   { id: "UCcQTRi69dsVYHN3exePtZ1A", name: "KBS News", tier: "news", note: "국토부·서울시 정책 보도" },
 ];
@@ -65,7 +69,7 @@ export const SOURCE_EXAMPLES = [
   "UCAVdqlngIAxHtwlCA2hjv3A",
   "@korealand",
   "https://www.youtube.com/channel/UCTHCOPwqNfZ0uiKOvFyhGwg",
-  "https://www.youtube.com/playlist?list=PL0Uzao5umnToeNR6m0wYRd2Td-QJcO1oh",
+  "https://www.youtube.com/playlist?list=PLZtm8tjZjNV6jjvdmjZ-zc9jz1qKHUInQ",
 ];
 export const SOURCE_EXAMPLES_TEXT = SOURCE_EXAMPLES.join("\n");
 

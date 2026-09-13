@@ -140,8 +140,13 @@ export const NUMBERS_TITLE: Record<Period, string> = { daily: "오늘의 숫자"
 export const VIDEO_TITLE: Record<Period, string> = { daily: "오늘의 영상 기사", weekly: "이번 주 영상 기사", monthly: "이달의 영상 기사" };
 export const VIDEO_SUB = "언론사·공공기관 유튜브 채널이 만든 영상 보도입니다 · 제목을 누르면 유튜브로 이동합니다";
 export const VIDEO_POINTS_TITLE = "이 영상에서 다루는 것";
-/** 영상 기사란 코너 이름. 설정에서 바꾸고, 비우면 코너 이름 없이 제목만 섭니다 */
-export const VIDEO_BRAND = "REPORT K";
+/**
+ * 영상 기사란 코너 이름. 설정에서 바꾸고, 비우면 코너 이름 없이 제목만 섭니다.
+ *
+ * 마스트헤드가 REAL ESTATE REPORT ALERT 라서 코너까지 REPORT 를 쓰면 같은 말이 두 번 섭니다.
+ * 이 코너는 영상을 '보고' 그 아래에서 사실과 해석을 갈라 읽는 자리라 VIEW 가 두 뜻으로 맞습니다.
+ */
+export const VIDEO_BRAND = "NEWS VIEW";
 /**
  * ANALYSIS 칸에 들어가는 문장. 영상이 말한 내용을 옮기는 게 아니라,
  * 그 주제에서 중개사가 원문을 열고 무엇부터 확인해야 하는지를 적습니다.
