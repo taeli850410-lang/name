@@ -26,13 +26,22 @@ import {
   type VworldErrorCode,
 } from "@/lib/vworld";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 /**
- * 서울에서 부른다. VWorld 는 미국 리전(iad1)에서 부르면 게이트웨이가 502 를 주거나
- * 연결을 끊는다 — 키·Referer 와 무관하게 요청 자체가 거절된다. 같은 주소를 서울
- * 리전에서 부르면 정상 응답한다. 부르는 상대가 전부 한국 서버라 다른 라우트도 같다.
+ * 이 라우트만 엣지에서 돈다.
+ *
+ * VWorld 는 미국 리전에서 온 요청을 거절한다 — 게이트웨이가 502 를 주거나
+ * 연결을 끊는다. 키도 Referer 도 멀쩡한데 요청 자체가 안 받아진다.
+ * 서울에서 부르면 정상이다.
+ *
+ * 그런데 서버리스 함수의 리전은 프로젝트 설정이 정하고 코드의
+ * preferredRegion 은 무시됐다(확인 응답에 region: "iad1" 로 찍혔다).
+ * 엣지 런타임은 이 설정을 따르므로 여기서 서울로 못박는다.
+ *
+ * 이 라우트는 fetch 와 URLSearchParams 밖에 쓰지 않아 엣지에서 그대로 돈다.
+ * 인증키는 여전히 서버(엣지)에만 있고 브라우저로 나가지 않는다.
  */
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
 export const preferredRegion = "icn1";
 
 const GEO = "https://api.vworld.kr/req/address";
@@ -71,9 +80,16 @@ function referer(): string {
   return (process.env.VWORLD_REFERER || "").trim();
 }
 
-/** 이 함수가 실제로 도는 리전. icn1 이 서울, iad1 이 워싱턴. */
-function region(): string {
-  return process.env.VERCEL_REGION || "unknown";
+/**
+ * 이 함수가 실제로 도는 리전. icn1 이 서울, iad1 이 워싱턴.
+ * 엣지에서는 환경 변수가 비어 있을 수 있어 x-vercel-id 앞머리로 보완한다.
+ */
+function region(req?: Request): string {
+  const fromEnv = (process.env.VERCEL_REGION || "").trim();
+  if (fromEnv) return fromEnv;
+  const id = req?.headers.get("x-vercel-id") || "";
+  const first = id.split(/[:,]/)[0]?.trim();
+  return first || "unknown";
 }
 
 function fail(code: VworldErrorCode, status = 400, extra?: Record<string, unknown>) {
@@ -189,7 +205,7 @@ export async function GET(req: Request) {
     const ref = referer();
     const r = await geocode(CHECK_ADDRESS, "parcel");
     if (!("code" in r)) {
-      return NextResponse.json({ ok: true, live: true, region: region(), address: CHECK_ADDRESS, referer: ref || null, pnu: r.hit.pnu ?? null, point: r.hit.point });
+      return NextResponse.json({ ok: true, live: true, region: region(req), address: CHECK_ADDRESS, referer: ref || null, pnu: r.hit.pnu ?? null, point: r.hit.point });
     }
 
     // 실패했으면 Referer 를 빼고 한 번 더. 이것만으로 되면 원인은 키도
@@ -206,7 +222,7 @@ export async function GET(req: Request) {
       live: true,
       // 어느 리전에서 부른 것인지. 추측하지 않고 실제 값을 읽는다 —
       // VWorld 는 미국 리전에서 온 요청을 거절하므로 이게 곧 원인이다.
-      region: region(),
+      region: region(req),
       address: CHECK_ADDRESS,
       referer: ref || null,
       withoutReferer,
