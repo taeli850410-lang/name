@@ -12,9 +12,9 @@ import { CONTRACT_TYPES, INTEREST_TYPES, customers, type ContractType, type Inte
 import { templates } from "@/data/templates";
 import { sendBatches } from "@/data/sends";
 import { systemStatus } from "@/data/system";
+import { profile } from "@/data/misc";
+import { ALIMTALK_COST as COST, renderVars, SMS_COST, smsKind } from "@/lib/sms";
 import { addDays, formatDateTime, formatPhone, formatWon, TODAY } from "@/lib/format";
-
-const COST = 6.5;
 
 export default function SendPage() {
   return (
@@ -47,6 +47,13 @@ function SendNow() {
 
   const tpl = approved.find((t) => t.id === templateId);
   const vendorDown = systemStatus.balsongking.status !== "ok";
+  /**
+   * 대체 문자는 "실패한 건에만" 과금된다. 몇 건이 실패할지는 보내 봐야 알기 때문에
+   * 총액을 지어내지 않고 건당 단가만 미리 보여 준다.
+   */
+  const fb = tpl?.sms?.enabled && profile.smsFallback.enabled && tpl.sms.body.trim()
+    ? { kind: smsKind(renderVars(tpl.sms.body, { 고객명: "홍길동" })), on: true as const }
+    : { kind: null, on: false as const };
 
   const filtered = useMemo(() => {
     const s = q.trim().replace(/-/g, "");
@@ -100,6 +107,7 @@ function SendNow() {
     { k: "대상", v: `${sendCount}명${optOutSelected ? ` (수신 거부 ${optOutSelected}명 제외)` : ""}` },
     { k: "예상 비용", v: formatWon(cost) },
     { k: "발송 시점", v: confirm === "delay" ? "5분 뒤 (그 안에 취소 가능)" : confirm === "now" ? "지금 즉시 — 취소할 수 없습니다" : scheduleAt.replace("T", " ") },
+    { k: "대체 문자", v: fb.on ? `${fb.kind} · 실패한 건만 건당 ${SMS_COST[fb.kind!]}원` : "꺼짐 — 카카오톡으로 못 받으면 그대로 누락" },
   ];
 
   return (
@@ -246,7 +254,28 @@ function SendNow() {
                 <dt>선택</dt><dd>{selectedList.length}명{optOutSelected ? <span className="muted"> · 거부 {optOutSelected}명은 제외</span> : null}</dd>
                 <dt>실제 발송</dt><dd className="strong">{sendCount}명</dd>
                 <dt>예상 비용</dt><dd className="strong">{formatWon(cost)} <span className="muted small">(건당 {COST}원)</span></dd>
+                <dt>대체 문자</dt>
+                <dd>
+                  {!tpl ? (
+                    <span className="muted">템플릿 미선택</span>
+                  ) : fb.on ? (
+                    <>
+                      <Badge tone="good" dot>{fb.kind}</Badge>{" "}
+                      <span className="muted small">카카오톡으로 못 받은 건만 건당 {formatWon(SMS_COST[fb.kind!])}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Badge tone="neutral">꺼짐</Badge>{" "}
+                      <span className="muted small">카카오톡으로 못 받는 고객은 아무것도 받지 못합니다</span>
+                    </>
+                  )}
+                </dd>
               </dl>
+              {tpl && !fb.on && (
+                <p className="help mt-8">
+                  <Link href="/agent/alimtalk/templates" className="link">템플릿 관리</Link>에서 이 템플릿의 대체 문자를 켜면, 알림톡이 안 꽂힌 고객에게 문자로 대신 나갑니다.
+                </p>
+              )}
             </div>
           </section>
         </div>

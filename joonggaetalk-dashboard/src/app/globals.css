@@ -81,6 +81,7 @@ code { font-family: var(--mono); font-size: 0.9em; }
 .num { font-variant-numeric: tabular-nums; }
 .mono { font-family: var(--mono); font-size: 0.92em; }
 .muted { color: var(--muted); }
+.danger { color: var(--danger); }
 .faint { color: var(--faint); }
 .small { font-size: 12.5px; }
 .strong { font-weight: 600; }
@@ -625,3 +626,16 @@ a.list__item:hover { background: var(--surface-2); }
 .login__form h1 { font-size: 22px; margin-bottom: 6px; }
 .login__links { display: flex; justify-content: center; gap: 16px; font-size: 13px; color: var(--muted); margin-top: 4px; }
 @media (max-width: 800px) { .login { grid-template-columns: 1fr; } .login__side { padding: 32px 24px; } .login__side .mark { width: 64px; height: 64px; font-size: 32px; border-radius: 18px; } }
+
+/* 문자 미리보기 — 알림톡 말풍선과 나란히 놓고 본다 */
+.sms-wrap { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+.sms-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; font-size: 11.5px; color: var(--faint); }
+.sms-kind { font-weight: 700; letter-spacing: 0.02em; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; color: var(--muted); }
+.sms-bubble { background: var(--surface); border: 1px solid var(--line); border-radius: 14px 14px 14px 4px; padding: 11px 13px; font-size: 13.5px; line-height: 1.6; max-width: 320px; white-space: pre-line; }
+.sms-bubble .var { background: #fff3b0; padding: 0 3px; border-radius: 3px; }
+
+/* 바이트 게이지 — 한도까지 얼마나 남았는지 */
+.bytebar { height: 6px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); overflow: hidden; }
+.bytebar i { display: block; height: 100%; background: var(--good); transition: width 0.15s ease; }
+.bytebar.is-lms i { background: var(--warn); }
+.bytebar.is-over i { background: var(--danger); }

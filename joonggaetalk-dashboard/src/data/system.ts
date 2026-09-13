@@ -15,6 +15,17 @@ export const systemStatus = {
     balanceCheckedAt: "2026-09-12 11:40",
     lastBalance: 48_250,
   },
+  /**
+   * 문자 발신번호 사전등록 (전기통신사업법 제84조의2).
+   * 알림톡과 별개의 절차다 — 카카오 채널만 있으면 알림톡은 나가지만,
+   * 대체 문자는 이 등록이 없으면 한 건도 나가지 않는다.
+   */
+  smsSender: {
+    status: "ok" as ServiceStatus,
+    number: "03212341234",
+    registeredAt: "2026-07-02",
+    via: "발송킹 (KISA 번호도용문자차단서비스 연계)",
+  },
   registry: {
     status: "ok" as ServiceStatus,
     running: 12,

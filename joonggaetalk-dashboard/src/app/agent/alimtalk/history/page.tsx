@@ -7,6 +7,7 @@ import { Badge, Banner, EmptyState, MoreMenu, PageHead, SearchBox, Switch, type 
 import { ConfirmModal } from "@/components/ui/Modal";
 import { useToast } from "@/components/ui/Toast";
 import { FAIL_REASONS, sendBatches as seed, type SendBatch } from "@/data/sends";
+import type { FallbackPolicy } from "@/lib/sms";
 import { systemStatus } from "@/data/system";
 import { addDays, formatDateTime, formatWon, relativeDay, TODAY } from "@/lib/format";
 
@@ -20,6 +21,14 @@ function statusOf(b: SendBatch): "예정" | "보류" | "실패" | "일부 실패
   return "성공";
 }
 const TONE: Record<ReturnType<typeof statusOf>, Tone> = { 예정: "info", 보류: "warn", 실패: "danger", "일부 실패": "warn", 성공: "good" };
+
+/** 대체발송 정책을 한 단어로. 왜 문자가 안 갔는지는 옆의 설명이 말한다. */
+const FB_LABEL: Record<FallbackPolicy, { text: string; tone: Tone }> = {
+  auto: { text: "문자 대체 대상", tone: "info" },
+  choice: { text: "직접 선택", tone: "warn" },
+  duplicate: { text: "중복 위험", tone: "warn" },
+  blocked: { text: "문자도 불가", tone: "neutral" },
+};
 
 export default function HistoryPage() {
   return (
@@ -43,6 +52,7 @@ function History() {
   const [tech, setTech] = useState<Set<string>>(new Set());
   const [retry, setRetry] = useState<SendBatch | null>(null);
   const [cancel, setCancel] = useState<SendBatch | null>(null);
+  const [sms, setSms] = useState<SendBatch | null>(null);
 
   const filtered = useMemo(() => {
     const since = addDays(TODAY, -days);
@@ -69,6 +79,12 @@ function History() {
   const toggleOpen = (id: string) => setOpen((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const toggleTech = (id: string) => setTech((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const retryable = (b: SendBatch) => b.items.filter((i) => i.status === "실패" && i.code && FAIL_REASONS[i.code].retryable).length;
+  /**
+   * 알림톡으로 다시 보내 봐야 같은 결과인데 문자도 안 나간 건.
+   * 대체발송을 켜기 전에 실패한 건들이 여기 남는다.
+   */
+  const smsable = (b: SendBatch) => b.items.filter((i) => i.status === "실패" && i.code && FAIL_REASONS[i.code].fallback === "auto" && !i.fallback);
+  const smsCostOf = (b: SendBatch) => smsable(b).length * 50;
   const vendorDown = systemStatus.balsongking.status !== "ok";
 
   return (
@@ -153,7 +169,12 @@ function History() {
                               <i className="ok" style={{ width: `${(b.success / b.total) * 100}%` }} />
                               <i className="ng" style={{ width: `${(b.failed / b.total) * 100}%` }} />
                             </div>
-                            <div className="cell-sub">성공 {b.success} · 실패 {b.failed} · {formatWon(b.success * b.costPerMsg)}</div>
+                            <div className="cell-sub">
+                              성공 {b.success} · 실패 {b.failed} · {formatWon(b.success * b.costPerMsg)}
+                              {b.fallback && b.fallback.sent > 0 && (
+                                <span style={{ color: "var(--good)" }}> · 문자로 {b.fallback.sent}건 덮음 {formatWon(b.fallback.cost)}</span>
+                              )}
+                            </div>
                             {codes.length > 0 && <div className="small" style={{ color: "var(--danger)" }}>{codes.map((c) => FAIL_REASONS[c].title).join(" / ")}</div>}
                           </>
                         )}
@@ -162,6 +183,9 @@ function History() {
                         <div className="row-actions">
                           {retryable(b) > 0 && (
                             <button type="button" className="btn btn--sm" onClick={() => setRetry(b)}><Icon name="refresh" size={13} /> 다시 보내기 ({retryable(b)})</button>
+                          )}
+                          {smsable(b).length > 0 && (
+                            <button type="button" className="btn btn--sm" onClick={() => setSms(b)}><Icon name="send" size={13} /> 문자로 보내기 ({smsable(b).length})</button>
                           )}
                           <MoreMenu items={[
                             ...(b.pending > 0 ? [{ label: "예약 취소", icon: "x" as const, danger: true, onClick: () => setCancel(b) }] : []),
@@ -178,17 +202,37 @@ function History() {
                             <div className="muted small">대상은 발송 시점에 조건으로 확정됩니다 (정기 발송).</div>
                           ) : (
                             <table className="table table--dense" style={{ background: "transparent" }}>
-                              <thead><tr><th>고객</th><th>번호</th><th>상태</th><th>사유</th></tr></thead>
+                              <thead><tr><th style={{ width: 90 }}>고객</th><th style={{ width: 130 }}>번호</th><th style={{ width: 80 }}>상태</th><th>사유</th><th style={{ width: 300 }}>대체 문자</th></tr></thead>
                               <tbody>
                                 {b.items.map((it, i) => (
                                   <tr key={i}>
-                                    <td>{it.customerName}</td>
-                                    <td className="num">{it.phoneMasked}</td>
+                                    <td className="nowrap">{it.customerName}</td>
+                                    <td className="num nowrap">{it.phoneMasked}</td>
                                     <td><Badge tone={it.status === "성공" ? "good" : it.status === "실패" ? "danger" : it.status === "보류" ? "warn" : "info"} dot>{it.status}</Badge></td>
                                     <td>{it.code ? <span>{FAIL_REASONS[it.code].title}<span className="muted"> — {FAIL_REASONS[it.code].detail}</span></span> : <span className="muted">—</span>}</td>
+                                    <td>
+                                      {it.fallback ? (
+                                        <div className="stack" style={{ gap: 2 }}>
+                                          <span className="row" style={{ gap: 6 }}>
+                                            <Badge tone={it.fallback.status === "발송" ? "good" : it.fallback.status === "실패" ? "danger" : "neutral"} dot>
+                                              {it.fallback.status === "발송" ? `${it.fallback.kind} 발송` : it.fallback.status}
+                                            </Badge>
+                                            {it.fallback.cost > 0 && <span className="muted small">{formatWon(it.fallback.cost)}</span>}
+                                          </span>
+                                          <span className="muted small">{it.fallback.note ?? (it.code ? FAIL_REASONS[it.code].fallbackNote : "")}</span>
+                                        </div>
+                                      ) : it.code ? (
+                                        <div className="stack" style={{ gap: 2 }}>
+                                          <Badge tone={FB_LABEL[FAIL_REASONS[it.code].fallback].tone}>{FB_LABEL[FAIL_REASONS[it.code].fallback].text}</Badge>
+                                          <span className="muted small">{FAIL_REASONS[it.code].fallbackNote}</span>
+                                        </div>
+                                      ) : (
+                                        <span className="muted">—</span>
+                                      )}
+                                    </td>
                                   </tr>
                                 ))}
-                                {b.total > b.items.length && <tr><td colSpan={4} className="muted small">외 {b.total - b.items.length}명 (성공)</td></tr>}
+                                {b.total > b.items.length && <tr><td colSpan={5} className="muted small">외 {b.total - b.items.length}명 (성공)</td></tr>}
                               </tbody>
                             </table>
                           )}
@@ -217,6 +261,31 @@ function History() {
         summary={retry ? [{ k: "템플릿", v: retry.templateName }, { k: "대상", v: `${retryable(retry)}명` }, { k: "예상 비용", v: formatWon(retryable(retry) * retry.costPerMsg) }] : undefined}
         confirmLabel={retry ? `${retryable(retry)}건 다시 보내기` : "다시 보내기"}
         onConfirm={() => { const b = retry; setRetry(null); if (b) toast({ message: `${retryable(b)}건을 다시 보내도록 예약했습니다.`, action: { label: "실행 취소", onClick: () => toast({ tone: "info", message: "예약을 취소했습니다." }) } }); }}
+      />
+      <ConfirmModal
+        open={!!sms}
+        onClose={() => setSms(null)}
+        title={sms ? `${smsable(sms).length}명에게 문자로 보냅니다` : ""}
+        description="카카오톡으로는 받을 수 없는 고객입니다. 알림톡으로 다시 보내도 결과는 같습니다. 템플릿에 저장된 대체 문자 문구가 나갑니다."
+        summary={sms ? [
+          { k: "템플릿", v: sms.templateName },
+          { k: "대상", v: smsable(sms).map((i) => i.customerName).join(", ") },
+          { k: "예상 비용", v: `${formatWon(smsCostOf(sms))} (LMS 기준)` },
+          { k: "알림톡이었다면", v: formatWon(smsable(sms).length * sms.costPerMsg) },
+        ] : undefined}
+        confirmLabel={sms ? `${smsable(sms).length}명에게 문자 발송` : "문자 발송"}
+        onConfirm={() => {
+          const b = sms;
+          setSms(null);
+          if (!b) return;
+          const names = smsable(b).map((i) => i.customerName);
+          setList((xs) => xs.map((x) => x.id !== b.id ? x : {
+            ...x,
+            fallback: { sent: (x.fallback?.sent ?? 0) + names.length, cost: (x.fallback?.cost ?? 0) + smsCostOf(b) },
+            items: x.items.map((i) => names.includes(i.customerName) ? { ...i, fallback: { kind: "LMS" as const, status: "발송" as const, at: `${TODAY} 21:20`, cost: 50, note: "발송 내역에서 직접 보냈습니다." } } : i),
+          }));
+          toast({ message: `${names.length}건을 문자로 보냈습니다. ${formatWon(smsCostOf(b))}` });
+        }}
       />
       <ConfirmModal
         open={!!cancel}

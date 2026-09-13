@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { Badge, Banner, PageHead, Switch } from "@/components/ui/Bits";
 import { ConfirmModal } from "@/components/ui/Modal";
 import { useToast } from "@/components/ui/Toast";
 import { profile, termsHistory } from "@/data/misc";
 import { CUSTOMER_KEYWORDS } from "@/data/customers";
-import { formatPhone } from "@/lib/format";
+import { systemStatus } from "@/data/system";
+import { templates } from "@/data/templates";
+import { SMS_COST } from "@/lib/sms";
+import { formatPhone, formatWon } from "@/lib/format";
 
 const TABS = [
   { key: "basic", label: "기본 정보" },
@@ -19,15 +23,29 @@ const TABS = [
 ] as const;
 type TabKey = (typeof TABS)[number]["key"];
 
-/** 나의 정보 — 탭으로 나누고, 수정 중인 섹션에만 저장 바가 뜬다. 비밀값은 기본 마스킹. */
 export default function SettingsPage() {
+  return (
+    <Suspense>
+      <Settings />
+    </Suspense>
+  );
+}
+
+/** 나의 정보 — 탭으로 나누고, 수정 중인 섹션에만 저장 바가 뜬다. 비밀값은 기본 마스킹. */
+function Settings() {
   const toast = useToast();
-  const [tab, setTab] = useState<TabKey>("basic");
+  const params = useSearchParams();
+  // 다른 화면에서 ?tab=sending 처럼 특정 탭을 바로 열 수 있다
+  const [tab, setTab] = useState<TabKey>(() => {
+    const t = params.get("tab");
+    return TABS.some((x) => x.key === t) ? (t as TabKey) : "basic";
+  });
   const [dirty, setDirty] = useState(false);
   const [showBk, setShowBk] = useState(false);
   const [disconnect, setDisconnect] = useState(false);
   const [pw, setPw] = useState({ cur: "", next: "", again: "" });
   const [phone, setPhone] = useState(formatPhone(profile.phone));
+  const [fallback, setFallback] = useState(profile.smsFallback);
   const strength = pw.next.length >= 12 && /[^a-zA-Z0-9]/.test(pw.next) ? "강함" : pw.next.length >= 8 && /\d/.test(pw.next) && /[a-zA-Z]/.test(pw.next) ? "보통" : pw.next ? "약함" : "";
 
   const mark = () => setDirty(true);
@@ -135,6 +153,71 @@ export default function SettingsPage() {
                 </div>
                 <div className="row">
                   <button type="button" className="btn" onClick={() => toast({ tone: "danger", message: "연결 테스트 실패 — 대행사 서버 인증서 문제 (09-12 12:35부터). 계정 정보와는 무관합니다." })}><Icon name="activity" size={14} /> 연결 테스트</button>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {tab === "sending" && (
+            <section className="card">
+              <div className="card__head">
+                <h2>알림톡 실패 시 문자 대체발송</h2>
+                {fallback.enabled ? <Badge tone="good" dot>켜짐</Badge> : <Badge tone="neutral">꺼짐</Badge>}
+              </div>
+              <div className="card__body stack" style={{ gap: 14 }}>
+                <p className="muted small">
+                  카카오톡을 쓰지 않거나 채널을 차단한 고객에게는 알림톡이 꽂히지 않습니다. 그럴 때 같은 내용을 문자로 대신 내보냅니다.
+                  대체 문자는 알림톡 요청에 함께 실려 나가므로, 템플릿마다 문구가 미리 준비돼 있어야 합니다.
+                </p>
+
+                <div className="row" style={{ justifyContent: "space-between", gap: 12 }}>
+                  <span>
+                    <b>대체발송 사용</b>
+                    <div className="help">끄면 알림톡이 실패한 고객은 아무것도 받지 못합니다.</div>
+                  </span>
+                  <Switch checked={fallback.enabled} onChange={(v) => { setFallback((f) => ({ ...f, enabled: v })); mark(); }} label="대체발송" />
+                </div>
+
+                <div className="field" style={{ maxWidth: 320 }}>
+                  <label className="label" htmlFor="s-cap">하루 상한</label>
+                  <div className="input-group">
+                    <input id="s-cap" className="input" type="number" min={0} value={fallback.dailyCap} onChange={(e) => { setFallback((f) => ({ ...f, dailyCap: Number(e.target.value) })); mark(); }} />
+                    <span className="btn" aria-hidden>건</span>
+                  </div>
+                  <div className="help">
+                    문자는 알림톡의 3~8배입니다. 상한을 넘으면 그날은 더 보내지 않고 발송 내역에 남깁니다.
+                    오늘 {fallback.usedToday}건 사용 · 상한을 다 쓰면 최대 {formatWon(fallback.dailyCap * SMS_COST.LMS)}입니다.
+                  </div>
+                </div>
+
+                <div className="row" style={{ padding: "10px 12px", background: "var(--surface-2)", borderRadius: 8, gap: 10, flexWrap: "wrap" }}>
+                  <span className="muted">문자 발신번호</span>
+                  <b className="num">{formatPhone(systemStatus.smsSender.number)}</b>
+                  <Badge tone="good" dot>사전등록 완료</Badge>
+                  <span className="muted small">{systemStatus.smsSender.registeredAt} · {systemStatus.smsSender.via}</span>
+                </div>
+                <div className="help">
+                  문자 발신번호는 전기통신사업법에 따라 미리 등록해야 합니다. 알림톡과는 별개 절차라, 등록이 없으면 알림톡은 나가도 대체 문자는 한 건도 나가지 않습니다.
+                </div>
+
+                <div>
+                  <div className="section-label">대체 문구가 준비된 템플릿</div>
+                  <div className="list">
+                    {templates.filter((t) => t.status === "승인").map((t) => (
+                      <div key={t.id} className="list__item">
+                        <span className="what">
+                          <div className="t">{t.name}</div>
+                          <div className="s">{t.usedBy ?? "수동 발송"}</div>
+                        </span>
+                        {t.sms?.enabled ? <Badge tone="good" dot>문자 대체</Badge> : t.sms ? <Badge tone="neutral">문구만 있음</Badge> : <Badge tone="outline">없음</Badge>}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="help mt-8">
+                    계약일·중도금·잔금·만료일처럼 놓치면 사고가 나는 안내만 켜 두는 것이 좋습니다.
+                    시세·칼럼 같은 정보성 발송까지 켜면 비용만 늘고 고객에게는 문자 광고로 보입니다.
+                    문구는 <a className="link" href="/agent/alimtalk/templates">템플릿 관리</a>에서 고칩니다.
+                  </div>
                 </div>
               </div>
             </section>

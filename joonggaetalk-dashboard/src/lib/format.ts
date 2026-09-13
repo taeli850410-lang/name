@@ -102,6 +102,9 @@ export function formatPhone(raw: string): string {
   const p = raw.replace(/\D/g, "");
   if (/^01[016789]/.test(p) && p.length === 11) return `${p.slice(0, 3)}-${p.slice(3, 7)}-${p.slice(7)}`;
   if (p.startsWith("02") && p.length === 10) return `${p.slice(0, 2)}-${p.slice(2, 6)}-${p.slice(6)}`;
+  if (p.startsWith("02") && p.length === 9) return `${p.slice(0, 2)}-${p.slice(2, 5)}-${p.slice(5)}`;
+  // 지역번호 3자리 + 8자리 (032-1234-5678) · 070·050 같은 번호도 여기에 해당한다
+  if (p.length === 11) return `${p.slice(0, 3)}-${p.slice(3, 7)}-${p.slice(7)}`;
   if (p.length === 10) return `${p.slice(0, 3)}-${p.slice(3, 6)}-${p.slice(6)}`;
   return raw;
 }

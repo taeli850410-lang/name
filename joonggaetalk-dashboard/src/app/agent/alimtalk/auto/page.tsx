@@ -36,6 +36,7 @@ export default function AutoSendPage() {
               <th style={{ width: 220 }}>관련 시점</th>
               <th>발송 템플릿</th>
               <th style={{ width: 200 }}>발송 시점</th>
+              <th style={{ width: 150 }}>대체 문자</th>
               <th style={{ width: 120 }}>사용</th>
             </tr>
           </thead>
@@ -71,6 +72,19 @@ export default function AutoSendPage() {
                     )}
                   </td>
                   <td>
+                    {(() => {
+                      const t = approved.find((x) => x.id === r.templateId);
+                      if (!t) return <span className="muted small">—</span>;
+                      if (t.sms?.enabled) return <Badge tone="good" dot>켜짐</Badge>;
+                      return (
+                        <span className="stack" style={{ gap: 2 }}>
+                          <Badge tone="neutral">꺼짐</Badge>
+                          <span className="muted small">카카오톡 미사용 고객은 못 받습니다</span>
+                        </span>
+                      );
+                    })()}
+                  </td>
+                  <td>
                     <Switch checked={r.enabled} onChange={(v) => update(r.id, { enabled: v })} label={r.enabled ? "사용" : "사용 안 함"} />
                   </td>
                 </tr>
@@ -79,7 +93,8 @@ export default function AutoSendPage() {
           </tbody>
         </table>
       </div>
-      <p className="help mt-12">발송 시점의 09:00에 예약됩니다. 이미 예약된 발송은 바뀐 설정을 따르지 않으므로, 바꾼 뒤 발송 내역에서 예정 건을 확인하세요.</p>
+      <p className="help mt-12">대체 문자는 <Link href="/agent/alimtalk/templates" className="link">템플릿 관리</Link>에서 템플릿마다 켭니다. 자동발송은 사람이 보고 있지 않은 시점에 나가므로, 계약·잔금 안내는 켜 두는 편이 안전합니다.</p>
+      <p className="help">발송 시점의 09:00에 예약됩니다. 이미 예약된 발송은 바뀐 설정을 따르지 않으므로, 바꾼 뒤 발송 내역에서 예정 건을 확인하세요.</p>
 
       {dirty && (
         <div className="savebar" role="region" aria-label="변경 사항 저장">

@@ -52,6 +52,12 @@ export const profile = {
   kakaoChannelId: "@서연부동산",
   kakaoChannelUrl: "http://pf.kakao.com/_example",
   telegram: { connected: true, account: "@seoyeon_jt", lastAlert: "2026-09-12 12:36" },
+  /**
+   * 알림톡 대체발송(문자) — 계정 단위 설정.
+   * dailyCap 은 안전장치다. 문자는 알림톡의 3~8배라 대량 발송에서
+   * 상한이 없으면 비용이 하루 만에 예치금을 비운다.
+   */
+  smsFallback: { enabled: true, dailyCap: 300, usedToday: 0 },
   googleCalendar: { connected: false },
 };
 

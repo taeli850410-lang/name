@@ -6,12 +6,39 @@ import { Badge, Banner, EmptyState, MoreMenu, PageHead, SearchBox, type Tone } f
 import { ConfirmModal } from "@/components/ui/Modal";
 import { Drawer } from "@/components/ui/Drawer";
 import { KakaoPreview } from "@/components/ui/KakaoPreview";
+import { SmsFallbackEditor } from "@/components/alimtalk/SmsFallbackEditor";
 import { useToast } from "@/components/ui/Toast";
 import { templates as seed, VARIABLES, type Template, type TemplateStatus } from "@/data/templates";
-import { TODAY } from "@/lib/format";
+import { profile } from "@/data/misc";
+import { systemStatus } from "@/data/system";
+import { formatPhone, TODAY } from "@/lib/format";
 
 const TONE: Record<TemplateStatus, Tone> = { 승인: "good", 검수중: "info", 반려: "danger" };
 const BUTTONS = ["오시는길", "홈페이지", "네이버부동산", "전화하기", "관심지역 실거래가"];
+
+/** 미리보기 예시 값 — 알림톡과 대체 문자가 같은 값을 써야 길이 비교가 뜻이 있다. */
+const SAMPLE: Record<string, string> = {
+  고객명: "박지훈",
+  물건명: "더샵부평 110동 103호",
+  계약일: "9월 30일(수)",
+  중도금일: "9월 25일(금)",
+  잔금일: "9월 30일(수)",
+  입주일: "10월 1일(목)",
+  계약만료일: "2028년 9월 30일",
+  중개사상호: "서연공인중개사사무소",
+  "사무실 전화": "032-000-1234",
+  물건주소: "인천 부평구 십정동 630",
+  약속일시: "9월 14일(월) 10:00",
+  약속장소: "더샵부평 현장",
+  약속유형: "임장",
+};
+
+/** 버튼 이름 → 실제 주소. 주소를 아는 버튼만 문자 본문에 링크로 풀 수 있다. */
+const BUTTON_LINKS: Record<string, string> = {
+  오시는길: profile.directionsUrl,
+  홈페이지: profile.homepageUrl,
+  네이버부동산: profile.naverUrl,
+};
 
 export default function TemplatesPage() {
   const toast = useToast();
@@ -100,6 +127,7 @@ export default function TemplatesPage() {
                       <div className="row" style={{ gap: 6 }}>
                         <span className="cell-title">{t.name}</span>
                         {t.shared && <Badge tone="outline">공용</Badge>}
+                        {t.sms?.enabled && <Badge tone="good">문자 대체</Badge>}
                       </div>
                       <div className="cell-sub" style={{ maxWidth: 380, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                         {t.body.replace(/\n/g, " ")}
@@ -147,7 +175,7 @@ export default function TemplatesPage() {
               <>
                 {sel.status === "반려" && sel.rejectReason && <Banner tone="danger" title="검수 반려" body={sel.rejectReason} />}
                 {sel.status === "검수중" && <Banner tone="info" title="카카오 검수 중" body="보통 1~2 영업일이 걸립니다. 승인되면 알림을 보냅니다." />}
-                <KakaoPreview body={sel.body} buttons={sel.buttons} sample={{ 고객명: "박지훈", 물건명: "더샵부평 110동 103호", 계약일: "9월 30일(수)", 중도금일: "9월 25일(금)", 잔금일: "9월 30일(수)", 입주일: "10월 1일(목)", 계약만료일: "2028년 9월 30일", 중개사상호: "서연공인중개사사무소", "사무실 전화": "032-000-1234", 물건주소: "인천 부평구 십정동 630", 약속일시: "9월 14일(월) 10:00", 약속장소: "더샵부평 현장", 약속유형: "임장" }} />
+                <KakaoPreview body={sel.body} buttons={sel.buttons} sample={SAMPLE} />
                 <div className="muted small">변수는 예시 값으로 치환해 보여 줍니다. 실제 발송 시 고객·계약 정보로 바뀝니다.</div>
                 <div className="row row--end">
                   <button type="button" className="btn btn--sm" onClick={() => setEditOpen(true)}>
@@ -165,6 +193,34 @@ export default function TemplatesPage() {
             )}
           </div>
         </div>
+
+        {sel && (
+          <div className="card" style={{ gridColumn: "1 / -1" }}>
+            <div className="card__head">
+              <h2>알림톡이 안 갔을 때</h2>
+              <span className="muted small">발신번호 {formatPhone(systemStatus.smsSender.number)} · {systemStatus.smsSender.registeredAt} 사전등록</span>
+            </div>
+            <div className="card__body">
+              {!profile.smsFallback.enabled ? (
+                <Banner
+                  tone="warn"
+                  title="대체발송이 계정에서 꺼져 있습니다"
+                  body="템플릿마다 문구를 준비해 둬도 나가지 않습니다. 설정 › 발송에서 켜 주세요."
+                  actions={<a className="btn btn--sm" href="/agent/settings?tab=sending">설정으로 가기</a>}
+                />
+              ) : (
+                <SmsFallbackEditor
+                  template={sel}
+                  sender={profile.office}
+                  senderNumber={systemStatus.smsSender.number}
+                  links={BUTTON_LINKS}
+                  sample={SAMPLE}
+                  onChange={(sms) => setList((xs) => xs.map((t) => (t.id === sel.id ? { ...t, sms } : t)))}
+                />
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       <Drawer open={addOpen || editOpen} onClose={() => { setAddOpen(false); setEditOpen(false); }} title={editOpen ? "템플릿 수정" : "템플릿 작성"}>
