@@ -33,12 +33,14 @@ export default function StudioChrome({
   letters,
   storeLabel,
   storePersistent,
+  storeError,
   llmLabel,
 }: {
   collectLabel: string | null;
   letters: ChromeLetter[];
   storeLabel: string;
   storePersistent: boolean;
+  storeError: string | null;
   llmLabel: string | null;
 }) {
   const pathname = usePathname() ?? "/studio";
@@ -175,7 +177,7 @@ export default function StudioChrome({
             ⚙ 설정
           </Link>
           <div className="chips">
-            <span className={`chip ${storePersistent ? "chip-ok" : "chip-warn"}`} title="저장소 상태">
+            <span className={`chip ${storePersistent ? "chip-ok" : "chip-warn"}`} title={storeError ?? "저장소 상태"}>
               {storeLabel}
             </span>
             <span className={`chip ${llmLabel ? "chip-ok" : "chip-neutral"}`} title="자동 초안">

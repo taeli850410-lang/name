@@ -69,7 +69,7 @@ export default function OfficeDialog({ onClose }: { onClose: () => void }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(office),
       });
-      const data = (await res.json()) as { office?: Office; error?: string; persistent?: boolean; storeLabel?: string };
+      const data = (await res.json()) as { office?: Office; error?: string; persistent?: boolean; storeLabel?: string; storeError?: string | null };
       if (!res.ok || !data.office) throw new Error(data.error || res.statusText);
       setOffice(data.office);
       // 서버 컴포넌트를 다시 그려 마스트헤드·푸터·CTA 에 즉시 반영합니다
@@ -77,7 +77,9 @@ export default function OfficeDialog({ onClose }: { onClose: () => void }) {
       if (data.persistent === false) {
         setMsg({
           tone: "error",
-          text: `화면에는 반영했지만 이 배포에는 영구 저장소가 없습니다(${data.storeLabel ?? "메모리 저장"}). 잠시 뒤 기본값으로 돌아갈 수 있습니다 — Vercel → Storage → Upstash Redis 연결이 필요합니다.`,
+          text: data.storeError
+            ? `화면에는 반영했지만 저장소에 쓰지 못했습니다 — ${data.storeError}`
+            : `화면에는 반영했지만 이 배포에는 영구 저장소가 없습니다(${data.storeLabel ?? "메모리 저장"}). 잠시 뒤 기본값으로 돌아갈 수 있습니다 — Vercel → Storage 에서 Upstash Redis 를 연결한 뒤 재배포해야 합니다.`,
         });
       } else {
         setMsg({ tone: "ok", text: "적용했습니다. 이 화면의 상호·연락처가 바로 바뀝니다." });

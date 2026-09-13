@@ -15,6 +15,8 @@ export interface KV {
   persistent: boolean;
   get<T>(key: string): Promise<T | null>;
   set<T>(key: string, value: T): Promise<void>;
+  /** 저장소에 실제로 한 번 다녀옵니다. 정상이면 null, 아니면 사람이 읽을 실패 이유 */
+  check(): Promise<string | null>;
 }
 
 /**
@@ -23,9 +25,21 @@ export interface KV {
  */
 const PREFIX = process.env.KV_PREFIX ?? "rera:";
 
+/** 실패 메시지를 그대로 두되, 자주 나오는 원인은 무엇을 고쳐야 하는지까지 적어 줍니다 */
+function reason(e: unknown): string {
+  const msg = e instanceof Error ? e.message : String(e);
+  if (/\b401\b|\b403\b|WRONGPASS|Unauthorized/i.test(msg)) return `인증 실패 — 토큰이 맞지 않습니다 (${msg})`;
+  if (/read.?only|NOPERM/i.test(msg)) return `읽기 전용 토큰입니다 — 쓰기 가능한 토큰이 필요합니다 (${msg})`;
+  if (/\b404\b/.test(msg)) return `주소가 맞지 않습니다 — REST URL 을 확인하세요 (${msg})`;
+  return msg;
+}
+
 class UpstashStore implements KV {
   kind: StoreKind = "upstash";
   persistent = true;
+  /** 읽기는 던지지 않고 이유만 남깁니다 — 저장소가 죽었다고 화면까지 못 그리면 원인을 볼 곳이 없습니다 */
+  private readError: string | null = null;
+  private probe: Promise<string | null> | null = null;
   constructor(
     private url: string,
     private token: string,
@@ -45,8 +59,34 @@ class UpstashStore implements KV {
     if (data.error) throw new Error(data.error);
     return data.result;
   }
+  /**
+   * 환경변수가 있다는 것과 Redis 가 받아 준다는 것은 다릅니다. 토큰을 잘못 붙여넣거나
+   * 읽기 전용 토큰을 넣어도 변수는 그대로 있으니, 한 번 써 보고 그 값을 되읽어 확인합니다.
+   * 환경변수는 도는 중에 바뀌지 않으므로 인스턴스당 한 번만 다녀옵니다.
+   */
+  check(): Promise<string | null> {
+    this.probe ??= this.roundTrip();
+    return this.probe.then((p) => this.readError ?? p);
+  }
+  private async roundTrip(): Promise<string | null> {
+    const key = `${PREFIX}__probe`;
+    const mark = String(Date.now());
+    try {
+      await this.cmd(["SET", key, mark, "EX", 60]);
+      const back = await this.cmd(["GET", key]);
+      return String(back) === mark ? null : "쓴 값이 그대로 돌아오지 않았습니다";
+    } catch (e) {
+      return reason(e);
+    }
+  }
   async get<T>(key: string): Promise<T | null> {
-    const r = await this.cmd(["GET", this.k(key)]);
+    let r: unknown;
+    try {
+      r = await this.cmd(["GET", this.k(key)]);
+    } catch (e) {
+      this.readError = reason(e);
+      return null;
+    }
     if (r == null) return null;
     try {
       return JSON.parse(String(r)) as T;
@@ -54,6 +94,7 @@ class UpstashStore implements KV {
       return null;
     }
   }
+  /** 저장은 실패하면 던집니다 — 저장된 척하는 화면이 제일 나쁩니다 */
   async set<T>(key: string, value: T): Promise<void> {
     await this.cmd(["SET", this.k(key), JSON.stringify(value)]);
   }
@@ -65,6 +106,10 @@ class FileStore implements KV {
   private dir = path.join(process.cwd(), ".data", "kv");
   private file(key: string) {
     return path.join(this.dir, `${key.replace(/[^a-zA-Z0-9_-]/g, "_")}.json`);
+  }
+  /** 로컬 디스크입니다. 쓸 수 없으면 저장할 때 그 자리에서 드러납니다 */
+  async check(): Promise<string | null> {
+    return null;
   }
   async get<T>(key: string): Promise<T | null> {
     try {
@@ -92,6 +137,10 @@ class MemoryStore implements KV {
     if (!g.__llMemoryStore) g.__llMemoryStore = new Map();
     this.map = g.__llMemoryStore;
   }
+  /** 확인할 것이 없습니다. 사라진다는 사실은 kind 가 이미 말하고 있습니다 */
+  async check(): Promise<string | null> {
+    return null;
+  }
   async get<T>(key: string): Promise<T | null> {
     const v = this.map.get(key);
     return v == null ? null : (JSON.parse(v) as T);
@@ -113,9 +162,27 @@ export function getStore(): KV {
   return instance;
 }
 
-export function storeStatus(): { kind: StoreKind; persistent: boolean; label: string } {
+export interface StoreStatus {
+  kind: StoreKind;
+  /** 지금 이 순간 정말로 저장되는지. 변수만 있고 Redis 가 거절하면 false 입니다 */
+  persistent: boolean;
+  label: string;
+  /** 실패했을 때만 채워지는 이유 */
+  error: string | null;
+}
+
+export async function storeStatus(): Promise<StoreStatus> {
   const s = getStore();
-  const label =
-    s.kind === "upstash" ? "Upstash Redis 연결됨" : s.kind === "file" ? "로컬 파일 저장(.data/)" : "메모리 저장 · 재시작 시 초기화";
-  return { kind: s.kind, persistent: s.persistent, label };
+  const error = await s.check();
+  if (s.kind === "upstash") {
+    return error
+      ? { kind: "upstash", persistent: false, label: "Upstash 연결 실패 · 저장 안 됨", error }
+      : { kind: "upstash", persistent: true, label: "Upstash Redis 연결됨", error: null };
+  }
+  return {
+    kind: s.kind,
+    persistent: s.persistent,
+    label: s.kind === "file" ? "로컬 파일 저장(.data/)" : "메모리 저장 · 재시작 시 초기화",
+    error: null,
+  };
 }

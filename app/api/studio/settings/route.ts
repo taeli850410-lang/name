@@ -44,8 +44,8 @@ export async function PUT(req: Request) {
   }
   await saveSettings(next);
   // 메모리 저장이면 이 요청을 처리한 인스턴스에만 남습니다. 화면에서 그 사실을 알려야 합니다.
-  const store = storeStatus();
-  return NextResponse.json({ office: next, persistent: store.persistent, storeLabel: store.label });
+  const store = await storeStatus();
+  return NextResponse.json({ office: next, persistent: store.persistent, storeLabel: store.label, storeError: store.error });
 }
 
 export async function POST(req: Request) {
