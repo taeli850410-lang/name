@@ -1,5 +1,5 @@
 import { CUSTOMER_BODY_STATUSES, PERIOD_WINDOW_MS, SEGMENTS, STATUS_LABEL, TOPIC_LABEL } from "./taxonomy";
-import type { CustomerRoute, Grade, Issue, Period, Segment } from "./types";
+import type { CustomerRoute, Grade, Issue, Period, Segment, Topic } from "./types";
 
 /**
  * 라우팅 규칙 R1~R8. 같은 보도자료가 중개사에게는 전문으로, 고객에게는 본문/한 줄/동네 타깃으로 가거나 제외됩니다.
@@ -81,6 +81,14 @@ export function gradeIssue(issue: Issue, now = Date.now()): Grade {
   if (route === "body" && maxSegmentImpact(issue) >= 4 && isFresh(issue, "weekly", now)) return "star";
   if (route === "target" && isFresh(issue, "monthly", now)) return "star";
   return "ref";
+}
+
+/**
+ * 주력 주제 가중치. 주력이면 0, 아니면 1 을 돌려주어 같은 등급·영향도 안에서만 순서를 당깁니다.
+ * 규칙 R1~R8(고객 본문 여부·분량·신선도)은 그대로 두고 정렬에만 관여합니다.
+ */
+export function focusRank(topic: Topic, focus?: Topic[]): number {
+  return focus && focus.length > 0 && focus.includes(topic) ? 0 : 1;
 }
 
 export const GRADE_LABEL: Record<Grade, string> = { star: "★ 발송 권장", ref: "◎ 참고", keep: "○ 보관" };

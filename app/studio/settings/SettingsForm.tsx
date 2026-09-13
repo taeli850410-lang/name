@@ -2,7 +2,16 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { Office } from "@/lib/types";
+import { TOPICS, TOPIC_LABEL } from "@/lib/taxonomy";
+import type { Office, Topic } from "@/lib/types";
+
+/** 안양 만안·동안 동네 사무소 기준 추천 조합 */
+const RECOMMENDED: Topic[] = ["redev", "lease", "rate"];
+const WHY: Partial<Record<Topic, string>> = {
+  redev: "동네 독점 정보 — 수촌마을·충훈부 같은 구역 소식은 전국 매체가 다루지 않습니다",
+  lease: "거래 빈도 최고 — 임차인·임대인 양쪽이 모두 고객입니다",
+  rate: "세 세그먼트 공통 — 내집마련·갈아타기·자산 모두 영향도 3 이상입니다",
+};
 
 const FIELDS: { key: keyof Office; label: string; hint?: string; type?: string; textarea?: boolean }[] = [
   { key: "officeName", label: "중개사무소 상호" },
@@ -23,6 +32,7 @@ const FIELDS: { key: keyof Office; label: string; hint?: string; type?: string; 
 export default function SettingsForm({ office: initial }: { office: Office }) {
   const router = useRouter();
   const [office, setOffice] = useState<Office>(initial);
+  const [focus, setFocus] = useState<Topic[]>(initial.focusTopics ?? []);
   const [busy, setBusy] = useState<"save" | "reset" | null>(null);
   const [msg, setMsg] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
 
@@ -30,10 +40,11 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
     setBusy("save");
     setMsg(null);
     try {
-      const res = await fetch("/api/studio/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(office) });
+      const res = await fetch("/api/studio/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...office, focusTopics: focus }) });
       const data = (await res.json()) as { office?: Office; error?: string };
       if (!res.ok || !data.office) throw new Error(data.error || res.statusText);
       setOffice(data.office);
+      setFocus(data.office.focusTopics ?? []);
       setMsg({ tone: "ok", text: "저장되었습니다. 다음 발행부터 반영됩니다." });
       router.refresh();
     } catch (e) {
@@ -72,6 +83,40 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
             {f.hint && <span className="hint">{f.hint}</span>}
           </div>
         ))}
+        <div className="field">
+          <label>주력 주제</label>
+          <div className="chipbar">
+            {TOPICS.map((t) => (
+              <button
+                className="fchip"
+                key={t}
+                type="button"
+                aria-pressed={focus.includes(t)}
+                onClick={() => setFocus(focus.includes(t) ? focus.filter((x) => x !== t) : [...focus, t])}
+              >
+                {TOPIC_LABEL[t]}
+              </button>
+            ))}
+          </div>
+          <span className="hint">
+            고른 주제를 인박스·브리핑·레터에서 같은 조건일 때 앞으로 당깁니다. 규칙 R1~R8(고객 본문 여부·분량·신선도)은 그대로라 다른 주제가 사라지지는 않습니다. 2~4개가 적당하고, 비우면
+            가중치 없이 최신순으로만 정렬합니다.
+          </span>
+          {focus.length === 0 && (
+            <button className="btn btn-sm" type="button" style={{ alignSelf: "flex-start", marginTop: 4 }} onClick={() => setFocus(RECOMMENDED)}>
+              추천 조합 넣기 · {RECOMMENDED.map((t) => TOPIC_LABEL[t]).join(" · ")}
+            </button>
+          )}
+          {focus.length > 0 && (
+            <ul className="small muted" style={{ margin: "6px 0 0", paddingLeft: 18 }}>
+              {focus.filter((t) => WHY[t]).map((t) => (
+                <li key={t}>
+                  <b>{TOPIC_LABEL[t]}</b> — {WHY[t]}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         {msg && <div className={`alert alert-${msg.tone}`} style={{ marginBottom: 10 }}>{msg.text}</div>}
         <button className="btn btn-primary" onClick={save} disabled={busy !== null}>
           {busy === "save" ? "저장 중…" : "저장"}
@@ -85,6 +130,7 @@ export default function SettingsForm({ office: initial }: { office: Office }) {
             <li>수신거부 링크 또는 이메일 (필수)</li>
             <li>고객용 문장의 금지 표현: 고객에게 · 안내하세요 · 설명하세요 · 상담 시 · 영업 · 경쟁 · 수주 · 협회 · DEMO · 입력해 주세요 · 미설정</li>
             <li>검수 완료된 이슈만, 신선도 창 안에서, 세그먼트 영향도 3 이상</li>
+            <li>주력 주제는 순서만 당기고 R1~R8 을 덮어쓰지 않습니다</li>
           </ul>
         </div>
         <div className="card">

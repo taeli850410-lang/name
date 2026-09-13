@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { AgencyBadge, GradeChip, RegionChip, ReviewChip, RouteChip, StatusPill, TopicChip } from "@/components/Badges";
 import { fmtDate, relTime } from "@/lib/format";
-import { gradeIssue, isFresh, routeIssue } from "@/lib/routing";
+import { focusRank, gradeIssue, isFresh, routeIssue } from "@/lib/routing";
 import { TOPICS, TOPIC_LABEL } from "@/lib/taxonomy";
 import type { CollectStats, Issue, Topic } from "@/lib/types";
 
@@ -16,7 +16,17 @@ import type { CollectStats, Issue, Topic } from "@/lib/types";
 
 type Filter = "all" | "today" | "week";
 
-export default function InboxClient({ issues, lastCollect, llm }: { issues: Issue[]; lastCollect: CollectStats | null; llm: boolean }) {
+export default function InboxClient({
+  issues,
+  lastCollect,
+  llm,
+  focusTopics = [],
+}: {
+  issues: Issue[];
+  lastCollect: CollectStats | null;
+  llm: boolean;
+  focusTopics?: Topic[];
+}) {
   const router = useRouter();
   const [period, setPeriod] = useState<Filter>("all");
   const [topic, setTopic] = useState<Topic | "all">("all");
@@ -24,6 +34,7 @@ export default function InboxClient({ issues, lastCollect, llm }: { issues: Issu
   const [bodyOnly, setBodyOnly] = useState(false);
   const [draftOnly, setDraftOnly] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
+  const [focusOnly, setFocusOnly] = useState(false);
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -41,10 +52,11 @@ export default function InboxClient({ issues, lastCollect, llm }: { issues: Issu
           if (anyangOnly && i.region !== "anyang") return false;
           if (bodyOnly && route.customer !== "body" && route.customer !== "target") return false;
           if (draftOnly && i.review !== "draft") return false;
+          if (focusOnly && focusTopics.length > 0 && !focusTopics.includes(i.topic)) return false;
           if (q && !(i.title + i.summary + i.agency + i.dong.join(" ")).toLowerCase().includes(q.toLowerCase())) return false;
           return true;
         }),
-    [issues, period, anyangOnly, bodyOnly, draftOnly, showArchived, q, now],
+    [issues, period, anyangOnly, bodyOnly, draftOnly, showArchived, focusOnly, focusTopics, q, now],
   );
 
   const topicCounts = useMemo(() => {
@@ -60,9 +72,12 @@ export default function InboxClient({ issues, lastCollect, llm }: { issues: Issu
         .sort((a, b) => {
           const g = { star: 0, ref: 1, keep: 2 };
           if (g[a.grade] !== g[b.grade]) return g[a.grade] - g[b.grade];
+          const fa = focusRank(a.i.topic, focusTopics);
+          const fb = focusRank(b.i.topic, focusTopics);
+          if (fa !== fb) return fa - fb;
           return new Date(b.i.publishedAt).getTime() - new Date(a.i.publishedAt).getTime();
         }),
-    [pool, topic],
+    [pool, topic, focusTopics],
   );
 
   async function patch(id: string, body: Partial<Issue>) {
@@ -121,6 +136,11 @@ export default function InboxClient({ issues, lastCollect, llm }: { issues: Issu
           <label className="row small">
             <input type="checkbox" checked={showArchived} onChange={(e) => setShowArchived(e.target.checked)} /> 보관 포함
           </label>
+          {focusTopics.length > 0 && (
+            <label className="row small" title={`주력 주제: ${focusTopics.map((t) => TOPIC_LABEL[t]).join(" · ")}`}>
+              <input type="checkbox" checked={focusOnly} onChange={(e) => setFocusOnly(e.target.checked)} /> 주력 주제만
+            </label>
+          )}
           <input type="text" placeholder="제목·기관·동 검색" value={q} onChange={(e) => setQ(e.target.value)} />
           <span style={{ flex: 1 }} />
           <button className="btn btn-primary" onClick={collectNow} disabled={busy === "collect"}>
@@ -131,11 +151,14 @@ export default function InboxClient({ issues, lastCollect, llm }: { issues: Issu
           <button className="fchip" aria-pressed={topic === "all"} onClick={() => setTopic("all")}>
             전체 <b>{pool.length}</b>
           </button>
-          {TOPICS.filter((t) => (topicCounts.get(t) ?? 0) > 0).map((t) => (
-            <button className="fchip" key={t} aria-pressed={topic === t} onClick={() => setTopic(t)}>
-              {TOPIC_LABEL[t]} <b>{topicCounts.get(t)}</b>
-            </button>
-          ))}
+          {TOPICS.filter((t) => (topicCounts.get(t) ?? 0) > 0)
+            .sort((a, b) => focusRank(a, focusTopics) - focusRank(b, focusTopics))
+            .map((t) => (
+              <button className="fchip" key={t} aria-pressed={topic === t} onClick={() => setTopic(t)}>
+                {focusTopics.includes(t) && <span className="fchip-star">★</span>}
+                {TOPIC_LABEL[t]} <b>{topicCounts.get(t)}</b>
+              </button>
+            ))}
         </div>
       </div>
 
@@ -143,8 +166,8 @@ export default function InboxClient({ issues, lastCollect, llm }: { issues: Issu
         인박스 — {topic === "all" ? "전체" : TOPIC_LABEL[topic]} ({rows.length})
       </h2>
       <p className="panel-sub">
-        수집된 보도자료·기사·고시에 5축(발표 주체 · 정책 단계 · 주제 · 영향 대상 · 지역) 태그가 붙습니다. 주제로 먼저 묶고, 기관은 확정 여부 판단에만 씁니다. ★ 발송 권장 {starCount}건 · 미검수{" "}
-        {draftCount}건
+        수집된 보도자료·기사·고시에 5축(발표 주체 · 정책 단계 · 주제 · 영향 대상 · 지역) 태그가 붙습니다. 주제로 먼저 묶고, 기관은 확정 여부 판단에만 씁니다.{" "}
+        {focusTopics.length > 0 && <>주력 주제 ★ {focusTopics.map((t) => TOPIC_LABEL[t]).join(" · ")} 가 같은 등급 안에서 먼저 옵니다. </>}★ 발송 권장 {starCount}건 · 미검수 {draftCount}건
         {lastCollect && ` · 마지막 수집 읽음 ${lastCollect.fetched} / 새 이슈 ${lastCollect.added} / 병합 ${lastCollect.merged}${lastCollect.errors.length ? ` / 오류 ${lastCollect.errors.length}` : ""}`}
       </p>
 

@@ -19,6 +19,8 @@ export const DEFAULT_OFFICE: Office = {
   kakaoUrl: "",
   unsubscribeUrl: "",
   privacyUrl: "",
+  // 안양 만안·동안 동네 사무소 기준 추천 조합 — 동네 독점 정보(정비사업) · 거래 빈도(임대차) · 모든 세그먼트 공통(금리)
+  focusTopics: ["redev", "lease", "rate"],
   slogan: "안양 부동산 소식, 3분 브리핑",
   defaultComment:
     "정책은 '발표'보다 '적용 대상'과 '시행 시점'이 중요합니다. 이번 호에는 확정된 내용만 본문에 담고, 논의 중인 사안은 '주요 뉴스'에 따로 두었습니다. 내 상황에 어떻게 적용되는지 궁금하시면 편하게 연락 주세요.",

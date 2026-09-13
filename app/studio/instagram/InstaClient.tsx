@@ -18,8 +18,9 @@ import {
   type InstaThemeKey,
   type Slide,
 } from "@/lib/insta";
-import { SEGMENTS, SEGMENT_KEYS } from "@/lib/taxonomy";
-import type { InstaSave, Issue, MarketDoc, Office, Period, Segment } from "@/lib/types";
+import { focusRank } from "@/lib/routing";
+import { SEGMENTS, SEGMENT_KEYS, TOPIC_LABEL } from "@/lib/taxonomy";
+import type { InstaSave, Issue, MarketDoc, Office, Period, Segment, Topic } from "@/lib/types";
 
 const W = 1080;
 const H = 1350;
@@ -186,6 +187,7 @@ export default function InstaClient({
   initialSaves,
   initialIssueId = null,
   period = "daily",
+  focusTopics = [],
 }: {
   issues: Issue[];
   office: Office;
@@ -193,6 +195,7 @@ export default function InstaClient({
   initialSaves: InstaSave[];
   initialIssueId?: string | null;
   period?: Period;
+  focusTopics?: Topic[];
 }) {
   const [issueId, setIssueId] = useState<string | null>(initialIssueId && issues.some((i) => i.id === initialIssueId) ? initialIssueId : null);
   const [count, setCount] = useState(5);
@@ -208,7 +211,15 @@ export default function InstaClient({
   const issue = useMemo(() => issues.find((i) => i.id === issueId) ?? null, [issues, issueId]);
   const slides = useMemo(() => (issue ? buildSlides(issue, office, market, count, segment, period) : []), [issue, office, market, count, segment, period]);
   const forbidden = useMemo(() => slidesForbidden(slides), [slides]);
-  const sorted = useMemo(() => [...issues].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()), [issues]);
+  // 주력 주제를 먼저, 그 안에서 최신순
+  const sorted = useMemo(
+    () =>
+      [...issues].sort((a, b) => {
+        const f = focusRank(a.topic, focusTopics) - focusRank(b.topic, focusTopics);
+        return f !== 0 ? f : new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+      }),
+    [issues, focusTopics],
+  );
 
   function fileBase(i: number) {
     return `landlanguage-${theme}-${template}-${String(i + 1).padStart(2, "0")}.png`;
@@ -345,6 +356,7 @@ export default function InstaClient({
                 <button className="topic-row" key={i.id} onClick={() => setIssueId(i.id)} title={`${i.title} · ${fmtDate(i.publishedAt)}`}>
                   <AgencyBadge agency={i.agency} />
                   <span className="topic-title">{i.customer.headline || i.title}</span>
+                  {focusTopics.includes(i.topic) && <span className="chip chip-star">★ {TOPIC_LABEL[i.topic]}</span>}
                   {i.review !== "reviewed" && <ReviewChip review={i.review} />}
                   <span className="topic-arrow">→</span>
                 </button>

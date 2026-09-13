@@ -15,5 +15,5 @@ export default async function InstagramPage({ searchParams }: { searchParams: Pr
   const live = issues.filter((i) => i.review !== "archived");
   // 주제 목록은 주기 창 안의 이슈. 이슈 상세에서 넘어온 경우(?issue=)는 창 밖이어도 포함
   const topics = live.filter((i) => isFresh(i, period) || i.id === sp.issue);
-  return <InstaClient issues={topics} office={office} market={market} initialSaves={saves} initialIssueId={sp.issue ?? null} period={period} />;
+  return <InstaClient issues={topics} office={office} market={market} initialSaves={saves} initialIssueId={sp.issue ?? null} period={period} focusTopics={office.focusTopics ?? []} />;
 }

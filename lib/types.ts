@@ -138,6 +138,8 @@ export interface Office {
   unsubscribeUrl: string;
   /** 푸터 '수신거부·개인정보처리방침' 링크. 이전 설정에는 없을 수 있음 */
   privacyUrl?: string;
+  /** 주력 주제. 같은 등급 안에서 이 주제를 앞으로 당깁니다(규칙 R1~R8을 덮어쓰지는 않음). 비우면 가중치 없음 */
+  focusTopics?: Topic[];
   slogan: string;
   defaultComment: string;
   areaLabel: string;

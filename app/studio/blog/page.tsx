@@ -14,5 +14,5 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
   const [issues, office, market, posts] = await Promise.all([getIssues(), getSettings(), getMarket(), getBlogPosts()]);
   const live = issues.filter((i) => i.review !== "archived");
   const topics = live.filter((i) => isFresh(i, period) || i.id === sp.issue);
-  return <BlogClient issues={topics} office={office} market={market} initialPosts={posts} initialIssueId={sp.issue ?? null} initialPostId={sp.post ?? null} period={period} />;
+  return <BlogClient issues={topics} office={office} market={market} initialPosts={posts} initialIssueId={sp.issue ?? null} initialPostId={sp.post ?? null} period={period} focusTopics={office.focusTopics ?? []} />;
 }

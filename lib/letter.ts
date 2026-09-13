@@ -2,7 +2,7 @@ import { newId } from "./format";
 import { links, TOPIC_LINKS } from "./links";
 import { sortArticles, sourceLinks } from "./source";
 import { computeTiles } from "./market";
-import { findForbidden, gradeIssue, isFresh, routeIssue, segmentImpact } from "./routing";
+import { findForbidden, focusRank, gradeIssue, isFresh, routeIssue, segmentImpact } from "./routing";
 import { PERIOD_LIMIT, PERIOD_TITLE, SEGMENTS, STATUS_LABEL, TOPIC_GLOSSARY } from "./taxonomy";
 import type { Issue, Letter, LetterIssue, MarketDoc, Office, Period, Segment, Validation, WatchItem } from "./types";
 
@@ -72,6 +72,8 @@ export function buildDraft(issues: Issue[], office: Office, market: MarketDoc, o
   const targets = dong ? routed.filter((x) => x.r.customer === "target" && x.i.dong.includes(dong)) : [];
   const bodies = routed.filter((x) => x.r.customer === "body" && segmentImpact(x.i, segment) >= 3);
 
+  // 등급 → 세그먼트 영향도 → 주력 주제 → 최신순. 주력 주제는 앞의 두 조건이 같을 때만 순서를 당깁니다.
+  const focus = office.focusTopics;
   const gradeRank = { star: 0, ref: 1, keep: 2 } as const;
   const ranked = [
     ...targets.map((x) => ({ ...x, targeted: true })),
@@ -82,6 +84,9 @@ export function buildDraft(issues: Issue[], office: Office, market: MarketDoc, o
         const ia = segmentImpact(a.i, segment);
         const ib = segmentImpact(b.i, segment);
         if (ia !== ib) return ib - ia;
+        const fa = focusRank(a.i.topic, focus);
+        const fb = focusRank(b.i.topic, focus);
+        if (fa !== fb) return fa - fb;
         return new Date(b.i.publishedAt).getTime() - new Date(a.i.publishedAt).getTime();
       }),
   ];

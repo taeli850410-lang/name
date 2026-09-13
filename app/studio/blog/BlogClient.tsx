@@ -5,7 +5,9 @@ import { AgencyBadge, ReviewChip } from "@/components/Badges";
 import { blogForbidden, generateBlogPost } from "@/lib/blog";
 import { fmtDate, fmtDateTime } from "@/lib/format";
 import { mdToHtml } from "@/lib/markdown";
-import type { BlogPost, Issue, MarketDoc, Office, Period } from "@/lib/types";
+import { focusRank } from "@/lib/routing";
+import { TOPIC_LABEL } from "@/lib/taxonomy";
+import type { BlogPost, Issue, MarketDoc, Office, Period, Topic } from "@/lib/types";
 
 /**
  * 블로그 포스팅 화면. 원본 스튜디오의 뼈대를 따릅니다:
@@ -24,6 +26,7 @@ export default function BlogClient({
   initialIssueId = null,
   initialPostId = null,
   period = "daily",
+  focusTopics = [],
 }: {
   issues: Issue[];
   office: Office;
@@ -32,6 +35,7 @@ export default function BlogClient({
   initialIssueId?: string | null;
   initialPostId?: string | null;
   period?: Period;
+  focusTopics?: Topic[];
 }) {
   const openPost = initialPostId ? initialPosts.find((p) => p.id === initialPostId) ?? null : null;
   const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
@@ -42,7 +46,15 @@ export default function BlogClient({
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ tone: "ok" | "error" | "info"; text: string } | null>(null);
 
-  const sorted = useMemo(() => [...issues].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()), [issues]);
+  // 주력 주제를 먼저, 그 안에서 최신순
+  const sorted = useMemo(
+    () =>
+      [...issues].sort((a, b) => {
+        const f = focusRank(a.topic, focusTopics) - focusRank(b.topic, focusTopics);
+        return f !== 0 ? f : new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+      }),
+    [issues, focusTopics],
+  );
   const html = useMemo(() => (current ? mdToHtml(current.body) : ""), [current]);
   const hints = useMemo(() => (current ? blogForbidden(current.body) : []), [current]);
   const slots = useMemo(() => {
@@ -175,6 +187,7 @@ export default function BlogClient({
                 <button className="topic-row" key={i.id} disabled={busy} onClick={() => createFrom(i)} title={`${i.title} · ${fmtDate(i.publishedAt)}`}>
                   <AgencyBadge agency={i.agency} />
                   <span className="topic-title">{i.customer.headline || i.title}</span>
+                  {focusTopics.includes(i.topic) && <span className="chip chip-star">★ {TOPIC_LABEL[i.topic]}</span>}
                   {i.review !== "reviewed" && <ReviewChip review={i.review} />}
                   <span className="topic-arrow">→</span>
                 </button>

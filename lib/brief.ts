@@ -2,7 +2,7 @@ import { clamp, fmtDate } from "./format";
 import { editionLabel, letterTitle } from "./letter";
 import { links, TOPIC_LINKS } from "./links";
 import { computeTiles } from "./market";
-import { gradeIssue, isFresh, maxSegmentImpact, ROUTE_LABEL, routeIssue } from "./routing";
+import { focusRank, gradeIssue, isFresh, maxSegmentImpact, ROUTE_LABEL, routeIssue } from "./routing";
 import { sourceLinks, type SourceLink } from "./source";
 import { PERIOD_LABEL, PERSONAS, REGION_LABEL, SEGMENTS, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL } from "./taxonomy";
 import type { Article, Glossary, HistoryPoint, Issue, Letter, LetterIssue, MarketDoc, MarketTile, Office, Period, Persona, Segment } from "./types";
@@ -300,11 +300,15 @@ function brokerNews(issue: Issue): BriefNewsModel {
 
 export function buildBrokerBrief(issues: Issue[], office: Office, market: MarketDoc, period: Period, now = Date.now()): BriefModel {
   const gradeRank = { star: 0, ref: 1, keep: 2 } as const;
+  const focus = office.focusTopics;
   const fresh = issues
     .filter((i) => i.review !== "archived" && isFresh(i, period, now))
     .map((i) => ({ i, g: gradeIssue(i, now) }))
     .sort((a, b) => {
       if (gradeRank[a.g] !== gradeRank[b.g]) return gradeRank[a.g] - gradeRank[b.g];
+      const fa = focusRank(a.i.topic, focus);
+      const fb = focusRank(b.i.topic, focus);
+      if (fa !== fb) return fa - fb;
       return new Date(b.i.publishedAt).getTime() - new Date(a.i.publishedAt).getTime();
     })
     .map((x) => x.i);
