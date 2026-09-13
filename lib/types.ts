@@ -121,6 +121,8 @@ export interface Issue {
   topic: Topic;
   region: Region;
   dong: string[];
+  /** 제목에 잡힌 지명(서울·부산·안양…). 전국 사안이면 비어 있습니다 */
+  place?: string | null;
   publishedAt: string;
   effectiveAt: string | null;
   officialUrl: string | null;

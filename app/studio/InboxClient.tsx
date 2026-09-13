@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AgencyBadge, GradeChip, RegionChip, ReviewChip, RouteChip, StatusPill, TopicChip } from "@/components/Badges";
 import { fmtDate, relTime } from "@/lib/format";
 import { focusRank, gradeIssue, isFresh, routeIssue } from "@/lib/routing";
-import { TOPICS, TOPIC_LABEL } from "@/lib/taxonomy";
+import { REGION_LABEL, regionLabel, STATUS_LABEL, TOPICS, TOPIC_LABEL } from "@/lib/taxonomy";
 import type { CollectStats, Issue, Topic } from "@/lib/types";
 
 /**
@@ -15,6 +15,9 @@ import type { CollectStats, Issue, Topic } from "@/lib/types";
  */
 
 type Filter = "all" | "today" | "week";
+/** 칩 줄이 보여 줄 축. 주제뿐 아니라 발표 주체·정책 단계·지역으로도 인박스를 나눠 봅니다. */
+type Axis = "topic" | "agency" | "status" | "region";
+const AXIS_LABEL: Record<Axis, string> = { topic: "주제", agency: "발표 주체", status: "정책 단계", region: "지역" };
 
 export default function InboxClient({
   issues,
@@ -29,7 +32,8 @@ export default function InboxClient({
 }) {
   const router = useRouter();
   const [period, setPeriod] = useState<Filter>("all");
-  const [topic, setTopic] = useState<Topic | "all">("all");
+  const [axis, setAxis] = useState<Axis>("topic");
+  const [bucket, setBucket] = useState<string>("all");
   const [localOnly, setLocalOnly] = useState(false);
   const [bodyOnly, setBodyOnly] = useState(false);
   const [draftOnly, setDraftOnly] = useState(false);
@@ -56,22 +60,49 @@ export default function InboxClient({
           if (bodyOnly && route.customer !== "body" && route.customer !== "target") return false;
           if (draftOnly && i.review !== "draft") return false;
           if (focusOnly && focusTopics.length > 0 && !focusTopics.includes(i.topic)) return false;
-          if (q && !(i.title + i.summary + i.agency + i.dong.join(" ")).toLowerCase().includes(q.toLowerCase())) return false;
+          if (q && !(i.title + i.summary + i.agency + (i.place ?? "") + i.dong.join(" ")).toLowerCase().includes(q.toLowerCase())) return false;
           return true;
         }),
     [issues, period, localOnly, bodyOnly, draftOnly, showArchived, focusOnly, focusTopics, q, now],
   );
 
-  const topicCounts = useMemo(() => {
-    const m = new Map<Topic, number>();
-    for (const { i } of pool) m.set(i.topic, (m.get(i.topic) ?? 0) + 1);
-    return m;
-  }, [pool]);
+  /** 선택한 축에서 이슈가 속하는 칸의 키와 표시 이름 */
+  const bucketOf = (i: Issue): { key: string; label: string } => {
+    if (axis === "topic") return { key: i.topic, label: TOPIC_LABEL[i.topic] };
+    if (axis === "agency") return { key: i.agency, label: i.agency };
+    if (axis === "status") return { key: i.status, label: STATUS_LABEL[i.status] };
+    const label = regionLabel(i.region, i.place);
+    return { key: label, label };
+  };
+
+  /** 지역 축은 전국·우리 지역을 앞에 두고 나머지는 건수 순으로 */
+  const regionRank = (k: string) => (k === REGION_LABEL.national ? 0 : k === REGION_LABEL.local ? 1 : 2);
+
+  const buckets = useMemo(() => {
+    const m = new Map<string, { label: string; n: number }>();
+    for (const { i } of pool) {
+      const b = bucketOf(i);
+      const cur = m.get(b.key);
+      m.set(b.key, { label: b.label, n: (cur?.n ?? 0) + 1 });
+    }
+    // 주제·단계는 정해진 순서대로, 발표 주체는 건수 많은 순으로
+    const order =
+      axis === "topic"
+        ? TOPICS.map(String)
+        : axis === "status"
+          ? Object.keys(STATUS_LABEL)
+          : [...m.keys()].sort((a, b) => {
+              if (axis === "region" && regionRank(a) !== regionRank(b)) return regionRank(a) - regionRank(b);
+              return (m.get(b)?.n ?? 0) - (m.get(a)?.n ?? 0);
+            });
+    return order.filter((k) => m.has(k)).map((k) => ({ key: k, label: m.get(k)!.label, n: m.get(k)!.n }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pool, axis]);
 
   const rows = useMemo(
     () =>
       pool
-        .filter(({ i }) => topic === "all" || i.topic === topic)
+        .filter(({ i }) => bucket === "all" || bucketOf(i).key === bucket)
         .sort((a, b) => {
           const g = { star: 0, ref: 1, keep: 2 };
           if (g[a.grade] !== g[b.grade]) return g[a.grade] - g[b.grade];
@@ -80,7 +111,8 @@ export default function InboxClient({
           if (fa !== fb) return fa - fb;
           return new Date(b.i.publishedAt).getTime() - new Date(a.i.publishedAt).getTime();
         }),
-    [pool, topic, focusTopics],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pool, bucket, axis, focusTopics],
   );
 
   async function patch(id: string, body: Partial<Issue>) {
@@ -150,23 +182,37 @@ export default function InboxClient({
             {busy === "collect" ? "수집 중…" : "지금 수집"}
           </button>
         </div>
-        <div className="chipbar" role="group" aria-label="주제">
-          <button className="fchip" aria-pressed={topic === "all"} onClick={() => setTopic("all")}>
-            전체 <b>{pool.length}</b>
-          </button>
-          {TOPICS.filter((t) => (topicCounts.get(t) ?? 0) > 0)
-            .sort((a, b) => focusRank(a, focusTopics) - focusRank(b, focusTopics))
-            .map((t) => (
-              <button className="fchip" key={t} aria-pressed={topic === t} onClick={() => setTopic(t)}>
-                {focusTopics.includes(t) && <span className="fchip-star">★</span>}
-                {TOPIC_LABEL[t]} <b>{topicCounts.get(t)}</b>
+        <div className="row" style={{ gap: 8 }}>
+          <div className="seg" role="group" aria-label="분류 축">
+            {(Object.keys(AXIS_LABEL) as Axis[]).map((a) => (
+              <button
+                key={a}
+                aria-pressed={axis === a}
+                onClick={() => {
+                  setAxis(a);
+                  setBucket("all");
+                }}
+              >
+                {AXIS_LABEL[a]}
               </button>
             ))}
+          </div>
+          <div className="chipbar" role="group" aria-label={AXIS_LABEL[axis]} style={{ flex: 1 }}>
+            <button className="fchip" aria-pressed={bucket === "all"} onClick={() => setBucket("all")}>
+              전체 <b>{pool.length}</b>
+            </button>
+            {buckets.map((b) => (
+              <button className="fchip" key={b.key} aria-pressed={bucket === b.key} onClick={() => setBucket(b.key)}>
+                {axis === "topic" && focusTopics.includes(b.key as Topic) && <span className="fchip-star">★</span>}
+                {b.label} <b>{b.n}</b>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       <h2 className="panel-title">
-        인박스 — {topic === "all" ? "전체" : TOPIC_LABEL[topic]} ({rows.length})
+        인박스 — {bucket === "all" ? "전체" : buckets.find((b) => b.key === bucket)?.label ?? bucket} ({rows.length})
       </h2>
       <p className="panel-sub">
         수집된 보도자료·기사·고시에 5축(발표 주체 · 정책 단계 · 주제 · 영향 대상 · 지역) 태그가 붙습니다. 주제로 먼저 묶고, 기관은 확정 여부 판단에만 씁니다.{" "}
@@ -200,7 +246,7 @@ export default function InboxClient({
                 <AgencyBadge agency={i.agency} />
                 <StatusPill status={i.status} />
                 <TopicChip topic={i.topic} />
-                <RegionChip region={i.region} dong={i.dong} />
+                <RegionChip region={i.region} dong={i.dong} place={i.place} />
                 <RouteChip route={route.customer} />
                 <ReviewChip review={i.review} />
               </div>

@@ -1,5 +1,5 @@
 import { GRADE_LABEL, ROUTE_LABEL } from "@/lib/routing";
-import { REGION_LABEL, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL } from "@/lib/taxonomy";
+import { regionLabel, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL } from "@/lib/taxonomy";
 import type { CustomerRoute, Grade, Region, Status, Topic } from "@/lib/types";
 
 export function StatusPill({ status }: { status: Status }) {
@@ -10,8 +10,9 @@ export function TopicChip({ topic }: { topic: Topic }) {
   return <span className="chip chip-outline">{TOPIC_LABEL[topic]}</span>;
 }
 
-export function RegionChip({ region, dong }: { region: Region; dong?: string[] }) {
-  const label = dong && dong.length ? `${REGION_LABEL[region]} · ${dong.join("·")}` : REGION_LABEL[region];
+export function RegionChip({ region, dong, place }: { region: Region; dong?: string[]; place?: string | null }) {
+  const base = regionLabel(region, place);
+  const label = dong && dong.length ? `${base} · ${dong.join("·")}` : base;
   return <span className={`chip ${region === "local" ? "chip-c" : "chip-neutral"}`}>{label}</span>;
 }
 

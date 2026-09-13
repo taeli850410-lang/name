@@ -1,5 +1,6 @@
 import bundledMarket from "@/data/market-sample.json";
 import { DEFAULT_OFFICE, seedIssues, seedLetters } from "./seed";
+import { detectPlace } from "./classify";
 import { getStore } from "./store";
 import { normalizeRegion } from "./taxonomy";
 import type { AreaConfig, BlogPost, InstaSave, Issue, Letter, MarketDoc, Meta, Office } from "./types";
@@ -12,7 +13,8 @@ export async function getIssues(): Promise<Issue[]> {
   const store = getStore();
   const list = await store.get<Issue[]>(KEYS.issues);
   // 구버전 저장본의 지역 값(seoul·gyeonggi·anyang)을 현재 4종으로 옮겨 읽습니다
-  if (list) return list.map((i) => ({ ...i, region: normalizeRegion(i.region) }));
+  // place 는 나중에 붙은 필드라 옛 저장본에는 없습니다. 읽을 때 제목에서 채웁니다.
+  if (list) return list.map((i) => ({ ...i, region: normalizeRegion(i.region), place: i.place ?? detectPlace(i.title) }));
   const seeded = seedIssues(await getArea());
   await store.set(KEYS.issues, seeded);
   return seeded;

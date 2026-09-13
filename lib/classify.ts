@@ -15,12 +15,48 @@ export function isRealEstateRelevant(text: string): boolean {
 /** 수도권 광역 단위 — 전국 독자에게도 의미 있는 시장 기사 */
 const METRO = /수도권|서울시|서울특별시|서울\s|서울은|서울의|서울\b|인천|경기도|경기\s|경기권/;
 /** 특정 시군구 — 그 지역 사람에게만 의미 있는 사안 */
-const CITY =
-  /수원|성남|용인|고양|화성|안양|군포|의왕|과천|광명|부천|안산|시흥|김포|파주|남양주|하남|구리|의정부|양주|평택|오산|이천|여주|동탄|판교|분당|평촌|인덕원|창원|청주|천안|전주|포항|김해|구미|진주|목포|여수|원주|춘천|강릉|서귀포|둔산|해운대/;
+const CITY_NAMES = [
+  "수원", "성남", "용인", "고양", "화성", "안양", "군포", "의왕", "과천", "광명", "부천", "안산", "시흥", "김포", "파주",
+  "남양주", "하남", "구리", "의정부", "양주", "평택", "오산", "이천", "여주", "동탄", "판교", "분당", "평촌", "인덕원",
+  "창원", "청주", "천안", "전주", "포항", "김해", "구미", "진주", "목포", "여수", "원주", "춘천", "서귀포", "둔산", "해운대",
+];
+/**
+ * 짧은 지명은 다른 낱말 안에 숨어 있습니다 — "보여주면"의 여주, "고양이"의 고양.
+ * 앞뒤가 한글이면 지명으로 보지 않되, 행정 접미사(안양시·대전시의회)까지는 허용합니다.
+ */
+const cityPattern = (n: string) => `(?<![가-힣])${n}(?:특별자치시|특별시|광역시|시|군|구)?(?:의회|청|장)?(?![가-힣])`;
+const CITY = new RegExp(CITY_NAMES.map(cityPattern).join("|"));
 /** 지방 광역시·도 */
 const WIDE = /부산|대구|광주광역|대전|울산|세종|강원|충청북도|충북|충청남도|충남|전라북도|전북|전라남도|전남|경상북도|경북|경상남도|경남|제주/;
 /** 정부 부처·전국 단위 신호 */
 const NATIONWIDE = /전국|정부|국토교통부|국토부|한국은행|금융위|금융당국|기획재정부|재정경제부|기재부|국세청|법제처|국회|한국부동산원|부동산원/;
+
+/**
+ * 화면에 띄울 지역 이름. region 4단계(전국·수도권·우리 지역·타 지역)는 라우팅용이라 그대로 두고,
+ * 뱃지에는 실제 지명(서울·부산·안양…)을 보여주려고 따로 뽑습니다.
+ * 제목에서만 찾습니다 — 요약까지 보면 "기준금리 인상, 서울 집값 영향" 같은 전국 기사가 서울로 보입니다.
+ */
+/** 자치구·택지지구 이름은 상위 시로 올려 보여줍니다 */
+const SUB_CITY: Record<string, string> = {
+  동탄: "화성", 판교: "성남", 분당: "성남", 평촌: "안양", 인덕원: "안양", 둔산: "대전", 해운대: "부산",
+};
+const WIDE_PLACES: [RegExp, string][] = [
+  [/부산/, "부산"], [/대구/, "대구"], [/광주광역/, "광주"], [/대전/, "대전"], [/울산/, "울산"], [/세종/, "세종"],
+  [/강원/, "강원"], [/충청북도|충북/, "충북"], [/충청남도|충남/, "충남"],
+  [/전북특별자치도|전라북도|전북/, "전북"], [/전라남도|전남/, "전남"],
+  [/경상북도|경북/, "경북"], [/경상남도|경남/, "경남"], [/제주/, "제주"],
+];
+const METRO_PLACES: [RegExp, string][] = [
+  [/서울/, "서울"], [/인천/, "인천"], [/경기도|경기\s|경기권/, "경기"], [/수도권/, "수도권"],
+];
+
+/** 제목에 이름이 걸린 가장 좁은 행정구역. 전국 사안이면 null */
+export function detectPlace(title: string): string | null {
+  for (const n of CITY_NAMES) if (new RegExp(cityPattern(n)).test(title)) return SUB_CITY[n] ?? n;
+  for (const [re, name] of WIDE_PLACES) if (re.test(title)) return name;
+  for (const [re, name] of METRO_PLACES) if (re.test(title)) return name;
+  return null;
+}
 
 const SIDO_NAMES = [
   "서울특별시", "부산광역시", "대구광역시", "인천광역시", "광주광역시", "대전광역시", "울산광역시", "세종특별자치시",
@@ -28,7 +64,7 @@ const SIDO_NAMES = [
 ];
 
 /** "안양시" → "안양" 처럼 행정 접미사를 뗀 짧은 이름 */
-function shortName(name: string): string {
+export function shortName(name: string): string {
   return name.replace(/(특별자치시|특별자치도|특별시|광역시|시|군|구|도)$/, "");
 }
 
@@ -55,11 +91,17 @@ const AGENCY_RULES: { re: RegExp; group: AgencyGroup; name: string }[] = [
   { re: /금융위원회|금융위|금융감독원|금감원|금융당국/, group: "fsc", name: "금융위원회" },
   { re: /재정경제부|재경부|기획재정부|기재부/, group: "mofe", name: "재정경제부" },
   { re: /국세청/, group: "nts", name: "국세청" },
+  { re: /행정안전부|행안부/, group: "other", name: "행정안전부" },
+  { re: /통계청/, group: "other", name: "통계청" },
+  { re: /국무조정실|국무총리실/, group: "other", name: "국무조정실" },
   { re: /한국은행|한은|금통위|금융통화위원회/, group: "bok", name: "한국은행" },
   { re: /주택도시보증공사|HUG/, group: "reb", name: "HUG" },
   { re: /토지주택공사|LH/, group: "reb", name: "LH" },
   { re: /한국부동산원|부동산원/, group: "reb", name: "한국부동산원" },
-  { re: /법제처|국회|상임위|국토위|본회의|의원/, group: "law", name: "국회" },
+  { re: /법제처/, group: "law", name: "법제처" },
+  { re: /국민참여입법센터|입법예고/, group: "law", name: "국민참여입법센터" },
+  { re: /국회|상임위|국토위|본회의|법안소위|의원/, group: "law", name: "국회" },
+  { re: /대법원|법원경매|경매법정/, group: "other", name: "법원" },
   { re: /공인중개사협회|협회/, group: "industry", name: "한국공인중개사협회" },
   { re: /건설|시공사|수주|조합/, group: "industry", name: "업계" },
 ];
@@ -99,11 +141,14 @@ export function detectStatus(text: string, sourceKind: SourceKind, region: Regio
     return /통과|가결|의결됐|처리됐|공포/.test(text) ? "CONFIRMED" : "IN_ASSEMBLY";
   }
   if (/검토|논의|추진 방안|거론|만지작|가닥|저울질|검토 중|협의 중|방안 마련/.test(text)) return "UNDER_REVIEW";
-  if (/전망|분석|관측|예상|전문가|시각|해석|칼럼|사설|우려|가능성/.test(text) && !/발표|시행|확정|인상|인하/.test(text)) return "OUTLOOK";
+  // "금리 인상에도 집값 하락 제한적" 같은 해설 기사가 '확정'으로 새지 않도록, 기관의 실제 행위를 나타내는 말이 없을 때만 전망으로 봅니다
+  if (/전망|분석|관측|예상|전문가|시각|해석|칼럼|사설|우려|가능성/.test(text) && !/발표했|발표한|확정했|의결했|시행한다|시행된다|고시했/.test(text)) return "OUTLOOK";
   if (/통계|동향|지수|거래량|실거래가|상승률|하락률|최고치|최저치|평균|비중|건수|조사 결과|집계/.test(text)) return "STAT";
   if (sourceKind === "official") return "CONFIRMED";
-  if (/시행|확정|결정|인상|인하|동결|지정|면제|도입|출시|의무화|시행된다|적용된다/.test(text)) return "CONFIRMED";
-  if (/예정|부터 시행|앞두고|내년|다음 달부터/.test(text)) return "SCHEDULED";
+  // 시행 시점이 앞으로인 것이 명시되면 '시행 예정'이 먼저입니다
+  if (/부터 시행|시행 예정|시행될 예정|예정이다|예정인|도입 예정|앞두고/.test(text)) return "SCHEDULED";
+  if (/시행|확정|결정|인상|인하|동결|지정|면제|도입|출시|의무화|착공|준공|개통|시행된다|적용된다/.test(text)) return "CONFIRMED";
+  if (/예정|내년|다음 달부터/.test(text)) return "SCHEDULED";
   return "PRESS_REPORTED";
 }
 
@@ -185,6 +230,7 @@ export interface Classification {
   topic: Topic;
   region: Region;
   dong: string[];
+  place: string | null;
   personas: Record<Persona, number>;
   relevant: boolean;
 }
@@ -200,5 +246,7 @@ export function classify(input: ClassifyInput, area?: AreaConfig): Classificatio
     personas["매수 예정자"] = Math.min(5, personas["매수 예정자"] + 1);
     personas["공인중개사"] = 5;
   }
-  return { agency, agencyGroup, status, topic, region, dong, personas, relevant: isRealEstateRelevant(text) };
+  // 제목에 지명이 없어도 지자체가 낸 고시면 그 지자체 이름을 지명으로 씁니다
+  const place = detectPlace(input.title) ?? (agencyGroup === "local" ? shortName(agency) : null);
+  return { agency, agencyGroup, status, topic, region, dong, place, personas, relevant: isRealEstateRelevant(text) };
 }

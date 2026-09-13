@@ -4,7 +4,7 @@ import { links, TOPIC_LINKS } from "./links";
 import { computeTiles } from "./market";
 import { focusRank, gradeIssue, isFresh, maxSegmentImpact, ROUTE_LABEL, routeIssue } from "./routing";
 import { sourceLinks, type SourceLink } from "./source";
-import { PERIOD_LABEL, PERSONAS, REGION_LABEL, SEGMENTS, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL } from "./taxonomy";
+import { PERIOD_LABEL, PERSONAS, regionLabel, SEGMENTS, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL } from "./taxonomy";
 import type { Article, Glossary, HistoryPoint, Issue, Letter, LetterIssue, MarketDoc, MarketTile, Office, Period, Persona, Segment } from "./types";
 
 /**
@@ -252,7 +252,7 @@ function brokerCard(issue: Issue): BriefCardModel {
     { label: ROUTE_LABEL[route.customer], tone: "route" },
   ];
   if (issue.region === "local") badges.push({ label: issue.dong.length ? `우리 지역 · ${issue.dong.join("·")}` : "우리 지역", tone: "target" });
-  else if (issue.region !== "national") badges.push({ label: REGION_LABEL[issue.region], tone: "neutral" });
+  else if (issue.place || issue.region !== "national") badges.push({ label: regionLabel(issue.region, issue.place), tone: "neutral" });
   if (issue.review === "draft") badges.push({ label: "검수 필요", tone: "warn" });
 
   const facts = issue.broker.facts.filter(Boolean);

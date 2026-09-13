@@ -1,6 +1,6 @@
 import { buildDraft, publishLetter } from "./letter";
 import { PERSONA_MATRIX, TOPIC_GLOSSARY } from "./taxonomy";
-import { titleHash } from "./classify";
+import { detectPlace, shortName, titleHash } from "./classify";
 import type { AgencyGroup, AreaConfig, Article, BrokerFields, CustomerFields, Issue, Letter, MarketDoc, Office, Persona, Region, Status, Topic } from "./types";
 
 /**
@@ -76,6 +76,7 @@ function mk(s: SeedSpec, area?: AreaConfig): Issue {
     topic: s.topic,
     region,
     dong: isLocal ? s.dong ?? [] : [],
+    place: detectPlace(s.title) ?? (s.agencyGroup === "local" ? shortName(s.agency) : null),
     publishedAt: s.publishedAt,
     effectiveAt: s.effectiveAt ?? null,
     officialUrl: s.officialUrl ?? null,

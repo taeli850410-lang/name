@@ -50,6 +50,15 @@ export const REGION_LABEL: Record<Region, string> = {
   other: "타 지역",
 };
 
+/**
+ * 뱃지에 쓸 지역 이름. 제목에 지명이 있으면 그 이름을(서울·부산·안양), 없으면 4단계 라벨을 씁니다.
+ * '우리 지역'은 고객이 읽는 말이라 지명으로 바꾸지 않습니다.
+ */
+export function regionLabel(region: Region, place?: string | null): string {
+  if (region === "local") return REGION_LABEL.local;
+  return place || REGION_LABEL[region];
+}
+
 /** 구버전 저장본의 지역 값을 현재 4종으로 옮깁니다 */
 const LEGACY_REGION: Record<string, Region> = { seoul: "metro", gyeonggi: "metro", anyang: "local" };
 export function normalizeRegion(r: unknown): Region {

@@ -127,7 +127,7 @@ export default function IssueEditor({ issue: initial, llm }: { issue: Issue; llm
             <AgencyBadge agency={issue.agency} />
             <StatusPill status={issue.status} />
             <TopicChip topic={issue.topic} />
-            <RegionChip region={issue.region} dong={issue.dong} />
+            <RegionChip region={issue.region} dong={issue.dong} place={issue.place} />
             <RouteChip route={route.customer} />
           </div>
           <h2 style={{ fontSize: 17 }}>{issue.title}</h2>
