@@ -140,10 +140,15 @@ export default function StudioChrome({
               </Link>
             ))}
           </nav>
+          {/* 중개사용을 보고 있을 때는 「고객용」을 안 내놓습니다 — 사무소가 하루 종일 들여다보는
+              화면이라 안 쓰는 칸을 지웁니다. 고객용에서는 둘 다 나와서 중개사용으로 돌아올 수 있고,
+              중개사용에서 고객용으로 갈 때는 아래 줄 「✉ EDM 빌더」를 씁니다. */}
           <nav className="chrome-seg" aria-label="보는 사람">
-            <Link href={briefHref({ audience: "customer" })} {...cur(onBrief && audience === "customer")}>
-              고객용
-            </Link>
+            {audience === "customer" && (
+              <Link href={briefHref({ audience: "customer" })} {...cur(onBrief)}>
+                고객용
+              </Link>
+            )}
             <Link href={briefHref({ audience: "broker" })} {...cur(onBrief && audience === "broker")}>
               중개사용
             </Link>
