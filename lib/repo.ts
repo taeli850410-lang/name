@@ -3,11 +3,12 @@ import { DEFAULT_OFFICE, seedIssues, seedLetters } from "./seed";
 import { detectPlace } from "./classify";
 import { getStore } from "./store";
 import { normalizeRegion } from "./taxonomy";
-import type { AreaConfig, BlogPost, InstaSave, Issue, Letter, MarketDoc, Meta, Office, VideoItem } from "./types";
+import { BANNER_MAX, normalizeBanner } from "./banner";
+import type { AreaConfig, Banner, BlogPost, InstaSave, Issue, Letter, MarketDoc, Meta, Office, VideoItem } from "./types";
 
-/** 저장소 접근 계층. 컬렉션 단위 문서(issues, letters, settings, market, meta, insta, blog)로 저장합니다. */
+/** 저장소 접근 계층. 컬렉션 단위 문서(issues, letters, settings, market, meta, insta, blog, videos, banners)로 저장합니다. */
 
-const KEYS = { issues: "issues", letters: "letters", settings: "settings", market: "market", meta: "meta", insta: "insta", blog: "blog", videos: "videos" } as const;
+const KEYS = { issues: "issues", letters: "letters", settings: "settings", market: "market", meta: "meta", insta: "insta", blog: "blog", videos: "videos", banners: "banners" } as const;
 
 export async function getIssues(): Promise<Issue[]> {
   const store = getStore();
@@ -129,6 +130,17 @@ export async function getVideos(): Promise<VideoItem[]> {
 }
 export async function saveVideos(list: VideoItem[]): Promise<void> {
   await getStore().set(KEYS.videos, list);
+}
+
+/* ── 홍보 배너 ── */
+/** 저장된 값을 그대로 믿지 않고 한 번 다듬어 돌려줍니다 — 손으로 고친 JSON 이 들어올 수 있습니다 */
+export async function getBanners(): Promise<Banner[]> {
+  const raw = (await getStore().get<Partial<Banner>[]>(KEYS.banners)) ?? [];
+  if (!Array.isArray(raw)) return [];
+  return raw.slice(0, BANNER_MAX).map((b, i) => normalizeBanner(b, `banner-${i + 1}`));
+}
+export async function saveBanners(list: Banner[]): Promise<void> {
+  await getStore().set(KEYS.banners, list.slice(0, BANNER_MAX));
 }
 
 /* ── 인스타 카드 구성 ── */

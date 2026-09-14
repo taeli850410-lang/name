@@ -9,7 +9,8 @@ import { AUDIENCE_NOTE, AUDIENCES, audienceImpact, AUDIENCE_LABEL, CHECKPOINTS, 
 import { descriptionPoints } from "./video";
 import { sourceLinks, type SourceLink } from "./source";
 import { PERIOD_LABEL, PERSONAS, regionLabel, SEGMENTS, STATUS_LABEL, STATUS_TONE, TOPIC_LABEL } from "./taxonomy";
-import type { Article, Glossary, HistoryPoint, Issue, Letter, LetterIssue, MarketDoc, MarketTile, Office, Period, Persona, Segment, Topic, VideoItem } from "./types";
+import { activeBanner } from "./banner";
+import type { Article, Banner, BannerTone, Glossary, HistoryPoint, Issue, Letter, LetterIssue, MarketDoc, MarketTile, Office, Period, Persona, Segment, Topic, VideoItem } from "./types";
 
 // 고르는 자리는 channels.ts 로 옮겼지만 이름은 여기 그대로 둡니다 — 부르던 곳이 그대로 부를 수 있게
 export { videoWeigh };
@@ -141,7 +142,24 @@ export interface BriefModel {
   persona?: { title: string; sub: string; rows: { label: string; level: number; note: string }[]; note: string; glossary?: Glossary | null };
   comment?: { name: string; tag: string; body: string };
   cta: { title: string; sub: string; buttons: BriefLink[] };
+  /**
+   * 사무소 홍보 배너. 조건에 맞는 배너가 없으면 자리 자체가 없습니다 — 빈 상자를 내보내지 않습니다.
+   * 영상과 달리 발행 시점에 얼리지 않고 열어 볼 때마다 최신을 씁니다(lib/banner.ts 참고).
+   */
+  promo?: BriefPromoModel;
   footer: { head: string; rows: [string, string][]; legal: string[]; links: { label: string; href: string }[] };
+}
+
+export interface BriefPromoModel {
+  title: string;
+  body: string;
+  ctaLabel: string;
+  ctaUrl: string;
+  tone: BannerTone;
+  /** 고객용이고 광고로 표시한 배너일 때만 참 — 중개사 본인이 보는 화면에는 안 붙습니다 */
+  showAdMark: boolean;
+  /** 중개사용에 뜨는 안내 줄. 지금 어떤 배너가 고객에게 나가는지와 고치러 가는 길 */
+  note?: string;
 }
 
 export const DISCLAIMER =
@@ -286,7 +304,25 @@ function letterAt(letter: Letter): number | undefined {
   return Number.isFinite(at) ? at : undefined;
 }
 
-export function letterToBrief(letter: Letter): BriefModel {
+/**
+ * 배너 한 장을 브리핑 모델로. 고객용에서는 광고 표기를 붙이고, 중개사용에서는
+ * "지금 고객에게 이게 나가고 있습니다"라는 안내로 바꿔 답니다.
+ */
+export function promoBlock(banner: Banner | undefined, audience: Audience): BriefPromoModel | undefined {
+  if (!banner) return undefined;
+  const forCustomer = audience === "customer";
+  return {
+    title: banner.title,
+    body: banner.body,
+    ctaLabel: banner.ctaLabel,
+    ctaUrl: banner.ctaUrl,
+    tone: banner.tone,
+    showAdMark: forCustomer && banner.isAd,
+    note: forCustomer ? undefined : "지금 고객용 EDM 에 나가는 배너입니다. 관리자 → 배너에서 고칠 수 있습니다.",
+  };
+}
+
+export function letterToBrief(letter: Letter, banners: Banner[] = [], now = Date.now()): BriefModel {
   const o = letter.office;
   const telHref = o.phone ? `tel:${o.phone.replace(/[^0-9+]/g, "")}` : null;
   const unsubscribeHref = o.unsubscribeUrl || (o.email ? `mailto:${o.email}?subject=${encodeURIComponent("수신거부 요청")}` : null);
@@ -357,6 +393,7 @@ export function letterToBrief(letter: Letter): BriefModel {
     comment: letter.comment
       ? { name: o.repName ? `${o.repName} 공인중개사의 한마디` : `${o.officeName}의 한마디`, tag: "전문가 코멘트", body: letter.comment }
       : undefined,
+    promo: promoBlock(activeBanner(banners, "customer", now), "customer"),
     cta: { title: CTA_TITLE, sub: CTA_SUB, buttons },
     footer: {
       head: `${o.officeName} 안내`,
@@ -567,7 +604,7 @@ function brokerNews(issue: Issue): BriefNewsModel {
   };
 }
 
-export function buildBrokerBrief(issues: Issue[], office: Office, market: MarketDoc, period: Period, now = Date.now(), videos: VideoItem[] = []): BriefModel {
+export function buildBrokerBrief(issues: Issue[], office: Office, market: MarketDoc, period: Period, now = Date.now(), videos: VideoItem[] = [], banners: Banner[] = []): BriefModel {
   const gradeRank = { star: 0, ref: 1, keep: 2 } as const;
   const focus = office.focusTopics;
   const fresh = issues
@@ -636,6 +673,7 @@ export function buildBrokerBrief(issues: Issue[], office: Office, market: Market
     comment: office.defaultComment
       ? { name: office.repName ? `${office.repName} 공인중개사의 한마디` : `${office.officeName}의 한마디`, tag: "전문가 코멘트 · EDM에 실을 기본 문구, 설정에서 수정", body: office.defaultComment }
       : undefined,
+    promo: promoBlock(activeBanner(banners, "broker", now), "broker"),
     cta: {
       title: "고객용 EDM을 만들 준비가 됐습니다",
       sub: "검수 완료된 이슈만 규칙 R1~R8을 거쳐 세그먼트별 EDM으로 발행됩니다.",

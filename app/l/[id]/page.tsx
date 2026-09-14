@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import LetterView from "@/components/LetterView";
 import { letterTitle } from "@/lib/letter";
-import { getLetter } from "@/lib/repo";
+import { getBanners, getLetter } from "@/lib/repo";
 
 export const dynamic = "force-dynamic";
 
@@ -22,12 +22,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function LetterPage({ params }: Props) {
   const { id } = await params;
-  const letter = await getLetter(id);
+  const [letter, banners] = await Promise.all([getLetter(id), getBanners()]);
   if (!letter || letter.status !== "published") notFound();
   return (
     <main className="brief-stage page">
       <div className="brief-device">
-        <LetterView letter={letter} />
+        <LetterView letter={letter} banners={banners} />
       </div>
     </main>
   );

@@ -310,6 +310,32 @@ export interface CollectStats {
   videos?: { fetched: number; added: number; dropped?: number; refreshed?: number; timed?: number };
 }
 
+/* ───────── 홍보 배너 ───────── */
+
+export type BannerTone = "navy" | "green" | "gold" | "plain";
+/** 배너를 걸 화면. 고객용 EDM 맨 아래, 중개사용 브리핑 맨 아래 */
+export type BannerPlace = "customer" | "broker";
+
+/** 사무소가 직접 쓰는 홍보 배너 한 장. 이미지 없이 글·색·버튼으로만 만듭니다 */
+export interface Banner {
+  id: string;
+  title: string;
+  body: string;
+  ctaLabel: string;
+  /** http · https · tel: · mailto: 만 */
+  ctaUrl: string;
+  tone: BannerTone;
+  where: BannerPlace[];
+  /** 켜면 고객용에 (광고) 표기와 수신거부 안내가 붙습니다 */
+  isAd: boolean;
+  /** YYYY-MM-DD. 비우면 제한 없음 */
+  startAt: string | null;
+  endAt: string | null;
+  enabled: boolean;
+  /** 기간이 겹치면 작은 값이 이깁니다 */
+  order: number;
+}
+
 export interface Meta {
   lastCollectAt: string | null;
   lastCollect: CollectStats | null;

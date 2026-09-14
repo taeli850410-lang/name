@@ -7,7 +7,7 @@ import LetterView from "@/components/LetterView";
 import { fmtDateTime } from "@/lib/format";
 import { letterTitle, segmentLabel, shareText } from "@/lib/letter";
 import { PERIOD_LABEL, PERIOD_LIMIT, SEGMENTS, SEGMENT_KEYS } from "@/lib/taxonomy";
-import type { Letter, Office, Period, Segment, Validation } from "@/lib/types";
+import type { Banner, Letter, Office, Period, Segment, Validation } from "@/lib/types";
 
 /**
  * EDM 빌더. 브리핑 화면과 같은 뼈대를 씁니다:
@@ -16,7 +16,7 @@ import type { Letter, Office, Period, Segment, Validation } from "@/lib/types";
 
 type Mode = "build" | "history";
 
-export default function LetterBuilder({ office, published }: { office: Office; published: Letter[] }) {
+export default function LetterBuilder({ office, published, banners = [] }: { office: Office; published: Letter[]; banners?: Banner[] }) {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("build");
   const [period, setPeriod] = useState<Period>("weekly");
@@ -239,7 +239,7 @@ export default function LetterBuilder({ office, published }: { office: Office; p
       <div className="brief-stage">
         <div className="brief-device">
           {shown ? (
-            <LetterView letter={shown} />
+            <LetterView letter={shown} banners={banners} />
           ) : (
             <div className="brief theme-navy">
               <div className="wrap">

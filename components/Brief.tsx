@@ -14,6 +14,7 @@ import {
   type BriefLink,
   type BriefModel,
   type BriefNewsModel,
+  type BriefPromoModel,
   type BriefVideoModel,
 } from "@/lib/brief";
 import VideoPlayer from "@/components/VideoPlayer";
@@ -169,6 +170,32 @@ function NumberedArticles({ articles, id }: { articles: BriefVideoModel["article
  * CTA 는 스크립트가 아니라 앵커(#va-…)로 내려갑니다. 부드러운 스크롤은 CSS 가 맡고,
  * 스크립트를 지우는 이메일 클라이언트에서도 링크로 남습니다.
  */
+/**
+ * 사무소 홍보 배너. 맨 아래, 푸터 바로 위에 섭니다.
+ *
+ * 고객용에서 광고로 표시한 배너에는 (광고) 표기가 붙습니다 — 광고성 정보를 보낼 때는
+ * 표기와 수신거부 수단이 있어야 하고, 수신거부는 바로 아래 푸터에 이미 있습니다.
+ * 중개사용에는 대신 "지금 고객에게 이게 나갑니다" 안내가 붙습니다. 본인이 보는 화면이라
+ * 광고가 아닙니다.
+ */
+function Promo({ p }: { p: BriefPromoModel }) {
+  return (
+    <section className="sec">
+      <aside className={`promo promo-${p.tone}`}>
+        <p className="promo-t">{p.title}</p>
+        {p.body && <p className="promo-b">{p.body}</p>}
+        {p.ctaUrl && p.ctaLabel && (
+          <a className="promo-btn" href={p.ctaUrl} target="_blank" rel="noreferrer noopener">
+            {p.ctaLabel}
+          </a>
+        )}
+        {p.showAdMark && <span className="promo-ad">(광고) 수신거부는 아래 안내를 확인하세요.</span>}
+        {p.note && <span className="promo-note">{p.note}</span>}
+      </aside>
+    </section>
+  );
+}
+
 function VideoHead({ v }: { v: BriefVideoModel }) {
   return (
     <article className="pcard vhero">
@@ -636,6 +663,8 @@ export default function BriefView({ model }: { model: BriefModel }) {
             </div>
           </section>
         )}
+
+        {model.promo && <Promo p={model.promo} />}
 
         <footer className="foot">
           <div className="foot-id">
