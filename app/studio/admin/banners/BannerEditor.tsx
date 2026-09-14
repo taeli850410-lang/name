@@ -47,7 +47,13 @@ function Preview({ b, place }: { b: Banner; place: BannerPlace }) {
         {b.body && <p className="promo-b">{b.body}</p>}
         {b.ctaUrl && b.ctaLabel && <span className="promo-btn">{b.ctaLabel}</span>}
         {forCustomer && b.isAd && <span className="promo-ad">(광고) 수신거부는 아래 안내를 확인하세요.</span>}
-        {!forCustomer && <span className="promo-note">지금 고객용 EDM 에 나가는 배너입니다. 관리자 → 배너에서 고칠 수 있습니다.</span>}
+        {!forCustomer && (
+          <span className="promo-note">
+            {b.where.includes("customer")
+              ? "고객용 EDM 에도 함께 나가는 배너입니다. 관리자 → 배너에서 고칠 수 있습니다."
+              : "중개사용 브리핑에만 나오는 배너입니다. 고객에게는 나가지 않습니다."}
+          </span>
+        )}
       </div>
     </div>
   );
@@ -211,27 +217,39 @@ export default function BannerEditor({ initial }: { initial: Banner[] }) {
               </div>
             </div>
 
-            <div className="field">
-              <label>노출할 곳</label>
-              <div className="bn-checks">
-                {BANNER_PLACES.map((p) => (
-                  <label key={p} className="bn-check" htmlFor={`bn-where-${p}`}>
-                    <input id={`bn-where-${p}`} type="checkbox" checked={cur.where.includes(p)} onChange={() => togglePlace(p)} />
-                    {PLACE_LABEL[p]}
-                  </label>
-                ))}
-                <label className="bn-check" htmlFor="bn-enabled">
-                  <input id="bn-enabled" type="checkbox" checked={cur.enabled} onChange={(e) => patch({ enabled: e.target.checked })} />
-                  켜기
-                </label>
-                <label className="bn-check" htmlFor="bn-isad">
-                  <input id="bn-isad" type="checkbox" checked={cur.isAd} onChange={(e) => patch({ isAd: e.target.checked })} />
-                  광고로 표시
-                </label>
+            <div className="bn-two">
+              <div className="field">
+                <label>노출할 곳</label>
+                <div className="bn-checks">
+                  {BANNER_PLACES.map((p) => (
+                    <label key={p} className="bn-check" htmlFor={`bn-where-${p}`}>
+                      <input id={`bn-where-${p}`} type="checkbox" checked={cur.where.includes(p)} onChange={() => togglePlace(p)} />
+                      {PLACE_LABEL[p]}
+                    </label>
+                  ))}
+                </div>
+                <p className="hint">
+                  {cur.where.includes("broker")
+                    ? "중개사용 브리핑 맨 아래, 사무소 정보 바로 위에 섭니다."
+                    : "중개사용 브리핑에는 안 나옵니다 — 나오게 하려면 «중개사용 브리핑»을 켜세요."}
+                </p>
               </div>
-              <p className="hint">
-                사무소를 홍보하는 내용이면 <b>광고로 표시</b>를 켜 두세요. 고객용 EDM 에 <b>(광고)</b> 표기가 붙습니다. 중개사용 브리핑에는 붙지 않습니다.
-              </p>
+              <div className="field">
+                <label>상태</label>
+                <div className="bn-checks">
+                  <label className="bn-check" htmlFor="bn-enabled">
+                    <input id="bn-enabled" type="checkbox" checked={cur.enabled} onChange={(e) => patch({ enabled: e.target.checked })} />
+                    켜기
+                  </label>
+                  <label className="bn-check" htmlFor="bn-isad">
+                    <input id="bn-isad" type="checkbox" checked={cur.isAd} onChange={(e) => patch({ isAd: e.target.checked })} />
+                    광고로 표시
+                  </label>
+                </div>
+                <p className="hint">
+                  사무소를 홍보하는 내용이면 <b>광고로 표시</b>를 켜 두세요. 고객용 EDM 에 <b>(광고)</b> 표기가 붙습니다. 중개사용 브리핑에는 붙지 않습니다.
+                </p>
+              </div>
             </div>
 
             {problems.length > 0 && (

@@ -712,25 +712,31 @@ tr:last-child td { border-bottom: 0; }
   .adm-chan-t { grid-column: 1 / -1; justify-self: start; }
 }
 
-/* ───────── 홍보 배너 (브리핑 맨 아래, 푸터 바로 위) ───────── */
-.promo { border-radius: 6px; padding: 22px 22px 24px; }
-.promo-navy  { background: #1c3a7a; color: #fff; }
-.promo-green { background: #1f6b46; color: #fff; }
-.promo-gold  { background: #8a6a22; color: #fff; }
-.promo-plain { background: transparent; color: inherit; border: 1px solid var(--line); }
-.promo-t { font-size: 17px; font-weight: 700; margin: 0 0 6px; line-height: 1.45; }
-.promo-b { font-size: 13.5px; line-height: 1.7; margin: 0 0 14px; opacity: .88; }
-.promo-plain .promo-b { opacity: 1; color: var(--muted); }
-.promo-btn {
-  display: inline-block; background: #fff; color: #16202b;
-  font-size: 13.5px; font-weight: 600; text-decoration: none;
-  border-radius: 3px; padding: 8px 16px;
+/* ───────── 홍보 배너 (브리핑 맨 아래, 푸터 바로 위) ─────────
+   브리핑 안에서는 `.brief a { color: inherit }` 가 0,1,1 로 이겨서, 클래스 하나짜리
+   규칙으로는 버튼 글자색이 안 먹습니다 — 흰 배경에 흰 글자가 나왔습니다.
+   그래서 `.brief` 를 앞에 붙여 다른 브리핑 규칙과 같은 무게로 맞춥니다. 편집 화면의
+   미리보기는 `.brief` 밖이라 접두사 없는 규칙도 같이 둡니다. */
+.promo, .brief .promo { border-radius: 14px; padding: 22px 20px 24px; }
+.promo-navy,  .brief .promo-navy  { background: #1c3a7a; color: #fff; }
+.promo-green, .brief .promo-green { background: #1f6b46; color: #fff; }
+.promo-gold,  .brief .promo-gold  { background: #8a6a22; color: #fff; }
+.promo-plain, .brief .promo-plain { background: transparent; color: inherit; border: 1px solid var(--line-b, #d8dfec); }
+.promo-t, .brief .promo-t { font-size: 16px; font-weight: 800; line-height: 1.45; margin: 0 0 7px; color: inherit; }
+.promo-b, .brief .promo-b { font-size: 12.5px; line-height: 1.7; margin: 0 0 14px; color: rgba(255, 255, 255, 0.82); }
+.promo-plain .promo-b, .brief .promo-plain .promo-b { color: var(--muted-b, #5c6577); }
+.promo-btn, .brief .promo-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 40px; padding: 0 18px; border-radius: 8px;
+  background: #fff; color: #16202b;
+  font-size: 13px; font-weight: 800; text-decoration: none;
 }
-.promo-plain .promo-btn { background: var(--ink); color: var(--surface); }
-.promo-ad, .promo-note {
-  display: block; font-size: 11.5px; margin-top: 13px; opacity: .72; line-height: 1.6;
+.promo-plain .promo-btn, .brief .promo-plain .promo-btn { background: var(--ink-b, #172033); color: #fff; }
+.promo-ad, .promo-note, .brief .promo-ad, .brief .promo-note {
+  display: block; font-size: 11px; margin-top: 13px; line-height: 1.6; color: rgba(255, 255, 255, 0.72);
 }
-.promo-plain .promo-ad, .promo-plain .promo-note { color: var(--dim); opacity: 1; }
+.promo-plain .promo-ad, .promo-plain .promo-note,
+.brief .promo-plain .promo-ad, .brief .promo-plain .promo-note { color: var(--dim-b, #8b93a3); }
 
 /* ───────── 배너 편집 ───────── */
 .bn { display: grid; grid-template-columns: 260px 1fr; gap: 18px; align-items: start; }

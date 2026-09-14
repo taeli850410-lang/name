@@ -318,7 +318,12 @@ export function promoBlock(banner: Banner | undefined, audience: Audience): Brie
     ctaUrl: banner.ctaUrl,
     tone: banner.tone,
     showAdMark: forCustomer && banner.isAd,
-    note: forCustomer ? undefined : "지금 고객용 EDM 에 나가는 배너입니다. 관리자 → 배너에서 고칠 수 있습니다.",
+    // 중개사 화면에서만 한 줄 덧붙입니다 — 이게 고객한테도 나가는 것인지 아닌지를 여기서 바로 알아야 합니다
+    note: forCustomer
+      ? undefined
+      : banner.where.includes("customer")
+        ? "고객용 EDM 에도 함께 나가는 배너입니다. 관리자 → 배너에서 고칠 수 있습니다."
+        : "중개사용 브리핑에만 나오는 배너입니다. 고객에게는 나가지 않습니다.",
   };
 }
 
