@@ -4,6 +4,7 @@ import { detectPlace } from "./classify";
 import { getStore } from "./store";
 import { normalizeRegion } from "./taxonomy";
 import { BANNER_MAX, normalizeBanner } from "./banner";
+import { type BannerImage, imageIdOf, imageKey } from "./bannerImage";
 import type { AreaConfig, Banner, BlogPost, InstaSave, Issue, Letter, MarketDoc, Meta, Office, VideoItem } from "./types";
 
 /** 저장소 접근 계층. 컬렉션 단위 문서(issues, letters, settings, market, meta, insta, blog, videos, banners)로 저장합니다. */
@@ -156,7 +157,29 @@ export async function getBanners(): Promise<Banner[]> {
   return raw.slice(0, BANNER_MAX).map((b, i) => normalizeBanner(b, `banner-${i + 1}`));
 }
 export async function saveBanners(list: Banner[]): Promise<void> {
-  await getStore().set(KEYS.banners, list.slice(0, BANNER_MAX));
+  const kept = list.slice(0, BANNER_MAX);
+  const before = await getBanners();
+  await getStore().set(KEYS.banners, kept);
+
+  // 배너에서 떨어져 나간 그림은 같이 비웁니다 — 안 그러면 지운 배너의 그림이 저장소에 남습니다.
+  // 목록 저장이 끝난 뒤에 하므로, 여기서 실패해도 사무소가 한 일은 이미 저장돼 있습니다.
+  const live = new Set(kept.map((b) => imageIdOf(b.imageUrl)).filter((v): v is string => v !== null));
+  const gone = new Set(before.map((b) => imageIdOf(b.imageUrl)).filter((v): v is string => v !== null && !live.has(v)));
+  for (const id of gone) {
+    try {
+      await getStore().set(imageKey(id), null);
+    } catch {
+      // 못 비워도 화면에는 아무 영향이 없습니다. 다음 저장 때 다시 시도합니다
+    }
+  }
+}
+
+export async function getBannerImage(id: string): Promise<BannerImage | null> {
+  return getStore().get<BannerImage>(imageKey(id));
+}
+
+export async function saveBannerImage(id: string, img: BannerImage): Promise<void> {
+  await getStore().set(imageKey(id), img);
 }
 
 /* ── 인스타 카드 구성 ── */

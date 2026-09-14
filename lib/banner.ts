@@ -33,11 +33,17 @@ export const BANNER_MAX = 20;
 const SAFE_URL = /^(https?:\/\/|tel:|mailto:)/i;
 
 /**
- * 그림 주소는 http · https 만 받습니다. 전화번호(tel:)나 메일(mailto:)은 그림이 될 수 없고,
- * data: 로 그림을 통째로 붙여 넣는 것도 막습니다 — 저장소 한 번에 보낼 수 있는 양(1MB)을
- * 배너 한 장이 다 먹어 버립니다. 그림은 어딘가에 올리고 주소만 가져오는 것이 맞습니다.
+ * 그림 주소로 받는 것 둘.
+ *
+ * 하나는 우리가 직접 내주는 주소입니다 — 사무소가 파일을 올리면 이 모양이 됩니다.
+ * 다른 하나는 남의 주소(http · https)입니다. 이미 어딘가에 올려 둔 그림을 그대로 쓸 때입니다.
+ *
+ * 그림을 data: 로 통째로 붙여 넣는 것은 막습니다. 저장소가 한 번에 받는 양(1MB)을 배너
+ * 한 장이 다 먹습니다. 올린 그림은 배너 목록과 다른 키에 따로 둡니다(lib/bannerImage.ts).
+ *
+ * `//다른곳` 같은 주소가 새지 않도록 두 번째 글자까지 못 박아 둡니다.
  */
-const SAFE_IMAGE_URL = /^https?:\/\//i;
+const SAFE_IMAGE_URL = /^(https?:\/\/|\/api\/banner-image\/[A-Za-z0-9_-]{1,64}(?:\?|$))/i;
 
 export function isSafeBannerUrl(url: string): boolean {
   return SAFE_URL.test(url.trim());
@@ -63,7 +69,7 @@ export function validateBanner(b: Banner): string[] {
 
   const img = b.imageUrl.trim();
   if (img && !isSafeImageUrl(img)) {
-    errors.push("그림 주소는 http 나 https 로 시작해야 합니다. 그림을 파일째 붙여 넣을 수는 없습니다.");
+    errors.push("그림은 파일을 올리거나, http · https 로 시작하는 주소를 넣으세요.");
   }
 
   if (b.startAt && b.endAt && b.startAt > b.endAt) errors.push("노출 시작일이 종료일보다 뒤입니다.");

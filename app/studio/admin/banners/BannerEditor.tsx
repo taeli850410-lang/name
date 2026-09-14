@@ -14,6 +14,7 @@ import {
   isSafeImageUrl,
   validateBanner,
 } from "@/lib/banner";
+import { IMAGE_SOURCE_MAX, IMAGE_BASE64_MAX, IMAGE_WIDTH, imageIdOf } from "@/lib/bannerImage";
 import type { Banner, BannerPlace, BannerTone } from "@/lib/types";
 
 /**
@@ -38,6 +39,69 @@ const EMPTY = (order: number): Banner => ({
   enabled: true,
   order,
 });
+
+
+/**
+ * 고른 파일을 배너에 쓸 만한 크기로 줄여 data: 한 줄로 바꿉니다.
+ *
+ * 요즘 폰 사진은 4000px 에 8MB 라 그대로 올리면 저장소가 안 받습니다. 그래서 **올리기 전에
+ * 브라우저에서** 가로 1200px 로 줄입니다. 서버는 줄이는 일을 하지 않습니다 — 그쪽에서 하려면
+ * 라이브러리가 하나 더 붙는데, 여기서 이미 끝나 있습니다.
+ *
+ * webp 부터 넣어 봅니다. 가장 작고 투명한 부분도 살아 있습니다. 브라우저가 webp 를 못 만들면
+ * toBlob 이 알아서 png 를 돌려주고, 그것도 크면 마지막으로 jpeg 까지 내려갑니다.
+ */
+const ENCODE: [string, number][] = [
+  ["image/webp", 0.85],
+  ["image/webp", 0.7],
+  ["image/png", 1],
+  ["image/jpeg", 0.82],
+];
+
+function readAsDataUrl(blob: Blob): Promise<string> {
+  return new Promise((ok, fail) => {
+    const r = new FileReader();
+    r.onload = () => ok(String(r.result));
+    r.onerror = () => fail(new Error("파일을 읽지 못했습니다."));
+    r.readAsDataURL(blob);
+  });
+}
+
+async function shrink(file: File): Promise<string> {
+  if (!file.type.startsWith("image/")) throw new Error("그림 파일이 아닙니다. JPG · PNG · WebP 를 고르세요.");
+  if (file.size > IMAGE_SOURCE_MAX) throw new Error("파일이 너무 큽니다. 20MB 아래로 줄여서 올려 주세요.");
+
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const img = await new Promise<HTMLImageElement>((ok, fail) => {
+      const el = new Image();
+      el.onload = () => ok(el);
+      el.onerror = () => fail(new Error("그림을 열지 못했습니다. 다른 파일로 해 보세요."));
+      el.src = objectUrl;
+    });
+
+    const scale = Math.min(1, IMAGE_WIDTH / (img.naturalWidth || IMAGE_WIDTH));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+    canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("이 브라우저에서는 그림을 줄이지 못합니다. 그림 주소를 붙여넣어 주세요.");
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    let last = "";
+    for (const [type, quality] of ENCODE) {
+      const blob = await new Promise<Blob | null>((ok) => canvas.toBlob(ok, type, quality));
+      if (!blob) continue;
+      const url = await readAsDataUrl(blob);
+      last = url;
+      if (url.length - url.indexOf(",") - 1 <= IMAGE_BASE64_MAX) return url;
+    }
+    if (last) throw new Error("줄여도 그림이 너무 큽니다. 더 단순한 그림으로 올려 주세요.");
+    throw new Error("그림을 바꾸지 못했습니다. 다른 파일로 해 보세요.");
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
 
 /**
  * 그림 주소가 실제로 열리는지 눌러 봅니다.
@@ -102,14 +166,43 @@ export default function BannerEditor({ initial }: { initial: Banner[] }) {
   const [at, setAt] = useState(initial.length ? 0 : -1);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ kind: "ok" | "bad"; text: string } | null>(null);
+  const [up, setUp] = useState<{ busy: boolean; err: string | null }>({ busy: false, err: null });
 
   const cur = at >= 0 && at < list.length ? list[at] : null;
   const problems = useMemo(() => (cur ? validateBanner(cur) : []), [cur]);
+  /** 우리가 받아 둔 그림인가. 그러면 주소 칸을 보여 줄 이유가 없습니다 — 주소가 우리 내부 주소입니다 */
+  const uploaded = cur ? imageIdOf(cur.imageUrl) !== null : false;
 
   const patch = (p: Partial<Banner>) => {
     if (at < 0) return;
     setList((prev) => prev.map((b, i) => (i === at ? { ...b, ...p } : b)));
     setMsg(null);
+  };
+
+  /**
+   * 파일을 고르면 줄여서 올리고, 돌려받은 주소를 그림 칸에 넣습니다.
+   *
+   * 배너를 아직 저장하지 않았어도 그림은 먼저 올라갑니다 — 그래야 미리보기로 확인하고
+   * 저장할지 정할 수 있습니다. 저장하지 않고 나가면 다음 저장 때 딸린 그림도 같이 비워집니다.
+   */
+  const pickFile = async (file: File | undefined) => {
+    if (!file || !cur) return;
+    setUp({ busy: true, err: null });
+    setMsg(null);
+    try {
+      const dataUrl = await shrink(file);
+      const res = await fetch("/api/studio/banners/image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: cur.id, dataUrl }),
+      });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok || !data.url) throw new Error(data.error ?? "그림을 올리지 못했습니다.");
+      patch({ imageUrl: data.url });
+      setUp({ busy: false, err: null });
+    } catch (e) {
+      setUp({ busy: false, err: (e as Error).message });
+    }
   };
 
   const add = () => {
@@ -234,12 +327,50 @@ export default function BannerEditor({ initial }: { initial: Banner[] }) {
             </div>
 
             <div className="field">
-              <label htmlFor="bn-img">그림 주소 <span className="bn-count">안 넣어도 됩니다</span></label>
-              <input id="bn-img" value={cur.imageUrl} onChange={(e) => patch({ imageUrl: e.target.value })} placeholder="https://… .jpg" />
-              <ImageProbe key={cur.imageUrl} url={cur.imageUrl} />
+              <label htmlFor="bn-file">그림 <span className="bn-count">안 넣어도 됩니다</span></label>
+              <div className="bn-img">
+                {cur.imageUrl && (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img className="bn-img-thumb" src={cur.imageUrl} alt="" />
+                )}
+                <div className="bn-img-acts">
+                  <label className={`btn btn-sm${up.busy ? " is-busy" : ""}`} htmlFor="bn-file">
+                    {up.busy ? "올리는 중…" : cur.imageUrl ? "다른 그림으로" : "파일 올리기"}
+                  </label>
+                  <input
+                    id="bn-file"
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    disabled={up.busy}
+                    onChange={(e) => {
+                      void pickFile(e.target.files?.[0]);
+                      e.target.value = "";
+                    }}
+                  />
+                  {cur.imageUrl && (
+                    <button className="btn btn-sm btn-danger" type="button" disabled={up.busy} onClick={() => { patch({ imageUrl: "" }); setUp({ busy: false, err: null }); }}>
+                      그림 빼기
+                    </button>
+                  )}
+                  <span className="bn-hint">
+                    {uploaded ? "올린 그림입니다." : "JPG · PNG · WebP. 크면 알아서 가로 1200px 로 줄여 올립니다."}
+                  </span>
+                </div>
+              </div>
+              {up.err && <p className="hint bn-badhint">{up.err}</p>}
+
+              {!uploaded && (
+                <div className="bn-img-url">
+                  <label htmlFor="bn-img">또는 그림 주소 붙여넣기</label>
+                  <input id="bn-img" value={cur.imageUrl} onChange={(e) => patch({ imageUrl: e.target.value })} placeholder="https://… .jpg" />
+                  <ImageProbe key={cur.imageUrl} url={cur.imageUrl} />
+                </div>
+              )}
+
               <p className="hint">
-                <b>가로 1200px</b> 로 만드세요. 화면에는 600px 로 줄어 들어가고, 두 배로 만들어야 휴대폰에서 안 뿌옇습니다.
-                높이는 <b>1200×600</b> 이나 <b>1200×400</b> 이 무난합니다. 그림은 제목 위에 얹히고, 버튼 주소를 넣어 두면 그림을 눌러도 같은 곳으로 갑니다.
+                그림은 제목 위, 카드 위쪽을 꽉 채웁니다. 버튼 주소를 넣어 두면 그림을 눌러도 같은 곳으로 갑니다.
+                직접 만드실 때는 <b>가로 1200px</b>, 높이는 <b>1200×600</b> 이나 <b>1200×400</b> 이 무난합니다.
               </p>
             </div>
 
