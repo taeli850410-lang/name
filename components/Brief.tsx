@@ -658,7 +658,7 @@ export default function BriefView({ model }: { model: BriefModel }) {
           </section>
         )}
 
-        {model.cta.buttons.length > 0 && (
+        {model.cta && model.cta.buttons.length > 0 && (
           <section className="sec">
             <div className="cta">
               <h3>{model.cta.title}</h3>

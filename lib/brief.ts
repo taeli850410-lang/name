@@ -141,7 +141,8 @@ export interface BriefModel {
   };
   persona?: { title: string; sub: string; rows: { label: string; level: number; note: string }[]; note: string; glossary?: Glossary | null };
   comment?: { name: string; tag: string; body: string };
-  cta: { title: string; sub: string; buttons: BriefLink[] };
+  /** 상담 유도 판. 고객용은 홍보 배너가 그 일을 대신하면 안 그립니다 */
+  cta?: { title: string; sub: string; buttons: BriefLink[] };
   /**
    * 사무소 홍보 배너. 조건에 맞는 배너가 없으면 자리 자체가 없습니다 — 빈 상자를 내보내지 않습니다.
    * 영상과 달리 발행 시점에 얼리지 않고 열어 볼 때마다 최신을 씁니다(lib/banner.ts 참고).
@@ -416,7 +417,11 @@ export function letterToBrief(letter: Letter, banners: Banner[] = [], now = Date
       ? { name: o.repName ? `${o.repName} 공인중개사의 한마디` : `${o.officeName}의 한마디`, tag: "전문가 코멘트", body: letter.comment }
       : undefined,
     promo,
-    cta: { title: CTA_TITLE, sub: CTA_SUB, buttons },
+    // 배너가 있으면 상담 유도 판은 뺍니다. 전화번호가 맨 위 ☏, 이 판, 배너, 푸터까지 네 번
+    // 나오고 있었습니다. 둘 중 남길 것은 배너입니다 — 사무소가 문구·색·그림까지 직접 고칠 수
+    // 있는 쪽이고, 이 판은 고정 문구라 손댈 수가 없습니다.
+    // 배너를 안 만든 사무소에는 그대로 둡니다. 안 그러면 편지가 부를 곳 없이 끝납니다.
+    cta: promo ? undefined : { title: CTA_TITLE, sub: CTA_SUB, buttons },
     footer: {
       head: `${o.officeName} 안내`,
       rows: officeRows(o),
