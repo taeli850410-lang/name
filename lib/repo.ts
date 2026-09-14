@@ -8,6 +8,22 @@ import type { AreaConfig, Banner, BlogPost, InstaSave, Issue, Letter, MarketDoc,
 
 /** 저장소 접근 계층. 컬렉션 단위 문서(issues, letters, settings, market, meta, insta, blog, videos, banners)로 저장합니다. */
 
+/**
+ * 처음 열었을 때 씨앗 데이터를 심는 쓰기. 실패해도 넘어갑니다.
+ *
+ * 저장소가 잠깐 흔들리면 읽기는 null 을 내고 그다음 쓰기가 던져서, 스튜디오 전체가
+ * 500 이 났습니다. 씨앗은 "있으면 좋은 것"이지 못 심었다고 화면이 죽을 이유가 없습니다.
+ * 사무소가 직접 저장하는 쓰기(saveLetter·saveSettings…)는 그대로 던집니다 — 그건 실패를
+ * 알려 줘야 합니다.
+ */
+async function seedWrite<T>(key: string, value: T): Promise<void> {
+  try {
+    await getStore().set(key, value);
+  } catch {
+    // 저장소가 받아 주지 않으면 이번 요청은 씨앗을 화면에만 보여 주고 넘어갑니다
+  }
+}
+
 const KEYS = { issues: "issues", letters: "letters", settings: "settings", market: "market", meta: "meta", insta: "insta", blog: "blog", videos: "videos", banners: "banners" } as const;
 
 export async function getIssues(): Promise<Issue[]> {
@@ -17,7 +33,7 @@ export async function getIssues(): Promise<Issue[]> {
   // place 는 나중에 붙은 필드라 옛 저장본에는 없습니다. 읽을 때 제목에서 채웁니다.
   if (list) return list.map((i) => ({ ...i, region: normalizeRegion(i.region), place: i.place ?? detectPlace(i.title) }));
   const seeded = seedIssues(await getArea());
-  await store.set(KEYS.issues, seeded);
+  await seedWrite(KEYS.issues, seeded);
   return seeded;
 }
 
@@ -85,7 +101,7 @@ export async function getLetters(): Promise<Letter[]> {
   const list = await store.get<Letter[]>(KEYS.letters);
   const sample = seedLetters(bundledMarket as MarketDoc);
   if (!list) {
-    await store.set(KEYS.letters, sample);
+    await seedWrite(KEYS.letters, sample);
     return sample;
   }
   // 샘플 EDM(demo)은 사무소가 쓴 편지가 아니라 '지금 코드가 무엇을 그리는지' 보여 주는 자리입니다.

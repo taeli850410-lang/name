@@ -12,6 +12,7 @@ const TABS: { href: string; label: string; match: (p: string) => boolean }[] = [
   { href: "/studio/admin", label: "현황판", match: (p) => p === "/studio/admin" },
   { href: "/studio/admin/banners", label: "배너", match: (p) => p.startsWith("/studio/admin/banners") },
   { href: "/studio/settings", label: "사무소 정보", match: (p) => p.startsWith("/studio/settings") },
+  { href: "/studio/admin/access", label: "접근 관리", match: (p) => p.startsWith("/studio/admin/access") },
 ];
 
 export default function AdminTabs() {
