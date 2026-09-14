@@ -305,10 +305,45 @@ function watchUrl(videoId: string): string {
 }
 
 const LENGTH_MARK = /"lengthSeconds":"(\d+)"/;
+/** 머리말에 먼저 나오는 표시. 재생 정보보다 앞이라 이쪽이 먼저 걸릴 때가 많습니다 */
+const META_MARK = /itemprop="duration"[^>]*content="PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?"/i;
 /** 표시를 못 찾아도 여기까지만 읽고 포기합니다 */
 const MAX_SCAN = 512 * 1024;
-/** 한 편을 기다리는 최대 시간. 여덟 편을 한꺼번에 부르므로 이게 곧 이 단계의 상한입니다 */
-const DURATION_TIMEOUT = 4000;
+/** 한 편을 기다리는 최대 시간. 열 편을 한꺼번에 부르므로 이게 곧 이 단계의 상한입니다 */
+const DURATION_TIMEOUT = 9000;
+
+/**
+ * 워치 페이지를 부를 때 붙이는 것들.
+ *
+ * 처음에는 `Mozilla/5.0 (compatible; RealEstateReportAlert/1.0)` 로 우리를 밝혔습니다.
+ * 그랬더니 **배포한 데서 열 편이 전부 빈손으로 돌아왔습니다**(2026-09-14 수집, 저장된 40편
+ * 모두 재생시간 없음). 로컬에서는 되던 것이라 코드 문제는 아니고, 유튜브가 데이터센터 주소에서
+ * 오는 이런 요청에 동의 화면이나 다른 페이지를 주는 쪽으로 봅니다 — 그 페이지에는 재생 정보가
+ * 없습니다. 그래서 평범한 브라우저처럼 보내고, 동의 화면을 건너뛰는 쿠키를 같이 답니다.
+ *
+ * 우리가 하는 일은 공개된 페이지 한 장을 읽어 길이를 보는 것뿐입니다. 로그인도, 남의 자료도
+ * 아닙니다. 수집 한 번에 열 번이라 부담을 줄 양도 아닙니다.
+ */
+const WATCH_HEADERS: Record<string, string> = {
+  "user-agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+  "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+  // 동의 화면을 건너뜁니다. 이게 없으면 본문 대신 동의 페이지가 옵니다
+  "cookie": "CONSENT=YES+cb; SOCS=CAI",
+};
+
+/** 왜 못 읽었는지. 배포한 데서 무슨 일이 있었는지 알아야 다음에 고칠 수 있습니다 */
+export type DurationWhy = "ok" | "http" | "empty" | "notfound" | "timeout" | "error";
+
+function markSeconds(buf: string): number | null {
+  const m = LENGTH_MARK.exec(buf);
+  if (m) return Number(m[1]) || null;
+  const t = META_MARK.exec(buf);
+  if (!t) return null;
+  const sec = Number(t[1] ?? 0) * 3600 + Number(t[2] ?? 0) * 60 + Number(t[3] ?? 0);
+  return sec > 0 ? sec : null;
+}
 
 /**
  * 영상 한 편의 재생시간(초). Atom 피드에 없어서 워치 페이지에서 읽습니다.
@@ -316,18 +351,19 @@ const DURATION_TIMEOUT = 4000;
  * 워치 페이지는 1MB가 넘지만 재생시간은 앞쪽 재생 정보에 들어 있습니다. 그래서 전부 받지 않고
  * 조각을 읽어 가며 표시를 만나는 즉시 끊습니다 — 수집 한 번에 여덟 번을 불러도 부담이 적습니다.
  */
-export async function fetchDuration(videoId: string): Promise<number | null> {
+export async function tryDuration(videoId: string): Promise<{ seconds: number | null; why: DurationWhy }> {
   // 끊는 수단을 abort 하나로 통일합니다. 스트림을 reader.cancel() 로 닫으면 Next 가 감싼 fetch 에서
   // 응답이 끝날 때까지 돌아오지 않는 자리가 있었습니다(수집이 100초를 넘겨도 안 끝났습니다).
   const ctl = new AbortController();
-  const timer = setTimeout(() => ctl.abort(), DURATION_TIMEOUT);
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    ctl.abort();
+  }, DURATION_TIMEOUT);
   try {
-    const res = await fetch(watchUrl(videoId), {
-      headers: { "user-agent": "Mozilla/5.0 (compatible; RealEstateReportAlert/1.0)" },
-      cache: "no-store",
-      signal: ctl.signal,
-    });
-    if (!res.ok || !res.body) return null;
+    const res = await fetch(watchUrl(videoId), { headers: WATCH_HEADERS, cache: "no-store", signal: ctl.signal });
+    if (!res.ok) return { seconds: null, why: "http" };
+    if (!res.body) return { seconds: null, why: "empty" };
     const reader = res.body.getReader();
     const dec = new TextDecoder();
     let buf = "";
@@ -337,19 +373,23 @@ export async function fetchDuration(videoId: string): Promise<number | null> {
       if (done) break;
       read += value.byteLength;
       buf += dec.decode(value, { stream: true });
-      const m = buf.match(LENGTH_MARK);
-      if (m) return Number(m[1]) || null;
+      const sec = markSeconds(buf);
+      if (sec) return { seconds: sec, why: "ok" };
       if (read >= MAX_SCAN) break;
-      // 표시가 조각 경계에 걸칠 수 있어 꼬리만 남깁니다
-      buf = buf.slice(-64);
+      // 표시가 조각 경계에 걸칠 수 있어 꼬리만 남깁니다. 머리말 표시가 더 길어서 넉넉히 둡니다
+      buf = buf.slice(-256);
     }
-    return null;
+    return { seconds: null, why: "notfound" };
   } catch {
-    return null;
+    return { seconds: null, why: timedOut ? "timeout" : "error" };
   } finally {
     clearTimeout(timer);
     ctl.abort();
   }
+}
+
+export async function fetchDuration(videoId: string): Promise<number | null> {
+  return (await tryDuration(videoId)).seconds;
 }
 
 /**
@@ -359,10 +399,18 @@ export async function fetchDuration(videoId: string): Promise<number | null> {
 export async function withDurations(
   videos: VideoItem[],
   targets: VideoItem[],
-): Promise<{ videos: VideoItem[]; timed: number }> {
-  if (!targets.length) return { videos, timed: 0 };
-  const found = await Promise.all(targets.map(async (v) => [v.id, await fetchDuration(v.id)] as const));
-  const secs = new Map(found.filter((p): p is [string, number] => typeof p[1] === "number"));
-  if (!secs.size) return { videos, timed: 0 };
-  return { videos: videos.map((v) => (secs.has(v.id) ? { ...v, seconds: secs.get(v.id) } : v)), timed: secs.size };
+): Promise<{ videos: VideoItem[]; timed: number; tried: number; why: Partial<Record<DurationWhy, number>> }> {
+  if (!targets.length) return { videos, timed: 0, tried: 0, why: {} };
+  const found = await Promise.all(targets.map(async (v) => [v.id, await tryDuration(v.id)] as const));
+
+  // 왜 못 읽었는지 세어 둡니다. 전부 null 로만 남으면 배포한 데서 무슨 일이 있었는지 알 길이 없습니다 —
+  // 실제로 한 번 그래서, 막힌 것인지 느린 것인지를 두고 한참 헤맸습니다.
+  const why: Partial<Record<DurationWhy, number>> = {};
+  for (const [, r] of found) why[r.why] = (why[r.why] ?? 0) + 1;
+
+  const secs = new Map(
+    found.filter((p): p is [string, { seconds: number; why: DurationWhy }] => typeof p[1].seconds === "number").map(([id, r]) => [id, r.seconds]),
+  );
+  const out = secs.size ? videos.map((v) => (secs.has(v.id) ? { ...v, seconds: secs.get(v.id) } : v)) : videos;
+  return { videos: out, timed: secs.size, tried: targets.length, why };
 }

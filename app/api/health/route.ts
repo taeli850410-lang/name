@@ -43,6 +43,9 @@ export async function GET() {
     studioProtected: studioProtected(),
     llm: llmEnabled(),
     videos: { stored: videos.length, byChannel, picked, all },
+    // 지난 수집이 실제로 무엇을 했는지. 재생시간을 몇 편 읽었고 못 읽은 건 왜인지가 여기 있습니다
+    lastCollect: meta.lastCollect?.videos ?? null,
+    collectErrors: meta.lastCollect?.errors ?? null,
     lastCollectAt: meta.lastCollectAt,
     lastMarketAt: meta.lastMarketAt,
   });

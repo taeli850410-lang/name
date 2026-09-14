@@ -247,8 +247,15 @@ export function pickVideos(
   // ③ 같으면 새것
   const headOf = (tier: ChannelTier): VideoItem | undefined => {
     const pool = reps.filter((v) => meta(v)?.tier === tier);
-    const recent = pool.filter((v) => now - new Date(v.publishedAt).getTime() <= HEAD_FRESH[tier]);
-    return (recent.length ? recent : pool).sort((a, b) => {
+    // ④ 쇼츠는 대표에서 뺍니다. 채널 안에서 이미 본편을 먼저 고르지만(위), 어떤 채널은 요즘
+    //    올리는 것이 죄다 쇼츠라 그 채널의 대표 자체가 쇼츠입니다. 그대로 두면 플레이어가 붙는
+    //    자리에 40초짜리가 서고, 설명문이 없어 카드 아래가 비어 버립니다. 실제로 그랬습니다 —
+    //    매부리TV 가 최근 다섯 편을 전부 쇼츠로 올린 날 그 쇼츠가 중개사용 대표로 섰습니다.
+    //    그 구분이 통째로 쇼츠뿐인 날에만 어쩔 수 없이 씁니다. 빈 칸보다는 낫습니다.
+    const full = pool.filter((v) => !isClipVideo(v));
+    const base = full.length ? full : pool;
+    const recent = base.filter((v) => now - new Date(v.publishedAt).getTime() <= HEAD_FRESH[tier]);
+    return (recent.length ? recent : base).sort((a, b) => {
       const w = (weigh?.(b) ?? 0) - (weigh?.(a) ?? 0);
       return w !== 0 ? w : newest(a, b);
     })[0];

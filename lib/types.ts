@@ -307,7 +307,16 @@ export interface CollectStats {
   errors: string[];
   feeds: { id: string; items: number; ok: boolean }[];
   /** 유튜브 영상 기사 — 가져온 편수 / 새로 담은 편수 */
-  videos?: { fetched: number; added: number; dropped?: number; refreshed?: number; timed?: number };
+  videos?: {
+    fetched: number;
+    added: number;
+    dropped?: number;
+    refreshed?: number;
+    /** 재생시간을 실제로 읽은 편수 / 확인해 본 편수 / 못 읽은 이유별 횟수 */
+    timed?: number;
+    tried?: number;
+    durationWhy?: Record<string, number>;
+  };
 }
 
 /* ───────── 홍보 배너 ───────── */
