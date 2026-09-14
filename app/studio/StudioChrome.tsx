@@ -50,6 +50,9 @@ export default function StudioChrome({
   const rawPeriod = sp?.get("period") ?? "";
   const period: Period = rawPeriod === "weekly" || rawPeriod === "monthly" ? rawPeriod : "daily";
   const view = sp?.get("view") === "mobile" ? "mobile" : "email";
+  // 고객용·중개사용은 같은 화면의 두 얼굴입니다. 주기와 이메일·모바일은 어느 쪽에서도 그대로 씁니다
+  const audience = sp?.get("audience") === "customer" ? "customer" : "broker";
+  const segment = sp?.get("segment") ?? "";
   const onBrief = pathname === "/studio/brief";
   const onInsta = pathname.startsWith("/studio/instagram");
   const onBlog = pathname.startsWith("/studio/blog");
@@ -68,7 +71,17 @@ export default function StudioChrome({
     return () => ro.disconnect();
   }, []);
 
-  const periodHref = (p: Period) => (onInsta ? `/studio/instagram?period=${p}` : onBlog ? `/studio/blog?period=${p}` : `/studio/brief?period=${p}&view=${view}`);
+  /** 브리핑 주소 한 곳에서 만듭니다 — 어느 칸을 눌러도 나머지 선택이 안 풀리게 */
+  const briefHref = (o: { period?: Period; view?: string; audience?: string } = {}) => {
+    const a = o.audience ?? audience;
+    const q = new URLSearchParams({ period: o.period ?? period, view: o.view ?? view });
+    if (a === "customer") {
+      q.set("audience", "customer");
+      if (segment) q.set("segment", segment);
+    }
+    return `/studio/brief?${q.toString()}`;
+  };
+  const periodHref = (p: Period) => (onInsta ? `/studio/instagram?period=${p}` : onBlog ? `/studio/blog?period=${p}` : briefHref({ period: p }));
   const letter = letters.find((l) => l.period === period) ?? letters[0] ?? null;
 
   function flash(text: string) {
@@ -127,11 +140,19 @@ export default function StudioChrome({
               </Link>
             ))}
           </nav>
+          <nav className="chrome-seg" aria-label="보는 사람">
+            <Link href={briefHref({ audience: "customer" })} {...cur(onBrief && audience === "customer")}>
+              고객용
+            </Link>
+            <Link href={briefHref({ audience: "broker" })} {...cur(onBrief && audience === "broker")}>
+              중개사용
+            </Link>
+          </nav>
           <nav className="chrome-seg" aria-label="보기">
-            <Link href={`/studio/brief?period=${period}&view=email`} {...cur(onBrief && view === "email")}>
+            <Link href={briefHref({ view: "email" })} {...cur(onBrief && view === "email")}>
               이메일
             </Link>
-            <Link href={`/studio/brief?period=${period}&view=mobile`} {...cur(onBrief && view === "mobile")}>
+            <Link href={briefHref({ view: "mobile" })} {...cur(onBrief && view === "mobile")}>
               모바일
             </Link>
             <Link href={`/studio/instagram?period=${period}`} {...cur(onInsta)}>

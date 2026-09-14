@@ -330,8 +330,19 @@ export function promoBlock(banner: Banner | undefined, audience: Audience): Brie
   };
 }
 
-export function letterToBrief(letter: Letter, banners: Banner[] = [], now = Date.now()): BriefModel {
-  const o = letter.office;
+/**
+ * 발행한 EDM 한 통을 그립니다.
+ *
+ * `office` 를 주면 얼려 둔 것 대신 **지금 사무소 정보**로 그립니다. 발행 시점에 얼려 두던
+ * 것을 이렇게 바꾼 이유가 있습니다 — 상호·대표·등록번호·연락처는 그 호의 내용이 아니라
+ * 사무소가 누구인지입니다. 대표가 바뀌거나 번호를 옮겼는데 지난달 보낸 링크에 옛 번호가
+ * 남아 있으면, 고객이 그 번호로 겁니다. 공인중개사법이 밝히라는 표시이기도 해서 옛것이
+ * 남는 쪽이 더 나쁩니다. 배너를 얼리지 않은 것과 같은 이유입니다.
+ *
+ * 그 호의 **내용**(고른 이슈, 영상, 써 둔 한마디)은 그대로 얼려 둡니다. 그건 그날의 기사입니다.
+ */
+export function letterToBrief(letter: Letter, banners: Banner[] = [], now = Date.now(), office?: Office): BriefModel {
+  const o = office ?? letter.office;
   const telHref = o.phone ? `tel:${o.phone.replace(/[^0-9+]/g, "")}` : null;
   const unsubscribeHref = o.unsubscribeUrl || (o.email ? `mailto:${o.email}?subject=${encodeURIComponent("수신거부 요청")}` : null);
   const buttons: BriefLink[] = [];

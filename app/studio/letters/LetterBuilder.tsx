@@ -239,7 +239,7 @@ export default function LetterBuilder({ office, published, banners = [] }: { off
       <div className="brief-stage">
         <div className="brief-device">
           {shown ? (
-            <LetterView letter={shown} banners={banners} />
+            <LetterView letter={shown} banners={banners} office={office} />
           ) : (
             <div className="brief theme-navy">
               <div className="wrap">
