@@ -1,7 +1,7 @@
 import { buildDraft, publishLetter } from "./letter";
 import { PERSONA_MATRIX, TOPIC_GLOSSARY } from "./taxonomy";
 import { detectPlace, shortName, titleHash } from "./classify";
-import type { AgencyGroup, AreaConfig, Article, BrokerFields, CustomerFields, Issue, Letter, MarketDoc, Office, Persona, Region, Status, Topic } from "./types";
+import type { AgencyGroup, AreaConfig, Article, BrokerFields, CustomerFields, Issue, Letter, MarketDoc, Office, Persona, Region, Status, Topic, VideoItem } from "./types";
 
 /**
  * 샘플 데이터. 2026년 9월 둘째 주 실제 보도를 바탕으로 손으로 쓴 초안이며,
@@ -526,10 +526,62 @@ export function seedIssues(area?: AreaConfig): Issue[] {
   ];
 }
 
+/**
+ * 샘플 EDM 에 실을 영상. 실제 채널의 실제 영상이고, 제목·설명문·게시일·재생시간 모두
+ * 2026-09-13 에 유튜브에서 받아 온 값입니다. 요약은 cleanDescription 을 거친 결과 그대로입니다.
+ *
+ * 샘플에 영상을 안 넣어 뒀더니 영상란이 통째로 비어서, 기능이 없는 것처럼 보였습니다.
+ * 샘플은 '지금 코드가 무엇을 그리는지' 보여 주는 자리라 대표 영상까지 들어 있어야 합니다.
+ */
+const SEED_VIDEOS: VideoItem[] = [
+  {
+    id: "WnjnK5RUuPE",
+    title: "전세계약 전 필수! 꼭 해야 하는 HUG의 안전계약 컨설팅 [집중공략 EP.2]",
+    summary:
+      "전세계약 전 필수! 꼭 해야 하는 HUG의 안전계약 컨설팅 전·월세 계약 체결 전 권리관계 분석은 어떻게 하나요? 계약시 유의사항은 뭔가요? 아무것도 몰라도 나만의 집PT 안전계약 컨설팅이 전세사기 예방을 위해 꼼꼼하게 알려드립니다 복잡하고 어려운 집 이야기를 집중적으로 압축해서 알려드리는 집중공략 2화! 지금 바로 확인해보세요!",
+    channel: "HUG 주택도시보증공사",
+    channelId: "UCXXERp2lKuALHbyuXIpLqzw",
+    url: "https://www.youtube.com/watch?v=WnjnK5RUuPE",
+    thumb: "https://i.ytimg.com/vi/WnjnK5RUuPE/hqdefault.jpg",
+    publishedAt: "2026-09-11T06:00:02.000Z",
+    seconds: 1174,
+    topic: "lease",
+    place: null,
+  },
+  {
+    id: "jDTRHW05D7U",
+    title: "대어 나왔다… 당첨만 되면 무조건 이득 서울 장기전세주택",
+    summary:
+      "서울 핵심 입지의 브랜드 아파트에서 최장 20년까지 거주할 수 있는 장기전세주택이 나왔습니다. 이번 제51차 장기전세주택 신규공급에는 청담르엘 전용 59㎡ 57가구, 디에이치방배 전용 59㎡ 133가구를 비롯해 래미안레벤투스, 오티에르 반포, 성동자이리버뷰, 영등포자이 디그니티 등 서울 주요 신축 아파트가 포함됐는데요. 장기전세주택은 주변 전세 시세의 80% 이하 수준으로 공급되며, 입주 자격을 유지할 경우 최장 20년까지 거주할 수 있는 공공임대주택입니다",
+    channel: "청약홈TV",
+    channelId: "UCPmI5ygQuHcDsb_HZDxBhWA",
+    url: "https://www.youtube.com/watch?v=jDTRHW05D7U",
+    thumb: "https://i.ytimg.com/vi/jDTRHW05D7U/hqdefault.jpg",
+    publishedAt: "2026-09-11T02:34:30.000Z",
+    seconds: 243,
+    topic: "subs",
+    place: "서울시",
+  },
+  {
+    id: "SbiXNtS1Jig",
+    title: "[SH 주거브리핑] 보증금 650만원으로 서울 전세 산다? SH 전세임대주택 총정리 A to Z",
+    summary:
+      "전세임대주택, 어렵게만 느껴지셨나요? 서울주택도시개발공사가 집주인과 전세 계약을 체결한 뒤 입주자에게 저렴하게 재임대하는 전세임대주택! 이번 영상에서는 전세임대주택의 기본 개념부터 당첨 후 입주까지의 실전가이드, 공인중개사님들이 알아두면 좋은 실무 내용까지 핵심 내용만 알차게 담았습니다",
+    channel: "SH 서울주택도시공사",
+    channelId: "UCD_GS8VmhbRvNrCn3plPX9A",
+    url: "https://www.youtube.com/watch?v=SbiXNtS1Jig",
+    thumb: "https://i.ytimg.com/vi/SbiXNtS1Jig/hqdefault.jpg",
+    publishedAt: "2026-09-11T07:00:16.000Z",
+    seconds: 432,
+    topic: "lease",
+    place: "서울시",
+  },
+];
+
 /** 샘플 EDM: 2026-09-12 기준 MONTHLY · 내집마련 호를 미리 발행해 둡니다. */
 export function seedLetters(market: MarketDoc): Letter[] {
   const now = Date.parse("2026-09-12T12:00:00+09:00");
-  const draft = buildDraft(seedIssues(), DEFAULT_OFFICE, market, { period: "monthly", segment: "first", now });
+  const draft = buildDraft(seedIssues(), DEFAULT_OFFICE, market, { period: "monthly", segment: "first", now, videos: SEED_VIDEOS });
   const published = publishLetter(draft, now);
   return [{ ...published, id: "demo" }];
 }

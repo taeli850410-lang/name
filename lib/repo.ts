@@ -82,10 +82,15 @@ export async function saveSettings(office: Office): Promise<void> {
 export async function getLetters(): Promise<Letter[]> {
   const store = getStore();
   const list = await store.get<Letter[]>(KEYS.letters);
-  if (list) return list;
-  const seeded = seedLetters(bundledMarket as MarketDoc);
-  await store.set(KEYS.letters, seeded);
-  return seeded;
+  const sample = seedLetters(bundledMarket as MarketDoc);
+  if (!list) {
+    await store.set(KEYS.letters, sample);
+    return sample;
+  }
+  // 샘플 EDM(demo)은 사무소가 쓴 편지가 아니라 '지금 코드가 무엇을 그리는지' 보여 주는 자리입니다.
+  // 저장된 것을 그대로 두면 처음 배포한 날의 샘플이 계속 남습니다 — 영상란이 비어 있는 샘플이
+  // 몇 주째 남아서, 영상 기능이 아예 없는 것처럼 보였습니다. 발행한 편지는 건드리지 않습니다.
+  return list.map((l) => (l.id === "demo" ? sample[0] : l));
 }
 
 export async function getLetter(id: string): Promise<Letter | null> {
