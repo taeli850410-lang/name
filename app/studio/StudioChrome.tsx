@@ -10,7 +10,8 @@ import OfficeDialog from "./OfficeDialog";
 /**
  * 원본 EDM 스튜디오의 상단 뼈대. 짙은 남색 바 한 줄에
  * 브랜드 · DAILY/WEEKLY/MONTHLY · 이메일/모바일/인스타 카드/블로그 포스팅 · 사무소/메일/PDF·인쇄/카카오톡/링크 · 실시간 뉴스 수집 시각.
- * 그 아래 얇은 줄에 이 서비스에만 있는 Pocket·EDM 빌더·우리 동네 숫자·설정과 상태 칩을 둡니다.
+ * 그 아래 얇은 줄에 이 서비스에만 있는 Pocket·EDM 빌더·우리 동네 숫자·관리자와 상태 칩을 둡니다.
+ * 매일 쓰는 칸은 앞의 셋이고, 어쩌다 만지는 것(현황·배너·사무소 정보)은 관리자 한 칸 안에 모읍니다.
  */
 
 export interface ChromeLetter {
@@ -173,8 +174,8 @@ export default function StudioChrome({
           <Link href="/studio/data" {...cur(pathname.startsWith("/studio/data"))}>
             📊 우리 동네 숫자
           </Link>
-          <Link href="/studio/settings" {...cur(pathname.startsWith("/studio/settings"))}>
-            ⚙ 설정
+          <Link href="/studio/admin" {...cur(pathname.startsWith("/studio/admin") || pathname.startsWith("/studio/settings"))}>
+            🛠 관리자
           </Link>
           <div className="chips">
             <span className={`chip ${storePersistent ? "chip-ok" : "chip-warn"}`} title={storeError ?? "저장소 상태"}>

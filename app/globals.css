@@ -659,3 +659,55 @@ tr:last-child td { border-bottom: 0; }
 
 /* 채널이 적은 설명 — 우리 글이 아니라는 게 눈으로도 보이게 살짝 죽입니다 */
 .vchan-desc { margin: 0; color: var(--muted); }
+
+/* ───────── 관리자 화면 ───────── */
+.adm-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; }
+.adm-tab {
+  font-size: 13.5px; color: var(--muted); text-decoration: none;
+  border: 1px solid var(--line); border-radius: 3px; padding: 6px 14px; background: var(--surface);
+}
+.adm-tab:hover { color: var(--ink); }
+.adm-tab.on { background: var(--brok); border-color: var(--brok); color: #fff; font-weight: 600; }
+
+.adm-sec { margin-top: 26px; }
+.adm-h {
+  font-size: 15px; font-weight: 600; margin: 0 0 10px;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px;
+}
+.adm-h-note { font-size: 12.5px; font-weight: 400; color: var(--dim); }
+.adm-grid {
+  display: grid; gap: 1px; background: var(--line);
+  border: 1px solid var(--line); border-radius: 3px; overflow: hidden;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+}
+.adm-row { background: var(--surface); padding: 13px 15px 14px; }
+.adm-row-k { font-size: 11.5px; letter-spacing: .04em; color: var(--dim); margin-bottom: 3px; }
+.adm-row-v { font-size: 15px; font-weight: 600; }
+.adm-ok { color: var(--ok, #1f6b3a); }
+.adm-warn { color: var(--warn, #8a5a00); }
+.adm-bad { color: var(--danger, #a12525); }
+.adm-row-note { display: block; font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.55; }
+
+.adm-fail { margin-top: 12px; border: 1px solid var(--line); border-left: 3px solid var(--warn, #8a5a00); border-radius: 3px; background: var(--surface); padding: 12px 15px 13px; }
+.adm-fail-h { font-size: 13px; font-weight: 600; color: var(--warn, #8a5a00); margin-bottom: 6px; }
+.adm-fail-r { font-size: 12.5px; color: var(--muted); line-height: 1.7; word-break: break-word; }
+.adm-empty { font-size: 13.5px; color: var(--muted); margin: 0; }
+
+.adm-chan { border: 1px solid var(--line); border-radius: 3px; background: var(--surface); overflow: hidden; }
+.adm-chan-r {
+  display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center;
+  padding: 9px 15px; border-top: 1px solid var(--line); font-size: 13.5px;
+}
+.adm-chan-r:first-child { border-top: 0; }
+.adm-chan-n { font-weight: 500; }
+.adm-chan-t { font-size: 11px; border-radius: 2px; padding: 2px 8px; white-space: nowrap; border: 1px solid currentColor; }
+.adm-t-estate { color: #1f6b46; }
+.adm-t-guide { color: #1c3a7a; }
+.adm-t-econ { color: #8a5a00; }
+.adm-t-news { color: #55606f; }
+.adm-t-custom { color: #838d9c; }
+.adm-chan-c { font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+@media (max-width: 460px) {
+  .adm-chan-r { grid-template-columns: 1fr auto; }
+  .adm-chan-t { grid-column: 1 / -1; justify-self: start; }
+}
