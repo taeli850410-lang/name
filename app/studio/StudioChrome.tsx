@@ -133,6 +133,7 @@ export default function StudioChrome({
             {SERVICE_BRAND.line1}
             <small>{SERVICE_BRAND.line2}</small>
           </Link>
+          <div className="chrome-navs">
           <nav className="chrome-seg" aria-label="주기">
             {PERIODS.map((p) => (
               <Link key={p.key} href={periodHref(p.key)} {...cur((onBrief || onInsta || onBlog) && period === p.key)}>
@@ -167,6 +168,7 @@ export default function StudioChrome({
               블로그 포스팅
             </Link>
           </nav>
+          </div>
           <div className="chrome-acts">
             <button className="chrome-btn" onClick={() => setOfficeOpen(true)} title="상호·대표·등록번호·연락처를 이 화면에서 바로 고칩니다">
               🏢 사무소
