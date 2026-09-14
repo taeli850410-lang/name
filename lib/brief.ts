@@ -424,6 +424,36 @@ function videoGuide(topic: Topic): NonNullable<BriefVideoModel["guide"]> {
   };
 }
 
+/** 초를 "7분 12초"로. 1분이 안 되면 초만 */
+function runLabel(sec: number): string {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return m ? (s ? `${m}분 ${s}초` : `${m}분`) : `${s}초`;
+}
+
+/**
+ * FACT 는 '이 영상이 무엇인가'를 사실로만 적는 자리입니다.
+ *
+ * 예전에는 바로 위에 실은 요약을 한 번 더 붙였습니다. 그래서 같은 문단이 카드에 두 번 나왔고,
+ * 채널이 쓴 홍보성 문장("어렵게만 느껴지셨나요?", "공인중개사님들이 알아두면 좋은")이 마치
+ * 중개사무소의 분석인 것처럼 읽혔습니다. 고객에게 보내는 편지에서는 특히 곤란합니다.
+ *
+ * 그래서 우리가 확실히 아는 것만 적습니다 — 누가, 언제, 얼마나, 무슨 주제로, 어느 지역을.
+ * 마지막 한 줄은 아래 ANALYSIS·체크리스트가 영상을 옮긴 것이 아님을 밝혀 둡니다.
+ *
+ * 채널 이름 뒤에 조사를 붙이면 받침에 따라 이/가가 갈립니다. 받침을 안 가리는 "에서"를 씁니다.
+ */
+function videoFact(v: VideoItem): string {
+  const where = v.place ? `, 다루는 지역은 ${v.place}` : "";
+  const out = [
+    `${v.channel}에서 ${fmtDate(v.publishedAt)}에 공개한 영상입니다.`,
+    `주제는 ${TOPIC_LABEL[v.topic]}${where}입니다.`,
+  ];
+  if (v.seconds) out.push(`재생 시간은 ${runLabel(v.seconds)}입니다.`);
+  out.push("아래 정리는 영상을 옮긴 것이 아니라, 이 주제에서 계약 전에 확인할 것을 적은 것입니다.");
+  return out.join(" ");
+}
+
 function toBriefVideo(v: VideoItem, full: boolean, period: Period, pool: VideoNewsSource[] = [], forCustomer = false): BriefVideoModel {
   const { lead, points } = descriptionPoints(v.summary);
   const leadText = clamp(lead || v.summary, full ? 200 : 110);
@@ -441,8 +471,7 @@ function toBriefVideo(v: VideoItem, full: boolean, period: Period, pool: VideoNe
     thumb: v.thumb,
     date: fmtDate(v.publishedAt),
     articles: full ? relatedForVideo(v, pool, period) : [],
-    // 채널 이름 뒤에 조사를 붙이면 받침에 따라 이/가가 갈립니다. 받침을 안 가리는 "에서"를 씁니다
-    fact: full ? `${v.channel}에서 ${fmtDate(v.publishedAt)}에 보도한 내용입니다. ${leadText}`.trim() : undefined,
+    fact: full ? videoFact(v) : undefined,
     analysis: full ? VIDEO_ANALYSIS[v.topic] : undefined,
     guide: full && forCustomer ? videoGuide(v.topic) : undefined,
   };

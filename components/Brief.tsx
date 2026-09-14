@@ -212,7 +212,18 @@ function VideoHead({ v }: { v: BriefVideoModel }) {
           ))}
         </div>
       ) : (
-        v.lead && <p className="pcard-lead">{v.lead}</p>
+        // 꼭지가 안 뽑히면 채널이 적은 설명을 그대로 싣습니다. 고객용에서는 라벨을 붙여
+        // 중개사무소가 쓴 글이 아님을 밝힙니다 — "공인중개사님들이 알아두면 좋은" 같은
+        // 업계향 문장이 라벨 없이 실리면 누가 한 말인지 헷갈립니다.
+        v.lead &&
+        (v.guide ? (
+          <div className="pcard-bullets">
+            <div className="lbl">{L.channelDesc}</div>
+            <p className="pcard-lead vchan-desc">{v.lead}</p>
+          </div>
+        ) : (
+          <p className="pcard-lead">{v.lead}</p>
+        ))
       )}
 
       {v.guide && <VideoGuideTop g={v.guide} />}

@@ -145,11 +145,13 @@ export const NOT_SETTLED: Record<Topic, string> = {
 
 export const CUSTOMER_VIDEO_LABELS = {
   summary: "30초 핵심정리",
+  /** 채널이 직접 적은 설명을 그대로 실을 때. 중개사무소가 쓴 글이 아님을 밝혀 둡니다 */
+  channelDesc: "영상 설명 · 채널 제공",
   audience: "나는 해당될까요?",
   impact: "나에게 어떤 영향?",
   impactNote: "※ 영향도는 주제별 일반 기준이며 분석 의견입니다. 개인의 주택 수·지역·보유 기간에 따라 달라집니다.",
   fact: "FACT",
-  factTitle: "공식 발표·보도 내용",
+  factTitle: "영상 출처와 범위",
   analysis: "ANALYSIS",
   analysisTitle: "확인하실 것",
   notSettled: "아직 정해지지 않은 것",
