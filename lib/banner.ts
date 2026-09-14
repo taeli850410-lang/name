@@ -32,8 +32,19 @@ export const BANNER_MAX = 20;
 /** 버튼 주소로 허용하는 것. javascript: 같은 건 들어올 자리가 없습니다 */
 const SAFE_URL = /^(https?:\/\/|tel:|mailto:)/i;
 
+/**
+ * 그림 주소는 http · https 만 받습니다. 전화번호(tel:)나 메일(mailto:)은 그림이 될 수 없고,
+ * data: 로 그림을 통째로 붙여 넣는 것도 막습니다 — 저장소 한 번에 보낼 수 있는 양(1MB)을
+ * 배너 한 장이 다 먹어 버립니다. 그림은 어딘가에 올리고 주소만 가져오는 것이 맞습니다.
+ */
+const SAFE_IMAGE_URL = /^https?:\/\//i;
+
 export function isSafeBannerUrl(url: string): boolean {
   return SAFE_URL.test(url.trim());
+}
+
+export function isSafeImageUrl(url: string): boolean {
+  return SAFE_IMAGE_URL.test(url.trim());
 }
 
 /** 저장 전에 거는 검증. 사람이 읽는 문장으로 돌려줍니다 */
@@ -49,6 +60,11 @@ export function validateBanner(b: Banner): string[] {
   if (url && !isSafeBannerUrl(url)) errors.push("버튼 주소는 http · https · tel: · mailto: 만 넣을 수 있습니다.");
   if (url && !b.ctaLabel.trim()) errors.push("버튼 주소를 넣었으면 버튼에 쓸 글자도 넣으세요.");
   if (!url && b.ctaLabel.trim()) errors.push("버튼 글자를 넣었으면 눌렀을 때 갈 주소도 넣으세요.");
+
+  const img = b.imageUrl.trim();
+  if (img && !isSafeImageUrl(img)) {
+    errors.push("그림 주소는 http 나 https 로 시작해야 합니다. 그림을 파일째 붙여 넣을 수는 없습니다.");
+  }
 
   if (b.startAt && b.endAt && b.startAt > b.endAt) errors.push("노출 시작일이 종료일보다 뒤입니다.");
   if (b.where.length === 0) errors.push("노출할 곳을 최소 한 곳은 고르세요. 지금은 아무 데도 안 보입니다.");
@@ -66,6 +82,7 @@ export function normalizeBanner(raw: Partial<Banner>, fallbackId: string): Banne
     body: String(raw.body ?? "").trim().slice(0, BODY_MAX),
     ctaLabel: String(raw.ctaLabel ?? "").trim().slice(0, CTA_MAX),
     ctaUrl: isSafeBannerUrl(String(raw.ctaUrl ?? "")) ? String(raw.ctaUrl).trim() : "",
+    imageUrl: isSafeImageUrl(String(raw.imageUrl ?? "")) ? String(raw.imageUrl).trim() : "",
     tone,
     where: where.length ? where : ["customer"],
     isAd: raw.isAd !== false,

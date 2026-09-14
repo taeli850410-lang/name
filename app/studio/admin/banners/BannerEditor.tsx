@@ -11,6 +11,7 @@ import {
   TITLE_MAX,
   TONE_LABEL,
   bannerState,
+  isSafeImageUrl,
   validateBanner,
 } from "@/lib/banner";
 import type { Banner, BannerPlace, BannerTone } from "@/lib/types";
@@ -28,6 +29,7 @@ const EMPTY = (order: number): Banner => ({
   body: "",
   ctaLabel: "",
   ctaUrl: "",
+  imageUrl: "",
   tone: "navy",
   where: ["customer"],
   isAd: true,
@@ -37,12 +39,48 @@ const EMPTY = (order: number): Banner => ({
   order,
 });
 
+/**
+ * 그림 주소가 실제로 열리는지 눌러 봅니다.
+ *
+ * 주소만 검사하면 오타나 막아 둔 주소를 못 잡습니다. 그래서 한 장 불러 보고 결과를 적습니다.
+ * 주소가 바뀌면 key 로 이 조각을 새로 달아 상태가 저절로 초기화됩니다.
+ */
+function ImageProbe({ url }: { url: string }) {
+  const [state, setState] = useState<"load" | "ok" | "bad">("load");
+  if (!url.trim()) return null;
+  if (!isSafeImageUrl(url)) {
+    return <p className="hint bn-badhint">그림 주소는 http 나 https 로 시작해야 합니다.</p>;
+  }
+  // 미리보기가 같은 그림을 이미 받아 뒀으면 onLoad 가 손 붙기 전에 끝나 버립니다.
+  // 그러면 "불러오는 중…" 에서 안 움직입니다 — 그래서 끝났는지 직접 확인합니다.
+  const settle = (el: HTMLImageElement | null) => {
+    if (el?.complete) setState(el.naturalWidth > 0 ? "ok" : "bad");
+  };
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={url} alt="" hidden ref={settle} onLoad={() => setState("ok")} onError={() => setState("bad")} />
+      {state === "load" && <p className="hint">그림을 불러오는 중…</p>}
+      {state === "ok" && <p className="hint bn-okhint">그림을 불러왔습니다. 아래 미리보기로 확인하세요.</p>}
+      {state === "bad" && (
+        <p className="hint bn-badhint">
+          이 주소에서 그림이 안 열립니다. 주소가 맞는지, 로그인 없이 누구나 볼 수 있는 주소인지 확인하세요.
+        </p>
+      )}
+    </>
+  );
+}
+
 function Preview({ b, place }: { b: Banner; place: BannerPlace }) {
   const forCustomer = place === "customer";
   return (
     <div className="bn-prev">
       <div className="bn-prev-h">{PLACE_LABEL[place]}</div>
       <div className={`promo promo-${b.tone}`}>
+        {b.imageUrl && isSafeImageUrl(b.imageUrl) && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img className="promo-img" src={b.imageUrl} alt="" />
+        )}
         <p className="promo-t">{b.title || "제목이 들어갑니다"}</p>
         {b.body && <p className="promo-b">{b.body}</p>}
         {b.ctaUrl && b.ctaLabel && <span className="promo-btn">{b.ctaLabel}</span>}
@@ -193,6 +231,16 @@ export default function BannerEditor({ initial }: { initial: Banner[] }) {
                 <input id="bn-ctau" value={cur.ctaUrl} onChange={(e) => patch({ ctaUrl: e.target.value })} placeholder="tel:01000000000" />
                 <p className="hint">http · https · tel: · mailto: 만 넣을 수 있습니다.</p>
               </div>
+            </div>
+
+            <div className="field">
+              <label htmlFor="bn-img">그림 주소 <span className="bn-count">안 넣어도 됩니다</span></label>
+              <input id="bn-img" value={cur.imageUrl} onChange={(e) => patch({ imageUrl: e.target.value })} placeholder="https://… .jpg" />
+              <ImageProbe key={cur.imageUrl} url={cur.imageUrl} />
+              <p className="hint">
+                <b>가로 1200px</b> 로 만드세요. 화면에는 600px 로 줄어 들어가고, 두 배로 만들어야 휴대폰에서 안 뿌옇습니다.
+                높이는 <b>1200×600</b> 이나 <b>1200×400</b> 이 무난합니다. 그림은 제목 위에 얹히고, 버튼 주소를 넣어 두면 그림을 눌러도 같은 곳으로 갑니다.
+              </p>
             </div>
 
             <div className="bn-two">

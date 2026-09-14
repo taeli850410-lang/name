@@ -179,9 +179,20 @@ function NumberedArticles({ articles, id }: { articles: BriefVideoModel["article
  * 광고가 아닙니다.
  */
 function Promo({ p }: { p: BriefPromoModel }) {
+  // 그림은 알맹이가 아니라 치장입니다 — 뜻은 아래 제목·본문이 다 지고 있어서 alt 를 비웁니다.
+  // 그래야 그림 주소가 죽었을 때 깨진 아이콘 대신 조용히 사라지고, 읽어 주는 기계도 같은 말을 두 번 안 합니다.
+  const img = p.imageUrl ? <img className="promo-img" src={p.imageUrl} alt="" /> : null;
   return (
     <section className="sec">
-      <aside className={`promo promo-${p.tone}`}>
+      <aside className={`promo promo-${p.tone}${p.imageUrl ? " promo-has-img" : ""}`}>
+        {img &&
+          (p.ctaUrl ? (
+            <a className="promo-imglink" href={p.ctaUrl} target="_blank" rel="noreferrer noopener">
+              {img}
+            </a>
+          ) : (
+            img
+          ))}
         <p className="promo-t">{p.title}</p>
         {p.body && <p className="promo-b">{p.body}</p>}
         {p.ctaUrl && p.ctaLabel && (

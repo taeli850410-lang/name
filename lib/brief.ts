@@ -155,6 +155,8 @@ export interface BriefPromoModel {
   body: string;
   ctaLabel: string;
   ctaUrl: string;
+  /** 있으면 글자 위에 그림이 한 장 얹힙니다. 없으면 그림 자리가 아예 안 그려집니다 */
+  imageUrl: string;
   tone: BannerTone;
   /** 고객용이고 광고로 표시한 배너일 때만 참 — 중개사 본인이 보는 화면에는 안 붙습니다 */
   showAdMark: boolean;
@@ -316,6 +318,7 @@ export function promoBlock(banner: Banner | undefined, audience: Audience): Brie
     body: banner.body,
     ctaLabel: banner.ctaLabel,
     ctaUrl: banner.ctaUrl,
+    imageUrl: banner.imageUrl,
     tone: banner.tone,
     showAdMark: forCustomer && banner.isAd,
     // 중개사 화면에서만 한 줄 덧붙입니다 — 이게 고객한테도 나가는 것인지 아닌지를 여기서 바로 알아야 합니다

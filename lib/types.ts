@@ -324,6 +324,8 @@ export interface Banner {
   ctaLabel: string;
   /** http · https · tel: · mailto: 만 */
   ctaUrl: string;
+  /** 글자 위에 얹는 그림의 주소. 비우면 지금처럼 글자만 나옵니다. http · https 만 */
+  imageUrl: string;
   tone: BannerTone;
   where: BannerPlace[];
   /** 켜면 고객용에 (광고) 표기와 수신거부 안내가 붙습니다 */
