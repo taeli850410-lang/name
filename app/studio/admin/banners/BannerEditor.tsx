@@ -32,8 +32,10 @@ const EMPTY = (order: number): Banner => ({
   ctaUrl: "",
   imageUrl: "",
   tone: "navy",
-  where: ["customer"],
-  isAd: true,
+  // 양쪽에 겁니다. 사무소가 배너를 만들면 자기 브리핑 맨 아래에서도 보여야 무엇이 나가는지 압니다
+  where: ["customer", "broker"],
+  // 광고 표시는 꺼 둡니다. 상담 안내처럼 광고가 아닌 것이 더 많고, 켜면 (광고) 딱지가 붙습니다
+  isAd: false,
   startAt: null,
   endAt: null,
   enabled: true,
@@ -148,7 +150,7 @@ function Preview({ b, place }: { b: Banner; place: BannerPlace }) {
         <p className="promo-t">{b.title || "제목이 들어갑니다"}</p>
         {b.body && <p className="promo-b">{b.body}</p>}
         {b.ctaUrl && b.ctaLabel && <span className="promo-btn">{b.ctaLabel}</span>}
-        {forCustomer && b.isAd && <span className="promo-ad">(광고) 수신거부는 아래 안내를 확인하세요.</span>}
+        {forCustomer && b.isAd && <span className="promo-ad">(광고)</span>}
         {!forCustomer && (
           <span className="promo-note">
             {b.where.includes("customer")
@@ -426,7 +428,7 @@ export default function BannerEditor({ initial }: { initial: Banner[] }) {
                   </label>
                 </div>
                 <p className="hint">
-                  사무소를 홍보하는 내용이면 <b>광고로 표시</b>를 켜 두세요. 고객용 EDM 에 <b>(광고)</b> 표기가 붙습니다. 중개사용 브리핑에는 붙지 않습니다.
+                  상담 안내가 아니라 <b>광고</b>에 가까운 내용이면 <b>광고로 표시</b>를 켜세요. 고객용 EDM 에 작게 <b>(광고)</b> 한 마디만 붙습니다(중개사용에는 안 붙습니다). 정보통신망법이 광고성 정보에 요구하는 표기입니다.
                 </p>
               </div>
             </div>

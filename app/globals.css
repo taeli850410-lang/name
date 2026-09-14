@@ -385,8 +385,10 @@ tr:last-child td { border-bottom: 0; }
 .brief .card.empty { color: var(--muted-b); font-size: 13.5px; }
 .brief .note { font-size: 11.5px; color: var(--dim-b); line-height: 1.55; margin: 12px 0 0; }
 /* 고객용 레터 맨 위의 서비스 로고 — 누르면 메인으로 */
-.brief .letter-brand { display: block; background: var(--chrome); color: #fff; border-radius: 12px; padding: 14px 18px; margin-bottom: 14px; text-align: center; font-weight: 900; font-size: 15px; letter-spacing: 0.12em; line-height: 1.2; text-decoration: none; }
-.brief .letter-brand small { display: block; margin-top: 3px; font-size: 10.5px; letter-spacing: 0.26em; color: var(--gold); font-weight: 700; }
+/* 서비스 이름표. 가로로 꽉 찬 큰 판이었는데, 고객이 제일 먼저 봐야 할 것은 서비스 이름이
+   아니라 사무소 이름과 이번 호 내용입니다. 왼쪽 위 작은 딱지로 물러나 앉힙니다 */
+.brief .letter-brand { display: inline-flex; align-items: baseline; gap: 6px; background: var(--chrome); color: #fff; border-radius: 6px; padding: 5px 9px; margin-bottom: 12px; font-weight: 900; font-size: 9.5px; letter-spacing: 0.14em; line-height: 1.25; text-decoration: none; }
+.brief .letter-brand small { display: inline; margin: 0; font-size: 9px; letter-spacing: 0.18em; color: var(--gold); font-weight: 700; }
 .brief .letter-brand:hover { text-decoration: none; opacity: 0.92; }
 
 /* 마스트헤드 */
