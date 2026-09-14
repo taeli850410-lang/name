@@ -316,6 +316,8 @@ export interface CollectStats {
     timed?: number;
     tried?: number;
     durationWhy?: Record<string, number>;
+    /** 워치 페이지에서 받은 바이트(가장 큰 값). 동의·봇 페이지면 몇십 KB, 진짜 페이지면 1MB 넘습니다 */
+    durationBytes?: number;
   };
 }
 

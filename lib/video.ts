@@ -308,7 +308,7 @@ const LENGTH_MARK = /"lengthSeconds":"(\d+)"/;
 /** 머리말에 먼저 나오는 표시. 재생 정보보다 앞이라 이쪽이 먼저 걸릴 때가 많습니다 */
 const META_MARK = /itemprop="duration"[^>]*content="PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?"/i;
 /** 표시를 못 찾아도 여기까지만 읽고 포기합니다 */
-const MAX_SCAN = 512 * 1024;
+const MAX_SCAN = 1536 * 1024;
 /** 한 편을 기다리는 최대 시간. 열 편을 한꺼번에 부르므로 이게 곧 이 단계의 상한입니다 */
 const DURATION_TIMEOUT = 9000;
 
@@ -334,7 +334,48 @@ const WATCH_HEADERS: Record<string, string> = {
 };
 
 /** 왜 못 읽었는지. 배포한 데서 무슨 일이 있었는지 알아야 다음에 고칠 수 있습니다 */
-export type DurationWhy = "ok" | "http" | "empty" | "notfound" | "timeout" | "error";
+export type DurationWhy = "ok" | "key" | "http" | "empty" | "notfound" | "timeout" | "error";
+
+/**
+ * 공식 API 로 재생시간을 받습니다. YT_API_KEY 가 있을 때만 씁니다.
+ *
+ * 워치 페이지를 긁는 쪽은 2026-09-14 배포본에서 열 편 전부 실패했습니다(durationWhy
+ * `{notfound: 10}` — 200 은 왔는데 길이 표시가 없는 페이지). 브라우저인 척해도 안 됐습니다.
+ * 데이터센터 주소에서 오는 요청에는 유튜브가 다른 페이지를 주는 것으로 보입니다.
+ *
+ * 공식 API 는 그런 다툼이 없습니다. 쉰 편을 한 번에 물어보고 1 유닛을 씁니다(하루 10,000).
+ * 하루 한 번 열 편이면 하루 1 유닛입니다.
+ *
+ * 키가 없으면 이 함수는 아무것도 하지 않고, 예전처럼 제목·설명문 어림으로 갑니다.
+ */
+const API_DURATION = /^P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/i;
+
+export async function apiDurations(ids: string[]): Promise<Map<string, number>> {
+  const key = process.env.YT_API_KEY;
+  const out = new Map<string, number>();
+  if (!key || !ids.length) return out;
+  const base = process.env.YT_API_BASE || "https://www.googleapis.com/youtube/v3/videos";
+  const url = `${base}?part=contentDetails&maxResults=50&id=${encodeURIComponent(ids.slice(0, 50).join(","))}&key=${encodeURIComponent(key)}`;
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), DURATION_TIMEOUT);
+  try {
+    const res = await fetch(url, { cache: "no-store", signal: ctl.signal });
+    if (!res.ok) return out;
+    const json = (await res.json()) as { items?: { id?: string; contentDetails?: { duration?: string } }[] };
+    for (const it of json.items ?? []) {
+      const m = API_DURATION.exec(String(it.contentDetails?.duration ?? ""));
+      if (!m || !it.id) continue;
+      const sec = Number(m[1] ?? 0) * 86400 + Number(m[2] ?? 0) * 3600 + Number(m[3] ?? 0) * 60 + Number(m[4] ?? 0);
+      if (sec > 0) out.set(it.id, sec);
+    }
+    return out;
+  } catch {
+    return out;
+  } finally {
+    clearTimeout(timer);
+    ctl.abort();
+  }
+}
 
 function markSeconds(buf: string): number | null {
   const m = LENGTH_MARK.exec(buf);
@@ -351,7 +392,7 @@ function markSeconds(buf: string): number | null {
  * 워치 페이지는 1MB가 넘지만 재생시간은 앞쪽 재생 정보에 들어 있습니다. 그래서 전부 받지 않고
  * 조각을 읽어 가며 표시를 만나는 즉시 끊습니다 — 수집 한 번에 여덟 번을 불러도 부담이 적습니다.
  */
-export async function tryDuration(videoId: string): Promise<{ seconds: number | null; why: DurationWhy }> {
+export async function tryDuration(videoId: string): Promise<{ seconds: number | null; why: DurationWhy; bytes?: number }> {
   // 끊는 수단을 abort 하나로 통일합니다. 스트림을 reader.cancel() 로 닫으면 Next 가 감싼 fetch 에서
   // 응답이 끝날 때까지 돌아오지 않는 자리가 있었습니다(수집이 100초를 넘겨도 안 끝났습니다).
   const ctl = new AbortController();
@@ -379,7 +420,9 @@ export async function tryDuration(videoId: string): Promise<{ seconds: number | 
       // 표시가 조각 경계에 걸칠 수 있어 꼬리만 남깁니다. 머리말 표시가 더 길어서 넉넉히 둡니다
       buf = buf.slice(-256);
     }
-    return { seconds: null, why: "notfound" };
+    // 몇 바이트를 받았는지 같이 남깁니다. 동의·봇 페이지는 몇십 KB 이고 진짜 워치 페이지는
+    // 1MB 가 넘어서, 이 수 하나로 둘이 갈립니다.
+    return { seconds: null, why: "notfound", bytes: read };
   } catch {
     return { seconds: null, why: timedOut ? "timeout" : "error" };
   } finally {
@@ -399,18 +442,27 @@ export async function fetchDuration(videoId: string): Promise<number | null> {
 export async function withDurations(
   videos: VideoItem[],
   targets: VideoItem[],
-): Promise<{ videos: VideoItem[]; timed: number; tried: number; why: Partial<Record<DurationWhy, number>> }> {
+): Promise<{ videos: VideoItem[]; timed: number; tried: number; why: Partial<Record<DurationWhy, number>>; bytes?: number }> {
   if (!targets.length) return { videos, timed: 0, tried: 0, why: {} };
-  const found = await Promise.all(targets.map(async (v) => [v.id, await tryDuration(v.id)] as const));
 
-  // 왜 못 읽었는지 세어 둡니다. 전부 null 로만 남으면 배포한 데서 무슨 일이 있었는지 알 길이 없습니다 —
-  // 실제로 한 번 그래서, 막힌 것인지 느린 것인지를 두고 한참 헤맸습니다.
-  const why: Partial<Record<DurationWhy, number>> = {};
-  for (const [, r] of found) why[r.why] = (why[r.why] ?? 0) + 1;
+  // 키가 있으면 공식 API 로 한 번에 묻습니다. 쉰 편까지 한 번, 하루 할당량의 1/10000 입니다.
+  const secs = await apiDurations(targets.map((v) => v.id));
+  const why: Partial<Record<DurationWhy, number>> = secs.size ? { key: secs.size } : {};
 
-  const secs = new Map(
-    found.filter((p): p is [string, { seconds: number; why: DurationWhy }] => typeof p[1].seconds === "number").map(([id, r]) => [id, r.seconds]),
-  );
+  // API 가 못 준 것만 워치 페이지로 내려갑니다. 키가 없으면 전부 이쪽입니다.
+  const rest = targets.filter((v) => !secs.has(v.id));
+  let bytes: number | undefined;
+  if (rest.length) {
+    const found = await Promise.all(rest.map(async (v) => [v.id, await tryDuration(v.id)] as const));
+    // 왜 못 읽었는지 세어 둡니다. 전부 null 로만 남으면 배포한 데서 무슨 일이 있었는지 알 길이 없습니다 —
+    // 실제로 한 번 그래서, 막힌 것인지 느린 것인지를 두고 한참 헤맸습니다.
+    for (const [id, r] of found) {
+      why[r.why] = (why[r.why] ?? 0) + 1;
+      if (typeof r.bytes === "number") bytes = Math.max(bytes ?? 0, r.bytes);
+      if (typeof r.seconds === "number") secs.set(id, r.seconds);
+    }
+  }
+
   const out = secs.size ? videos.map((v) => (secs.has(v.id) ? { ...v, seconds: secs.get(v.id) } : v)) : videos;
-  return { videos: out, timed: secs.size, tried: targets.length, why };
+  return { videos: out, timed: secs.size, tried: targets.length, why, bytes };
 }

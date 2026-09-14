@@ -300,6 +300,7 @@ export async function runCollect(opts: CollectOptions = {}): Promise<CollectStat
         timed: timed.timed,
         tried: timed.tried,
         durationWhy: timed.why,
+        durationBytes: timed.bytes,
       };
       for (const src of res.stats.sources) if (!src.ok) stats.errors.push(`영상 ${src.input}: ${src.error ?? "실패"}`);
     }
