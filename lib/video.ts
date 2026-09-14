@@ -215,6 +215,8 @@ export interface VideoCollectStats {
   added: number;
   /** 예전 기준으로 담겨 있다가 지금 기준에 안 맞아 빠진 편수 */
   dropped: number;
+  /** 같은 영상인데 제목·요약이 달라져 갈아 끼운 편수 */
+  refreshed: number;
   sources: { input: string; key: string | null; items: number; ok: boolean; error?: string }[];
 }
 
@@ -226,20 +228,32 @@ export interface VideoCollectStats {
  * 계속 올라왔습니다. 해시태그는 저장하지 않으므로 제목과 요약만 봅니다 — 해시태그로만 통과했던
  * 영상이 여기서 빠질 수 있는데, 애매한 걸 남기는 것보다 낫습니다.
  */
-export function mergeVideos(existing: VideoItem[], incoming: VideoItem[]): { videos: VideoItem[]; added: number; dropped: number } {
+export function mergeVideos(existing: VideoItem[], incoming: VideoItem[]): { videos: VideoItem[]; added: number; dropped: number; refreshed: number } {
   // 제목만 봅니다. 요약까지 보면 종합뉴스 채널의 채널 소개 문구에 '부동산'이 한 번 들어 있어서
   // 인사청문회 영상이 그대로 남습니다 — 수집할 때 설명문을 안 보는 것과 같은 이유입니다.
   const kept = existing.filter((v) => isStrongRealEstate(v.title));
   const dropped = existing.length - kept.length;
   const seen = new Map(kept.map((v) => [v.id, v]));
   let added = 0;
+  let refreshed = 0;
   for (const v of incoming) {
-    if (seen.has(v.id)) continue;
+    const cur = seen.get(v.id);
+    if (cur) {
+      // 같은 영상이 다시 들어오면 방금 정리한 쪽으로 갈아 끼웁니다.
+      //
+      // 예전에는 저장된 쪽을 그대로 뒀습니다. 그래서 설명문 정리 규칙을 고쳐도 이미 담긴 영상은
+      // 안 바뀌어서, "프리미엄9만 가입하면 월 2만원…" 같은 홍보 문구가 몇 주씩 카드에 실렸습니다.
+      // 이미 알아낸 재생시간은 새 쪽에 옮겨 붙여 다시 부르지 않게 합니다.
+      const merged = cur.seconds != null && v.seconds == null ? { ...v, seconds: cur.seconds } : v;
+      if (merged.summary !== cur.summary || merged.title !== cur.title) refreshed++;
+      seen.set(v.id, merged);
+      continue;
+    }
     seen.set(v.id, v);
     added++;
   }
   const videos = [...seen.values()].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()).slice(0, VIDEO_KEEP);
-  return { videos, added, dropped };
+  return { videos, added, dropped, refreshed };
 }
 
 export async function collectVideos(
@@ -247,7 +261,7 @@ export async function collectVideos(
   existing: VideoItem[],
   cache: Record<string, string> = {},
 ): Promise<{ videos: VideoItem[]; stats: VideoCollectStats; cache: Record<string, string> }> {
-  const stats: VideoCollectStats = { fetched: 0, added: 0, dropped: 0, sources: [] };
+  const stats: VideoCollectStats = { fetched: 0, added: 0, dropped: 0, refreshed: 0, sources: [] };
   const nextCache = { ...cache };
   const incoming: VideoItem[] = [];
 
@@ -275,9 +289,10 @@ export async function collectVideos(
     stats.sources.push({ input: r.input, key: r.key, items: r.items.length, ok: r.ok, error: r.error });
   }
 
-  const { videos, added, dropped } = mergeVideos(existing, incoming);
+  const { videos, added, dropped, refreshed } = mergeVideos(existing, incoming);
   stats.added = added;
   stats.dropped = dropped;
+  stats.refreshed = refreshed;
   return { videos, stats, cache: nextCache };
 }
 

@@ -307,7 +307,7 @@ export interface CollectStats {
   errors: string[];
   feeds: { id: string; items: number; ok: boolean }[];
   /** 유튜브 영상 기사 — 가져온 편수 / 새로 담은 편수 */
-  videos?: { fetched: number; added: number; dropped?: number; timed?: number };
+  videos?: { fetched: number; added: number; dropped?: number; refreshed?: number; timed?: number };
 }
 
 export interface Meta {

@@ -292,7 +292,7 @@ export async function runCollect(opts: CollectOptions = {}): Promise<CollectStat
       const timed = await withDurations(res.videos, durationLookups(res.videos));
       await saveVideos(timed.videos);
       meta0.channelIds = res.cache;
-      stats.videos = { fetched: res.stats.fetched, added: res.stats.added, dropped: res.stats.dropped, timed: timed.timed };
+      stats.videos = { fetched: res.stats.fetched, added: res.stats.added, dropped: res.stats.dropped, refreshed: res.stats.refreshed, timed: timed.timed };
       for (const src of res.stats.sources) if (!src.ok) stats.errors.push(`영상 ${src.input}: ${src.error ?? "실패"}`);
     }
   } catch (e) {
