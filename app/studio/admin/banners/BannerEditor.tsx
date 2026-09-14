@@ -150,7 +150,6 @@ function Preview({ b, place }: { b: Banner; place: BannerPlace }) {
         <p className="promo-t">{b.title || "제목이 들어갑니다"}</p>
         {b.body && <p className="promo-b">{b.body}</p>}
         {b.ctaUrl && b.ctaLabel && <span className="promo-btn">{b.ctaLabel}</span>}
-        {forCustomer && b.isAd && <span className="promo-ad">(광고)</span>}
         {!forCustomer && (
           <span className="promo-note">
             {b.where.includes("customer")

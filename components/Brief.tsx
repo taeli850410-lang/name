@@ -200,7 +200,6 @@ function Promo({ p }: { p: BriefPromoModel }) {
             {p.ctaLabel}
           </a>
         )}
-        {p.showAdMark && <span className="promo-ad">(광고)</span>}
         {p.note && <span className="promo-note">{p.note}</span>}
       </aside>
     </section>

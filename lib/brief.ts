@@ -168,6 +168,8 @@ export const DISCLAIMER =
   "본 자료는 정부·공공기관의 발표자료 및 공개된 언론보도를 바탕으로 일반적인 부동산 정보를 제공하기 위해 작성되었습니다. 개별 부동산의 매수·매도·세무·법률 판단은 개인별 상황에 따라 달라질 수 있으므로 필요한 경우 관련 전문가의 별도 확인을 권합니다.";
 export const AD_FOOTER =
   "본 자료는 일반적인 부동산 정보 제공을 목적으로 작성되었으며 개별적인 투자·세무·법률 판단을 대신하지 않습니다. 광고성 정보 수신에 동의한 고객에게 발송되었습니다.";
+/** 배너를 광고로 표시했을 때 푸터에 한 줄 더. 배너 카드 안에 넣으면 버튼 아래가 한 칸 더 벌어집니다 */
+export const AD_BANNER_NOTE = "이 편지 맨 아래 홍보 배너는 광고입니다.";
 export const NUMBERS_NOTE = "※ 실거래 신고 기한이 30일이라 최근 두 달 수치는 잠정치이며 이후 늘어날 수 있습니다. 출처와 기준일이 확인되지 않은 수치는 표시하지 않습니다.";
 
 /**
@@ -351,6 +353,7 @@ export function letterToBrief(letter: Letter, banners: Banner[] = [], now = Date
 
   const lead = letter.issues[0];
   const period = letter.period;
+  const promo = promoBlock(activeBanner(banners, "customer", now), "customer");
   const footLinks: { label: string; href: string }[] = [];
   if (unsubscribeHref) footLinks.push({ label: "수신거부", href: unsubscribeHref });
   if (o.privacyUrl) footLinks.push({ label: "개인정보처리방침", href: o.privacyUrl });
@@ -412,12 +415,12 @@ export function letterToBrief(letter: Letter, banners: Banner[] = [], now = Date
     comment: letter.comment
       ? { name: o.repName ? `${o.repName} 공인중개사의 한마디` : `${o.officeName}의 한마디`, tag: "전문가 코멘트", body: letter.comment }
       : undefined,
-    promo: promoBlock(activeBanner(banners, "customer", now), "customer"),
+    promo,
     cta: { title: CTA_TITLE, sub: CTA_SUB, buttons },
     footer: {
       head: `${o.officeName} 안내`,
       rows: officeRows(o),
-      legal: [DISCLAIMER, AD_FOOTER],
+      legal: promo?.showAdMark ? [DISCLAIMER, AD_FOOTER, AD_BANNER_NOTE] : [DISCLAIMER, AD_FOOTER],
       links: footLinks,
     },
   };
