@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
+import ScrollTop from "@/components/ScrollTop";
 
 export const metadata: Metadata = {
   title: { default: "Real Estate Report Alert", template: "%s · Real Estate Report Alert" },
@@ -37,7 +38,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <ScrollTop />
+      </body>
     </html>
   );
 }

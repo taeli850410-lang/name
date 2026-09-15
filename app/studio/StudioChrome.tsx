@@ -110,16 +110,33 @@ export default function StudioChrome({
     const body = encodeURIComponent(`${letter.headline}\n\n▶ 전체 브리핑 보기\n${url}`);
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
   }
-  function kakao() {
+  /**
+   * 공유. 휴대폰이면 기기의 공유 창을 띄웁니다 — 카카오톡·메시지·메일이 거기 다 있습니다.
+   *
+   * 여태는 문구를 복사해 두고 사무소가 카카오톡을 직접 열어 붙여 넣어야 했습니다.
+   * navigator.share 는 그 두 단계를 없앱니다. 없는 환경(대개 데스크톱 브라우저)에서는
+   * 예전처럼 복사로 내려갑니다.
+   */
+  async function share(kind: "kakao" | "link") {
     const url = letterUrl();
     if (!letter || !url) return needLetter();
-    void copy(letter.share.replace("{{URL}}", url), "카카오톡에 붙여 넣을 공유 문구를 복사했습니다.");
+    const text = letter.share.replace("{{URL}}", url);
+    const nav = typeof navigator !== "undefined" ? (navigator as Navigator & { share?: (d: ShareData) => Promise<void> }) : null;
+    if (nav?.share) {
+      try {
+        // 공유 창에 뜨는 제목은 문구 첫 줄을 씁니다 — `[사무소 이름] 이달의 부동산 브리핑`.
+        // 서비스 이름(REAL ESTATE)만 띄우면 받는 사람이 누가 보낸 것인지 모릅니다.
+        const title = text.split("\n")[0].trim() || SERVICE_BRAND.line1;
+        await nav.share(kind === "kakao" ? { title, text, url } : { title, url });
+        return;
+      } catch (e) {
+        // 사용자가 공유 창을 닫은 것은 실패가 아닙니다. 그때는 아무 말도 하지 않습니다
+        if ((e as Error)?.name === "AbortError") return;
+      }
+    }
+    void copy(kind === "kakao" ? text : url, kind === "kakao" ? "공유 문구를 복사했습니다. 카카오톡에 붙여 넣으세요." : "고객용 EDM 링크를 복사했습니다.");
   }
-  function link() {
-    const url = letterUrl();
-    if (!letter || !url) return needLetter();
-    void copy(url, "고객용 EDM 링크를 복사했습니다.");
-  }
+
 
   const cur = (on: boolean) => (on ? { "aria-current": "true" as const } : {});
 
@@ -154,7 +171,8 @@ export default function StudioChrome({
               중개사용
             </Link>
           </nav>
-          <nav className="chrome-seg" aria-label="보기">
+          </div>
+          <nav className="chrome-seg chrome-view" aria-label="보기">
             <Link href={briefHref({ view: "email" })} {...cur(onBrief && view === "email")}>
               이메일
             </Link>
@@ -168,7 +186,6 @@ export default function StudioChrome({
               블로그 포스팅
             </Link>
           </nav>
-          </div>
           <div className="chrome-acts">
             <button className="chrome-btn" onClick={() => setOfficeOpen(true)} title="상호·대표·등록번호·연락처를 이 화면에서 바로 고칩니다">
               🏢 사무소
@@ -179,10 +196,10 @@ export default function StudioChrome({
             <button className="chrome-btn" onClick={() => window.print()} title="브라우저 인쇄 대화상자에서 PDF로 저장">
               🖨 PDF·인쇄
             </button>
-            <button className="chrome-btn" onClick={kakao} title="최근 발행한 EDM의 카카오톡 공유 문구 복사">
+            <button className="chrome-btn" onClick={() => void share("kakao")} title="휴대폰이면 공유 창에서 카카오톡을 고르고, 아니면 문구를 복사합니다">
               💬 카카오톡
             </button>
-            <button className="chrome-btn" onClick={link} title="최근 발행한 EDM 링크 복사">
+            <button className="chrome-btn" onClick={() => void share("link")} title="휴대폰이면 공유 창을, 아니면 링크를 복사합니다">
               🔗 링크
             </button>
           </div>
