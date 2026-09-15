@@ -271,12 +271,20 @@ export async function collectVideos(
       const src = await resolveSource(input, cache);
       if (!src) return { input, key: null, items: [] as VideoItem[], ok: false, error: "채널을 찾지 못했습니다" };
       try {
-        const res = await fetch(feedUrl(src), { headers: { "user-agent": "Mozilla/5.0 (compatible; RealEstateReportAlert/1.0)" }, cache: "no-store" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         // 종합뉴스 채널(연합뉴스TV·YTN·KBS)은 제목에 부동산 낱말이 있을 때만 담습니다
         const tier = channelTier(src.key) ?? channelTier(input.trim());
+        // 워치 페이지와 같은 머리글을 씁니다. v53 에서 워치 페이지만 고치고 여기를 빼먹었는데,
+        // 2026-09-15 수집에서 채널 열네 곳이 전부 HTTP 404 로 돌아왔습니다 — 하루 전까지는
+        // 서른다섯 편을 받아 오던 자리입니다. 우리를 봇이라고 밝히던 머리글이 유력합니다.
+        const res = await fetch(feedUrl(src), { headers: WATCH_HEADERS, cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return { input, key: src.key, items: parseVideoFeed(await res.text(), tier !== "news"), ok: true };
       } catch (e) {
+        // 피드가 막히면 공식 API 로 한 번 더 갑니다(키가 있을 때만). 업로드 목록은 한 번에 1 유닛이라
+        // 채널 열네 곳을 다 물어도 하루 14 유닛, 할당량 10,000 의 0.14% 입니다.
+        const tier = channelTier(src.key) ?? channelTier(input.trim());
+        const viaApi = src.kind === "channel" ? await apiChannelVideos(src.key, tier !== "news") : [];
+        if (viaApi.length) return { input, key: src.key, items: viaApi, ok: true, error: undefined };
         return { input, key: src.key, items: [] as VideoItem[], ok: false, error: e instanceof Error ? e.message : String(e) };
       }
     }),
@@ -294,6 +302,62 @@ export async function collectVideos(
   stats.dropped = dropped;
   stats.refreshed = refreshed;
   return { videos, stats, cache: nextCache };
+}
+
+/**
+ * 공식 API 로 한 채널의 최근 업로드를 받습니다. YT_API_KEY 가 있을 때만 씁니다.
+ *
+ * 채널 UCxxxx 의 업로드 목록은 UUxxxx 입니다(유튜브가 오래 지켜 온 규칙). 그 목록을
+ * playlistItems 로 읽으면 한 번에 1 유닛입니다 — search 로 찾으면 100 유닛이라 채널
+ * 열네 곳이면 하루 1,400 유닛이 됩니다. 같은 것을 100분의 1 로 받습니다.
+ *
+ * 피드가 살아 있으면 이 길은 안 탑니다. 피드가 막힌 날에만 뒤를 받칩니다.
+ */
+export async function apiChannelVideos(channelId: string, trustHashtags = true): Promise<VideoItem[]> {
+  const key = process.env.YT_API_KEY;
+  if (!key || !/^UC[\w-]{20,}$/.test(channelId)) return [];
+  const base = process.env.YT_API_PLAYLIST_BASE || "https://www.googleapis.com/youtube/v3/playlistItems";
+  const uploads = `UU${channelId.slice(2)}`;
+  const url = `${base}?part=snippet&maxResults=15&playlistId=${encodeURIComponent(uploads)}&key=${encodeURIComponent(key)}`;
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), DURATION_TIMEOUT);
+  try {
+    const res = await fetch(url, { cache: "no-store", signal: ctl.signal });
+    if (!res.ok) return [];
+    const json = (await res.json()) as {
+      items?: { snippet?: { title?: string; description?: string; publishedAt?: string; channelTitle?: string; resourceId?: { videoId?: string } } }[];
+    };
+    const out: VideoItem[] = [];
+    for (const it of json.items ?? []) {
+      const sn = it.snippet ?? {};
+      const videoId = sn.resourceId?.videoId ?? "";
+      const title = stripHtml(String(sn.title ?? ""));
+      if (!videoId || !title || NOT_A_REPORT.test(title)) continue;
+      // 피드로 들어올 때와 똑같은 규칙을 태웁니다. 들어오는 길이 둘이어도 담기는 기준은 하나여야 합니다
+      const raw = String(sn.description ?? "");
+      if (!isStrongRealEstate(title) && !(trustHashtags && isStrongRealEstate(hashtagsOf(raw)))) continue;
+      const summary = clamp(stripHtml(cleanDescription(raw)), 320);
+      out.push({
+        id: videoId,
+        title,
+        summary,
+        channel: stripHtml(String(sn.channelTitle ?? "")),
+        channelId,
+        url: `https://www.youtube.com/watch?v=${videoId}`,
+        thumb: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+        publishedAt: toIso(String(sn.publishedAt ?? "")),
+        topic: detectTopic(title, summary),
+        place: detectPlace(title),
+      });
+    }
+    out.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+    return out.slice(0, PER_CHANNEL);
+  } catch {
+    return [];
+  } finally {
+    clearTimeout(timer);
+    ctl.abort();
+  }
 }
 
 /* ───────── 재생시간 ───────── */
