@@ -690,6 +690,60 @@ tr:last-child td { border-bottom: 0; }
 .brief .foot-links a { color: var(--p); text-decoration: underline; }
 .brief .foot-links .sep { color: var(--line-b); margin: 0 6px; }
 
+/* ═══════════ 넓은 화면: 양옆을 비우지 않습니다 ═══════════
+   기기 프레임을 640px 로 묶어 둬서 PC 에서는 좌우가 회색으로 텅 비었습니다.
+   그렇다고 폭만 늘리면 한 줄이 1,000px 가 되어 읽기가 더 나빠집니다 — 긴 줄은 눈이
+   다음 줄 첫머리를 못 찾습니다. 그래서 **글줄은 그대로 두고 카드를 옆으로 폅니다.**
+   같은 내용이 절반 길이에 들어가서 스크롤도 같이 줄어듭니다.
+
+   「모바일」 보기는 건드리지 않습니다. 고객이 휴대폰에서 어떻게 보는지 확인하는 자리입니다. */
+@media (min-width: 1024px) {
+  .brief-device:not(.mobile) { max-width: 1060px; }
+  .brief-device:not(.mobile) .wrap { max-width: 1020px; }
+
+  /* 정책 카드·주요 뉴스를 두 칸으로. 카드 하나가 490px 쯤 되어 본문 길이는 그대로입니다 */
+  .brief-device:not(.mobile) .stack {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start; gap: 14px;
+  }
+  /* 우리 동네 숫자와 영상도 자리에 맞춰 폅니다 */
+  .brief-device:not(.mobile) .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .brief-device:not(.mobile) .vid-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  /* 한 칸을 통째로 쓰는 덩어리(헤드라인·한마디·상담·배너·푸터 안내)는 그 안의 글만 묶습니다.
+     한글 기준 마흔 자 남짓이면 한 줄이 눈에 한 번에 들어옵니다. */
+  .brief-device:not(.mobile) .keynote h2,
+  .brief-device:not(.mobile) .keynote p,
+  .brief-device:not(.mobile) .lede,
+  .brief-device:not(.mobile) .comment-body,
+  .brief-device:not(.mobile) .promo-b,
+  .brief-device:not(.mobile) .cta p,
+  .brief-device:not(.mobile) .note,
+  .brief-device:not(.mobile) .foot-legal p,
+  /* 카드가 한 칸을 통째로 쓰는 자리도 있습니다(영상 아래 해설 등). 거기서도 글줄만 묶습니다 —
+     재어 보니 1,440px 화면에서 한 줄이 960px, 한글 예순네 자였습니다. */
+  .brief-device:not(.mobile) .pcard-lead,
+  .brief-device:not(.mobile) .pcard-list li,
+  .brief-device:not(.mobile) .ncard-ex,
+  .brief-device:not(.mobile) .vaud p,
+  .brief-device:not(.mobile) .vsettle p,
+  .brief-device:not(.mobile) .vcheck li { max-width: 42em; }
+
+  /* 영상 안내의 대상별 줄(전세·월세 / 내 집 마련 / 투자·임대)을 두 칸으로 놓습니다.
+     한 줄에 하나씩 놓으면 넓은 화면에서 오른쪽 절반이 그대로 빕니다. 세 줄이면 두 칸에
+     둘·하나로 앉고, 마지막 하나는 왼쪽에 붙습니다. */
+  .brief-device:not(.mobile) .vguide {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start;
+  }
+  .brief-device:not(.mobile) .vguide-lbl,
+  .brief-device:not(.mobile) .vguide-note { grid-column: 1 / -1; }
+  /* 위아래로 긋던 점선을 칸 사이 세로선으로 바꿉니다 */
+  .brief-device:not(.mobile) .vaud + .vaud { border-top: 0; }
+  .brief-device:not(.mobile) .vaud:nth-child(even) { border-left: 1px dashed var(--line-b); }
+  .brief-device:not(.mobile) .vaud:nth-child(n + 4) { border-top: 1px dashed var(--line-b); }
+  .brief-device:not(.mobile) .vaud p { max-width: 42em; }
+}
+
 /* ═══════════ 스튜디오 상단 바: 작은 화면 ═══════════
    390×844 휴대폰에서 재어 보니 상단 바가 247px, 화면의 29% 였습니다. 중개사가 하루 종일
    쓰는 화면인데 삼분의 일이 메뉴였습니다. 줄바꿈을 없애고 옆으로 미는 방식으로 바꿉니다 —
