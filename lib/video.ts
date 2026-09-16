@@ -265,9 +265,15 @@ export async function collectVideos(
   const nextCache = { ...cache };
   const incoming: VideoItem[] = [];
 
-  // 채널이 열 개를 넘으므로 한 줄씩 기다리지 않고 같이 받습니다
-  const results = await Promise.all(
-    inputs.map(async (input) => {
+  // 채널 열네 곳을 한꺼번에 부르지 않습니다.
+  //
+  // 2026-09-16 수집에서 열네 곳 중 열두 곳이 404·500 섞여 실패했습니다(머리글을 고친 뒤라
+  // 두 곳은 성공). 404 와 500 이 섞여 나오는 것은 주소가 틀린 것이 아니라 한 주소에서
+  // 한꺼번에 몰려온 요청을 유튜브가 흘린 쪽입니다. 넷씩 나눠 부르고 사이를 조금 둡니다.
+  // 하루 한 번 도는 일이라 이 정도 느려지는 것은 문제가 되지 않습니다.
+  const BATCH = 4;
+  const GAP = 400;
+  const fetchOne = async (input: string) => {
       const src = await resolveSource(input, cache);
       if (!src) return { input, key: null, items: [] as VideoItem[], ok: false, error: "채널을 찾지 못했습니다" };
       try {
@@ -287,8 +293,13 @@ export async function collectVideos(
         if (viaApi.length) return { input, key: src.key, items: viaApi, ok: true, error: undefined };
         return { input, key: src.key, items: [] as VideoItem[], ok: false, error: e instanceof Error ? e.message : String(e) };
       }
-    }),
-  );
+  };
+
+  const results: Awaited<ReturnType<typeof fetchOne>>[] = [];
+  for (let i = 0; i < inputs.length; i += BATCH) {
+    if (i) await new Promise((r) => setTimeout(r, GAP));
+    results.push(...(await Promise.all(inputs.slice(i, i + BATCH).map(fetchOne))));
+  }
 
   for (const r of results) {
     if (r.key) nextCache[r.input.trim()] = r.key;

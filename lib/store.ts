@@ -40,6 +40,10 @@ class UpstashStore implements KV {
   /** 읽기는 던지지 않고 이유만 남깁니다 — 저장소가 죽었다고 화면까지 못 그리면 원인을 볼 곳이 없습니다 */
   private readError: string | null = null;
   private probe: Promise<string | null> | null = null;
+  /** 점검 결과를 언제까지 믿을지 */
+  private probeUntil = 0;
+  /** 이 인스턴스의 점검 키. 다른 인스턴스와 겹치지 않게 */
+  private probeId = Math.random().toString(36).slice(2, 10);
   constructor(
     private url: string,
     private token: string,
@@ -62,19 +66,43 @@ class UpstashStore implements KV {
   /**
    * 환경변수가 있다는 것과 Redis 가 받아 준다는 것은 다릅니다. 토큰을 잘못 붙여넣거나
    * 읽기 전용 토큰을 넣어도 변수는 그대로 있으니, 한 번 써 보고 그 값을 되읽어 확인합니다.
-   * 환경변수는 도는 중에 바뀌지 않으므로 인스턴스당 한 번만 다녀옵니다.
+   *
+   * 성공은 한동안 기억하고, **실패는 기억하지 않습니다.** 전에는 결과를 인스턴스당 한 번만
+   * 재고 영구히 들고 있었습니다. 그래서 한 번 어긋나면 그 인스턴스가 사는 동안 계속
+   * 「저장 안 됨」이라고 말했습니다 — 실제로는 읽기도 쓰기도 되는데 말입니다.
+   * 2026-09-16 배포한 데에서 그 일이 났습니다. 영상은 38편에서 40편으로 잘 저장됐는데
+   * 화면에는 「Upstash 연결 실패」가 떠 있었습니다.
    */
   check(): Promise<string | null> {
-    this.probe ??= this.roundTrip();
+    if (!this.probe || Date.now() >= this.probeUntil) {
+      // 먼저 창을 열어 두고 시작합니다. 이게 없으면 동시에 들어온 요청마다 각자 점검을
+      // 시작해서, 같은 키에 서로 다른 값을 쓰고 서로의 값을 읽습니다 — 다섯 번 물어보면
+      // 네 번이 실패로 나왔습니다. 도는 점검이 있으면 그 결과를 같이 씁니다.
+      this.probeUntil = Date.now() + 20_000;
+      this.probe = this.roundTrip();
+      // 성공하면 5분 쉬고, 실패하면 20초 뒤에 다시 물어봅니다
+      this.probe.then((p) => {
+        this.probeUntil = Date.now() + (p ? 20_000 : 300_000);
+      });
+    }
     return this.probe.then((p) => this.readError ?? p);
   }
   private async roundTrip(): Promise<string | null> {
-    const key = `${PREFIX}__probe`;
+    // 점검 키를 인스턴스마다 다르게 둡니다.
+    //
+    // 전에는 `rera:__probe` 하나를 모두가 같이 쓰면서 각자 다른 값을 넣고 되읽었습니다.
+    // 동시에 두 요청이 들어오면 A 가 쓴 값을 B 가 덮고, A 는 B 의 값을 읽어 「쓴 값이
+    // 그대로 돌아오지 않았습니다」로 끝납니다. 저장소는 멀쩡한데 서로가 서로를 고장으로
+    // 본 것입니다. 사무소가 화면을 두 개 열어 두면 그만으로 일어납니다.
+    const key = `${PREFIX}__probe:${this.probeId}`;
     const mark = String(Date.now());
     try {
       await this.cmd(["SET", key, mark, "EX", 60]);
       const back = await this.cmd(["GET", key]);
-      return String(back) === mark ? null : "쓴 값이 그대로 돌아오지 않았습니다";
+      if (String(back) === mark) return null;
+      // 무엇이 돌아왔는지 같이 적습니다. 「그대로 돌아오지 않았습니다」만으로는
+      // 한도 초과인지 빈 값인지 알 수 없어 다음 진단이 또 짐작이 됩니다.
+      return `쓴 값이 그대로 돌아오지 않았습니다 (쓴 값 ${mark}, 읽은 값 ${back === null ? "없음" : JSON.stringify(String(back)).slice(0, 40)})`;
     } catch (e) {
       return reason(e);
     }
