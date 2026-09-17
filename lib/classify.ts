@@ -61,8 +61,22 @@ const ORG_PR =
  */
 const OFF_TOPIC = /생중계|[[［【]\s*LIVE\s*[\]］】]|청문회|대법관|헌법재판관/i;
 
+/**
+ * 전쟁·분쟁 보도. '아파트'가 제목에 있다고 부동산 소식이 아닙니다.
+ *
+ * 2026-09-16 수집에 YTN 의 `폭격에 반파된 아파트 살다 '와르르'...가자 비극 현재 진행형`
+ * 이 담겼습니다. 아직 대표로 뽑히지는 않았지만, 뽑히는 날 고객에게 나갈 편지에
+ * 「이번 주 부동산 소식」으로 가자 지구 폭격 기사가 실립니다.
+ *
+ * '전쟁'은 넣지 않았습니다. 한국 부동산 기사에서 `청약 전쟁` `매물 전쟁` 처럼 비유로
+ * 자주 쓰여서, 넣으면 진짜 부동산 기사가 같이 걸립니다. '폭탄'도 같은 이유로 뺐습니다
+ * (`세금 폭탄` `전세 폭탄`). '폭격'은 `규제 폭격` 같은 비유가 있긴 하지만 드물고,
+ * 놓치는 쪽보다 실리는 쪽이 훨씬 나쁘다고 봤습니다.
+ */
+const WAR = /폭격|포격|공습|미사일|피격|교전|가자\s*지구|하마스|이스라엘군|우크라이나|피란민/i;
+
 export function isStrongRealEstate(text: string): boolean {
-  if (ORG_PR.test(text) || OFF_TOPIC.test(text)) return false;
+  if (ORG_PR.test(text) || OFF_TOPIC.test(text) || WAR.test(text)) return false;
   return STRONG.test(text.replace(ORG_NAME, " "));
 }
 
