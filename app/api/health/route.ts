@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { studioProtected } from "@/lib/auth";
+import { storedToken } from "@/lib/authStore";
 import { llmEnabled } from "@/lib/enrich";
 import { getMeta, getVideos } from "@/lib/repo";
 import { storeEnvNames, storeStatus } from "@/lib/store";
@@ -10,7 +11,10 @@ import { clamp } from "@/lib/format";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const [meta, store, videos] = await Promise.all([getMeta(), storeStatus(), getVideos()]);
+  const [meta, store, videos, kvToken] = await Promise.all([getMeta(), storeStatus(), getVideos(), storedToken()]);
+  // 비밀번호는 환경변수와 「관리자 → 접근 관리」 두 곳에서 옵니다. 환경변수만 보고 false 를
+  // 내주는 바람에, 화면에서 비밀번호를 걸어 둔 스튜디오를 열려 있다고 읽었습니다.
+  const guardedBy = studioProtected() ? "env" : kvToken ? "store" : null;
   // 영상란이 왜 그 영상을 골랐는지 — 담긴 편수, 채널별 분포, 중개사용으로 뽑힌 세 편
   const byChannel: Record<string, number> = {};
   for (const v of videos) byChannel[v.channel] = (byChannel[v.channel] ?? 0) + 1;
@@ -40,7 +44,8 @@ export async function GET() {
     persistent: store.persistent,
     storeError: store.error,
     storeVars: storeEnvNames(),
-    studioProtected: studioProtected(),
+    studioProtected: guardedBy !== null,
+    studioProtectedBy: guardedBy,
     llm: llmEnabled(),
     videos: { stored: videos.length, byChannel, picked, all },
     // 지난 수집이 실제로 무엇을 했는지. 재생시간을 몇 편 읽었고 못 읽은 건 왜인지가 여기 있습니다

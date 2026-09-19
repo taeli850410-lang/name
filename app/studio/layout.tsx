@@ -1,5 +1,6 @@
 import { Suspense, type ReactNode } from "react";
 import { studioProtected } from "@/lib/auth";
+import { storedToken } from "@/lib/authStore";
 import { llmEnabled, llmModel } from "@/lib/enrich";
 import { fmtCollect } from "@/lib/format";
 import { letterTitle, shareText } from "@/lib/letter";
@@ -11,9 +12,13 @@ export const dynamic = "force-dynamic";
 
 export default async function StudioLayout({ children }: { children: ReactNode }) {
   const store = await storeStatus();
-  const [meta, letters] = await Promise.all([getMeta(), getLetters()]);
+  const [meta, letters, kvToken] = await Promise.all([getMeta(), getLetters(), storedToken()]);
   const llm = llmEnabled();
-  const guarded = studioProtected();
+  // 비밀번호는 두 곳에서 올 수 있습니다(미들웨어와 같습니다) — 환경변수와 「관리자 → 접근 관리」.
+  // 환경변수만 보다가, 화면에서 비밀번호를 건 사무소한테도 「누구에게나 열려 있습니다」라고
+  // 모든 쪽마다 빨간 줄을 띄우고 있었습니다. 저장소가 잠깐 흔들리면 storedToken() 이 null 을
+  // 주지만, 그때는 미들웨어도 같이 열리므로 이 줄이 뜨는 것이 맞습니다.
+  const guarded = studioProtected() || Boolean(kvToken);
   const published: ChromeLetter[] = letters
     .filter((l) => l.status === "published")
     .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""))
@@ -28,7 +33,8 @@ export default async function StudioLayout({ children }: { children: ReactNode }
       <main className="studio-main">
         {!guarded && (
           <div className="alert alert-warn banner">
-            STUDIO_PASSWORD 환경변수가 비어 있어 스튜디오가 누구에게나 열려 있습니다. 배포 환경에서는 반드시 설정하세요.
+            스튜디오에 비밀번호가 걸려 있지 않습니다 — 주소를 아는 사람은 누구나 들어와 사무소 정보와 배너를 고칠 수 있습니다.{" "}
+            <b>관리자 → 접근 관리</b>에서 바로 걸 수 있습니다(재배포가 필요 없습니다). 환경변수 STUDIO_PASSWORD 로 걸어도 됩니다.
           </div>
         )}
         {!store.persistent && (
