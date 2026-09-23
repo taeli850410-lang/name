@@ -105,9 +105,38 @@ export function isStrongRealEstate(text: string): boolean {
   return STRONG.test(text.replace(ORG_NAME, " ").replace(FALSE_MATCH, " "));
 }
 
-/** 설명문에서 해시태그만 뽑습니다. #재건축 같은 건 글쓴이가 직접 단 주제 표시라 홍보 문구보다 믿을 만합니다 */
-export function hashtagsOf(text: string): string {
-  return (text.match(/#[^\s#<>]{1,30}/g) ?? []).join(" ");
+/** 설명문에서 해시태그만 뽑습니다. 낱개로 셀 수 있게 #을 떼고 배열로 돌려줍니다 */
+export function hashtagsOf(text: string): string[] {
+  return (text.match(/#[^\s#<>]{1,30}/g) ?? []).map((t) => t.slice(1));
+}
+
+/**
+ * 해시태그가 "이건 부동산 영상"이라고 말하고 있는가.
+ *
+ * 제목에 부동산 낱말이 없을 때 마지막으로 보는 곳입니다. 글쓴이가 직접 단 주제 표시라
+ * 홍보 문구보다 믿을 만하긴 한데, **하나라도 있으면 통과**시키다가 이게 실렸습니다.
+ *
+ *   `50대라면 꼭 보세요 목돈보다 중요한 현금흐름 구축법｜미네르바 아카데미｜김경필`
+ *   (한국경제TV, 2026-09-23) — 은퇴 재무설계 강의인데 그날 중개사용 브리핑 영상
+ *   세 칸 중 하나를 차지했습니다. 태그가 스물아홉 개 달려 있고 그중 부동산은
+ *   #주택연금 #부동산 둘(7%)뿐이었습니다. 나머지는 #주식 #ETF #연금 #YOLO 같은 것들입니다.
+ *
+ * 그래서 있는지(presence)가 아니라 **비중**을 봅니다. 진짜 부동산 영상은 태그도 대체로
+ * 부동산입니다 — 같은 날 통과한 매일경제TV `'홍지선호' 국토부 출범`은 태그 열한 개 중
+ * 여섯 개(3기신도시·주택공급·부동산시장·전월세상승·집값상승·부동산, 55%)가 부동산이었습니다.
+ *
+ * 태그가 넷 이하면 비중을 따지지 않습니다. 그건 뿌리는 목록이 아니라 주제를 적은 것이고,
+ * `#부동산 #집값` 두 개만 단 기사를 비중 때문에 떨어뜨리면 안 됩니다.
+ *
+ * 종합뉴스 채널에서는 이 함수를 아예 부르지 않습니다(collectVideos 의 tier !== "news").
+ * 거기는 영상마다 같은 태그 묶음을 달아서 비중으로도 가려지지 않습니다.
+ */
+export function hashtagsSayRealEstate(text: string): boolean {
+  const tags = hashtagsOf(text);
+  const hits = tags.filter((t) => isStrongRealEstate(t)).length;
+  if (!hits) return false;
+  if (tags.length <= 4) return true;
+  return hits >= 2 && hits * 4 >= tags.length;
 }
 
 /** 수도권 광역 단위 — 전국 독자에게도 의미 있는 시장 기사 */

@@ -1,5 +1,5 @@
 import { XMLParser } from "fast-xml-parser";
-import { detectPlace, detectTopic, hashtagsOf, isStrongRealEstate } from "./classify";
+import { detectPlace, detectTopic, hashtagsSayRealEstate, isStrongRealEstate } from "./classify";
 import { clamp, stripHtml } from "./format";
 import { VIDEO_KEEP } from "./taxonomy";
 export { DEFAULT_VIDEO_SOURCES } from "./channels";
@@ -160,7 +160,7 @@ export function parseVideoFeed(xml: string, trustHashtags = true): VideoItem[] {
     //   · [잇슈#태그] "중국 자본에 제주도 질식 위기"…독일 신문 보도
     // 저장된 영상을 다시 거를 때(mergeVideos)는 제목만 보므로, 해시태그로 들어온 영상은 다음 수집에
     // 조용히 사라집니다 — 담는 규칙과 남기는 규칙이 어긋나 있었던 셈입니다. 종합뉴스에서는 맞췄습니다.
-    if (!isStrongRealEstate(title) && !(trustHashtags && isStrongRealEstate(hashtagsOf(raw)))) continue;
+    if (!isStrongRealEstate(title) && !(trustHashtags && hashtagsSayRealEstate(raw))) continue;
 
     const channel = stripHtml(txt(e.author)) || feedTitle;
     out.push({
@@ -346,7 +346,7 @@ export async function apiChannelVideos(channelId: string, trustHashtags = true):
       if (!videoId || !title || NOT_A_REPORT.test(title)) continue;
       // 피드로 들어올 때와 똑같은 규칙을 태웁니다. 들어오는 길이 둘이어도 담기는 기준은 하나여야 합니다
       const raw = String(sn.description ?? "");
-      if (!isStrongRealEstate(title) && !(trustHashtags && isStrongRealEstate(hashtagsOf(raw)))) continue;
+      if (!isStrongRealEstate(title) && !(trustHashtags && hashtagsSayRealEstate(raw))) continue;
       const summary = clamp(stripHtml(cleanDescription(raw)), 320);
       out.push({
         id: videoId,
