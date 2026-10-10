@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>성북2구역 카드뉴스</title>
+<style>
+  @font-face { font-family: "Pretendard"; font-weight: 400; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-Regular.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 500; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-Medium.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 600; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-SemiBold.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 700; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-Bold.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 800; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-ExtraBold.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 900; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-Black.woff2") format("woff2"); }
+
+  :root {
+    --ink: #16181D;
+    --ink-2: #3A3E47;
+    --muted: #6B7079;
+    --paper: #F3EFE6;
+    --panel: #FBF9F4;
+    --line: #DCD5C6;
+    --hl: #FFD84A;
+    --accent: #D9452B;
+    --accent-soft: #F6DDD5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #2A2C31;
+    font-family: "Pretendard", system-ui, sans-serif;
+    color: var(--ink);
+    padding: 40px 0;
+    display: flex; flex-direction: column; align-items: center; gap: 40px;
+    -webkit-font-smoothing: antialiased;
+    word-break: keep-all;
+  }
+
+  /* ---------- card frame ---------- */
+  .card {
+    width: 1080px; height: 1350px;
+    background: var(--paper);
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+    padding: 64px 80px 56px;
+  }
+  .top {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 26px; font-weight: 600; color: var(--muted);
+    letter-spacing: -0.01em;
+    padding-bottom: 22px; border-bottom: 2px solid var(--ink);
+  }
+  .top .pg { font-variant-numeric: tabular-nums; }
+  .body { flex: 1; display: flex; flex-direction: column; padding-top: 52px; min-height: 0; }
+  .src {
+    font-size: 21px; line-height: 1.5; color: var(--muted); font-weight: 500;
+    padding-top: 20px; border-top: 1px solid var(--line);
+  }
+
+  .eyebrow { font-size: 30px; font-weight: 700; color: var(--accent); letter-spacing: -0.01em; margin-bottom: 18px; }
+  h2 { font-size: 72px; line-height: 1.18; font-weight: 800; letter-spacing: -0.045em; }
+  .lead { font-size: 34px; line-height: 1.5; font-weight: 500; color: var(--ink-2); letter-spacing: -0.02em; margin-top: 24px; }
+  b, strong { font-weight: 800; }
+  .mark { background: linear-gradient(transparent 52%, var(--hl) 52%, var(--hl) 94%, transparent 94%); padding: 0 4px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ---------- 01 cover ---------- */
+  .cover { background: var(--ink); color: var(--paper); }
+  .cover .top { color: #9A9EA6; border-color: #3A3E47; }
+  .cover .body { padding-top: 64px; }
+  .ticket {
+    position: relative; height: 560px; border-radius: 30px; background: var(--paper); color: var(--ink);
+    display: grid; grid-template-columns: 1fr 250px;
+  }
+  .ticket::before, .ticket::after {
+    content: ""; position: absolute; left: calc(100% - 250px - 30px); width: 60px; height: 60px; border-radius: 50%; background: var(--ink);
+  }
+  .ticket::before { top: -30px; }
+  .ticket::after { bottom: -30px; }
+  .ticket .main { padding: 52px 56px 48px; display: flex; flex-direction: column; }
+  .ticket .label { display: flex; justify-content: space-between; font-size: 26px; font-weight: 700; letter-spacing: 0.24em; color: var(--muted); }
+  .ticket .price { font-size: 330px; font-weight: 900; letter-spacing: -0.07em; line-height: 0.92; margin-top: 28px; margin-left: -12px; }
+  .ticket .meta { margin-top: auto; font-size: 30px; font-weight: 600; color: var(--ink-2); letter-spacing: -0.02em; }
+  .ticket .stub {
+    border-left: 4px dashed #BDB5A4; margin: 44px 0; padding: 0 34px;
+    display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+  }
+  .ticket .stub small { font-size: 26px; font-weight: 700; line-height: 1.35; color: var(--muted); letter-spacing: -0.02em; }
+  .ticket .stub .q { font-size: 210px; font-weight: 900; line-height: 1; color: var(--accent); margin-top: 6px; }
+  .cover h1 { font-size: 76px; line-height: 1.22; font-weight: 800; letter-spacing: -0.045em; margin-top: 70px; }
+  .cover h1 em { font-style: normal; color: var(--hl); }
+  .cover .sub { font-size: 32px; line-height: 1.5; color: #B9BCC3; font-weight: 500; margin-top: 26px; letter-spacing: -0.02em; }
+  .cover .swipe { margin-top: auto; display: flex; justify-content: flex-end; font-size: 28px; font-weight: 700; color: var(--hl); }
+
+  /* ---------- 02 spec ---------- */
+  .spec { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 44px; }
+  .spec div { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 26px 30px; }
+  .spec dt { font-size: 25px; font-weight: 600; color: var(--muted); }
+  .spec dd { font-size: 42px; font-weight: 800; letter-spacing: -0.035em; margin-top: 6px; }
+  .spec dd small { font-size: 27px; font-weight: 600; color: var(--muted); letter-spacing: -0.02em; margin-left: 6px; }
+  .spec .hot { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .spec .hot dt { color: #9A9EA6; }
+  .split { margin-top: 48px; }
+  .split .cap { display: flex; justify-content: space-between; font-size: 27px; font-weight: 700; margin-bottom: 14px; }
+  .split .bar { display: flex; height: 64px; gap: 4px; }
+  .split .bar span { border-radius: 8px; }
+  .split .lab { display: flex; justify-content: space-between; margin-top: 14px; font-size: 25px; font-weight: 600; color: var(--muted); }
+  .split .lab b { color: var(--ink); }
+  .say { margin-top: auto; font-size: 44px; line-height: 1.38; font-weight: 800; letter-spacing: -0.04em; }
+
+  /* ---------- 03 receipt ---------- */
+  .receipt {
+    margin-top: 44px; background: #FFFFFF; padding: 44px 52px 64px; position: relative;
+    -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 40px 100%;
+  }
+  .receipt .row { display: flex; justify-content: space-between; align-items: baseline; font-size: 36px; font-weight: 600; letter-spacing: -0.02em; padding: 16px 0; }
+  .receipt .row .v { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .receipt .note { font-size: 25px; color: var(--muted); font-weight: 500; margin-top: -6px; padding-bottom: 14px; }
+  .receipt .rule { border-top: 3px dashed var(--ink); margin: 18px 0 14px; }
+  .receipt .total { font-size: 38px; font-weight: 800; }
+  .receipt .total .v { font-size: 64px; color: var(--accent); letter-spacing: -0.04em; }
+  .formula { margin-top: 36px; padding: 30px 34px; border-radius: 20px; border: 2px solid var(--ink); }
+  .formula .eq { font-size: 34px; font-weight: 800; letter-spacing: -0.03em; }
+  .formula p { font-size: 30px; line-height: 1.5; font-weight: 500; margin-top: 12px; color: var(--ink-2); letter-spacing: -0.02em; }
+
+  /* ---------- charts ---------- */
+  svg text { font-family: "Pretendard", sans-serif; }
+  .legend { display: flex; gap: 30px; font-size: 25px; font-weight: 600; color: var(--ink-2); margin-top: 26px; }
+  .legend i { display: inline-block; width: 18px; height: 18px; border-radius: 50%; margin-right: 10px; vertical-align: -1px; }
+
+  /* ---------- 05 per-pyeong ---------- */
+  .bars { margin-top: 44px; display: flex; flex-direction: column; gap: 26px; }
+  .bars .r .h { display: flex; justify-content: space-between; align-items: baseline; font-size: 27px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.02em; }
+  .bars .r .h span:last-child { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .bars .r .h small { font-size: 23px; color: var(--muted); font-weight: 600; margin-left: 8px; }
+  .bars .track { height: 46px; position: relative; }
+  .bars .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 6px 6px 0; background: #6B7079; }
+  .bars .ext { position: absolute; top: 0; bottom: 0; border-radius: 0 6px 6px 0; background: #B9BCC3; }
+  .bars .me .fill { background: var(--accent); }
+  .bars .me .h { color: var(--accent); }
+  .bars .me .h span:last-child { font-size: 40px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: auto; }
+  .two > div { border-radius: 20px; padding: 28px 30px; background: var(--panel); border: 1px solid var(--line); }
+  .two h4 { font-size: 27px; font-weight: 800; letter-spacing: -0.02em; display: flex; align-items: center; gap: 10px; }
+  .two p { font-size: 29px; line-height: 1.5; font-weight: 600; margin-top: 10px; letter-spacing: -0.025em; color: var(--ink-2); }
+  .two .warn { background: var(--accent-soft); border-color: #EBC3B7; }
+  .two .warn h4 { color: var(--accent); }
+  .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--ink); display: inline-block; }
+
+  /* ---------- 06 compare ---------- */
+  .vs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 44px; }
+  .vs > div { border-radius: 22px; padding: 34px 34px 36px; }
+  .vs .up { background: var(--ink); color: var(--paper); }
+  .vs .flat { background: var(--panel); border: 1px solid var(--line); }
+  .vs .k { font-size: 25px; font-weight: 700; line-height: 1.4; letter-spacing: -0.02em; }
+  .vs .up .k { color: #9A9EA6; }
+  .vs .flat .k { color: var(--muted); }
+  .vs .big { font-size: 112px; font-weight: 900; letter-spacing: -0.06em; line-height: 1; margin-top: 26px; }
+  .vs .up .big { color: var(--hl); }
+  .vs .tag { display: inline-block; font-size: 25px; font-weight: 700; margin-top: 14px; }
+  .vs .path { margin-top: 26px; padding-top: 22px; font-size: 27px; line-height: 1.55; font-weight: 600; letter-spacing: -0.02em; }
+  .vs .up .path { border-top: 1px solid #3A3E47; color: #D5D7DC; }
+  .vs .flat .path { border-top: 1px solid var(--line); color: var(--ink-2); }
+  .vs .path b { color: inherit; }
+  .vs .path .ar { color: var(--muted); padding: 0 6px; }
+  .vs .up .path .ar { color: #9A9EA6; }
+  .read { margin-top: auto; }
+  .read p { font-size: 31px; line-height: 1.55; font-weight: 500; color: var(--ink-2); letter-spacing: -0.02em; }
+  .read .say { margin-top: 26px; }
+
+  /* ---------- 07 timeline ---------- */
+  .tl { margin-top: 46px; position: relative; padding-left: 52px; }
+  .tl::before { content: ""; position: absolute; left: 13px; top: 14px; bottom: 14px; width: 3px; background: var(--line); }
+  .tl li { list-style: none; position: relative; padding-bottom: 34px; }
+  .tl li:last-child { padding-bottom: 0; }
+  .tl li::before { content: ""; position: absolute; left: -52px; top: 6px; width: 30px; height: 30px; border-radius: 50%; background: var(--paper); border: 4px solid var(--ink); }
+  .tl li.on::before { background: var(--ink); }
+  .tl li.next::before { border-style: dashed; border-color: var(--muted); }
+  .tl .d { font-size: 25px; font-weight: 800; color: var(--accent); letter-spacing: -0.01em; }
+  .tl li.next .d { color: var(--muted); }
+  .tl .t { font-size: 34px; font-weight: 800; letter-spacing: -0.035em; margin-top: 4px; }
+  .tl .x { font-size: 27px; font-weight: 500; color: var(--ink-2); margin-top: 6px; line-height: 1.45; letter-spacing: -0.02em; }
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); border: 2px solid var(--ink); border-radius: 20px; margin-top: auto; }
+  .facts div { padding: 22px 0 24px; text-align: center; }
+  .facts div + div { border-left: 1px solid var(--line); }
+  .facts small { font-size: 23px; font-weight: 600; color: var(--muted); }
+  .facts b { display: block; font-size: 50px; font-weight: 900; letter-spacing: -0.05em; margin-top: 4px; }
+  .facts b span { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; margin-left: 2px; }
+  .facts-cap { font-size: 24px; font-weight: 600; color: var(--muted); margin-top: 14px; text-align: center; }
+
+  /* ---------- 08 pair ---------- */
+  .pair { margin-top: 48px; display: grid; grid-template-columns: 1fr 120px 1fr; align-items: stretch; }
+  .zone { border-radius: 22px; padding: 32px 30px; display: flex; flex-direction: column; }
+  .zone.a { background: var(--panel); border: 1px solid var(--line); }
+  .zone.b { background: var(--ink); color: var(--paper); }
+  .zone .n { font-size: 25px; font-weight: 700; color: var(--muted); }
+  .zone.b .n { color: #9A9EA6; }
+  .zone h3 { font-size: 46px; font-weight: 900; letter-spacing: -0.045em; margin-top: 6px; }
+  .zone .bld { display: flex; align-items: flex-end; gap: 8px; height: 240px; margin: 26px 0 22px; border-bottom: 3px solid currentColor; }
+  .zone .bld span { flex: 1; border-radius: 6px 6px 0 0; }
+  .zone.a .bld span { background: #8E9199; }
+  .zone.b .bld span { background: var(--hl); }
+  .zone ul { list-style: none; font-size: 27px; font-weight: 600; line-height: 1.6; letter-spacing: -0.02em; }
+  .zone.b ul { color: #D5D7DC; }
+  .zone ul b { font-weight: 800; color: var(--ink); }
+  .zone.b ul b { color: var(--paper); }
+  .arrow { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; font-size: 22px; font-weight: 700; color: var(--accent); text-align: center; line-height: 1.35; }
+  .arrow svg { width: 84px; }
+
+  /* ---------- 09 checklist ---------- */
+  .chk { list-style: none; margin-top: 40px; display: flex; flex-direction: column; gap: 14px; }
+  .chk li { display: grid; grid-template-columns: 70px 1fr; gap: 22px; padding: 22px 26px 24px; border-radius: 20px; background: var(--panel); border: 1px solid var(--line); }
+  .chk li.first { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .chk .no { width: 70px; height: 70px; border-radius: 16px; background: var(--paper); border: 3px solid var(--ink); display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 900; }
+  .chk li.first .no { background: var(--hl); border-color: var(--hl); color: var(--ink); }
+  .chk h4 { font-size: 34px; font-weight: 800; letter-spacing: -0.035em; }
+  .chk p { font-size: 26px; line-height: 1.5; font-weight: 500; margin-top: 4px; color: var(--ink-2); letter-spacing: -0.02em; }
+  .chk li.first p { color: #D5D7DC; }
+  .chk li.first p b { color: var(--hl); }
+
+  /* ---------- 10 who ---------- */
+  .who { display: grid; grid-template-columns: 1fr; gap: 18px; margin-top: 40px; margin-bottom: 36px; }
+  .who > div { border-radius: 22px; padding: 34px 36px; }
+  .who .yes { background: var(--panel); border: 2px solid var(--ink); }
+  .who .wait { background: var(--accent-soft); border: 2px solid var(--accent); }
+  .who h3 { font-size: 40px; font-weight: 900; letter-spacing: -0.04em; display: flex; align-items: center; gap: 14px; }
+  .who .wait h3 { color: var(--accent); }
+  .who .ic { width: 50px; height: 50px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 30px; font-weight: 900; }
+  .who .yes .ic { background: var(--ink); }
+  .who .wait .ic { background: var(--accent); }
+  .who ul { list-style: none; margin-top: 18px; }
+  .who li { font-size: 31px; font-weight: 600; line-height: 1.5; letter-spacing: -0.025em; padding-left: 28px; position: relative; margin-top: 6px; }
+  .who li::before { content: ""; position: absolute; left: 4px; top: 19px; width: 10px; height: 10px; border-radius: 50%; background: currentColor; }
+  .who .so { margin-top: 18px; padding-top: 18px; font-size: 29px; font-weight: 700; line-height: 1.5; letter-spacing: -0.025em; }
+  .who .yes .so { border-top: 1px solid var(--line); }
+  .who .wait .so { border-top: 1px solid #EBC3B7; }
+  .quote { margin-top: auto; font-size: 40px; font-weight: 800; letter-spacing: -0.045em; line-height: 1.3; padding-left: 26px; border-left: 8px solid var(--accent); }
+
+  /* ---------- 11 summary ---------- */
+  .end { background: var(--ink); color: var(--paper); }
+  .end .top { color: #9A9EA6; border-color: #3A3E47; }
+  .end .src { border-color: #3A3E47; color: #9A9EA6; }
+  .end h2 { color: var(--paper); }
+  .pts { list-style: none; margin-top: 46px; display: flex; flex-direction: column; gap: 18px; counter-reset: p; }
+  .pts li { counter-increment: p; display: grid; grid-template-columns: 70px 1fr; gap: 20px; align-items: start; font-size: 40px; font-weight: 800; line-height: 1.35; letter-spacing: -0.04em; padding: 30px 32px; background: #22252B; border-radius: 22px; }
+  .pts li::before { content: counter(p, decimal-leading-zero); font-size: 30px; font-weight: 900; color: var(--hl); padding-top: 8px; }
+  .pts li small { display: block; font-size: 28px; font-weight: 500; color: #B9BCC3; margin-top: 10px; letter-spacing: -0.02em; line-height: 1.5; }
+  .pts em { font-style: normal; color: var(--hl); }
+  .cta { margin-top: auto; font-size: 31px; line-height: 1.55; font-weight: 600; color: #D5D7DC; letter-spacing: -0.02em; }
+  .office {
+    margin-top: 28px; border-radius: 20px; padding: 26px 30px; min-height: 130px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .office.empty { border: 3px dashed #5A5E67; color: #8A8E96; font-size: 26px; font-weight: 600; line-height: 1.5; }
+  .office.filled { background: var(--paper); color: var(--ink); }
+  .office.filled .nm { font-size: 38px; font-weight: 900; letter-spacing: -0.04em; }
+  .office.filled .ln { font-size: 25px; font-weight: 600; color: var(--ink-2); margin-top: 6px; line-height: 1.5; }
+
+  #c06 .vs .big { font-size: 100px; }
+  #c06 .vs .path { font-size: 26px; }
+  #c06 .read .say { font-size: 38px; margin-top: 18px; }
+  #c06 .read p { font-size: 29px; }
+  .vs .path .sm { color: var(--muted); font-size: 24px; }
+</style>
+</head>
+<body>
+
+<!-- 01 표지 -->
+<section class="card cover" id="c01">
+  <header class="top"><span>성북2구역 매물 리포트</span><span class="pg">01 / 11</span></header>
+  <div class="body">
+    <div class="ticket">
+      <div class="main">
+        <div class="label"><span>입장권</span><span>성북2구역</span></div>
+        <div class="price">5억</div>
+        <div class="meta">무허가주택 · 대지 2.42평 · 건물 12평</div>
+      </div>
+      <div class="stub">
+        <small>끝까지<br>계산하면</small>
+        <div class="q">?</div>
+      </div>
+    </div>
+    <h1>5억은 <em>입장권</em>이고,<br>진짜 투자금은<br>그 뒤에 따라옵니다</h1>
+    <p class="sub">전면 철거로 바뀐 성북2구역 매물,<br>최근 실거래 10건으로 가격 위치를 짚어 봤습니다.</p>
+    <div class="swipe">넘겨서 끝까지 계산해 보기 →</div>
+  </div>
+</section>
+
+<!-- 02 매물 -->
+<section class="card" id="c02">
+  <header class="top"><span>성북2구역 매물 리포트</span><span class="pg">02 / 11</span></header>
+  <div class="body">
+    <div class="eyebrow">오늘의 매물</div>
+    <h2>성북2구역 무허가주택</h2>
+    <dl class="spec">
+      <div><dt>매물 종류</dt><dd>무허가주택</dd></div>
+      <div><dt>대지</dt><dd>8㎡<small>약 2.42평</small></dd></div>
+      <div><dt>건물</dt><dd>39.67㎡<small>약 12평</small></dd></div>
+      <div><dt>추정 감정평가액</dt><dd>약 3,848만 원</dd></div>
+      <div><dt>추정 프리미엄</dt><dd>약 4억 6,152만 원</dd></div>
+      <div class="hot"><dt>매매가</dt><dd>5억 원</dd></div>
+    </dl>
+    <div class="split">
+      <div class="cap"><span>매매가 5억 원은 이렇게 나뉩니다</span></div>
+      <div class="bar">
+        <span style="width:7.7%; background:#8E9199"></span>
+        <span style="flex:1; background:var(--accent)"></span>
+      </div>
+      <div class="lab"><span>감정가 <b>3,848만</b> · 7.7%</span><span>프리미엄 <b>4억 6,152만</b> · 92.3%</span></div>
+    </div>
+    <p class="say">땅은 2.42평이지만,<br>사는 것은 <span class="mark">‘새집을 받을 권리’</span>입니다.</p>
+  </div>
+  <footer class="src">매물 분석표 기준. 감정평가액·프리미엄은 관리처분 전 추정치입니다.</footer>
+</section>
+
+<!-- 03 총투자금 -->
+<section class="card" id="c03">
+  <header class="top"><span>성북2구역 매물 리포트</span><span class="pg">03 / 11</span></header>
+  <div class="body">
+    <div class="eyebrow">조합원 분양가 15억 원 가정</div>
+    <h2>끝까지 계산하면<br>얼마가 들까</h2>
+    <div class="receipt">
+      <div class="row"><span>매매가</span><span class="v">5억 원</span></div>
+      <div class="row"><span>+ 추정 분담금</span><span class="v">14억 6,152만 원</span></div>
+      <div class="note">조합원 분양가 15억(가정) − 감정가 3,848만</div>
+      <div class="rule"></div>
+      <div class="row total"><span>총투자금</span><span class="v">약 19억 6,152만</span></div>
+    </div>
+    <div class="formula">
+      <div class="eq">총투자금 = 프리미엄 4억 6,152만 + 조합원 분양가</div>
+      <p>그래서 물어야 할 것은 ‘5억이 싸냐’가 아니라<br><span class="mark"><b>‘프리미엄 4억 6천만 원이 적정하냐’</b></span>입니다.</p>
+    </div>
+  </div>
+  <footer class="src">※ 감정가와 분양가는 관리처분 전이라 확정되지 않은 추정치입니다. 실제 분양가가 정해지면 총투자금도 위아래로 움직입니다.</footer>
+</section>
+
+<!-- 04 실거래 10건 -->
+<section class="card" id="c04">
+  <header class="top"><span>성북2구역 매물 리포트</span><span class="pg">04 / 11</span></header>
+  <div class="body">
+    <div class="eyebrow">이 5억은 비싼가, 싼가</div>
+    <h2>최근 실거래 10건,<br><span class="mark">모두 5억 2,000만 원 이상</span></h2>
+    <svg id="scatter" width="920" height="600" viewBox="0 0 920 600" style="margin-top:40px"></svg>
+    <div class="legend"><span><i style="background:#6B7079"></i>실거래 10건 (중개거래)</span><span><i style="background:var(--accent)"></i>이 매물</span></div>
+  </div>
+  <footer class="src">자료: 국토교통부 단독·다가구 매매 실거래 공개자료. 성북동 200번지대, 1985~1989년 준공 소형 단독주택, 2025.5~2026.8 계약. 직거래·해제 거래 제외. 공개 지번 일부가 가려져(2**) 구역 안 물건인지는 따로 확인이 필요합니다.</footer>
+</section>
+
+<!-- 05 평당가 -->
+<section class="card" id="c05">
+  <header class="top"><span>성북2구역 매물 리포트</span><span class="pg">05 / 11</span></header>
+  <div class="body">
+    <div class="eyebrow">대지 평당가로 다시 보면</div>
+    <h2>땅값이 아니라<br><span class="mark">‘권리 1개’의 가격</span></h2>
+    <div class="bars">
+      <div class="r me">
+        <div class="h"><span>이 매물<small>대지 2.42평</small></span><span>2억 660만</span></div>
+        <div class="track"><div class="fill" style="width:100%"></div></div>
+      </div>
+      <div class="r">
+        <div class="h"><span>대지 15평대<small>2건</small></span><span>3,835만~3,868만</span></div>
+        <div class="track"><div class="fill" style="width:18.56%"></div><div class="ext" style="left:18.56%;width:0.16%"></div></div>
+      </div>
+      <div class="r">
+        <div class="h"><span>대지 19~20평<small>3건</small></span><span>2,605만~3,017만</span></div>
+        <div class="track"><div class="fill" style="width:12.61%"></div><div class="ext" style="left:12.61%;width:1.99%"></div></div>
+      </div>
+      <div class="r">
+        <div class="h"><span>대지 24~31평<small>5건</small></span><span>2,427만~2,810만</span></div>
+        <div class="track"><div class="fill" style="width:11.75%"></div><div class="ext" style="left:11.75%;width:1.85%"></div></div>
+      </div>
+    </div>
+    <div class="two">
+      <div><h4><span class="dot"></span>권리가 확실하다면</h4><p>10건 중 가장 낮은 거래가보다 2,000만 원 낮게 비슷한 권리를 사는 셈</p></div>
+      <div class="warn"><h4><span class="dot" style="background:var(--accent)"></span>확실하지 않다면</h4><p>가장 위험한 가격. 5억 전체가 불확실성 위에 올라갑니다.</p></div>
+    </div>
+  </div>
+  <footer class="src">막대 길이 = 대지 평당가. 회색 진한 부분은 구간 최저, 옅은 부분은 최고까지. 자료: 국토교통부 실거래 공개자료(앞 장과 같은 10건).</footer>
+</section>
+
+<!-- 06 1년 비교 -->
+<section class="card" id="c06">
+  <header class="top"><span>성북2구역 매물 리포트</span><span class="pg">06 / 11</span></header>
+  <div class="body">
+    <div class="eyebrow">1년 전과 비교하면</div>
+    <h2>지역은 오르는데,<br>이 일대는 제자리</h2>
+    <div class="vs">
+      <div class="up">
+        <div class="k">서울 동북권<br>단독주택 매매가격지수</div>
+        <div class="big">+4.1%</div>
+        <span class="tag">11개월 내리 상승</span>
+        <div class="path"><span class="num">97.01</span><span class="ar">→</span><b class="num">101.00</b><br>2025.9 → 2026.8</div>
+      </div>
+      <div class="flat">
+        <div class="k">성북동 소형 단독 실거래<br>비슷한 대지 크기끼리</div>
+        <div class="big">제자리</div>
+        <span class="tag" style="color:var(--muted)">1년 새 큰 변화 없음</span>
+        <div class="path"><span class="sm">대지 20평</span><br><b>5억 4,000만</b><span class="ar">→</span><b>5억 2,000만</b><br><span class="sm">대지 30평 안팎</span><br><b>7억 8,000만</b><span class="ar">→</span><br><b>7억 3,000만~8억 6,700만</b></div>
+      </div>
+    </div>
+    <div class="read">
+      <p>사업 방식 변화가 아직 덜 반영됐거나, 시장이 다음 절차를 기다리는 중입니다.</p>
+      <p class="say">어느 쪽이든 <span class="mark">지금 가격에 사업 변화의 기대가 많이 얹혀 있지는 않다</span>는 점은 숫자로 확인됩니다.</p>
+    </div>
+  </div>
+  <footer class="src">자료: 한국부동산원 R-ONE 단독주택 매매가격지수(월, 서울 동북권), 국토교통부 실거래 공개자료. 대지 20평은 2025.9 → 2026.8, 30평 안팎은 2025.5 → 2026년 거래.</footer>
+</section>
+
+<!-- 07 사업 정리 -->
+<section class="card" id="c07">
+  <header class="top"><span>성북2구역 매물 리포트</span><span class="pg">07 / 11</span></header>
+  <div class="body">
+    <div class="eyebrow">가격을 받쳐주는 이유 ①</div>
+    <h2>반쪽이던 사업이<br>하나로 정리됐다</h2>
+    <ul class="tl">
+      <li><div class="d">이전</div><div class="t">철거형 + 수복형 혼합 → ‘반쪽’</div><div class="x">사업시행계획인가는 공동정비지구 191가구만. 수복형 구역은 빠져 있었습니다.</div></li>
+      <li class="on"><div class="d">2025.11.19</div><div class="t">서울시 도시계획위원회 수정가결</div><div class="x">구역 전체를 전면 철거형으로 바꾸는 정비계획 변경안</div></li>
+      <li class="on"><div class="d">2026.3</div><div class="t">정비구역 변경 결정고시</div><div class="x">구역면적 75,072.8㎡ → 74,187㎡</div></li>
+      <li class="next"><div class="d">남은 절차</div><div class="t">사업시행계획 변경 → 관리처분</div></li>
+    </ul>
+    <div class="facts">
+      <div><small>공동주택</small><b>496<span>세대</span></b></div>
+      <div><small>최고 층수</small><b>4<span>층</span></b></div>
+      <div><small>용적률</small><b>90<span>% 이하</span></b></div>
+      <div><small>건폐율</small><b>60<span>% 이하</span></b></div>
+    </div>
+    <div class="facts-cap">변경된 정비계획</div>
+  </div>
+  <footer class="src">자료: 서울시 도시계획위원회(2025.11.19), 서울시 정비사업 현황 OA-20281(정비구역 변경 결정고시), EBN·뉴스핌·이데일리 보도.</footer>
+</section>
+
+<!-- 08 결합개발 -->
+<section class="card" id="c08">
+  <header class="top"><span>성북2구역 매물 리포트</span><span class="pg">08 / 11</span></header>
+  <div class="body">
+    <div class="eyebrow">가격을 받쳐주는 이유 ②</div>
+    <h2>결합 상대가<br>먼저 달리고 있다</h2>
+    <p class="lead">역사문화환경이 남은 구릉지라 높이 올릴 수 없는 땅. 대신 쓰지 못한 개발밀도는 결합 상대인 신월곡1구역으로 넘어가는 구조입니다.</p>
+    <div class="pair">
+      <div class="zone a">
+        <div class="n">성북2구역</div>
+        <h3>저층 496세대</h3>
+        <div class="bld"><span style="height:16%"></span><span style="height:16%"></span><span style="height:16%"></span><span style="height:16%"></span></div>
+        <ul><li>최고 <b>4층</b></li><li>용적률 <b>90% 이하</b></li><li>남는 밀도를 넘겨줌</li></ul>
+      </div>
+      <div class="arrow">
+        <svg viewBox="0 0 84 40" aria-hidden="true"><path d="M4 20 H72 M58 6 L76 20 L58 34" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>개발밀도<br>이전</span>
+      </div>
+      <div class="zone b">
+        <div class="n">신월곡1구역</div>
+        <h3>최고 47층</h3>
+        <div class="bld"><span style="height:62%"></span><span style="height:100%"></span><span style="height:84%"></span><span style="height:70%"></span></div>
+        <ul><li><b>약 2,200세대</b></li><li><b>사업시행변경인가</b> (2026.7)</li><li>이주 사실상 마무리 단계</li></ul>
+      </div>
+    </div>
+  </div>
+  <footer class="src">신월곡1구역 수치는 2026년 7월 보도 기준입니다. 세대수(2,200~2,280)와 층수(46~47층)는 보도마다 다르고, 착공 여부는 확인되지 않았습니다. 건물 그림은 비례가 아닌 개념도입니다.</footer>
+</section>
+
+<!-- 09 체크리스트 -->
+<section class="card" id="c09">
+  <header class="top"><span>성북2구역 매물 리포트</span><span class="pg">09 / 11</span></header>
+  <div class="body">
+    <div class="eyebrow">도장 찍기 전에</div>
+    <h2>계약 전 꼭 확인할 5가지</h2>
+    <ol class="chk">
+      <li class="first"><span class="no">1</span><div><h4>분양자격</h4><p>서울시 조례의 ‘특정무허가건축물’(1989.1.24 당시 존재) 요건 + 조합 정관 기준. <b>무허가건축물관리대장 등재·조합 인정 여부를 계약 전에 서면으로.</b></p></div></li>
+      <li><span class="no">2</span><div><h4>분양가 변동</h4><p>15억은 가정치. 분양가가 1억 오르면 분담금도 그대로 1억 늘어납니다.</p></div></li>
+      <li><span class="no">3</span><div><h4>자금 조달</h4><p>등기가 없어 담보대출이 어렵습니다. 5억 대부분을 자기 돈으로 준비해야 할 수 있습니다.</p></div></li>
+      <li><span class="no">4</span><div><h4>기다림의 길이</h4><p>사업시행계획 변경과 관리처분이 남았습니다. 그 시간의 기회비용까지 계산에 넣으세요.</p></div></li>
+      <li><span class="no">5</span><div><h4>규제와 세금</h4><p>토지거래허가구역 해당 여부, 취득세·보유세를 계약 전에 확인하세요.</p></div></li>
+    </ol>
+  </div>
+  <footer class="src">특정무허가건축물 기준일은 서울시 조례 기준입니다. 조합 정관 기준과 함께 대조해 확인하세요.</footer>
+</section>
+
+<!-- 10 맞는 사람 -->
+<section class="card" id="c10">
+  <header class="top"><span>성북2구역 매물 리포트</span><span class="pg">10 / 11</span></header>
+  <div class="body">
+    <div class="eyebrow">누구에게 맞을까</div>
+    <h2>이 매물이 맞는 사람,<br>기다려야 하는 사람</h2>
+    <div class="who">
+      <div class="yes">
+        <h3><span class="ic">✓</span>이런 분께 맞습니다</h3>
+        <ul><li>성북동 저층 주거에서 실제로 살 계획</li><li>분담금을 단계적으로 마련할 수 있음</li><li>몇 년의 기다림을 견딜 수 있음</li></ul>
+        <div class="so">→ 5억이 ‘시작하기 좋은 금액’이 될 수 있습니다.</div>
+      </div>
+      <div class="wait">
+        <h3><span class="ic">!</span>기다리시길 권합니다</h3>
+        <ul><li>대출 비중이 큰 경우</li><li>2~3년 안에 차익을 보려는 경우</li></ul>
+        <div class="so">→ 관리처분으로 분양가 윤곽이 나온 뒤 들어가면 진입가는 오를 수 있지만, 마음은 훨씬 편합니다.</div>
+      </div>
+    </div>
+    <p class="quote">조급한 돈은 재개발에서 가장 먼저 지칩니다.</p>
+  </div>
+</section>
+
+<!-- 11 정리 -->
+<section class="card end" id="c11">
+  <header class="top"><span>성북2구역 매물 리포트</span><span class="pg">11 / 11</span></header>
+  <div class="body">
+    <div class="eyebrow" style="color:var(--hl)">정리하면</div>
+    <h2>5억이 아니라<br>‘프리미엄 + 분양가’로</h2>
+    <ol class="pts">
+      <li><div>이 매물은 <em>프리미엄 4억 6천만 원 + 분양가</em>로 봐야 합니다.<small>분양가 15억 가정 시 총투자금 약 19억 6,152만 원</small></div></li>
+      <li><div>가격 협상보다 <em>분양자격 확인</em>이 먼저입니다.<small>무허가건축물관리대장 등재 · 조합 인정 여부, 서면으로</small></div></li>
+    </ol>
+    <p class="cta">이 두 가지가 정리된다면, 성북동에 새집을 가질 기회로 볼 수 있는 매물입니다. 분석표와 계산 과정은 상담 때 숫자 하나하나 같이 짚어 드리고, 분양자격 서류도 계약 전에 함께 확인해 드립니다.</p>
+    <div class="office" id="office"></div>
+  </div>
+</section>
+
+<script>
+  // 중개사무소 정보. 채우면 마지막 장 하단에 명함처럼 들어간다. 비워 두면 넣을 자리만 점선으로 표시된다.
+  const OFFICE = {
+    name: "",      // 예: ○○공인중개사사무소
+    lines: [],     // 예: ["대표 공인중개사 ○○○ · 등록번호 ○○○○-○○○○○-○○○○○", "서울 성북구 ○○로 00 · 02-000-0000"]
+  };
+
+  (function office() {
+    const el = document.getElementById("office");
+    if (OFFICE.name) {
+      el.className = "office filled";
+      el.innerHTML = `<div class="nm">${OFFICE.name}</div>` + OFFICE.lines.map(l => `<div class="ln">${l}</div>`).join("");
+    } else {
+      el.className = "office empty";
+      el.textContent = "중개사무소 정보 넣을 자리 · 상호, 대표 공인중개사, 등록번호, 소재지, 연락처";
+    }
+  })();
+
+  // 04장 산점도: 대지(평) × 거래가(억). 10건 = 국토부 실거래 중개거래.
+  (function scatter() {
+    const deals = [
+      ["2026.08.04", 20.0, 5.20], ["2026.06.18", 30.9, 8.67], ["2026.06.06", 15.1, 5.80],
+      ["2026.05.18", 15.1, 5.85], ["2026.04.27", 19.1, 5.75], ["2026.01.31", 29.0, 7.30],
+      ["2025.12.03", 25.1, 6.35], ["2025.09.05", 20.0, 5.40], ["2025.05.20", 23.9, 5.80],
+      ["2025.05.13", 29.9, 7.80],
+    ];
+    const me = [2.42, 5.0];
+    const svg = document.getElementById("scatter");
+    const W = 920, H = 600, L = 92, R = 24, T = 20, B = 70;
+    const x = v => L + (v / 35) * (W - L - R);
+    const y = v => T + (1 - (v - 4) / 5) * (H - T - B);
+    const NS = "http://www.w3.org/2000/svg";
+    const add = (tag, attrs, text) => {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs) n.setAttribute(k, attrs[k]);
+      if (text != null) n.textContent = text;
+      svg.appendChild(n); return n;
+    };
+    for (let v = 4; v <= 9; v++) {
+      add("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: v === 4 ? "#16181D" : "#DCD5C6", "stroke-width": v === 4 ? 2 : 1.5 });
+      add("text", { x: L - 16, y: y(v) + 9, "text-anchor": "end", "font-size": 25, "font-weight": 600, fill: "#6B7079" }, v + "억");
+    }
+    for (let v = 0; v <= 35; v += 5) {
+      add("text", { x: x(v), y: H - B + 40, "text-anchor": "middle", "font-size": 25, "font-weight": 600, fill: "#6B7079" }, v);
+    }
+    add("text", { x: W - R, y: H - 6, "text-anchor": "end", "font-size": 24, "font-weight": 700, fill: "#3A3E47" }, "대지 면적 (평)");
+
+    // 최저가 기준선
+    add("line", { x1: L, x2: W - R, y1: y(5.2), y2: y(5.2), stroke: "#16181D", "stroke-width": 2, "stroke-dasharray": "10 8" });
+    add("text", { x: W - R, y: y(5.2) - 14, "text-anchor": "end", "font-size": 25, "font-weight": 800, fill: "#16181D" }, "10건 최저 5억 2,000만");
+
+    for (const [, a, p] of deals) {
+      add("circle", { cx: x(a), cy: y(p), r: 15, fill: "#6B7079", stroke: "#F3EFE6", "stroke-width": 3 });
+    }
+    // 선택 라벨: 최고가
+    add("text", { x: x(30.9) - 26, y: y(8.67) + 9, "text-anchor": "end", "font-size": 24, "font-weight": 700, fill: "#3A3E47" }, "8억 6,700만 · 30.9평");
+
+    // 이 매물
+    add("circle", { cx: x(me[0]), cy: y(me[1]), r: 20, fill: "#D9452B", stroke: "#F3EFE6", "stroke-width": 4 });
+    add("text", { x: x(me[0]) + 34, y: y(me[1]) + 46, "font-size": 27, "font-weight": 800, fill: "#D9452B" }, "이 매물 · 대지 2.42평 · 5억");
+  })();
+</script>
+</body>
+</html>
