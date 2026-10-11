@@ -1,0 +1,2642 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>쌤태리부동산컨설팅 — 서울 재개발·재건축 투자 분석 전문</title>
+<meta name="description" content="서울 재개발·재건축 정비구역 분석, 조합원 입주권 검토 지원, 권리가액·분담금 계산, 투자 리스크 진단. 공적 자료로 확인하는 재개발 전문 컨설팅.">
+<meta name="keywords" content="재개발 컨설팅, 재개발 투자, 재건축 투자, 조합원 입주권, 권리가액, 비례율, 분담금, 정비구역 분석">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="쌤태리부동산컨설팅 — 서울 재개발·재건축 투자 분석 전문">
+<meta property="og:description" content="입주권이 나오는지, 총 얼마가 드는지. 매수 전에 공적 자료와 숫자로 확인합니다.">
+<!--
+  디자인: Stitch "Objective Institutional Intelligence" 디자인 시스템 적용
+  내용: company-profile.md · service-policy.md · faq.md 기준
+  BUILD 표시 사이는 tools/build_landing.py 가 문서에서 다시 만든다. 직접 고치지 말 것.
+  [확인 필요] 표시는 대표 확인 후 실제 정보로 바꾼다.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=analytics,arrow_forward,balance,calculate,calendar_month,check,check_circle,close,content_copy,description,domain,expand_more,fact_check,hourglass_top,info,lock,map,menu_book,policy,query_stats,receipt_long,redeem,school,search,task_alt,tune,verified,verified_user,warning&display=block">
+<style>
+/* Layout: 감사 메모 — 1280px 그리드 위에 가는 선으로 나눈 흰 카드가 #F8FAFC 바탕에 놓이고, 숫자는 고정폭으로 정렬한다 */
+:root {
+  color-scheme: light;
+  --canvas: #F8FAFC;
+  --card: #FFFFFF;
+  --muted-bg: #F1F5F9;
+  --line: #E2E8F0;
+  --line-strong: #CBD5E1;
+  --navy: #0F2537;
+  --navy-deep: #000F1D;
+  --slate: #334E68;
+  --gold: #C59B27;
+  --gold-wash: rgba(197, 155, 39, 0.24);
+  --text: #0F172A;
+  --text-sub: #43474C;
+  --text-muted: #64748B;
+  --on-navy: #FFFFFF;
+  --on-navy-muted: #B3C9E0;
+  --navy-line: #2E4963;
+  --alert: #B91C1C;
+  --alert-bg: #FEF2F2;
+  --alert-line: #F87171;
+  --review: #B45309;
+  --review-bg: #FFFBEB;
+  --review-line: #FCD34D;
+  --verified: #0F766E;
+  --verified-bg: #F0FDFA;
+  --verified-line: #99F6E4;
+  --mark-ok: #10B981;
+  --mark-no: #DC2626;
+  --header-bg: rgba(255, 255, 255, 0.92);
+  --hover-shadow: 0 2px 4px -1px rgba(15, 23, 42, 0.05);
+  --font-sans: "Inter", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Noto Sans KR", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --r-sm: 4px;
+  --r-lg: 8px;
+  --gutter: 1.5rem;
+  --margin: 3rem;
+}
+@media (max-width: 767px) { :root { --gutter: 1rem; --margin: 1.25rem; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+body {
+  margin: 0; background: var(--canvas); color: var(--text);
+  font-family: var(--font-sans); font-size: 15px; line-height: 24px; letter-spacing: -0.015em;
+  word-break: keep-all; overflow-wrap: break-word; -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; }
+a { color: inherit; }
+h1, h2, h3, p, ul, ol, dl, dd { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+.container { max-width: 1280px; margin-inline: auto; padding-inline: var(--margin); }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: 0; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; } }
+
+/* Icons (Material Symbols) */
+.ms {
+  font-family: "Material Symbols Outlined"; font-weight: normal; font-style: normal; font-size: 20px;
+  line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap;
+  direction: ltr; font-feature-settings: "liga"; -webkit-font-smoothing: antialiased;
+  width: 1em; overflow: hidden; flex: none;
+}
+.ms.ok { color: var(--mark-ok); }
+.ms.no { color: var(--mark-no); }
+
+/* Type scale (DESIGN.md) */
+.h-xl { font-size: 40px; line-height: 52px; font-weight: 700; letter-spacing: -0.03em; color: var(--navy); text-wrap: balance; }
+.h-lg { font-size: 32px; line-height: 42px; font-weight: 700; letter-spacing: -0.025em; color: var(--navy); text-wrap: balance; }
+.h-md { font-size: 24px; line-height: 32px; font-weight: 600; color: var(--navy); text-wrap: balance; }
+.h-sm { font-size: 20px; line-height: 28px; font-weight: 600; color: var(--navy); text-wrap: balance; }
+.body-lg { font-size: 18px; line-height: 28px; }
+.body-sm { font-size: 13px; line-height: 20px; }
+.label-md { font-size: 14px; line-height: 20px; font-weight: 600; }
+.label-sm { font-size: 12px; line-height: 16px; font-weight: 500; color: var(--text-muted); }
+.text-sub { color: var(--text-sub); }
+.text-muted { color: var(--text-muted); }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--slate); }
+@media (max-width: 767px) {
+  .h-xl { font-size: 30px; line-height: 38px; }
+  .h-lg { font-size: 24px; line-height: 32px; }
+}
+
+/* Tags (no pills: 4px) */
+.tag {
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: var(--r-sm);
+  font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0;
+  border: 1px solid var(--line-strong); background: var(--muted-bg); color: var(--slate); white-space: nowrap;
+}
+.tag-alert { background: var(--alert-bg); color: var(--alert); border-color: var(--alert-line); }
+.tag-review { background: var(--review-bg); color: var(--review); border-color: var(--review-line); }
+.tag-verified { background: var(--verified-bg); color: var(--verified); border-color: var(--verified-line); }
+.tag-navy { background: var(--navy); color: var(--on-navy); border-color: var(--navy); }
+.tbd { display: inline-block; padding: 0 6px; border-radius: var(--r-sm); background: var(--review-bg); color: var(--review); border: 1px solid var(--review-line); font-family: var(--font-mono); font-size: 12px; letter-spacing: 0; }
+mark.flag { background: var(--review-bg); color: var(--review); border: 1px solid var(--review-line); border-radius: var(--r-sm); padding: 0 4px; font-weight: 600; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 24px;
+  border-radius: var(--r-sm); border: 1px solid transparent; font: 600 14px/20px var(--font-sans); letter-spacing: -0.01em;
+  text-decoration: none; cursor: pointer; transition: background-color .15s, filter .15s, border-color .15s;
+}
+.btn-primary { background: var(--navy); color: var(--on-navy); }
+.btn-primary:hover { filter: brightness(1.25); }
+.btn-secondary { background: var(--card); color: var(--navy); border-color: var(--line-strong); }
+.btn-secondary:hover { background: var(--muted-bg); }
+.btn-accent { background: var(--gold); color: var(--navy); font-weight: 700; }
+.btn-accent:hover { filter: brightness(1.06); }
+.btn-block { width: 100%; }
+.btn-sm { min-height: 40px; padding: 8px 16px; }
+
+/* Cards, callouts, tables */
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); }
+.card-hover { transition: border-color .15s, box-shadow .15s; }
+.card-hover:hover { border-color: var(--slate); box-shadow: var(--hover-shadow); }
+.memo { background: var(--canvas); border: 1px solid var(--line); border-left: 3px solid var(--navy); border-radius: var(--r-sm); padding: 20px 24px; }
+.memo-alert { border-left-color: var(--mark-no); }
+.memo-caution { border-left-color: var(--gold); }
+.memo-title { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--card); }
+.data-table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 22px; min-width: 640px; }
+.data-table th { background: var(--muted-bg); color: var(--slate); font-size: 12px; line-height: 16px; font-weight: 600; text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.data-table td { padding: 12px 16px; border-top: 1px solid var(--line); vertical-align: top; }
+.data-table th + th, .data-table td + td { border-left: 1px solid var(--line); }
+.data-table .num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: 0; white-space: nowrap; }
+
+/* Sections */
+.section { padding-block: 80px; border-top: 1px solid var(--line); }
+.section-card { background: var(--card); }
+.section-canvas { background: var(--canvas); }
+.section-head { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 16px 48px; align-items: end; margin-bottom: 40px; }
+.section-head .eyebrow { margin-bottom: 8px; display: block; }
+.section-head p { color: var(--text-sub); max-width: 60ch; }
+@media (max-width: 900px) { .section-head { grid-template-columns: minmax(0, 1fr); } .section { padding-block: 56px; } }
+
+/* Header */
+.site-header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: var(--header-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+.site-header .container { min-height: 72px; display: flex; align-items: center; gap: 24px; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; min-width: 0; }
+.brand-mark { width: 40px; height: 40px; flex: none; }
+.brand-text { display: flex; flex-direction: column; min-width: 0; }
+.brand-name { display: flex; align-items: baseline; gap: 6px; font-size: 18px; line-height: 26px; font-weight: 700; color: var(--navy); letter-spacing: -0.02em; white-space: nowrap; }
+.brand-est { font-family: var(--font-mono); font-size: 11px; line-height: 16px; padding: 0 6px; border-radius: var(--r-sm); background: var(--muted-bg); color: var(--text-muted); letter-spacing: 0; }
+.brand-en { font-family: var(--font-mono); font-size: 10px; line-height: 14px; letter-spacing: 0.08em; color: var(--text-muted); white-space: nowrap; }
+.nav { display: flex; gap: 4px; margin-left: auto; }
+.nav a { padding: 8px 12px; border-radius: var(--r-sm); font-size: 14px; line-height: 20px; font-weight: 600; color: var(--text-sub); text-decoration: none; white-space: nowrap; }
+.nav a:hover { color: var(--text); background: var(--muted-bg); }
+.header-cta { margin-left: 8px; flex: none; }
+@media (max-width: 1180px) { .nav { display: none; } .header-cta { margin-left: auto; } }
+@media (max-width: 560px) { .brand-en, .brand-est { display: none; } .brand-name { font-size: 16px; } .header-cta { padding-inline: 12px; } }
+
+/* Hero */
+.hero { background: var(--canvas); padding-block: 32px 72px; }
+.micro-notice { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--card); font-family: var(--font-mono); font-size: 12px; line-height: 16px; color: var(--slate); letter-spacing: 0; }
+.micro-notice .ms { font-size: 16px; color: var(--verified); }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 48px; align-items: center; margin-top: 32px; }
+.hero-copy { display: grid; gap: 24px; }
+.hero-copy .eyebrow { color: var(--slate); }
+.hl { background: linear-gradient(transparent 62%, var(--gold-wash) 0); }
+.hero-lead { color: var(--text-sub); max-width: 58ch; }
+.kpi-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.kpi { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 10px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--card); }
+.kpi .ms { grid-row: span 2; color: var(--slate); margin-top: 2px; }
+.kpi b { font-size: 14px; line-height: 20px; color: var(--navy); }
+.kpi span:last-child { font-size: 12px; line-height: 16px; color: var(--text-muted); }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.boundary { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 20px; color: var(--text-sub); padding: 12px 14px; border-left: 3px solid var(--navy); background: var(--card); border-radius: var(--r-sm); }
+.boundary .ms { font-size: 18px; color: var(--navy); margin-top: 1px; }
+.hero-visual { position: relative; padding-bottom: 250px; }
+.map-card { overflow: hidden; }
+.map-card-head { display: flex; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); font-family: var(--font-mono); font-size: 12px; line-height: 16px; color: var(--text-muted); letter-spacing: 0; }
+.map-card canvas { display: block; width: 100%; height: 420px; background: var(--card); }
+.audit-card { position: absolute; left: -32px; bottom: 0; width: min(390px, 88%); background: var(--card); border: 1px solid var(--line-strong); border-radius: var(--r-lg); box-shadow: 0 12px 24px -16px rgba(15, 23, 42, 0.22); }
+.audit-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--muted-bg); border-radius: var(--r-lg) var(--r-lg) 0 0; }
+.audit-head .mono { font-size: 12px; color: var(--slate); }
+.audit-title { padding: 14px 16px 4px; font-weight: 700; color: var(--navy); }
+.audit-rows { padding: 4px 16px 8px; }
+.audit-rows li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+.audit-rows li:last-child { border-bottom: 0; }
+.audit-rows .r-label { font-size: 12px; line-height: 16px; color: var(--text-muted); }
+.audit-rows .r-value { grid-column: 1; font-size: 14px; line-height: 20px; font-weight: 600; }
+.audit-rows .tag { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+.audit-foot { padding: 10px 16px 14px; font-size: 12px; line-height: 18px; color: var(--text-muted); border-top: 1px solid var(--line); }
+@media (max-width: 1023px) {
+  .hero-grid { grid-template-columns: minmax(0, 1fr); }
+  .hero-visual { padding-bottom: 0; display: grid; gap: 16px; }
+  .audit-card { position: static; width: 100%; }
+}
+@media (max-width: 640px) { .kpi-row { grid-template-columns: minmax(0, 1fr); } .map-card canvas { height: 240px; } }
+
+/* Principles */
+.grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gutter); }
+.principle { padding: 24px; display: grid; gap: 12px; align-content: start; }
+.icon-box { width: 40px; height: 40px; display: inline-grid; place-items: center; border-radius: var(--r-sm); background: var(--muted-bg); color: var(--navy); }
+.principle .rule { border-top: 1px solid var(--line); padding-top: 12px; font-size: 13px; line-height: 20px; color: var(--text-sub); }
+.principle .rule b { display: block; font-size: 12px; line-height: 16px; color: var(--slate); margin-bottom: 2px; }
+.never { margin-top: 32px; }
+.never-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 24px; margin-top: 12px; }
+.never-list li { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; line-height: 22px; }
+.never-list .ms { font-size: 18px; margin-top: 2px; }
+@media (max-width: 1023px) { .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .never-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .grid-4, .never-list { grid-template-columns: minmax(0, 1fr); } }
+
+/* Services */
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); }
+.service-card { padding: 28px; display: grid; gap: 14px; align-content: start; }
+.service-card-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.check-list { display: grid; gap: 8px; font-size: 14px; line-height: 22px; color: var(--text-sub); }
+.check-list li { display: flex; gap: 8px; align-items: flex-start; }
+.check-list .ms { font-size: 18px; margin-top: 2px; }
+.check-list b { color: var(--navy); font-weight: 600; margin-right: 4px; }
+.service-card-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 16px; border-top: 1px solid var(--line); margin-top: 4px; }
+.price-inline { font-size: 18px; line-height: 24px; font-weight: 700; color: var(--navy); }
+.link-arrow { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 600; color: var(--navy); text-decoration: none; }
+.link-arrow:hover { text-decoration: underline; }
+.link-arrow .ms { font-size: 18px; }
+.subhead { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; margin: 48px 0 16px; }
+.subhead p { color: var(--text-sub); max-width: 60ch; font-size: 14px; }
+.edu-band { margin-top: 48px; background: var(--navy); color: var(--on-navy); border-radius: var(--r-lg); padding: 28px; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr) auto; gap: 24px 32px; align-items: center; }
+.edu-band .eyebrow { color: var(--on-navy-muted); }
+.edu-band h3 { color: var(--on-navy); margin-top: 6px; }
+.edu-band p.note { color: var(--on-navy-muted); font-size: 13px; line-height: 20px; margin-top: 8px; }
+.edu-list { display: grid; gap: 10px; }
+.edu-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding-bottom: 10px; border-bottom: 1px solid var(--navy-line); }
+.edu-list li:last-child { border-bottom: 0; padding-bottom: 0; }
+.edu-name { font-weight: 600; }
+.edu-meta { font-size: 12px; color: var(--on-navy-muted); text-align: right; }
+.edu-target { grid-column: 1 / -1; font-size: 12px; line-height: 18px; color: var(--on-navy-muted); }
+.edu-range { font-size: 13px; color: var(--on-navy-muted); margin-top: 8px; }
+.edu-side { display: grid; gap: 10px; justify-items: start; }
+@media (max-width: 1023px) { .edu-band { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 760px) { .grid-2 { grid-template-columns: minmax(0, 1fr); } .service-card { padding: 22px; } }
+
+/* Stress test */
+.stress-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gutter); }
+.calc-inputs { padding: 24px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 20px; align-items: start; }
+.calc-inputs .h-sm, .calc-inputs .calc-note { grid-column: 1 / -1; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: 13px; line-height: 18px; font-weight: 600; color: var(--text); }
+.input-unit { display: flex; align-items: stretch; }
+.input-unit input { border-radius: var(--r-sm) 0 0 var(--r-sm); }
+.input-unit span { display: grid; place-items: center; padding: 0 10px; border: 1px solid var(--line-strong); border-left: 0; border-radius: 0 var(--r-sm) var(--r-sm) 0; background: var(--muted-bg); font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+.hint { font-family: var(--font-mono); font-size: 12px; line-height: 16px; color: var(--text-muted); letter-spacing: 0; }
+input, select, textarea {
+  width: 100%; min-height: 40px; border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: var(--card);
+  color: var(--text); font: 400 14px/20px var(--font-sans); padding: 9px 12px; letter-spacing: -0.01em;
+}
+textarea { min-height: 112px; resize: vertical; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 1.5px var(--navy); }
+.calc-out { display: grid; gap: 16px; min-width: 0; }
+.case-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
+.case-strip div { padding: 14px 16px; border-left: 1px solid var(--line); display: grid; gap: 4px; }
+.case-strip div:first-child { border-left: 0; }
+.case-strip dt { font-size: 12px; line-height: 16px; color: var(--text-muted); }
+.case-strip dd { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 16px; line-height: 22px; font-weight: 700; color: var(--navy); letter-spacing: 0; }
+.case-strip dd.key { color: var(--navy); box-shadow: inset 0 -3px 0 var(--gold); justify-self: start; }
+.cell-up { color: var(--alert); font-weight: 600; }
+.cell-down { color: var(--verified); font-weight: 600; }
+.stress-table td small { display: block; color: var(--text-muted); font-size: 12px; line-height: 16px; }
+.stress-table tr.total td { background: var(--muted-bg); font-weight: 700; }
+@media (max-width: 1023px) { .calc-inputs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .calc-inputs { grid-template-columns: minmax(0, 1fr); } .case-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } .case-strip div:nth-child(3) { border-left: 0; } .case-strip div:nth-child(n+3) { border-top: 1px solid var(--line); } }
+
+/* Process */
+.steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gutter); counter-reset: none; }
+.step { padding: 20px; display: grid; gap: 8px; align-content: start; }
+.step .phase { font-family: var(--font-mono); font-size: 12px; line-height: 16px; color: var(--gold); font-weight: 700; letter-spacing: 0.04em; }
+.step h3 { font-size: 17px; line-height: 24px; font-weight: 600; color: var(--navy); }
+.step p { font-size: 14px; line-height: 22px; color: var(--text-sub); }
+.step .tag { justify-self: start; margin-top: 4px; white-space: normal; }
+.banner { margin-top: 24px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
+.banner .memo-title { margin: 0; }
+@media (max-width: 1023px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .steps { grid-template-columns: minmax(0, 1fr); } }
+
+/* Pricing */
+.plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gutter); }
+.plan-card { padding: 24px; display: grid; gap: 12px; align-content: start; grid-template-rows: auto auto auto auto auto 1fr auto auto; }
+.plan-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.label-plan { font-size: 12px; color: var(--gold); font-weight: 700; letter-spacing: 0.04em; }
+.plan-scope { font-size: 13px; line-height: 20px; color: var(--text-muted); }
+.plan-price { font-size: 15px; color: var(--text-sub); }
+.plan-price .mono { font-size: 30px; line-height: 38px; font-weight: 700; color: var(--navy); margin-right: 2px; }
+.plan-note { display: flex; gap: 6px; align-items: flex-start; font-size: 12px; line-height: 18px; color: var(--review); background: var(--review-bg); border: 1px solid var(--review-line); border-radius: var(--r-sm); padding: 6px 8px; }
+.plan-note .ms { font-size: 16px; margin-top: 1px; }
+.plan-lists { display: grid; gap: 6px; border-top: 1px solid var(--line); padding-top: 12px; align-content: start; }
+.plan-lists .label-sm { margin-top: 6px; }
+.mark-list { display: grid; gap: 6px; font-size: 13px; line-height: 20px; color: var(--text-sub); }
+.mark-list li { display: flex; gap: 6px; align-items: flex-start; }
+.mark-list .ms { font-size: 16px; margin-top: 2px; }
+.plan-terms { display: grid; gap: 6px; font-size: 12px; line-height: 18px; background: var(--muted-bg); border-radius: var(--r-sm); padding: 10px 12px; }
+.plan-terms div { display: grid; grid-template-columns: 2.6em minmax(0, 1fr); gap: 8px; }
+.plan-terms dt { color: var(--slate); font-weight: 600; }
+.plan-terms dd { color: var(--text-sub); }
+.fee-note { margin-top: 24px; }
+.fee-note ul { display: grid; gap: 4px; font-size: 13px; line-height: 20px; color: var(--text-sub); }
+.fee-note li::before { content: "· "; color: var(--slate); }
+@media (max-width: 1100px) { .plans { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 680px) { .plans { grid-template-columns: minmax(0, 1fr); } }
+
+/* Knowledge center FAQ */
+.faq-controls { display: grid; gap: 16px; margin-bottom: 20px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 6px 12px; border-radius: var(--r-sm); border: 1px solid var(--line-strong); background: var(--card); color: var(--text-sub); font: 500 13px/18px var(--font-sans); letter-spacing: -0.01em; cursor: pointer; }
+.chip .mono { font-size: 11px; color: var(--text-muted); }
+.chip:hover { border-color: var(--slate); }
+.chip[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: var(--on-navy); }
+.chip[aria-pressed="true"] .mono { color: var(--on-navy-muted); }
+.search-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.search-box { position: relative; flex: 1 1 320px; max-width: 520px; }
+.search-box .ms { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+.search-box input { padding-left: 40px; }
+.faq-count { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); letter-spacing: 0; }
+.faq-list { display: grid; gap: 8px; }
+.faq-item { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); }
+.faq-item[open] { border-color: var(--slate); }
+.faq-item summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 12px; align-items: center; padding: 16px 20px; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-no { font-size: 12px; color: var(--slate); font-weight: 700; }
+.faq-title { font-size: 15px; line-height: 22px; font-weight: 600; color: var(--navy); }
+.faq-caret { color: var(--text-muted); transition: transform .15s; }
+.faq-item[open] .faq-caret { transform: rotate(180deg); }
+.faq-body { padding: 0 20px 20px; display: grid; gap: 12px; border-top: 1px solid var(--line); padding-top: 16px; margin-inline: 0; }
+.faq-ask { font-size: 13px; line-height: 20px; color: var(--text-muted); }
+.faq-answer { font-size: 15px; line-height: 26px; max-width: 78ch; }
+.faq-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 24px; background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 12px 14px; font-size: 13px; line-height: 20px; }
+.faq-meta div { display: grid; grid-template-columns: 6.5em minmax(0, 1fr); gap: 8px; }
+.faq-meta dt { color: var(--slate); font-weight: 600; }
+.faq-meta dd { color: var(--text-sub); }
+.faq-meta .tag { white-space: normal; }
+.faq-empty { padding: 24px; text-align: center; color: var(--text-muted); border: 1px dashed var(--line-strong); border-radius: var(--r-lg); }
+@media (max-width: 640px) {
+  .faq-item summary { grid-template-columns: minmax(0, 1fr) auto; padding: 14px 16px; }
+  .faq-item summary .faq-no { grid-column: 1; }
+  .faq-item summary .faq-title { grid-column: 1 / -1; grid-row: 2; }
+  .faq-item summary .tag { grid-column: 2; grid-row: 1; justify-self: end; }
+  .faq-item summary .faq-caret { display: none; }
+  .faq-body { padding-inline: 16px; }
+  .faq-meta { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Contact */
+.contact-grid { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 48px; align-items: start; }
+.contact-side { display: grid; gap: 24px; }
+.prep-list { display: grid; gap: 8px; font-size: 14px; line-height: 22px; color: var(--text-sub); }
+.prep-list li { display: flex; gap: 8px; }
+.prep-list .ms { font-size: 18px; color: var(--slate); margin-top: 2px; }
+.form-card { padding: 28px; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.form-grid .full { grid-column: 1 / -1; }
+.req { color: var(--alert); }
+.consent { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 20px; color: var(--text-sub); background: var(--canvas); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 12px; }
+.consent input { width: 18px; min-height: 18px; height: 18px; margin-top: 1px; flex: none; accent-color: var(--navy); }
+.form-error { color: var(--alert); font-size: 13px; line-height: 20px; }
+.trust-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
+.trust-row span { display: flex; gap: 6px; align-items: center; font-size: 12px; line-height: 16px; color: var(--text-muted); }
+.trust-row .ms { font-size: 16px; color: var(--slate); }
+.result-panel { margin-top: 20px; }
+.result-panel textarea { font-family: var(--font-mono); font-size: 12px; line-height: 18px; min-height: 220px; background: var(--canvas); letter-spacing: 0; }
+.result-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+.copy-status { font-size: 13px; color: var(--verified); }
+@media (max-width: 1023px) { .contact-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; } }
+@media (max-width: 640px) { .form-grid, .trust-row { grid-template-columns: minmax(0, 1fr); } .form-card { padding: 20px; } }
+
+/* Footer */
+.site-footer { background: var(--card); border-top: 1px solid var(--line); padding-block: 56px 32px; }
+.footer-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr) minmax(0, 1fr); gap: 40px; }
+.footer-grid h3 { font-size: 13px; line-height: 18px; font-weight: 700; color: var(--slate); margin-bottom: 12px; }
+.company-info { display: grid; gap: 6px; font-size: 13px; line-height: 20px; color: var(--text-sub); margin-top: 16px; }
+.company-info div { display: grid; grid-template-columns: 7.5em minmax(0, 1fr); gap: 8px; }
+.company-info dt { color: var(--text-muted); }
+.footer-links { display: grid; gap: 8px; font-size: 13px; line-height: 20px; }
+.footer-links a { color: var(--text-sub); text-decoration: none; }
+.footer-links a:hover { color: var(--navy); text-decoration: underline; }
+.footer-links .mono { font-size: 11px; color: var(--text-muted); }
+.legal { margin-top: 40px; font-size: 12px; line-height: 20px; color: var(--text-sub); }
+.footer-bottom { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing: 0; }
+@media (max-width: 900px) { .footer-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="#top" aria-label="쌤태리부동산컨설팅 처음으로">
+      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+        <rect width="40" height="40" rx="4" fill="#0F2537"/>
+        <path d="M8 9h11v9H8zM21 9h11v13H21zM8 20h11v11H8zM21 24h11v7H21z" fill="none" stroke="#2E4963" stroke-width="1.5"/>
+        <path d="M21 24h11v7H21z" fill="rgba(197,155,39,0.35)" stroke="#C59B27" stroke-width="1.8"/>
+      </svg>
+      <span class="brand-text">
+        <span class="brand-name">쌤태리부동산컨설팅 <span class="brand-est">EST. 2026</span></span>
+        <span class="brand-en">SSAEMTAERI REAL ESTATE CONSULTING</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="주요 메뉴">
+      <a href="#about">회사소개</a>
+      <a href="#services">핵심 서비스</a>
+      <a href="#stress-test">투자비 계산</a>
+      <a href="#process">분석 프로세스</a>
+      <a href="#pricing">서비스 요금표</a>
+      <a href="#faq">지식센터 FAQ</a>
+    </nav>
+    <a class="btn btn-primary btn-sm header-cta" href="#contact">기초 상담 신청</a>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- 1. HERO -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container">
+    <p class="micro-notice"><span class="ms" aria-hidden="true">verified</span>공적 자료 기반 리서치 · 법령·세금 정보 기준일 2026.10.11</p>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Due Diligence &amp; Scenario Audit for Urban Redevelopment</p>
+        <h1 class="h-xl" id="hero-title">재개발 투자,<br><span class="hl">사기 전에 자료로 확인하세요.</span></h1>
+        <p class="body-lg hero-lead">입주권이 나오는지, 총 얼마가 드는지 매수 전에 숫자로 확인합니다. 서울 재개발·재건축 정비구역 분석부터 조합원 입주권 검토, 권리가액·분담금 계산, 투자 리스크 진단까지 공적 자료를 근거로 정리해 드립니다.</p>
+        <ul class="kpi-row" aria-label="분석 방식">
+          <li class="kpi"><span class="ms" aria-hidden="true">fact_check</span><b>공적 장부 대조</b><span>등기·건축물대장·토지대장</span></li>
+          <li class="kpi"><span class="ms" aria-hidden="true">tune</span><b>3개 시나리오</b><span>기본·보수·악화 비례율 모델</span></li>
+          <li class="kpi"><span class="ms" aria-hidden="true">menu_book</span><b>FAQ 100</b><span>재개발 지식센터</span></li>
+        </ul>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#contact"><span class="ms" aria-hidden="true">calendar_month</span>재개발 기초 상담 신청하기</a>
+          <a class="btn btn-secondary" href="#stress-test"><span class="ms" aria-hidden="true">calculate</span>내 물건 투자비 계산해 보기</a>
+        </div>
+        <p class="boundary"><span class="ms" aria-hidden="true">info</span><span>매물 중개나 투자 권유가 아니라, 정비사업 공적 기록을 대조해 분석합니다. 투자수익, 조합원 입주권 취득, 사업 일정은 보장하지 않습니다.</span></p>
+      </div>
+
+      <div class="hero-visual">
+        <figure class="card map-card" style="margin:0">
+          <figcaption class="map-card-head"><span>정비구역 경계 · 대상 필지</span><span>예시 그림</span></figcaption>
+          <canvas id="parcel-map" aria-hidden="true"></canvas>
+        </figure>
+        <article class="audit-card" aria-label="검토 의견서 예시">
+          <div class="audit-head"><span class="mono">검토 의견서 · 예시</span><span class="tag">기준일 2026.10.11</span></div>
+          <p class="audit-title">○○재개발구역 다세대 1건</p>
+          <ul class="audit-rows">
+            <li><span class="r-label">건축물대장 용도</span><span class="r-value">다세대주택(집합건물)</span><span class="tag tag-verified">공적 장부 확인</span></li>
+            <li><span class="r-label">사용승인일 vs 권리산정기준일</span><span class="r-value">기준일 이전 사용승인</span><span class="tag tag-verified">공적 장부 확인</span></li>
+            <li><span class="r-label">매도인 세대의 구역 내 다른 물건</span><span class="r-value">매도인 확인서·특약 필요</span><span class="tag tag-review">[확인 필요]</span></li>
+            <li><span class="r-label">추정 분담금 (전용 84㎡)</span><span class="r-value mono">약 5억 원 · 비례율 100% 가정</span><span class="tag">추정치</span></li>
+            <li><span class="r-label">비례율 90%로 하락 시</span><span class="r-value mono">분담금 약 3,000만 원 증가</span><span class="tag tag-alert">위험 플래그</span></li>
+          </ul>
+          <p class="audit-foot">가상의 예시입니다. 실제 보고서는 자료 출처와 기준일을 적고, 추정치와 확정치를 구분합니다.</p>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. PRINCIPLES -->
+<section class="section section-card" id="about" aria-labelledby="about-title">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="eyebrow">Operational Principles</span><h2 class="h-lg" id="about-title">우리가 일하는 기준과 4대 원칙</h2></div>
+      <p>재개발은 같은 구역 안에서도 물건마다, 사업 단계마다 결과가 달라집니다. 쌤태리부동산컨설팅은 매수 결정을 대신하지 않고, 결정에 필요한 근거와 위험을 먼저 정리합니다.</p>
+    </div>
+    <div class="grid-4">
+      <article class="card principle">
+        <span class="icon-box"><span class="ms" aria-hidden="true">description</span></span>
+        <span class="mono label-plan">PRINCIPLE 01</span>
+        <h3 class="h-sm">자료로 말한다</h3>
+        <p class="text-sub">의견보다 근거를 먼저 제시합니다.</p>
+        <p class="rule"><b>실무 기준</b>모든 수치에 출처와 기준일을 적고, 추정치는 추정치라고 표시합니다.</p>
+      </article>
+      <article class="card principle">
+        <span class="icon-box"><span class="ms" aria-hidden="true">warning</span></span>
+        <span class="mono label-plan">PRINCIPLE 02</span>
+        <h3 class="h-sm">위험부터 말한다</h3>
+        <p class="text-sub">좋은 점보다 확인해야 할 위험을 먼저 설명합니다.</p>
+        <p class="rule"><b>실무 기준</b>보고서마다 '매수 전 반드시 확인할 사항'과 '현금청산·사업 지연 위험'을 별도 항목으로 둡니다.</p>
+      </article>
+      <article class="card principle">
+        <span class="icon-box"><span class="ms" aria-hidden="true">query_stats</span></span>
+        <span class="mono label-plan">PRINCIPLE 03</span>
+        <h3 class="h-sm">쉽게 설명한다</h3>
+        <p class="text-sub">비례율·권리가액 같은 용어를 계산 예시와 함께 풀어 씁니다.</p>
+        <p class="rule"><b>실무 기준</b>보고서를 전달한 뒤 결과 설명 시간을 서비스에 포함합니다.</p>
+      </article>
+      <article class="card principle">
+        <span class="icon-box"><span class="ms" aria-hidden="true">balance</span></span>
+        <span class="mono label-plan">PRINCIPLE 04</span>
+        <h3 class="h-sm">판단은 고객이 한다</h3>
+        <p class="text-sub">매수 여부를 대신 결정하지 않고, 결정에 필요한 정보를 정리합니다.</p>
+        <p class="rule"><b>실무 기준</b>'사라/팔라'는 권유 대신 시나리오별 결과를 비교해 드립니다.</p>
+      </article>
+    </div>
+
+    <div class="memo memo-alert never">
+      <p class="memo-title"><span class="ms" aria-hidden="true">policy</span>쌤태리부동산컨설팅이 하지 않는 일</p>
+      <ul class="never-list">
+        <li><span class="ms no" aria-hidden="true">close</span>투자수익, 프리미엄, 조합원 입주권 취득, 사업 일정 보장</li>
+        <li><span class="ms no" aria-hidden="true">close</span>조합원 자격·분양대상·현금청산 여부의 법적 확정</li>
+        <li><span class="ms no" aria-hidden="true">close</span>세금 신고 대리와 확정 세액 산정</li>
+        <li><span class="ms no" aria-hidden="true">close</span>감정평가 (종전자산은 공개 자료 기반 추정 범위로만 제시)</li>
+        <li><span class="ms no" aria-hidden="true">close</span>컨설팅 계약 안에서의 매물 알선·대출 알선</li>
+        <li><span class="ms no" aria-hidden="true">close</span>조합·추진위원회 업무 대행 (정비사업전문관리업 영역)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 3. CORE SERVICES -->
+<section class="section section-canvas" id="services" aria-labelledby="services-title">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="eyebrow">Independent Due Diligence Services</span><h2 class="h-lg" id="services-title">재개발 정밀 분석 핵심 서비스</h2></div>
+      <p>구역 검토부터 개별 물건의 입주권 쟁점, 비례율 시나리오까지 투자 단계에 맞는 보고서를 제공합니다. 가격과 기간은 실습용 예시입니다.</p>
+    </div>
+    <div class="grid-2">
+<!-- BUILD:SERVICE-CARDS:START -->
+<article class="card service-card">
+  <div class="service-card-top"><span class="icon-box"><span class="ms" aria-hidden="true">map</span></span><span class="tag tag-neutral">구역 기초 검토</span></div>
+  <h3 class="h-md">재개발 정비구역 분석</h3>
+  <p class="text-sub">구역 개요, 추진 단계와 고시 이력, 정비계획(세대수·용적률·임대주택), 공개된 조합 자료, 입지와 주변 경쟁단지 실거래가, 위험요인을 한 보고서로 정리합니다.</p>
+  <ul class="check-list">
+    <li><span class="ms ok" aria-hidden="true">check_circle</span><span><b>주요 대상</b> 관심 구역을 처음 검토하는 투자자</span></li>
+    <li><span class="ms ok" aria-hidden="true">check_circle</span><span><b>산출물</b> 정비구역 분석보고서 1건(PDF, 15~25쪽 내외) + 온라인 결과 설명 30분 1회</span></li>
+    <li><span class="ms ok" aria-hidden="true">check_circle</span><span><b>소요기간</b> <span class="mono">7영업일</span></span></li>
+  </ul>
+  <div class="service-card-foot"><span class="price-inline mono">350,000원</span><a class="link-arrow" href="#contact" data-service="재개발 정비구역 분석">서비스 신청하기<span class="ms" aria-hidden="true">arrow_forward</span></a></div>
+</article>
+<article class="card service-card">
+  <div class="service-card-top"><span class="icon-box"><span class="ms" aria-hidden="true">domain</span></span><span class="tag tag-neutral">매수 전 점검</span></div>
+  <h3 class="h-md">재개발 투자 물건 분석</h3>
+  <p class="text-sub">등기·건축물대장·토지대장 대조, 물건 유형별 분양대상 쟁점, 권리산정기준일 대비 분할·신축 여부, 종전자산 추정 범위, 초기투자금·총투자비 시뮬레이션을 제공합니다.</p>
+  <ul class="check-list">
+    <li><span class="ms ok" aria-hidden="true">check_circle</span><span><b>주요 대상</b> 특정 물건의 매수를 검토 중인 투자자</span></li>
+    <li><span class="ms ok" aria-hidden="true">check_circle</span><span><b>산출물</b> 투자 물건 분석보고서 1건(PDF, 10~20쪽 내외) + 투자비 계산표(엑셀) + 온라인 결과 설명 30분 1회</span></li>
+    <li><span class="ms ok" aria-hidden="true">check_circle</span><span><b>소요기간</b> <span class="mono">5영업일</span></span></li>
+  </ul>
+  <div class="service-card-foot"><span class="price-inline mono">500,000원</span><a class="link-arrow" href="#contact" data-service="재개발 투자 물건 분석">서비스 신청하기<span class="ms" aria-hidden="true">arrow_forward</span></a></div>
+</article>
+<article class="card service-card">
+  <div class="service-card-top"><span class="icon-box"><span class="ms" aria-hidden="true">verified_user</span></span><span class="tag tag-neutral">현금청산 위험 점검</span></div>
+  <h3 class="h-md">조합원 입주권 검토 지원</h3>
+  <p class="text-sub">조례상 분양대상 요건, 다물권·공유 쟁점, 1+1 가능성, 투기과열지구 조합원 지위 양도 제한과 예외 사유를 자료로 검토합니다. 결과는 검토 의견이며 법적 확정이 아닙니다.</p>
+  <ul class="check-list">
+    <li><span class="ms ok" aria-hidden="true">check_circle</span><span><b>주요 대상</b> 다물권·무허가·도로 등 권리관계가 복잡한 물건</span></li>
+    <li><span class="ms ok" aria-hidden="true">check_circle</span><span><b>산출물</b> 조합원 입주권 검토 의견서 1건(PDF, 8~15쪽 내외) + 조합·전문가 확인 질의 목록 + 온라인 결과 설명 30분 1회</span></li>
+    <li><span class="ms ok" aria-hidden="true">check_circle</span><span><b>소요기간</b> <span class="mono">7영업일</span></span></li>
+  </ul>
+  <div class="service-card-foot"><span class="price-inline mono">400,000원</span><a class="link-arrow" href="#contact" data-service="조합원 입주권 검토 지원">서비스 신청하기<span class="ms" aria-hidden="true">arrow_forward</span></a></div>
+</article>
+<article class="card service-card">
+  <div class="service-card-top"><span class="icon-box"><span class="ms" aria-hidden="true">analytics</span></span><span class="tag tag-neutral">분담금 스트레스 테스트</span></div>
+  <h3 class="h-md">재개발 사업성 분석</h3>
+  <p class="text-sub">종후자산과 총사업비를 추정해 비례율 3개 시나리오(기본·보수·악화)와 공사비·일반분양가·사업기간 변화에 따른 분담금 영향을 수치로 보여 드립니다.</p>
+  <ul class="check-list">
+    <li><span class="ms ok" aria-hidden="true">check_circle</span><span><b>주요 대상</b> 관리처분 전 장기 보유를 계획하는 조합원·투자자</span></li>
+    <li><span class="ms ok" aria-hidden="true">check_circle</span><span><b>산출물</b> 재개발 사업성 분석보고서 1건(PDF, 20~30쪽 내외) + 시나리오 계산표(엑셀) + 온라인 결과 설명 60분 1회</span></li>
+    <li><span class="ms ok" aria-hidden="true">check_circle</span><span><b>소요기간</b> <span class="mono">12영업일</span></span></li>
+  </ul>
+  <div class="service-card-foot"><span class="price-inline mono">800,000원</span><a class="link-arrow" href="#contact" data-service="재개발 사업성 분석">서비스 신청하기<span class="ms" aria-hidden="true">arrow_forward</span></a></div>
+</article>
+<!-- BUILD:SERVICE-CARDS:END -->
+    </div>
+
+    <div class="subhead">
+      <div><span class="eyebrow">Advisory Boundary</span><h3 class="h-md">검토 지원과 법적 확정 판단의 구분</h3></div>
+      <p>보고서의 결론은 검토 의견이며, 법적 효력이 있는 확인서가 아닙니다. 아래 쟁점은 법정 절차나 해당 자격을 가진 전문가가 확정합니다.</p>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th scope="col">쟁점</th><th scope="col">쌤태리부동산컨설팅이 하는 일</th><th scope="col">확정하는 주체</th></tr></thead>
+        <tbody>
+          <tr><td><b>조합원 자격</b></td><td>자료 대조, 쟁점 정리, 조합 확인 질의서 초안</td><td>조합의 정관과 분양신청 절차, 관리처분계획 인가, 분쟁 시 법원</td></tr>
+          <tr><td><b>분양대상 여부</b></td><td>조례 요건 체크리스트 대조</td><td>관리처분계획 수립·인가</td></tr>
+          <tr><td><b>현금청산</b></td><td>위험 요인 안내</td><td>조합 협의, 토지수용위원회, 법원</td></tr>
+          <tr><td><b>종전자산 평가</b></td><td>공개 자료 기반 추정 범위</td><td>감정평가법인등의 감정평가</td></tr>
+          <tr><td><b>세금</b></td><td>일반 구조와 확인 쟁점 안내</td><td>세무사, 과세관청</td></tr>
+          <tr><td><b>법률 분쟁</b></td><td>쟁점 정리와 필요한 자료 안내</td><td>변호사, 법원</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="edu-band" id="education">
+      <div>
+        <span class="eyebrow">Workshops for Professionals · 보조 서비스</span>
+        <h3 class="h-sm">공인중개사·실무자를 위한 실무교육</h3>
+        <p class="note">재개발 컨설팅에서 쓰는 분석 방법을 교육으로 전합니다. 교육 내용은 일반 정보이며 개별 물건의 판단 기준으로 그대로 쓰지 않도록 안내합니다.</p>
+      </div>
+      <div>
+<!-- BUILD:EDU-STRIP:START -->
+<ul class="edu-list">
+  <li><span class="edu-name">재개발 실무교육</span><span class="mono edu-meta">3시간 그룹교육 · 1인 150,000원</span><span class="edu-target">공인중개사, 부동산 실무자, 재개발 투자 입문자. 최소 5명, 최대 20명(실습용 제안)</span></li>
+  <li><span class="edu-name">공인중개사 AI 실무교육</span><span class="mono edu-meta">2시간 그룹교육 · 1인 99,000원</span><span class="edu-target">공인중개사, 중개보조원, 부동산 실무자. 최소 5명, 최대 20명(실습용 제안)</span></li>
+  <li><span class="edu-name">SNS 마케팅 실무교육</span><span class="mono edu-meta">4시간 그룹교육 · 1인 220,000원</span><span class="edu-target">공인중개사, 부동산 실무자. 최소 5명, 최대 15명(실습용 제안)</span></li>
+</ul>
+<p class="edu-range mono">1인 99,000원 ~ 220,000원</p>
+<!-- BUILD:EDU-STRIP:END -->
+      </div>
+      <div class="edu-side">
+        <a class="btn btn-accent" href="#contact" data-service="재개발 실무교육"><span class="ms" aria-hidden="true">school</span>교육 일정 문의</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. STRESS TEST -->
+<section class="section section-card" id="stress-test" aria-labelledby="stress-title">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="eyebrow">Quantitative Stress-Test Model</span><h2 class="h-lg" id="stress-title">“비례율 10%p 하락 시 분담금은 어떻게 바뀔까?”</h2></div>
+      <p>가상의 숫자로 계산 구조를 보여 드립니다. 값을 바꾸면 권리가액, 추정 분담금, 총투자비가 바로 다시 계산됩니다.</p>
+    </div>
+    <div class="stress-grid">
+      <form class="card calc-inputs" id="calc-form" autocomplete="off">
+        <h3 class="h-sm">가상 매물 조건</h3>
+        <div class="field"><label for="in-price">매수가</label><div class="input-unit"><input id="in-price" type="number" inputmode="numeric" min="0" step="100" value="70000"><span>만원</span></div><span class="hint" id="hint-price"></span></div>
+        <div class="field"><label for="in-asset">종전자산평가액(추정)</label><div class="input-unit"><input id="in-asset" type="number" inputmode="numeric" min="0" step="100" value="30000"><span>만원</span></div><span class="hint" id="hint-asset"></span></div>
+        <div class="field"><label for="in-sale">조합원분양가 (희망 평형)</label><div class="input-unit"><input id="in-sale" type="number" inputmode="numeric" min="0" step="100" value="80000"><span>만원</span></div><span class="hint" id="hint-sale"></span></div>
+        <div class="field"><label for="in-ratio">기본 비례율</label><div class="input-unit"><input id="in-ratio" type="number" inputmode="decimal" min="0" max="200" step="1" value="100"><span>%</span></div></div>
+        <div class="field"><label for="in-drop">악화 시나리오 하락 폭</label><select id="in-drop"><option value="5">5%p</option><option value="10" selected>10%p</option><option value="15">15%p</option><option value="20">20%p</option></select></div>
+        <div class="field"><label for="in-loan">승계 이주비 대출·임대보증금</label><div class="input-unit"><input id="in-loan" type="number" inputmode="numeric" min="0" step="100" value="12000"><span>만원</span></div><span class="hint" id="hint-loan"></span></div>
+        <div class="field"><label for="in-cost">취득세·중개보수 등 부대비용</label><div class="input-unit"><input id="in-cost" type="number" inputmode="numeric" min="0" step="100" value="2000"><span>만원</span></div><span class="hint" id="hint-cost"></span></div>
+        <p class="hint calc-note">금융비용(이자)은 제외했습니다. 이주비 승계는 매수자의 주택 수와 대출 규제에 따라 불가능할 수 있습니다.</p>
+      </form>
+
+      <div class="calc-out" aria-live="polite">
+        <dl class="card case-strip">
+          <div><dt>프리미엄 (매수가 − 종전자산)</dt><dd id="out-premium">-</dd></div>
+          <div><dt>초기투자금</dt><dd id="out-initial">-</dd></div>
+          <div><dt>기본 추정 분담금</dt><dd id="out-share">-</dd></div>
+          <div><dt>기본 총투자비</dt><dd id="out-total" class="key">-</dd></div>
+        </dl>
+        <div class="table-wrap">
+          <table class="data-table stress-table">
+            <thead><tr><th scope="col">구분</th><th scope="col" class="num" id="th-base">기본 시나리오</th><th scope="col" class="num" id="th-bad">악화 시나리오</th><th scope="col" class="num">변동폭</th></tr></thead>
+            <tbody>
+              <tr><td>권리가액<small>종전자산평가액 × 비례율</small></td><td class="num" id="c-right-base">-</td><td class="num" id="c-right-bad">-</td><td class="num" id="c-right-diff">-</td></tr>
+              <tr><td>추정 분담금<small>조합원분양가 − 권리가액</small></td><td class="num" id="c-share-base">-</td><td class="num" id="c-share-bad">-</td><td class="num" id="c-share-diff">-</td></tr>
+              <tr class="total"><td>총투자비<small>매수가 + 분담금 + 부대비용</small></td><td class="num" id="c-total-base">-</td><td class="num" id="c-total-bad">-</td><td class="num" id="c-total-diff">-</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="memo memo-caution">
+          <p class="memo-title"><span class="ms" aria-hidden="true">warning</span>분석 메모</p>
+          <p class="body-sm text-sub">총사업비가 늘면 비례율이 낮아지고 분담금이 늘어납니다. 예를 들어 종후자산 1조 원, 종전자산 4,000억 원, 총사업비 6,000억 원인 구역에서 사업비가 10% 늘면 비례율은 100%에서 85%로 내려갑니다. 실제 보고서는 공사비·일반분양가·사업기간 시나리오를 함께 반영합니다. 이 계산기는 구조를 보여 주는 가상 예시이며 투자 판단의 근거가 아닙니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. PROCESS -->
+<section class="section section-canvas" id="process" aria-labelledby="process-title">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="eyebrow">Systematic Methodology</span><h2 class="h-lg" id="process-title">문의부터 종료까지 8단계 분석 프로세스</h2></div>
+      <p>단계별 기간, 수정 횟수, 취소·환불 조건은 계약 전에 서면으로 안내합니다.</p>
+    </div>
+    <ol class="steps">
+      <li class="card step"><span class="phase">PHASE 01</span><h3>상담 문의</h3><p>홈페이지나 공식 채널로 상담을 문의합니다.</p><span class="tag">준비: 관심 구역 또는 물건 주소</span></li>
+      <li class="card step"><span class="phase">PHASE 02</span><h3>사전 질문지</h3><p>투자 목적, 예산, 보유 주택 수, 일정을 확인합니다.</p><span class="tag">준비: 질문지 작성</span></li>
+      <li class="card step"><span class="phase">PHASE 03</span><h3>범위·견적 확정</h3><p>서비스를 고르고 제출자료 목록과 기간을 안내받습니다.</p><span class="tag">견적 유효기간 14일</span></li>
+      <li class="card step"><span class="phase">PHASE 04</span><h3>계약·결제</h3><p>서비스 범위와 환불 조건을 확인한 뒤 결제합니다.</p><span class="tag">선결제 또는 착수금 50% + 잔금 50%</span></li>
+      <li class="card step"><span class="phase">PHASE 05</span><h3>자료 접수·분석</h3><p>공적 장부와 공개 자료를 조사하고 분석합니다.</p><span class="tag">기간: 결제·자료 완비 다음 영업일부터</span></li>
+      <li class="card step"><span class="phase">PHASE 06</span><h3>보고서 전달·설명</h3><p>보고서를 전달하고 온라인으로 결과를 설명합니다.</p><span class="tag">설명 30~90분 (서비스별)</span></li>
+      <li class="card step"><span class="phase">PHASE 07</span><h3>수정·후속 질의</h3><p>서비스별 수정 횟수 안에서 조건 변경과 질문을 반영합니다.</p><span class="tag">요청 기한: 전달 후 14일 이내</span></li>
+      <li class="card step"><span class="phase">PHASE 08</span><h3>종료</h3><p>서비스를 마치고 자료 보관·파기 방식을 안내합니다.</p><span class="tag">개인정보 파기 안내</span></li>
+    </ol>
+    <div class="memo banner">
+      <p class="memo-title"><span class="ms" aria-hidden="true">task_alt</span>사실관계 오류 30일 무상 정정</p>
+      <p class="body-sm text-sub">회사의 조사·계산 오류는 결과물 전달 후 30일 이내에 무상으로 정정합니다. 서비스별 수정 횟수와 별도입니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6. PRICING -->
+<section class="section section-card" id="pricing" aria-labelledby="pricing-title">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="eyebrow">Advisory Fees · 실습용 예시</span><h2 class="h-lg" id="pricing-title">서비스 요금표</h2></div>
+      <p>업무 범위, 산출물, 제외 범위를 먼저 정하고 서비스별 정해진 가격으로 안내합니다.</p>
+    </div>
+    <div class="plans">
+<!-- BUILD:PRICING:START -->
+<article class="card plan-card">
+  <div class="plan-top"><span class="mono label-plan">PLAN 01</span><span class="tag tag-neutral">60분</span></div>
+  <h3 class="h-sm">재개발 기초 상담</h3>
+  <p class="plan-scope">60분, 정비사업 기본 검토</p>
+  <p class="plan-price"><span class="mono">150,000</span>원</p>
+  <p class="plan-note"><span class="ms" aria-hidden="true">redeem</span>14일 이내 같은 구역·물건으로 컨설팅 계약 시 상담료 50%(75,000원) 차감</p>
+  <div class="plan-lists">
+    <p class="label-sm">포함</p>
+    <ul class="mark-list">
+      <li><span class="ms ok" aria-hidden="true">check</span><span>60분 상담(온라인 화상 또는 전화)</span></li>
+      <li><span class="ms ok" aria-hidden="true">check</span><span>상담 요약 메모 1건(A4 1~2쪽 분량, PDF)</span></li>
+    </ul>
+    <p class="label-sm">제외</p>
+    <ul class="mark-list">
+      <li><span class="ms no" aria-hidden="true">close</span><span>개별 물건 권리분석</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>서면 분석보고서</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>비례율·분담금 시나리오 계산</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>세무·법률 확정 의견</span></li>
+    </ul>
+  </div>
+  <dl class="plan-terms">
+    <div><dt>기간</dt><dd>신청 후 5영업일 이내에 상담 일정 확정(협의), 상담 요약 메모는 상담 후 2영업일 이내 전달</dd></div>
+    <div><dt>수정</dt><dd>상담 요약 메모의 사실관계 정정 1회</dd></div>
+    <div><dt>결제</dt><dd>상담일 2영업일 전까지 100% 선결제</dd></div>
+  </dl>
+  <a class="btn btn-accent btn-block" href="#contact" data-service="재개발 기초 상담">기초 상담 예약</a>
+</article>
+<article class="card plan-card">
+  <div class="plan-top"><span class="mono label-plan">PLAN 02</span><span class="tag tag-neutral">7영업일</span></div>
+  <h3 class="h-sm">재개발 정비구역 분석</h3>
+  <p class="plan-scope">정비구역 1곳, 분석보고서 1건</p>
+  <p class="plan-price"><span class="mono">350,000</span>원</p>
+  
+  <div class="plan-lists">
+    <p class="label-sm">포함</p>
+    <ul class="mark-list">
+      <li><span class="ms ok" aria-hidden="true">check</span><span>정비구역 분석보고서 1건(PDF, 15~25쪽 내외)</span></li>
+      <li><span class="ms ok" aria-hidden="true">check</span><span>온라인 결과 설명 30분 1회</span></li>
+    </ul>
+    <p class="label-sm">제외</p>
+    <ul class="mark-list">
+      <li><span class="ms no" aria-hidden="true">close</span><span>개별 물건 권리분석</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>비례율·분담금 시나리오</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>현장 임장</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>조합 비공개 자료 확보</span></li>
+    </ul>
+  </div>
+  <dl class="plan-terms">
+    <div><dt>기간</dt><dd>7영업일</dd></div>
+    <div><dt>수정</dt><dd>사실관계 오류 정정: 보고서 전달 후 30일 이내 무상 / 구성·표현 수정: 1회(전달 후 14일 이내 요청)</dd></div>
+    <div><dt>결제</dt><dd>계약 시 100% 선결제</dd></div>
+  </dl>
+  <a class="btn btn-secondary btn-block" href="#contact" data-service="재개발 정비구역 분석">이 서비스로 신청</a>
+</article>
+<article class="card plan-card">
+  <div class="plan-top"><span class="mono label-plan">PLAN 03</span><span class="tag tag-neutral">5영업일</span></div>
+  <h3 class="h-sm">재개발 투자 물건 분석</h3>
+  <p class="plan-scope">개별 물건 1건, 투자비·위험요인 검토</p>
+  <p class="plan-price"><span class="mono">500,000</span>원</p>
+  
+  <div class="plan-lists">
+    <p class="label-sm">포함</p>
+    <ul class="mark-list">
+      <li><span class="ms ok" aria-hidden="true">check</span><span>투자 물건 분석보고서 1건(PDF, 10~20쪽 내외)</span></li>
+      <li><span class="ms ok" aria-hidden="true">check</span><span>투자비 계산표(엑셀)</span></li>
+      <li><span class="ms ok" aria-hidden="true">check</span><span>온라인 결과 설명 30분 1회</span></li>
+    </ul>
+    <p class="label-sm">제외</p>
+    <ul class="mark-list">
+      <li><span class="ms no" aria-hidden="true">close</span><span>감정평가</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>확정 세액 계산</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>매매계약서 작성·법률 검토</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>매물 알선</span></li>
+    </ul>
+  </div>
+  <dl class="plan-terms">
+    <div><dt>기간</dt><dd>5영업일</dd></div>
+    <div><dt>수정</dt><dd>조건 변경 재계산 1회(매수가·대출·보증금 변경 등, 전달 후 14일 이내) / 사실관계 오류 정정: 30일 이내 무상</dd></div>
+    <div><dt>결제</dt><dd>계약 시 100% 선결제</dd></div>
+  </dl>
+  <a class="btn btn-secondary btn-block" href="#contact" data-service="재개발 투자 물건 분석">이 서비스로 신청</a>
+</article>
+<article class="card plan-card">
+  <div class="plan-top"><span class="mono label-plan">PLAN 04</span><span class="tag tag-neutral">7영업일</span></div>
+  <h3 class="h-sm">조합원 입주권 검토 지원</h3>
+  <p class="plan-scope">개별 물건 1건, 관련 요건·증빙자료 검토</p>
+  <p class="plan-price"><span class="mono">400,000</span>원</p>
+  
+  <div class="plan-lists">
+    <p class="label-sm">포함</p>
+    <ul class="mark-list">
+      <li><span class="ms ok" aria-hidden="true">check</span><span>조합원 입주권 검토 의견서 1건(PDF, 8~15쪽 내외)</span></li>
+      <li><span class="ms ok" aria-hidden="true">check</span><span>조합·전문가 확인 질의 목록</span></li>
+      <li><span class="ms ok" aria-hidden="true">check</span><span>온라인 결과 설명 30분 1회</span></li>
+    </ul>
+    <p class="label-sm">제외</p>
+    <ul class="mark-list">
+      <li><span class="ms no" aria-hidden="true">close</span><span>조합원 자격·분양대상 여부의 법적 확정</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>법률 의견서 작성</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>소송·이의신청 대리</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>세무 신고</span></li>
+    </ul>
+  </div>
+  <dl class="plan-terms">
+    <div><dt>기간</dt><dd>7영업일</dd></div>
+    <div><dt>수정</dt><dd>추가 자료 반영 재검토 1회(전달 후 30일 이내 자료 제출 시) / 사실관계 오류 정정: 30일 이내 무상</dd></div>
+    <div><dt>결제</dt><dd>계약 시 100% 선결제</dd></div>
+  </dl>
+  <a class="btn btn-secondary btn-block" href="#contact" data-service="조합원 입주권 검토 지원">이 서비스로 신청</a>
+</article>
+<article class="card plan-card">
+  <div class="plan-top"><span class="mono label-plan">PLAN 05</span><span class="tag tag-neutral">12영업일</span></div>
+  <h3 class="h-sm">재개발 사업성 분석</h3>
+  <p class="plan-scope">구역 1곳, 사업비·비례율 등 시나리오</p>
+  <p class="plan-price"><span class="mono">800,000</span>원</p>
+  
+  <div class="plan-lists">
+    <p class="label-sm">포함</p>
+    <ul class="mark-list">
+      <li><span class="ms ok" aria-hidden="true">check</span><span>재개발 사업성 분석보고서 1건(PDF, 20~30쪽 내외)</span></li>
+      <li><span class="ms ok" aria-hidden="true">check</span><span>시나리오 계산표(엑셀)</span></li>
+      <li><span class="ms ok" aria-hidden="true">check</span><span>온라인 결과 설명 60분 1회</span></li>
+    </ul>
+    <p class="label-sm">제외</p>
+    <ul class="mark-list">
+      <li><span class="ms no" aria-hidden="true">close</span><span>공식 감정평가</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>조합의 공식 사업성 자료를 대체하는 확정 수치</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>조합 업무 대행</span></li>
+    </ul>
+  </div>
+  <dl class="plan-terms">
+    <div><dt>기간</dt><dd>12영업일</dd></div>
+    <div><dt>수정</dt><dd>가정 변경 재계산 2회(전달 후 14일 이내) / 사실관계 오류 정정: 30일 이내 무상</dd></div>
+    <div><dt>결제</dt><dd>계약 시 착수금 50%(400,000원), 초안 전달 전 잔금 50%(400,000원)</dd></div>
+  </dl>
+  <a class="btn btn-secondary btn-block" href="#contact" data-service="재개발 사업성 분석">이 서비스로 신청</a>
+</article>
+<article class="card plan-card">
+  <div class="plan-top"><span class="mono label-plan">PLAN 06</span><span class="tag tag-neutral">15영업일</span></div>
+  <h3 class="h-sm">투자자 맞춤 종합 컨설팅</h3>
+  <p class="plan-scope">2개 구역 비교, 투자비·리스크 보고서</p>
+  <p class="plan-price"><span class="mono">1,200,000</span>원</p>
+  
+  <div class="plan-lists">
+    <p class="label-sm">포함</p>
+    <ul class="mark-list">
+      <li><span class="ms ok" aria-hidden="true">check</span><span>투자자 맞춤 종합 리서치 보고서 1건(PDF, 30~50쪽 내외)</span></li>
+      <li><span class="ms ok" aria-hidden="true">check</span><span>구역 비교표</span></li>
+      <li><span class="ms ok" aria-hidden="true">check</span><span>투자비 계산표(엑셀)</span></li>
+      <li><span class="ms ok" aria-hidden="true">check</span><span>온라인 결과 설명 90분 1회</span></li>
+      <li><span class="ms ok" aria-hidden="true">check</span><span>보고서 전달 후 30일 이내 이메일 후속 질의 3회</span></li>
+    </ul>
+    <p class="label-sm">제외</p>
+    <ul class="mark-list">
+      <li><span class="ms no" aria-hidden="true">close</span><span>매수 대상 확정 권유</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>매물 알선</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>확정 세액</span></li>
+      <li><span class="ms no" aria-hidden="true">close</span><span>법률 의견</span></li>
+    </ul>
+  </div>
+  <dl class="plan-terms">
+    <div><dt>기간</dt><dd>15영업일</dd></div>
+    <div><dt>수정</dt><dd>2회(가정 변경 재계산 포함, 전달 후 14일 이내) / 사실관계 오류 정정: 30일 이내 무상</dd></div>
+    <div><dt>결제</dt><dd>계약 시 착수금 50%(600,000원), 초안 전달 전 잔금 50%(600,000원)</dd></div>
+  </dl>
+  <a class="btn btn-secondary btn-block" href="#contact" data-service="투자자 맞춤 종합 컨설팅">이 서비스로 신청</a>
+</article>
+<!-- BUILD:PRICING:END -->
+    </div>
+    <div class="memo fee-note">
+      <p class="memo-title"><span class="ms" aria-hidden="true">receipt_long</span>가격·환불 안내</p>
+      <ul>
+        <li>표시 가격과 기간은 실습용 예시이며, 부가가치세 포함 여부는 확정 전입니다.</li>
+        <li>기간은 결제와 필수 자료 접수가 모두 끝난 다음 영업일부터 계산합니다.</li>
+        <li>보고서형 서비스는 착수 전 취소 시 전액, 착수 후 초안 전 취소 시 서비스 금액의 50%를 공제하고 환불하며, 초안 전달 후에는 환불이 어렵습니다.</li>
+        <li>기본 범위를 넘는 요청(구역·물건 추가, 현장 방문, 긴급 처리)은 별도 견적으로 안내합니다.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 7. KNOWLEDGE CENTER -->
+<section class="section section-canvas" id="faq" aria-labelledby="faq-title">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="eyebrow">Curated Knowledge Base</span><h2 class="h-lg" id="faq-title">재개발 지식센터 FAQ 100</h2></div>
+      <p>재개발·재건축 절차, 입주권, 분담금, 세금, 투자 위험을 100개 질문으로 정리했습니다. 법령·세금·금융 답변은 2026년 10월 11일 기준 일반 정보이며 개별 사안의 확정 판단이 아닙니다.</p>
+    </div>
+    <div class="faq-controls">
+      <div class="chips" role="group" aria-label="FAQ 카테고리">
+<!-- BUILD:FAQ-FILTERS:START -->
+<button type="button" class="chip" data-cat="featured" aria-pressed="true">자주 찾는 질문 <span class="mono">6</span></button>
+<button type="button" class="chip" data-cat="all" aria-pressed="false">전체 <span class="mono">100</span></button>
+<button type="button" class="chip" data-cat="01" aria-pressed="false">회사 및 컨설팅 이용 안내 <span class="mono">5</span></button>
+<button type="button" class="chip" data-cat="02" aria-pressed="false">재개발·재건축 기초 개념 <span class="mono">10</span></button>
+<button type="button" class="chip" data-cat="03" aria-pressed="false">재개발 정비사업 추진 절차 <span class="mono">10</span></button>
+<button type="button" class="chip" data-cat="04" aria-pressed="false">조합원 입주권 및 분양자격 <span class="mono">15</span></button>
+<button type="button" class="chip" data-cat="05" aria-pressed="false">권리가액·비례율·분담금 <span class="mono">10</span></button>
+<button type="button" class="chip" data-cat="06" aria-pressed="false">재개발 투자금 및 수익성 분석 <span class="mono">10</span></button>
+<button type="button" class="chip" data-cat="07" aria-pressed="false">권리산정기준일·현금청산·투자 위험 <span class="mono">10</span></button>
+<button type="button" class="chip" data-cat="08" aria-pressed="false">재개발·재건축 관련 세금 및 금융 <span class="mono">10</span></button>
+<button type="button" class="chip" data-cat="09" aria-pressed="false">공인중개사 재개발 실무 및 AI 교육 <span class="mono">5</span></button>
+<button type="button" class="chip" data-cat="10" aria-pressed="false">SNS 마케팅 교육 <span class="mono">5</span></button>
+<button type="button" class="chip" data-cat="11" aria-pressed="false">컨설팅 신청·계약·결제·환불 <span class="mono">10</span></button>
+<!-- BUILD:FAQ-FILTERS:END -->
+      </div>
+      <div class="search-row">
+        <label class="search-box" for="faq-search"><span class="visually-hidden">FAQ 검색</span><span class="ms" aria-hidden="true">search</span><input id="faq-search" type="search" placeholder="예: 현금청산, 권리산정기준일, 이주비"></label>
+        <span class="faq-count" id="faq-count" aria-live="polite"></span>
+      </div>
+    </div>
+    <div class="faq-list" id="faq-list">
+<!-- BUILD:FAQ-LIST:START -->
+<details class="faq-item" id="faq-001" data-cat="01">
+  <summary><span class="mono faq-no">FAQ-001</span><span class="faq-title">쌤태리부동산컨설팅은 어떤 일을 하는 회사인가요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 쌤태리부동산컨설팅은 어떤 회사이고, 주로 어떤 상담을 하나요?</p>
+    <p class="faq-answer">쌤태리부동산컨설팅은 서울 재개발·재건축 투자를 검토하는 분들을 위한 재개발 전문 컨설팅 회사입니다. 정비구역 분석, 재개발 투자 물건 분석, 조합원 입주권 검토 지원, 권리가액·분담금 계산, 사업성 분석, 투자 리스크 진단을 핵심 서비스로 제공합니다. 공인중개사 실무교육과 AI·SNS 마케팅 교육은 보조 서비스로 운영합니다. 모든 결과물은 공적 자료에 근거한 참고 의견이며, 투자수익이나 입주권 취득을 보장하지 않습니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>회사 및 컨설팅 이용 안내</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 기초 상담</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>쌤태리부동산컨설팅, 재개발 컨설팅, 재건축 컨설팅, 회사 소개</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-002" data-cat="01">
+  <summary><span class="mono faq-no">FAQ-002</span><span class="faq-title">재개발 컨설팅은 누구에게 필요한가요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발이 처음인데, 저 같은 사람도 재개발 컨설팅을 받아야 하나요?</p>
+    <p class="faq-answer">재개발 물건은 같은 구역 안에서도 물건 유형, 취득 시점, 세대의 다른 주택 보유 여부에 따라 입주권 여부와 투자금이 크게 달라집니다. 특히 ①재개발 빌라·단독주택 매수를 앞둔 분 ②분담금과 총투자비를 계산하기 어려운 분 ③현금청산 위험이 걱정되는 분 ④재개발 물건 상담이 많은 공인중개사에게 도움이 됩니다. 처음이라면 60분 재개발 기초 상담(150,000원, 실습용 예시 가격)으로 기본 구조와 확인할 점을 먼저 정리하시길 권합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>회사 및 컨설팅 이용 안내</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 기초 상담, 재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>재개발 처음, 재개발 입문, 재개발 컨설팅 필요성, 재개발 투자 상담</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-003" data-cat="01">
+  <summary><span class="mono faq-no">FAQ-003</span><span class="faq-title">어떤 서비스를 신청해야 할지 모르겠어요.</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 서비스 종류가 많은데, 제 상황에는 어떤 서비스를 신청하면 되나요?</p>
+    <p class="faq-answer">목적에 따라 고르시면 됩니다(가격은 실습용 예시). 구역 자체가 궁금하면 재개발 정비구역 분석(350,000원), 매수할 특정 물건의 투자비와 위험을 보려면 재개발 투자 물건 분석(500,000원), 입주권이 나오는지가 핵심 쟁점이면 조합원 입주권 검토 지원(400,000원), 비례율·분담금 변화를 보려면 재개발 사업성 분석(800,000원), 두 구역을 비교해 결정하려면 투자자 맞춤 종합 컨설팅(1,200,000원)이 맞습니다. 판단이 어려우면 재개발 기초 상담(150,000원)에서 적합한 서비스를 안내해 드립니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>회사 및 컨설팅 이용 안내</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 기초 상담, 재개발 정비구역 분석, 재개발 투자 물건 분석, 조합원 입주권 검토 지원, 재개발 사업성 분석, 투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>서비스 선택, 컨설팅 종류, 재개발 분석 서비스, 가격</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-004" data-cat="01">
+  <summary><span class="mono faq-no">FAQ-004</span><span class="faq-title">컨설팅을 받으면 수익이나 입주권을 보장받을 수 있나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 컨설팅을 받고 투자하면 수익이 나거나 입주권이 확실히 나오는 건가요?</p>
+    <p class="faq-answer">아닙니다. 쌤태리부동산컨설팅은 투자수익, 프리미엄, 조합원 입주권 취득, 사업 진행 일정을 보장하지 않습니다. 재개발 사업은 공사비, 일반분양가, 조합 운영, 정책 변화에 따라 결과가 달라지고, 분양대상 여부는 조합의 분양신청 절차와 관리처분계획 인가로 확정됩니다. 컨설팅은 확인해야 할 위험과 시나리오별 숫자를 미리 보여 드려 판단의 근거를 마련하는 서비스입니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>회사 및 컨설팅 이용 안내</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 기초 상담</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>수익 보장, 입주권 보장, 컨설팅 한계, 투자 책임</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-005" data-cat="01">
+  <summary><span class="mono faq-no">FAQ-005</span><span class="faq-title">컨설팅에서 법률·세무 판단도 해 주나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 조합원 자격이나 양도세 문제도 컨설팅에서 최종 판단해 주시나요?</p>
+    <p class="faq-answer">법률과 세무 사항은 자료 검토 지원과 일반 정보 안내까지만 제공합니다. 조합원 자격·분양대상 여부는 조합 절차와 관리처분계획 인가로, 분쟁은 법원이 판단하며 개별 법률 의견은 변호사의 업무입니다. 세액과 비과세 여부는 세무사와 과세관청이, 종전자산 금액은 감정평가법인등이 정합니다. 보고서에는 전문가 확인이 필요한 항목을 따로 표시하고 확인할 질문 목록을 정리해 드립니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>회사 및 컨설팅 이용 안내</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원, 투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 사안은 변호사·세무사 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>법률 판단, 세무 판단, 변호사, 세무사, 감정평가, 업무 범위</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-006" data-cat="02">
+  <summary><span class="mono faq-no">FAQ-006</span><span class="faq-title">재개발과 재건축의 차이는 무엇인가요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발과 재건축은 어떻게 다른가요?</p>
+    <p class="faq-answer">둘 다 「도시 및 주거환경정비법」(도시정비법)에 따른 정비사업이지만 대상과 조합원 요건이 다릅니다. 재개발은 도로·상하수도 같은 정비기반시설이 열악하고 노후 건축물이 밀집한 지역이 대상이며, 구역 안의 토지 또는 건축물 소유자, 지상권자가 토지등소유자가 되고 조합이 설립되면 원칙적으로 조합원이 됩니다. 재건축은 정비기반시설은 양호하지만 노후 공동주택이 밀집한 지역이 대상이고, 건축물과 그 부속토지를 함께 소유한 사람 중 재건축에 동의한 사람만 조합원이 됩니다. 또 재건축에는 재건축초과이익환수제가 적용되고 재개발에는 적용되지 않습니다. 개별 구역에 적용되는 세부 요건은 해당 구역 자료로 확인해야 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 기초 개념</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 기초 상담</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 정비구역 적용 시 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>재개발, 재건축, 정비사업, 토지등소유자, 조합원 요건, 도시정비법</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-007" data-cat="02">
+  <summary><span class="mono faq-no">FAQ-007</span><span class="faq-title">정비사업에는 어떤 종류가 있나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 뉴스에 나오는 정비사업, 소규모 정비사업은 각각 무엇을 말하나요?</p>
+    <p class="faq-answer">도시정비법상 정비사업은 주거환경개선사업, 재개발사업, 재건축사업의 세 가지입니다. 재개발사업에는 공공이 시행자로 참여하는 공공재개발도 포함됩니다. 이와 별도로 「빈집 및 소규모주택 정비에 관한 특례법」에 따른 가로주택정비사업, 소규모재건축·재개발사업, 자율주택정비사업 같은 소규모주택정비사업이 있고, 서울시의 모아타운·모아주택이 이 법을 기반으로 합니다. 법이 다르면 조합원 요건, 권리산정기준일, 절차가 달라지므로 먼저 &#x27;어느 법에 따른 사업인지&#x27;를 확인하는 것이 출발점입니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 기초 개념</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 기초 상담, 재개발 정비구역 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 구역의 사업 근거 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>정비사업 종류, 주거환경개선사업, 소규모주택정비사업, 가로주택정비사업</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-008" data-cat="02">
+  <summary><span class="mono faq-no">FAQ-008</span><span class="faq-title">공공재개발은 일반 재개발과 무엇이 다른가요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 공공재개발 구역은 민간 재개발과 비교해 무엇이 다른가요?</p>
+    <p class="faq-answer">공공재개발은 LH·SH 같은 공공 시행자가 사업시행자나 공동시행자로 참여하는 재개발입니다. 공공이 참여하는 대신 용적률 완화, 인허가 절차 지원 같은 인센티브를 받고, 늘어난 용적률 일부를 공공임대·공공분양 주택으로 공급하는 구조입니다. 조합 방식에 비해 사업 주도권과 의사결정 방식, 분양 구조가 달라질 수 있습니다. 후보지 선정 단계에서 토지거래허가구역 지정과 별도의 권리산정기준일이 함께 정해진 사례가 많아, 매수 전 해당 구역의 고시를 반드시 확인해야 합니다. 인센티브 수치와 공공주택 비율 등 세부 기준은 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 기초 개념</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 정비구역 분석, 재개발 기초 상담</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>공공재개발, LH, SH, 공공시행자, 용적률 완화, 공공임대</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-009" data-cat="02">
+  <summary><span class="mono faq-no">FAQ-009</span><span class="faq-title">신속통합기획은 재개발의 한 종류인가요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 신속통합기획 구역이라고 하던데, 일반 재개발과 다른 사업인가요?</p>
+    <p class="faq-answer">신속통합기획은 별도의 사업 유형이 아니라, 서울시가 정비계획 수립 단계에서 공공성과 사업성을 함께 고려한 계획안을 제시하고 이후 심의 절차를 지원해 사업 기간을 줄이려는 서울시 제도입니다. 따라서 신속통합기획 구역도 대부분 도시정비법에 따른 민간 재개발·재건축 절차를 그대로 거칩니다. 후보지로 선정되었다고 정비구역 지정이나 사업 속도가 보장되는 것은 아니며, 후보지 선정 시 권리산정기준일과 토지거래허가구역이 함께 정해진 경우가 많아 매수 전에 확인이 필요합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 기초 개념</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 정비구역 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 후보지의 고시 내용 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>신속통합기획, 신통기획, 서울시 정비계획, 후보지</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-010" data-cat="02">
+  <summary><span class="mono faq-no">FAQ-010</span><span class="faq-title">모아타운은 일반 재개발과 어떻게 다른가요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 모아타운으로 지정된 곳의 빌라를 사도 재개발처럼 아파트를 받을 수 있나요?</p>
+    <p class="faq-answer">모아타운은 「빈집 및 소규모주택 정비에 관한 특례법」의 소규모주택정비 관리지역 제도를 활용한 서울시 정책으로, 블록 단위의 가로주택정비사업이나 소규모재건축·재개발사업(모아주택)을 묶어 관리하는 방식입니다. 도시정비법상 재개발과 근거 법령이 달라 조합원 자격, 권리산정기준일, 사업 규모와 절차가 다릅니다. 같은 모아타운 안에서도 사업 단위(블록)마다 추진 여부와 단계가 다르므로, 매수하려는 물건이 어느 사업 단위에 속하고 그 사업이 실제로 추진 중인지부터 확인해야 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 기초 개념</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 정비구역 분석, 조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">사업 단위별 요건과 최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>모아타운, 모아주택, 소규모주택정비, 가로주택정비사업, 관리지역</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-011" data-cat="02">
+  <summary><span class="mono faq-no">FAQ-011</span><span class="faq-title">공공재개발·신속통합기획·모아타운·도심 공공주택 복합사업은 어떻게 다른가요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 이름이 비슷한 정비사업 제도가 너무 많은데, 한 번에 비교해 주실 수 있나요?</p>
+    <p class="faq-answer">근거 법령과 시행 주체로 구분하면 이해가 쉽습니다. ①공공재개발: 도시정비법상 재개발에 LH·SH 등 공공이 시행자로 참여 ②신속통합기획: 사업 유형이 아니라 서울시가 정비계획 수립을 지원하는 제도로, 대부분 민간 재개발·재건축 ③모아타운: 빈집 및 소규모주택 정비에 관한 특례법에 따른 소규모 정비사업을 묶는 서울시 정책 ④도심 공공주택 복합사업: 공공주택 특별법에 따라 공공주택사업자가 시행하며, 토지등소유자에게 공급하는 주택의 우선공급 기준이 일반 재개발과 다릅니다. 유형마다 권리산정기준일, 분양 요건, 거래 제한이 달라 같은 동네라도 물건별로 따로 확인해야 하며, 도심 공공주택 복합사업의 한시 적용 기한 등 세부 사항은 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 기초 개념</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 기초 상담, 재개발 정비구역 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>공공재개발, 신속통합기획, 모아타운, 도심 공공주택 복합사업, 정비사업 비교</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-012" data-cat="02">
+  <summary><span class="mono faq-no">FAQ-012</span><span class="faq-title">조합원 입주권과 분양권은 어떻게 다른가요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 입주권과 분양권은 둘 다 새 아파트를 받는 권리인데 무엇이 다른가요?</p>
+    <p class="faq-answer">조합원 입주권은 정비사업의 조합원이 기존 주택이나 토지를 바탕으로 관리처분계획에 따라 새 주택을 분양받을 수 있는 지위를 말하고, 분양권은 청약 당첨 등으로 일반분양 주택을 공급받기로 계약한 권리를 말합니다. 입주권은 조합원분양가와 권리가액을 바탕으로 분담금을 내는 구조이고, 분양권은 분양가 전액을 계약금·중도금·잔금으로 냅니다. 세법상 주택 수 계산, 취득세, 양도세 처리, 거래 제한 규정도 서로 다르게 적용되므로 같은 단지라도 따로 검토해야 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 기초 개념</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 기초 상담, 조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">세법상 처리는 세무사 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>조합원 입주권, 분양권, 일반분양, 관리처분계획, 분담금</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-013" data-cat="02">
+  <summary><span class="mono faq-no">FAQ-013</span><span class="faq-title">조합 방식과 신탁 방식, 공공 시행은 무엇이 다른가요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발을 조합이 하지 않고 신탁사나 공공이 시행하는 경우도 있다던데 차이가 뭔가요?</p>
+    <p class="faq-answer">가장 일반적인 방식은 토지등소유자가 조합을 설립해 시행하는 조합 방식입니다. 이 밖에 토지등소유자의 동의를 받아 신탁업자가 시행자가 되는 신탁 방식, LH·SH 등 공공이 시행자나 공동시행자가 되는 공공 시행 방식이 있습니다. 신탁·공공 방식은 조합 운영 부담을 줄이고 자금 조달에 유리할 수 있지만 수수료나 의사결정 구조가 다르고, 토지등소유자가 시행자의 결정에 의견을 내는 방식도 달라집니다. 시행 방식에 따라 비용 구조와 분담금이 달라지므로 구역 분석 시 함께 확인합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 기초 개념</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 정비구역 분석, 재개발 사업성 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">시행 방식별 동의 요건은 최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>조합 방식, 신탁 방식, 공공 시행, 사업시행자, 신탁사</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-014" data-cat="02">
+  <summary><span class="mono faq-no">FAQ-014</span><span class="faq-title">어떤 지역이 재개발 정비구역으로 지정될 수 있나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 우리 동네도 재개발이 될 수 있는지, 정비구역 지정 기준이 궁금해요.</p>
+    <p class="faq-answer">재개발 정비구역은 노후·불량 건축물의 비율(노후도), 구역 면적, 주택 접도율, 과소 필지 비율 같은 요건을 바탕으로 도시정비법 시행령과 시·도 조례가 정한 기준에 따라 지정됩니다. 서울은 도시·주거환경정비기본계획과 정비구역 지정 요건을 함께 봅니다. 다만 요건을 갖췄다고 바로 지정되는 것은 아니며, 주민 동의, 정비계획 입안, 도시계획위원회 심의 등을 거쳐야 합니다. 노후도 기준 등 지정 요건은 최근 완화 논의와 개정이 이어지고 있어 구체적인 수치는 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 기초 개념</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 정비구역 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>정비구역 지정 요건, 노후도, 접도율, 과소필지, 정비기본계획</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-015" data-cat="02">
+  <summary><span class="mono faq-no">FAQ-015</span><span class="faq-title">재개발 구역 정보는 어디에서 확인할 수 있나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 관심 있는 재개발 구역의 진행 상황을 직접 찾아보고 싶은데, 어디를 보면 되나요?</p>
+    <p class="faq-answer">서울은 서울시 공식 정비사업 포털인 &#x27;정비사업 정보몽땅&#x27;(cleanup.seoul.go.kr)에서 사업장 검색, 단계별 공개 자료, 조합 예산·회계 자료, 분담금 추정 정보 등을 확인할 수 있습니다. 다만 일부 자료는 조합원 인증 후에만 볼 수 있습니다. 정비구역 지정·변경 고시는 토지이음(eum.go.kr)과 해당 자치구 고시공고에서, 건물 정보는 세움터 건축물대장에서, 거래 가격은 국토교통부 실거래가 공개시스템에서 확인합니다. 공개 자료는 반영이 늦을 수 있으므로 조합 공지와 함께 보는 것이 좋습니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 기초 개념</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 정비구역 분석, 재개발 기초 상담</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>정비사업 정보몽땅, 토지이음, 고시공고, 건축물대장, 실거래가</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-016" data-cat="03">
+  <summary><span class="mono faq-no">FAQ-016</span><span class="faq-title">재개발은 정비구역 지정부터 입주까지 어떤 순서로 진행되나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 사업이 처음부터 입주까지 어떤 단계를 거치는지 알고 싶어요.</p>
+    <p class="faq-answer">일반적인 조합 방식 재개발은 ①정비기본계획 수립 ②정비계획 입안과 정비구역 지정 ③조합설립추진위원회 승인 ④조합설립인가 ⑤시공자 선정 ⑥사업시행계획인가 ⑦조합원 분양신청 ⑧관리처분계획인가 ⑨이주·철거 ⑩착공과 일반분양 ⑪준공·입주 ⑫이전고시와 청산 순서로 진행됩니다. 구역에 따라 일부 절차를 함께 진행하거나 순서가 조정될 수 있고, 시공자 선정 시기도 조례에 따라 다릅니다. 단계마다 거래 제한, 대출, 세금 처리가 달라지므로 현재 단계를 정확히 아는 것이 투자 판단의 출발점입니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 정비사업 추진 절차</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 기초 상담, 재개발 정비구역 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 구역 단계 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>재개발 절차, 정비구역 지정, 조합설립인가, 사업시행계획인가, 관리처분계획인가, 이전고시</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-017" data-cat="03">
+  <summary><span class="mono faq-no">FAQ-017</span><span class="faq-title">정비기본계획, 정비계획, 정비구역 지정은 어떻게 다른가요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 기본계획에 들어갔다는 것과 정비구역으로 지정됐다는 것은 다른 이야기인가요?</p>
+    <p class="faq-answer">다릅니다. 도시·주거환경정비기본계획은 시·도 단위로 정비 방향과 대상 범위를 정하는 큰 계획입니다. 정비계획은 개별 구역의 토지이용, 건축물 높이와 용적률, 세대수, 기반시설 등을 구체적으로 정한 계획이고, 이 정비계획이 결정·고시되면서 정비구역으로 지정됩니다. 기본계획이나 후보지 선정은 &#x27;가능성&#x27; 단계이고, 정비구역 지정 고시가 나야 법적인 사업 구역이 확정됩니다. 그 전 단계 물건은 사업이 추진되지 않을 위험까지 함께 고려해야 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 정비사업 추진 절차</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 정비구역 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 구역 고시 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>정비기본계획, 정비계획, 정비구역 지정 고시, 후보지</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-018" data-cat="03">
+  <summary><span class="mono faq-no">FAQ-018</span><span class="faq-title">추진위원회와 조합설립인가 단계에서는 무엇이 중요한가요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 조합설립을 위해 동의서를 걷고 있다는데, 이 단계에서 무엇을 봐야 하나요?</p>
+    <p class="faq-answer">추진위원회는 조합 설립을 준비하는 단체이고, 법정 동의율을 채워 시장·군수 등의 인가를 받으면 조합이 설립됩니다. 도시정비법은 재개발의 경우 토지등소유자 4분의 3 이상과 토지면적 2분의 1 이상의 동의를 요구하고, 재건축은 동별 구분소유자 과반수 동의와 함께 전체 구분소유자·토지면적 기준 동의를 따로 요구합니다. 재건축 전체 동의 기준은 2025년 개정으로 70%로 완화된 것으로 알려져 있고, 재개발 동의율을 70%로 낮추는 방안은 2026년 8월 정부 발표와 법안 발의가 있었으나 2026년 10월 11일 현재 국회 통과는 확인되지 않았습니다. 이 단계에서는 동의율 진척, 반대 세력과 소송 여부, 정비계획과의 정합성이 중요하며, 적용 기준은 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 정비사업 추진 절차</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 정비구역 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>추진위원회, 조합설립인가, 동의율, 조합설립 동의서</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-019" data-cat="03">
+  <summary><span class="mono faq-no">FAQ-019</span><span class="faq-title">조합설립인가와 사업시행계획인가는 무엇이 다른가요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 조합설립인가가 났는데 아직 사업시행인가 전이라고 하네요. 두 인가는 어떻게 다른가요?</p>
+    <p class="faq-answer">조합설립인가는 사업을 추진할 &#x27;주체&#x27;인 조합을 법적으로 인정받는 절차입니다. 사업시행계획인가는 그 조합이 실제로 무엇을 지을지, 즉 건축계획, 세대수와 평형 구성, 정비기반시설, 이주대책, 사업비 계획 등을 담은 사업시행계획을 인가받는 절차입니다. 사업시행계획인가 이후 조합원 분양신청이 진행되고, 이를 바탕으로 관리처분계획을 세웁니다. 투자 관점에서는 사업시행계획인가로 사업의 윤곽이 구체화되지만, 비례율과 분담금은 관리처분계획 단계에서 더 구체적으로 정해집니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 정비사업 추진 절차</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 정비구역 분석, 재개발 사업성 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 구역 단계 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>조합설립인가, 사업시행계획인가, 사업시행인가, 건축계획, 분양신청</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-020" data-cat="03">
+  <summary><span class="mono faq-no">FAQ-020</span><span class="faq-title">관리처분계획인가는 무슨 의미인가요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 관리처분인가가 났다는 게 투자자 입장에서 어떤 의미가 있나요?</p>
+    <p class="faq-answer">관리처분계획은 조합원의 종전자산 평가액, 분양대상자별 분양 예정 주택, 조합원분양가, 추정 비례율과 분담금, 현금청산 대상 등 &#x27;누가 무엇을 얼마에 받는지&#x27;를 정하는 계획이고, 이를 시장·군수 등이 인가하는 것이 관리처분계획인가입니다. 인가 고시 후에는 원칙적으로 종전 토지·건축물의 사용·수익이 정지되고 이주와 철거로 이어집니다. 사업 불확실성이 줄어드는 단계지만, 이후에도 공사비 변경 등으로 관리처분계획이 변경될 수 있고, 투기과열지구에서는 이 시점 이후 재개발 조합원 지위 양도가 제한되는 점에 유의해야 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 정비사업 추진 절차</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석, 조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 구역 관리처분계획 내용 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>관리처분계획인가, 관리처분인가, 비례율, 분양대상자, 이주</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-021" data-cat="03">
+  <summary><span class="mono faq-no">FAQ-021</span><span class="faq-title">조합원 분양신청은 언제, 어떻게 하나요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 조합에서 분양신청 안내문이 왔는데, 분양신청은 언제까지 어떻게 하는 건가요?</p>
+    <p class="faq-answer">도시정비법은 사업시행계획인가 고시 후 일정 기간 안에 조합이 토지등소유자에게 분담금 추산액, 분양신청 기간 등을 통지하도록 하고, 분양신청 기간은 통지한 날부터 30일 이상 60일 이내로 정하되 20일 범위에서 한 번 연장할 수 있도록 하고 있습니다. 분양신청은 조합이 정한 서식에 따라 희망 평형 등을 적어 기간 안에 제출해야 합니다. 기간 안에 신청하지 않으면 현금청산 대상이 될 수 있으므로 기한과 제출 서류를 반드시 확인하세요. 구체적인 기간은 조합 통지문을 기준으로 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 정비사업 추진 절차</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">조합 통지문 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>분양신청, 분양신청 기간, 분담금 추산액, 평형 신청, 현금청산</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-022" data-cat="03">
+  <summary><span class="mono faq-no">FAQ-022</span><span class="faq-title">이주와 철거는 어떻게 진행되나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 관리처분인가 후 이주가 시작된다는데, 세입자가 있으면 어떻게 되나요?</p>
+    <p class="faq-answer">관리처분계획인가 후 조합이 정한 이주 기간 동안 조합원과 세입자가 이주하고, 이주가 끝나면 철거가 진행됩니다. 조합원은 이주비 대출을 받아 세입자 보증금 반환이나 이사 비용에 쓰는 경우가 많고, 세입자에게는 요건에 따라 주거이전비, 이사비 등의 보상이 있을 수 있습니다. 이주가 늦어지는 가구가 있으면 전체 일정이 늦어지고 금융비용이 늘어납니다. 임대 중인 물건을 매수할 때는 보증금 규모, 만기, 이주비 대출 가능 여부를 함께 확인해야 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 정비사업 추진 절차</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">세입자 보상 요건은 개별 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>이주, 철거, 세입자 보상, 주거이전비, 이주비</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-023" data-cat="03">
+  <summary><span class="mono faq-no">FAQ-023</span><span class="faq-title">착공 이후 일반분양, 준공, 이전고시, 청산은 어떻게 진행되나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 착공한 뒤 입주와 사업 마무리까지는 어떤 절차가 남아 있나요?</p>
+    <p class="faq-answer">착공 후 조합원 물량을 뺀 나머지 주택을 일반분양하고, 공사가 끝나면 준공인가를 받아 입주합니다. 이후 조합은 새 건축물과 대지의 소유권을 조합원과 분양받은 사람에게 이전하는 이전고시를 하고, 소유권 보존등기를 거쳐 종전자산과 새 자산의 차액을 정산하는 청산 절차를 진행합니다. 입주 시점과 소유권 등기 시점이 다를 수 있어 입주 직후 매매나 대출에 제약이 있을 수 있고, 최종 비례율이 관리처분 때와 달라지면 청산금도 달라질 수 있습니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 정비사업 추진 절차</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 사업성 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 구역 일정 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>일반분양, 준공인가, 입주, 이전고시, 청산, 소유권 보존등기</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-024" data-cat="03">
+  <summary><span class="mono faq-no">FAQ-024</span><span class="faq-title">재개발은 입주까지 보통 몇 년이 걸리나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 지금 정비구역 지정 단계인 곳을 사면 언제쯤 입주할 수 있을까요?</p>
+    <p class="faq-answer">재개발 사업 기간은 구역마다 차이가 매우 크고 보장할 수 없습니다. 정비구역 지정부터 입주까지 10년 이상 걸리는 사례가 흔하고, 조합 갈등, 소송, 공사비 협상, 정책 변화가 생기면 더 길어집니다. 반대로 신속통합기획 등 절차 단축 제도를 활용해 기간을 줄이려는 시도도 있습니다. 컨설팅에서는 &#x27;몇 년 후 입주&#x27;를 단정하지 않고 현재 단계, 다음 단계까지 남은 과제, 지연 요인을 정리해 기간별 시나리오와 그 기간의 금융비용을 함께 보여 드립니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 정비사업 추진 절차</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 정비구역 분석, 투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 구역 일정 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>재개발 기간, 입주 시기, 사업 지연, 사업 일정</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-025" data-cat="03">
+  <summary><span class="mono faq-no">FAQ-025</span><span class="faq-title">재건축 절차는 재개발과 무엇이 다른가요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 아파트 재건축을 보고 있는데, 재개발 절차와 다른 점이 있나요?</p>
+    <p class="faq-answer">큰 흐름(정비구역 지정 → 조합설립인가 → 사업시행계획인가 → 관리처분계획인가 → 착공·준공)은 같지만 몇 가지가 다릅니다. 재건축은 구조 안전성 등을 확인하는 진단 절차를 거쳐야 하는데, 2025년 개정으로 명칭이 &#x27;재건축진단&#x27;으로 바뀌고 사업시행계획인가 전까지 통과하면 되도록 시기가 조정된 것으로 알려져 있습니다. 조합설립에 동의하지 않은 소유자에게는 수용이 아닌 매도청구를 합니다. 투기과열지구에서는 재개발보다 이른 조합설립인가 이후부터 조합원 지위 양도가 제한되고, 재건축초과이익환수제가 적용됩니다. 진단 절차의 세부 기준은 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 정비사업 추진 절차</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 기초 상담, 재개발 정비구역 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>재건축 절차, 재건축진단, 안전진단, 매도청구, 재건축초과이익환수</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-026" data-cat="04" data-featured>
+  <summary><span class="mono faq-no">FAQ-026</span><span class="faq-title">재개발 조합원 입주권을 받으려면 어떤 요건을 갖춰야 하나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 구역 안의 집을 사면 무조건 입주권이 나오나요? 입주권 취득 요건이 궁금해요.</p>
+    <p class="faq-answer">구역 안 물건을 샀다고 입주권이 자동으로 생기지는 않습니다. 일반적으로 ①정비구역 안 토지 또는 건축물 소유자(토지등소유자)로서 조합원일 것 ②해당 시·도 조례의 분양대상 요건을 충족할 것 ③분양신청 기간 안에 분양신청을 할 것 ④투기과열지구 조합원 지위 양도 제한이나 재당첨 제한에 해당하지 않을 것이 필요하고, 이후 관리처분계획에서 분양대상자로 정해져 인가를 받아야 입주권이 확정됩니다. 권리산정기준일 이후 쪼개진 물건이나 한 세대가 여러 물건을 가진 경우는 단독 입주권이 나오지 않을 수 있습니다. 개별 물건의 해당 여부는 자료 검토가 필요합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>조합원 입주권 및 분양자격</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">개별 물건 자료 검토 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>조합원 입주권, 입주권 요건, 분양대상, 토지등소유자, 관리처분계획</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-027" data-cat="04">
+  <summary><span class="mono faq-no">FAQ-027</span><span class="faq-title">서울 재개발에서 분양대상이 되는 기준은 무엇인가요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 서울 재개발 구역에서 아파트를 분양받을 수 있는 사람의 기준이 조례에 정해져 있다던데요?</p>
+    <p class="faq-answer">서울은 「서울특별시 도시 및 주거환경정비 조례」 제36조가 재개발 분양대상 기준을 정합니다. 관리처분계획기준일 현재 ①주택 소유자(조합 정관 등으로 정한 주거용 특정무허가건축물 포함) ②종전 토지 총면적 90㎡ 이상 소유자 ③권리가액이 분양용 최소 규모 공동주택 1가구 추산액 이상인 자 중 하나에 해당하면 분양대상이 됩니다. 30㎡ 이상 90㎡ 미만 토지는 2003년 12월 30일 이전 분할 등 경과 규정의 요건을 갖춘 경우에만 예외적으로 인정됩니다. 다만 세대 합산, 권리산정기준일 이후 분할 등은 여러 명을 1명의 분양대상자로 봅니다. 조항 번호와 세부 요건은 개정될 수 있어 <mark class="flag">최신 법령 확인 필요</mark>합니다(2026.10.11 기준 일반 정보).</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>조합원 입주권 및 분양자격</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>분양대상 기준, 서울시 도시정비조례, 90㎡, 권리가액, 최소 분양단위</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-028" data-cat="04">
+  <summary><span class="mono faq-no">FAQ-028</span><span class="faq-title">재개발 구역 다세대주택(빌라) 한 채를 사면 입주권이 나오나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 구역의 다세대 빌라를 사려고 하는데, 권리분석에서 무엇을 봐야 하나요?</p>
+    <p class="faq-answer">다세대주택은 호수별로 구분소유되는 공동주택이라 원칙적으로 한 호를 가진 사람은 주택 소유자로서 분양대상이 될 수 있습니다. 다만 ①권리산정기준일 이후 단독·다가구를 다세대로 전환했거나 새로 지은 빌라라면 여러 소유자가 하나의 분양권을 나눠야 할 수 있고 ②건축물대장상 용도가 다세대주택이 아닌 근린생활시설이면 주택으로 인정되지 않아 권리가액 등 다른 요건을 갖춰야 할 수 있으며 ③매수자 세대가 구역 안에 다른 물건을 가지고 있으면 하나의 분양대상으로 합쳐질 수 있습니다. 건축물대장의 용도·사용승인일·집합건물 전환일과 해당 구역의 권리산정기준일을 반드시 비교해야 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>조합원 입주권 및 분양자격</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원, 재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">개별 물건 자료 검토 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>다세대 권리분석, 재개발 빌라, 근생빌라, 신축빌라, 권리산정기준일</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-029" data-cat="04">
+  <summary><span class="mono faq-no">FAQ-029</span><span class="faq-title">다가구주택은 입주권이 몇 개 나오나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 방이 여러 개인 다가구주택을 사면 가구 수만큼 입주권이 나오나요?</p>
+    <p class="faq-answer">아닙니다. 다가구주택은 여러 가구가 살더라도 건축법상 단독주택이고 소유권이 하나이므로, 1명이 소유하면 원칙적으로 분양대상도 1개입니다. 권리가액이 커서 1+1 분양 요건을 충족하면 2주택을 받을 가능성은 있지만, 이는 조합 정관과 관리처분계획으로 정해집니다. 권리산정기준일 이후 다가구를 집합건물(다세대)로 전환해 호별로 판 경우에는 여러 매수자가 하나의 분양권을 나누게 될 수 있습니다. 과거 특정 시점 이전에 가구별 지분 등기를 마친 다가구에 대한 예외 규정이 조례에 있으므로, 해당 여부는 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>조합원 입주권 및 분양자격</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원, 재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>다가구 권리분석, 다가구 입주권, 단독주택, 1+1, 다세대 전환</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-030" data-cat="04">
+  <summary><span class="mono faq-no">FAQ-030</span><span class="faq-title">단독주택이나 토지만 가지고 있어도 입주권이 나오나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 구역 안의 단독주택, 또는 건물 없이 토지만 사도 아파트를 받을 수 있나요?</p>
+    <p class="faq-answer">단독주택 소유자는 주택 소유자로서 원칙적으로 1개의 분양대상이 될 수 있습니다. 토지만 가진 경우 서울은 종전 토지 총면적이 90㎡ 이상이면 분양대상이 될 수 있고, 30㎡ 이상 90㎡ 미만은 분할 시점·세대원 무주택 등 경과 규정의 요건을 충족해야 하며, 그보다 작거나 지목·현황이 도로인 토지는 분양대상에서 제외될 위험이 큽니다. 또 권리산정기준일 이후 토지와 건물을 따로 취득한 경우 하나의 분양대상으로 볼 수 있습니다. 토지 투자는 면적, 지목, 분할 이력을 함께 확인해야 하며 세부 요건은 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>조합원 입주권 및 분양자격</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>단독주택 권리분석, 토지 입주권, 나대지, 도로 지분, 90㎡</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-031" data-cat="04">
+  <summary><span class="mono faq-no">FAQ-031</span><span class="faq-title">무허가 건축물도 입주권을 받을 수 있나요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 구역에 무허가 주택이 싸게 나왔는데, 이것도 입주권이 나오나요?</p>
+    <p class="faq-answer">무허가 건축물은 일률적으로 판단할 수 없습니다. 서울 조례는 일정 시점(1989년 1월 24일) 당시 존재한 무허가건축물 가운데 조합 정관 등에서 정한 주거용 건축물을 &#x27;특정무허가건축물&#x27;로 보아 분양대상에 포함할 수 있도록 하고 있으며, 그 이후 새로 생긴 무허가 건축물은 원칙적으로 분양대상이 되기 어렵습니다. 기존 무허가 여부는 무허가건축물관리대장, 재산세 과세 기록, 항공사진 등으로 확인하며, 토지 소유권이 없는 경우 권리가액이 작아 분담금이 커질 수 있습니다. 개별 건축물의 인정 여부는 조합과 자치구 확인이 필요하며 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>조합원 입주권 및 분양자격</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>무허가 건축물, 특정무허가건축물, 기존무허가, 뚜껑, 무허가건축물관리대장</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-032" data-cat="04">
+  <summary><span class="mono faq-no">FAQ-032</span><span class="faq-title">재개발 구역 상가를 가지고 있으면 아파트를 받을 수 있나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 구역 안의 상가 소유자도 조합원으로 아파트를 분양받을 수 있나요?</p>
+    <p class="faq-answer">상가 소유자도 토지등소유자로서 조합원이 되며, 원칙적으로 새 상가 등 부대·복리시설을 분양받습니다. 아파트를 받으려면 서울 조례 기준으로 권리가액이 분양용 최소 규모 공동주택 1가구 추산액 이상이거나 토지 면적 요건을 충족하는 등 공동주택 분양대상 요건을 갖추고, 조합 정관과 관리처분계획에서 정한 기준을 따라야 합니다. 권리산정기준일 이후 상가를 여러 개로 쪼개 소유자를 늘린 경우에는 분양권이 제한될 수 있습니다. 상가는 조합원 간 분양 경쟁과 평가 방식이 달라 개별 검토가 필요하며 세부 기준은 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>조합원 입주권 및 분양자격</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>상가 조합원, 상가 입주권, 부대복리시설, 상가 쪼개기, 권리가액</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-033" data-cat="04">
+  <summary><span class="mono faq-no">FAQ-033</span><span class="faq-title">지분쪼개기란 무엇이고 왜 문제가 되나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 물건을 볼 때 &#x27;지분쪼개기 물건은 조심하라&#x27;는데, 지분쪼개기가 정확히 뭔가요?</p>
+    <p class="faq-answer">지분쪼개기는 재개발이 예상되는 지역에서 입주권 수를 늘리려고 토지를 분할하거나, 단독·다가구를 다세대 같은 집합건물로 전환하거나, 기존 건물을 헐고 소형 빌라를 새로 지어 소유자를 늘리는 행위를 말합니다. 도시정비법 제77조는 권리산정기준일 다음 날부터 이런 방식으로 늘어난 권리는 기준일 기준으로 산정하도록 해, 늘어난 소유자들이 하나의 분양권을 나누게 하거나 현금청산 대상이 되게 합니다. 그래서 같은 구역 빌라라도 사용승인일·전환일·분할일이 권리산정기준일 전인지 후인지에 따라 가치가 크게 달라집니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>조합원 입주권 및 분양자격</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원, 재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 구역 권리산정기준일 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>지분쪼개기, 신축 쪼개기, 권리산정기준일, 다세대 전환, 토지 분할</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-034" data-cat="04">
+  <summary><span class="mono faq-no">FAQ-034</span><span class="faq-title">한 세대가 재개발 구역 안에 물건을 여러 개 가지고 있으면 어떻게 되나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 저는 빌라 한 채가 있는데, 배우자 명의로 같은 구역 빌라를 하나 더 사면 입주권이 두 개 나오나요?</p>
+    <p class="faq-answer">원칙적으로 나오지 않습니다. 도시정비법 제39조는 여러 명이 1세대에 속하는 경우 그 여러 명을 대표하는 1명만 조합원으로 보며, 주민등록이 달라도 배우자와 19세 미만 미혼 자녀는 1세대로 보는 규정을 두고 있습니다. 따라서 세대 안에서 같은 구역 물건을 더 사면 분양대상은 하나로 합쳐지고, 추가로 산 물건은 권리가액만 더해지는 효과에 그칠 수 있습니다. 종전자산이 커서 1+1 분양 요건을 충족하는지는 별도로 검토합니다. 세대 판단 기준의 세부 내용은 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>조합원 입주권 및 분양자격</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>다물권자, 1세대 여러 물건, 세대 합산, 배우자 명의, 조합원 1인</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-035" data-cat="04">
+  <summary><span class="mono faq-no">FAQ-035</span><span class="faq-title">공동명의(공유)로 가진 재개발 물건은 입주권이 어떻게 되나요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 형제와 함께 공동명의로 가진 재개발 구역 주택은 입주권이 각각 나오나요?</p>
+    <p class="faq-answer">하나의 토지나 건축물을 여러 명이 공유하면 도시정비법 제39조에 따라 대표 1명만 조합원으로 보고, 분양대상도 원칙적으로 1개입니다. 부부 공동명의도 마찬가지입니다. 서울 조례는 권리산정기준일 이전부터 공유인 토지의 지분이 일정 면적 이상이면 단독 분양대상으로 볼 수 있는 예외를 두고 있으므로 지분 면적과 공유 시점을 확인해야 합니다. 또 투기과열지구 양도 제한의 예외 사유를 적용할 때 공유자 전원이 요건을 갖춰야 한다는 취지의 판단이 보도된 바 있어 공유 물건 매수 시 특히 주의가 필요합니다. 세부 기준은 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>조합원 입주권 및 분양자격</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>공동명의, 공유 지분, 대표 조합원, 부부 공동명의, 공유 토지</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-036" data-cat="04">
+  <summary><span class="mono faq-no">FAQ-036</span><span class="faq-title">1+1 분양을 받으려면 어떤 요건이 필요한가요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 종전자산이 큰 경우 아파트를 두 채 받는 1+1 분양이 가능하다던데, 요건이 어떻게 되나요?</p>
+    <p class="faq-answer">도시정비법 제76조는 종전자산의 가격 범위 또는 종전 주택의 주거전용면적 범위에서 2주택을 공급할 수 있도록 하고, 그중 1주택은 주거전용면적 60㎡ 이하로 하도록 정하고 있습니다. 이 60㎡ 이하 주택은 이전고시일 다음 날부터 3년 동안 전매(매매·증여 등)가 제한됩니다. 다만 법이 &#x27;공급할 수 있다&#x27;고 정한 것이므로 실제 배정 여부는 조합 정관과 관리처분계획, 평형별 신청 경쟁에 따라 정해집니다. 2주택을 받으면 이주비 대출이 제한되거나 세법상 다주택자가 되는 등 부담도 함께 검토해야 합니다. 전매 제한의 예외 범위는 <mark class="flag">최신 법령 확인 필요</mark>합니다(2026.10.11 기준 일반 정보).</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>조합원 입주권 및 분양자격</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원, 재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>1+1 분양, 두 채 분양, 60㎡ 이하, 전매 제한, 종전자산 가격</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-037" data-cat="04" data-featured>
+  <summary><span class="mono faq-no">FAQ-037</span><span class="faq-title">투기과열지구에서는 재개발 물건을 언제까지 사야 조합원이 될 수 있나요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 서울이 투기과열지구라던데, 관리처분인가가 난 재개발 물건을 사면 조합원이 못 되나요?</p>
+    <p class="faq-answer">도시정비법 제39조 제2항은 투기과열지구에서 재건축은 조합설립인가 후, 재개발은 관리처분계획인가 후 건축물이나 토지를 양수(매매·증여 등, 상속·이혼 제외)한 사람은 조합원이 될 수 없도록 정하고 있습니다. 조합원이 되지 못하면 입주권 대신 현금청산 대상이 됩니다. 2025년 10월 16일부터 서울 25개 구 전역이 투기과열지구로 지정된 것으로 확인되므로, 서울 재개발은 관리처분계획인가 전후를 반드시 확인해야 합니다. 다만 재개발 양도 제한은 2018년 1월 24일 시행 개정법 부칙에 따라 그 이전에 사업시행계획인가를 신청한 구역에는 적용되지 않는 등 구역별 차이가 있어 <mark class="flag">최신 법령 확인 필요</mark>합니다(2026.10.11 기준 일반 정보).</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>조합원 입주권 및 분양자격</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원, 재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>조합원 지위 양도 제한, 투기과열지구, 관리처분인가 후 매수, 현금청산, 서울 전역</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-038" data-cat="04">
+  <summary><span class="mono faq-no">FAQ-038</span><span class="faq-title">투기과열지구 조합원 지위 양도 제한에도 예외가 있나요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 관리처분인가 후에도 조합원 지위를 넘겨받을 수 있는 예외가 있다고 들었는데, 어떤 경우인가요?</p>
+    <p class="faq-answer">도시정비법 시행령 제37조 등에서 예외를 정하고 있습니다. 대표적으로 ①1세대 1주택자로서 일정 기간(10년) 이상 소유하고 일정 기간(5년) 이상 거주한 주택을 양도하는 경우 ②근무·질병 치료·취학·결혼으로 세대원 전원이 다른 지역으로 이전하는 경우 ③상속받은 주택으로 세대원 전원이 이전하는 경우 ④해외로 이주하거나 일정 기간 이상 해외에 체류하는 경우 ⑤사업이 장기간 지연된 경우 등이 있습니다. 예외에 해당하는지는 매도인의 사정으로 판단하므로 증빙자료를 확인해야 하고, 공유 물건은 공유자 전원이 요건을 갖춰야 한다는 판단이 보도된 바 있습니다. 세부 기간과 요건은 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>조합원 입주권 및 분양자격</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>양도 제한 예외, 10년 보유 5년 거주, 조합원 승계, 시행령 제37조</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-039" data-cat="04">
+  <summary><span class="mono faq-no">FAQ-039</span><span class="faq-title">재당첨 제한은 재개발 투자에 어떤 영향을 주나요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 예전에 다른 재개발 구역에서 분양받은 적이 있는데, 이번에 사는 물건도 입주권이 나올까요?</p>
+    <p class="faq-answer">도시정비법 제72조 제6항은 투기과열지구의 정비사업에서 관리처분계획에 따라 분양대상자로 선정된 사람과 그 세대원이 선정일부터 5년 이내에 투기과열지구의 정비사업에서 분양신청을 할 수 없도록 정하고 있습니다. 상속·결혼·이혼으로 조합원 자격을 얻은 경우 등은 예외입니다. 재당첨 제한에 해당하면 분양신청을 할 수 없어 현금청산 대상이 될 수 있으므로, 매수 전에 본인과 세대원의 과거 정비사업 분양 이력을 확인해야 합니다. 서울 전역이 투기과열지구로 지정된 점도 함께 고려해야 하며, 세부 기준은 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>조합원 입주권 및 분양자격</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>재당첨 제한, 5년, 분양대상자 선정일, 투기과열지구, 세대원</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-040" data-cat="04">
+  <summary><span class="mono faq-no">FAQ-040</span><span class="faq-title">조합원 입주권은 자유롭게 사고팔 수 있나요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 입주권 매매나 전매에도 제한이 있나요? 분양권 전매제한과 같은 건가요?</p>
+    <p class="faq-answer">입주권 매매 자체가 금지되는 것은 아니지만 여러 제한이 겹칩니다. ①투기과열지구에서는 재개발 관리처분계획인가 후 양수하면 예외 사유가 없는 한 조합원이 될 수 없습니다 ②1+1 분양으로 받은 60㎡ 이하 주택은 이전고시일 다음 날부터 3년간 전매가 제한됩니다 ③토지거래허가구역이면 허가가 필요할 수 있고, 관리처분인가 후 입주권도 허가 대상으로 보는 정부 기준이 보도되었습니다 ④일반분양 당첨자의 분양권 전매제한은 주택법에 따른 별도 규정으로 입주권과 구분됩니다. 거래 전에 구역의 규제 현황과 매도인의 예외 사유를 함께 확인해야 하며, 세부 기준은 <mark class="flag">최신 법령 확인 필요</mark>합니다(2026.10.11 기준 일반 정보).</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>조합원 입주권 및 분양자격</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원, 재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>입주권 매매, 입주권 전매 제한, 분양권 전매제한, 토지거래허가, 조합원 지위 양도</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-041" data-cat="05">
+  <summary><span class="mono faq-no">FAQ-041</span><span class="faq-title">종전자산 감정평가는 무엇이고 언제 하나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 조합에서 종전자산 감정평가 결과가 나온다던데, 종전자산 평가가 정확히 뭔가요?</p>
+    <p class="faq-answer">종전자산 감정평가는 조합원이 가진 기존 토지와 건축물의 가치를 평가하는 절차로, 관리처분계획에서 조합원별 권리가액과 분담금을 정하는 기준이 됩니다. 일반적으로 사업시행계획인가 고시일을 기준 시점으로 하고, 도시정비법이 정한 방식에 따라 선정된 2곳 이상의 감정평가법인등이 평가한 금액을 산술평균합니다. 결과는 분양신청 안내와 함께 통지되는 경우가 많습니다. 감정평가 금액은 시세나 매수가와 다를 수 있으며, 평가 법인 선정 방식 등 세부 절차는 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리가액·비례율·분담금</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석, 재개발 사업성 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>종전자산 감정평가, 종전자산평가액, 감정가, 사업시행계획인가 고시일</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-042" data-cat="05">
+  <summary><span class="mono faq-no">FAQ-042</span><span class="faq-title">종전자산 감정평가 금액이 시세보다 낮게 나왔는데 손해인가요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 감정평가액이 제가 산 가격보다 훨씬 낮게 나왔어요. 이러면 손해를 보는 건가요?</p>
+    <p class="faq-answer">감정평가액이 매수가보다 낮은 것은 흔한 일입니다. 매수가에는 재개발 기대감이 반영된 프리미엄이 포함되지만, 종전자산 평가는 기존 토지·건축물 자체의 가치를 평가하기 때문입니다. 또 구역 전체의 종전자산이 함께 낮게 평가되면 비례율이 높아지는 효과가 있어, 감정가만으로 손익을 판단하기는 어렵습니다. 중요한 것은 다른 조합원과 비교한 상대적인 평가 수준과 최종 분담금입니다. 평가에 이견이 있으면 관리처분계획 공람 기간에 의견을 제출하는 등의 절차가 있으며, 다툼이 생기면 법률 전문가 확인이 필요합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리가액·비례율·분담금</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석, 재개발 사업성 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">이의 절차는 변호사 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>감정평가액 낮음, 감정가 이의, 프리미엄, 관리처분계획 공람</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-043" data-cat="05">
+  <summary><span class="mono faq-no">FAQ-043</span><span class="faq-title">비례율은 무엇이고 어떻게 계산하나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 상담에서 비례율이라는 말이 자주 나오는데, 무슨 뜻이고 어떻게 계산하나요?</p>
+    <p class="faq-answer">비례율은 사업이 끝난 뒤 남는 순이익이 조합원들의 종전자산 총액에 비해 얼마나 되는지를 나타내는 비율로, 일반적으로 &#x27;(종후자산 총평가액 − 총사업비) ÷ 종전자산 총평가액 × 100&#x27;으로 계산합니다. 종후자산은 조합원분양 수입, 일반분양 수입, 상가 분양 수입 등 새로 지은 자산의 총가치이고, 총사업비는 공사비·금융비용·각종 부담금 등입니다. 예를 들어 종후자산 1조 원, 총사업비 6,000억 원, 종전자산 4,000억 원이면 비례율은 100%입니다. 계산 방식은 관리처분계획과 정관에 따라 세부적으로 달라질 수 있습니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리가액·비례율·분담금</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 사업성 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 구역 관리처분계획 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>비례율, 비례율 계산, 종후자산, 총사업비, 종전자산 총액</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-044" data-cat="05">
+  <summary><span class="mono faq-no">FAQ-044</span><span class="faq-title">권리가액은 어떻게 계산하나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 감정평가액과 권리가액은 다른 건가요? 권리가액 계산 방법을 알려 주세요.</p>
+    <p class="faq-answer">권리가액은 조합원이 새 아파트를 분양받을 때 자기 몫으로 인정받는 금액으로, 일반적으로 &#x27;종전자산평가액 × 비례율&#x27;로 계산합니다. 예를 들어 종전자산평가액이 3억 원이고 비례율이 105%면 권리가액은 3억 1,500만 원, 비례율이 90%면 2억 7,000만 원입니다. 같은 감정평가액이라도 비례율에 따라 권리가액이 달라지므로, 비례율이 바뀌면 분담금도 함께 바뀝니다. 관리처분계획 인가 전의 비례율은 추정치이며, 최종 권리가액은 사업이 끝난 뒤 청산 단계에서 확정됩니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리가액·비례율·분담금</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석, 재개발 사업성 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 구역 관리처분계획 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>권리가액, 권리가액 계산, 감정평가액, 비례율 적용</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-045" data-cat="05" data-featured>
+  <summary><span class="mono faq-no">FAQ-045</span><span class="faq-title">비례율이 높은 구역이 무조건 좋은 구역인가요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · A구역은 비례율이 110%, B구역은 95%라는데, A구역이 더 좋은 건가요?</p>
+    <p class="faq-answer">비례율만으로 판단하면 안 됩니다. 비례율은 종전자산을 얼마나 낮게 또는 높게 평가했는지, 조합원분양가를 얼마로 정했는지에 따라 크게 달라집니다. 종전자산을 낮게 평가하거나 조합원분양가를 높게 정하면 비례율이 높게 나올 수 있지만 조합원의 실제 부담이 줄어드는 것은 아닙니다. 따라서 구역을 비교할 때는 비례율보다 &#x27;내가 원하는 평형을 받기 위한 분담금&#x27;과 &#x27;입주까지의 총투자비&#x27;를 비교하는 것이 합리적입니다. 관리처분 전 비례율은 추정치라는 점도 기억해야 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리가액·비례율·분담금</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 사업성 분석, 투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>비례율 비교, 비례율 함정, 조합원분양가, 총투자비 비교</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-046" data-cat="05">
+  <summary><span class="mono faq-no">FAQ-046</span><span class="faq-title">조합원분양가와 일반분양가는 어떻게 다른가요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 같은 아파트인데 조합원분양가와 일반분양가가 다른 이유가 뭔가요?</p>
+    <p class="faq-answer">조합원분양가는 조합원에게 공급하는 가격으로 관리처분계획에서 정하고, 일반분양가는 조합원 물량을 제외한 주택을 청약으로 공급할 때의 가격입니다. 보통 조합원분양가가 일반분양가보다 낮게 정해지는데, 조합원은 사업 위험을 부담하고 토지를 출자했기 때문입니다. 일반분양 수입은 총사업비를 충당하는 핵심 재원이어서 일반분양가가 높을수록 비례율이 좋아지고 조합원 분담금이 줄어드는 경향이 있습니다. 일반분양가는 분양가상한제 적용 여부, 시장 상황, 심사 결과에 따라 달라지므로 사업성 분석 시 시나리오로 반영합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리가액·비례율·분담금</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 사업성 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">분양가상한제 적용 여부는 최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>조합원분양가, 일반분양가, 분양가상한제, 일반분양 수입</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-047" data-cat="05">
+  <summary><span class="mono faq-no">FAQ-047</span><span class="faq-title">추가분담금은 어떻게 계산하나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 아파트를 받으려면 분담금을 얼마나 더 내야 하는지 계산하는 방법이 궁금해요.</p>
+    <p class="faq-answer">추가분담금은 일반적으로 &#x27;조합원분양가 − 권리가액&#x27;으로 계산합니다. 예를 들어 권리가액이 3억 원인 조합원이 조합원분양가 8억 원인 84㎡를 신청하면 분담금은 약 5억 원, 6억 원인 59㎡를 신청하면 약 3억 원입니다. 권리가액이 조합원분양가보다 크면 차액을 돌려받는 구조입니다. 관리처분 전에는 감정평가액과 비례율이 추정치여서 분담금도 추정치이며, 공사비 증가나 일반분양 결과에 따라 사업 후반에 늘어나거나 줄어들 수 있습니다. 컨설팅에서는 기본·보수 시나리오로 범위를 보여 드립니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리가액·비례율·분담금</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석, 재개발 사업성 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 구역 관리처분계획 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>추가분담금, 분담금 계산, 조합원분양가, 권리가액, 환급</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-048" data-cat="05">
+  <summary><span class="mono faq-no">FAQ-048</span><span class="faq-title">청산금은 무엇이고 분담금과 어떻게 다른가요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 사업이 끝나면 청산금을 내거나 받는다던데, 분담금과 다른 건가요?</p>
+    <p class="faq-answer">도시정비법상 청산금은 이전고시 후 조합원이 받은 새 대지·건축물의 가격과 종전자산 가격의 차이를 최종 정산하는 금액입니다. 관리처분 단계의 분담금이 &#x27;예상&#x27; 정산액이라면, 청산금은 최종 비례율이 반영된 &#x27;확정&#x27; 정산액에 가깝습니다. 사업비가 늘면 추가로 내야 할 수 있고, 반대로 돌려받을 수도 있습니다. 분양신청을 하지 않은 사람에게 지급하는 &#x27;현금청산&#x27;과는 다른 개념입니다. 세법상 청산금을 받은 부분은 양도로 보아 과세될 수 있고 낸 부분은 취득가액에 더해지는 것으로 안내되고 있어, 개별 세금 처리는 세무사 확인 필요합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리가액·비례율·분담금</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 사업성 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">세무사 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>청산금, 이전고시, 최종 정산, 현금청산 구분, 청산금 양도세</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-049" data-cat="05">
+  <summary><span class="mono faq-no">FAQ-049</span><span class="faq-title">분담금은 언제, 어떻게 나눠서 내나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 분담금 수억 원을 한 번에 내야 하나요? 납부 시기가 궁금해요.</p>
+    <p class="faq-answer">분담금 납부 방식은 조합 정관과 조합원 분양계약에서 정하며 구역마다 다릅니다. 일반적으로 관리처분계획인가 후 조합원 분양계약을 체결하면서 계약금, 공사 기간 중 중도금, 입주 시 잔금으로 나눠 내는 방식이 많고, 일부 조합은 입주 시 일괄 납부 방식을 택하기도 합니다. 중도금은 집단대출을, 잔금은 주택담보대출을 활용하는 경우가 많은데, 규제지역 대출 한도가 적용될 수 있어 자기자금 계획이 중요합니다. 매수 전에는 이미 낸 분담금과 남은 분담금, 승계할 대출을 조합 자료로 확인해야 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리가액·비례율·분담금</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">조합 정관·분양계약 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>분담금 납부 시기, 계약금, 중도금, 잔금, 조합원 분양계약</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-050" data-cat="05">
+  <summary><span class="mono faq-no">FAQ-050</span><span class="faq-title">조합원 평형 배정은 어떻게 정해지나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 84㎡를 신청하면 무조건 84㎡를 받을 수 있나요? 평형 배정 기준이 궁금해요.</p>
+    <p class="faq-answer">평형 배정은 조합 정관과 관리처분계획 기준에 따라 정해지며, 원하는 평형이 보장되지는 않습니다. 일반적으로 조합원은 분양신청 때 희망 평형을 적어 내고, 특정 평형에 신청이 몰리면 권리가액이 큰 순서 등 정관이 정한 기준으로 배정합니다. 그래서 권리가액이 작은 물건은 인기 평형 배정에서 밀릴 수 있습니다. 평형에 따라 조합원분양가와 분담금이 크게 달라지므로, 투자비를 계산할 때는 희망 평형과 배정 가능성이 높은 평형을 함께 시나리오로 보는 것이 안전합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리가액·비례율·분담금</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원, 재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">조합 정관 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>평형 배정, 평형 신청, 84㎡, 권리가액 순, 동호수 추첨</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-051" data-cat="06" data-featured>
+  <summary><span class="mono faq-no">FAQ-051</span><span class="faq-title">초기투자금과 총투자비는 어떻게 다른가요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 매물 광고에 &#x27;초기투자금 2억&#x27;이라고 나오는데, 이게 전체 투자비인가요?</p>
+    <p class="faq-answer">아닙니다. 초기투자금은 매수 시점에 실제로 필요한 현금으로, 일반적으로 &#x27;매수가 − 승계 이주비 대출 − 승계 임대보증금 + 취득세·중개보수 등 부대비용&#x27;으로 계산합니다. 총투자비는 입주까지 들어가는 전체 비용으로 &#x27;매수가 + 추가분담금 + 취득세·부대비용 + 대출 이자 등 금융비용&#x27;입니다. 초기투자금이 적어 보여도 나중에 낼 분담금과 이자가 크면 총투자비는 훨씬 커집니다. 투자 판단은 반드시 총투자비를 기준으로, 입주 시점까지의 자금 흐름과 함께 봐야 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 투자금 및 수익성 분석</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">매수자별 대출·세금 조건 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>초기투자금, 총투자비, 재개발 투자금, 실투자금, 부대비용</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-052" data-cat="06">
+  <summary><span class="mono faq-no">FAQ-052</span><span class="faq-title">재개발 초기투자금은 실제로 어떻게 계산하나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 매수가 7억, 감정가 3억인 재개발 빌라가 있는데, 초기투자금을 예시로 계산해 주실 수 있나요?</p>
+    <p class="faq-answer">가상의 예시로 설명드리면, 매수가 7억 원(종전자산 3억 원 + 프리미엄 4억 원)인 물건에 승계 가능한 이주비 대출이 1억 2,000만 원이고 취득세·중개보수 등 부대비용을 2,000만 원으로 가정하면 초기투자금은 &#x27;7억 − 1억 2,000만 + 2,000만 = 6억 원&#x27;입니다. 멸실 전 임대 중인 물건이라면 이주비 대신 승계하는 전세보증금을 빼서 계산합니다. 다만 이주비 승계는 매수자의 주택 수와 대출 규제에 따라 불가능할 수 있고, 부대비용은 물건 상태와 매수자 주택 수에 따라 크게 달라집니다. 실제 계산은 매수자 조건을 반영해야 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 투자금 및 수익성 분석</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">매수자 대출·세금 조건 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>초기투자금 계산, 이주비 승계, 전세보증금 승계, 프리미엄, 계산 예시</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-053" data-cat="06">
+  <summary><span class="mono faq-no">FAQ-053</span><span class="faq-title">재개발 프리미엄이 적정한지 어떻게 판단하나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 프리미엄(피)이 4억이라는데, 이게 비싼 건지 싼 건지 어떻게 판단하나요?</p>
+    <p class="faq-answer">프리미엄은 매수가에서 종전자산평가액(감정가)을 뺀 금액입니다. 적정성은 프리미엄 숫자 자체보다 &#x27;매수가 + 분담금 + 부대비용 + 금융비용&#x27;으로 계산한 총투자비를, 같은 생활권 신축 아파트의 실거래가와 비교해 판단하는 것이 일반적입니다. 둘의 차이가 클수록 가격 변동이나 사업 지연을 견딜 여유가 크다고 볼 수 있습니다. 감정가가 아직 나오지 않은 단계에서는 프리미엄 자체가 추정치이고, 사업 초기일수록 기간과 불확실성이 커서 같은 차이라도 위험이 다릅니다. 미래 시세는 누구도 확정할 수 없으므로 보수적인 시나리오를 함께 봐야 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 투자금 및 수익성 분석</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석, 투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>프리미엄, 피, 적정 프리미엄, 안전마진, 신축 시세 비교</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-054" data-cat="06">
+  <summary><span class="mono faq-no">FAQ-054</span><span class="faq-title">재개발 투자 수익성은 어떻게 판단하나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 투자가 남는 장사인지 판단하려면 무엇을 비교해야 하나요?</p>
+    <p class="faq-answer">기본 구조는 &#x27;입주 시점 예상 가치&#x27;와 &#x27;총투자비 + 보유 기간 금융비용 + 세금&#x27;을 비교하는 것입니다. 입주 시점 가치는 주변 신축·준신축 단지의 실거래가를 참고하되 상승을 전제로 하지 않고 보수적으로 잡고, 총투자비에는 분담금 증가 가능성을 반영합니다. 또 같은 금액을 다른 곳에 썼을 때와 비교하려면 투자 기간을 고려해 연 단위로 환산해 봐야 합니다. 쌤태리부동산컨설팅은 수익률을 단정하지 않고 기본·보수·악화 시나리오별 결과를 보여 드려 판단을 돕습니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 투자금 및 수익성 분석</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석, 투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>재개발 수익성, 투자 수익률, 시나리오 분석, 금융비용, 기회비용</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-055" data-cat="06">
+  <summary><span class="mono faq-no">FAQ-055</span><span class="faq-title">재개발은 사업 초기와 후기 중 언제 투자하는 게 좋나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 초기 단계 물건과 관리처분 이후 물건은 투자 측면에서 어떻게 다른가요?</p>
+    <p class="faq-answer">단계별로 장단점이 다릅니다. 정비구역 지정 전후의 초기 단계는 가격 부담이 상대적으로 낮을 수 있지만 구역 해제, 동의율 미달, 긴 사업 기간 같은 불확실성이 큽니다. 조합설립과 사업시행계획인가를 거치면서 사업 윤곽이 잡히고, 관리처분계획인가 이후에는 분담금이 구체화되고 입주 시기가 가까워지는 대신 가격이 높아지고, 투기과열지구에서는 조합원 지위 양도 제한, 멸실 후 토지 취득세 등 추가 제약이 생깁니다. 어느 단계가 낫다고 단정할 수 없고 자금 여력, 보유 가능 기간, 위험 감내 수준에 맞춰 선택해야 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 투자금 및 수익성 분석</dd></div>
+      <div><dt>관련 서비스</dt><dd>투자자 맞춤 종합 컨설팅, 재개발 정비구역 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 구역 단계 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>재개발 투자 시기, 초기 투자, 관리처분 후 투자, 단계별 위험</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-056" data-cat="06">
+  <summary><span class="mono faq-no">FAQ-056</span><span class="faq-title">공사비 등 사업비가 늘어나면 내 분담금은 얼마나 늘어나나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 요즘 공사비가 많이 오른다던데, 사업비가 늘면 조합원에게 어떤 위험이 있나요?</p>
+    <p class="faq-answer">총사업비가 늘면 비례율이 낮아지고, 권리가액이 줄어 분담금이 늘어납니다. 가상의 예로 종후자산 1조 원, 종전자산 4,000억 원인 구역에서 총사업비가 6,000억 원이면 비례율은 100%지만, 사업비가 10% 늘어 6,600억 원이 되면 비례율은 85%로 떨어집니다. 이때 종전자산평가액 3억 원인 조합원의 권리가액은 3억 원에서 2억 5,500만 원으로 줄어 분담금이 약 4,500만 원 늘어납니다. 공사비 증액 협상, 금리 상승, 사업 지연이 겹치면 영향이 더 커지므로 매수 전에 공사비 계약 조건과 시나리오를 확인하는 것이 중요합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 투자금 및 수익성 분석</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 사업성 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 구역 공사비 계약 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>사업비 증가, 공사비 인상, 분담금 증가, 비례율 하락, 투자 위험</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-057" data-cat="06">
+  <summary><span class="mono faq-no">FAQ-057</span><span class="faq-title">일반분양 결과가 나쁘면 조합원에게 어떤 영향이 있나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 일반분양가가 예상보다 낮게 정해지거나 미분양이 나면 조합원 분담금도 달라지나요?</p>
+    <p class="faq-answer">달라질 수 있습니다. 일반분양 수입은 총사업비를 충당하는 핵심 재원이어서, 일반분양가가 예상보다 낮게 정해지거나 미분양으로 수입이 늦어지면 종후자산 가치가 줄고 금융비용이 늘어 비례율이 낮아집니다. 그 결과 조합원 권리가액이 줄고 분담금이 늘 수 있습니다. 일반분양가는 분양가상한제 적용 여부, 분양가 심사, 시장 상황의 영향을 받으므로 사업성 분석에서는 일반분양가를 기본값에서 올리고 내린 시나리오로 분담금 변화를 함께 보여 드립니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 투자금 및 수익성 분석</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 사업성 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">분양가상한제 적용 여부는 최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>일반분양, 미분양, 일반분양가, 분양가상한제, 비례율 영향</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-058" data-cat="06">
+  <summary><span class="mono faq-no">FAQ-058</span><span class="faq-title">재개발 사업성이 좋은 구역은 어떤 지표로 판단하나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 사업성이 좋은 재개발 구역을 고르려면 어떤 숫자를 봐야 하나요?</p>
+    <p class="faq-answer">대표적인 지표는 ①계획 용적률과 기존 용적률의 차이 ②조합원 수 대비 계획 세대수(일반분양 물량 비율) ③임대주택·기부채납 비율 ④주변 시세로 본 일반분양가 수준 ⑤공사비 수준과 계약 조건 ⑥조합원 평균 종전자산과 대지지분 ⑦상가 비중 ⑧예상 사업 기간입니다. 일반분양 물량이 많고 일반분양가를 높게 받을 수 있는 입지일수록 조합원 부담이 줄어드는 경향이 있습니다. 다만 한 가지 지표만으로 판단하면 왜곡될 수 있어 여러 지표를 함께 보고, 공개 자료가 부족한 단계에서는 추정 범위로 판단해야 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 투자금 및 수익성 분석</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 사업성 분석, 재개발 정비구역 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 구역 정비계획 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>사업성 지표, 용적률, 일반분양 비율, 조합원 수, 대지지분</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-059" data-cat="06">
+  <summary><span class="mono faq-no">FAQ-059</span><span class="faq-title">재개발 입주권, 신축 아파트 매수, 청약 중 무엇이 유리한가요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 내 집 마련을 위해 재개발 입주권을 사는 것과 신축 아파트를 사거나 청약하는 것을 비교하고 싶어요.</p>
+    <p class="faq-answer">각각 성격이 다릅니다. 재개발 입주권은 같은 지역 신축보다 총투자비가 낮을 가능성이 있지만, 입주까지 기간이 길고 분담금 증가, 사업 지연 같은 불확실성을 감수해야 합니다. 신축 아파트 매수는 가격과 입주 시기가 확정되어 있는 대신 매수 시점 가격이 가장 높을 수 있습니다. 청약은 분양가가 상대적으로 낮을 수 있지만 가점과 자격 요건, 당첨 가능성이 변수입니다. 세금과 대출 규제도 각각 다르게 적용되므로, 자금 계획과 원하는 입주 시기를 기준으로 비교하는 것이 좋습니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 투자금 및 수익성 분석</dd></div>
+      <div><dt>관련 서비스</dt><dd>투자자 맞춤 종합 컨설팅, 재개발 기초 상담</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">세금·대출은 개별 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>입주권 vs 신축, 청약 비교, 내 집 마련, 재개발 실거주</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-060" data-cat="06">
+  <summary><span class="mono faq-no">FAQ-060</span><span class="faq-title">실거주 목적과 투자 목적은 분석이 어떻게 달라지나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 저는 나중에 직접 들어가 살 생각인데, 투자 목적 분석과 다르게 봐야 할 점이 있나요?</p>
+    <p class="faq-answer">실거주 목적이라면 입주 시기, 원하는 평형을 배정받을 가능성, 이주 기간 동안 살 집, 입주 시 잔금 대출과 전입 요건을 중점적으로 봐야 합니다. 재개발 기간 중 거주할 대체주택을 사는 경우 일정 요건을 갖추면 대체주택 양도세 비과세 특례를 검토할 수 있습니다. 투자 목적이라면 총투자비 대비 예상 가치, 보유 기간의 금융비용, 양도 시점별 세율, 대출 규제와 주택 수 영향을 더 중요하게 봅니다. 같은 물건도 목적에 따라 적합성이 달라지므로 상담 때 목적을 먼저 알려 주시면 분석 범위를 맞춰 드립니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발 투자금 및 수익성 분석</dd></div>
+      <div><dt>관련 서비스</dt><dd>투자자 맞춤 종합 컨설팅, 재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">세금 특례는 세무사 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>실거주, 투자 목적, 대체주택, 평형 배정, 입주 계획</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-061" data-cat="07">
+  <summary><span class="mono faq-no">FAQ-061</span><span class="faq-title">권리산정기준일이란 무엇인가요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 물건을 볼 때 권리산정기준일을 꼭 확인하라는데, 정확히 무슨 날인가요?</p>
+    <p class="faq-answer">권리산정기준일은 재개발에서 새 주택을 분양받을 권리를 어느 시점 기준으로 산정할지 정하는 날입니다. 도시정비법 제77조는 정비구역 지정·고시일, 또는 시·도지사가 정비구역 지정 전에 따로 정하는 날을 기준일로 하고, 그 다음 날부터 1필지 분할, 집합건물이 아닌 건축물의 집합건물 전환, 토지와 건축물의 분리 취득, 신축으로 토지등소유자가 늘어나는 경우 등에는 기준일 기준으로 권리를 산정하도록 합니다. 2024년 개정으로 기준일을 정할 수 있는 시점과 대상이 넓어진 것으로 알려져 있어 <mark class="flag">최신 법령 확인 필요</mark>합니다. 서울은 신속통합기획·공공재개발 후보지 선정 때 별도 기준일을 고시한 사례가 많습니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리산정기준일·현금청산·투자 위험</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원, 재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>권리산정기준일, 도시정비법 제77조, 분양받을 권리, 쪼개기 방지</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-062" data-cat="07" data-featured>
+  <summary><span class="mono faq-no">FAQ-062</span><span class="faq-title">권리산정기준일 이후 지어진 신축 빌라를 사면 어떻게 되나요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 예정지에 새로 지은 빌라가 싸게 나왔는데, 사도 괜찮을까요?</p>
+    <p class="faq-answer">매우 주의해야 합니다. 권리산정기준일 이후 기존 건물을 헐고 다세대 등을 새로 지어 소유자가 늘었다면, 도시정비법 제77조에 따라 그 건물의 여러 소유자가 하나의 분양권을 나눠 가지는 구조가 될 수 있습니다. 이 경우 대표 1명만 분양대상이 되고 나머지는 현금청산되거나, 분양권 하나를 여럿이 나누는 문제가 생깁니다. 매수 전에 건축물대장의 사용승인일, 집합건물 등기일, 해당 구역의 권리산정기준일 고시를 반드시 비교하세요. &#x27;시세보다 싼 신축 빌라&#x27;는 이런 위험이 가격에 반영된 경우가 많습니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리산정기준일·현금청산·투자 위험</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원, 재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 구역 권리산정기준일 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>신축 빌라, 권리산정기준일 이후, 신축 쪼개기, 현금청산, 사용승인일</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-063" data-cat="07">
+  <summary><span class="mono faq-no">FAQ-063</span><span class="faq-title">현금청산 대상이 되는 대표적인 경우는 무엇인가요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발에서 입주권 대신 현금청산을 받게 되는 경우는 어떤 경우인가요?</p>
+    <p class="faq-answer">대표적인 사례는 ①분양신청 기간 안에 분양신청을 하지 않은 경우 ②분양신청 후 기간 안에 철회한 경우 ③소규모 토지, 신발생 무허가 건축물, 권리가액이 부족한 근린생활시설 등 분양대상 요건을 충족하지 못한 경우 ④권리산정기준일 이후 쪼개기로 생긴 물건 ⑤투기과열지구에서 조합원 지위 양도 제한 이후에 예외 없이 취득한 경우 ⑥재당첨 제한에 해당하는 경우 ⑦관리처분계획에서 분양대상에서 제외된 경우입니다. 정관에 따라 조합원 분양계약을 체결하지 않은 경우도 현금청산 대상이 될 수 있습니다. 재건축은 조합설립에 동의하지 않은 소유자에게 매도청구가 진행됩니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리산정기준일·현금청산·투자 위험</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 물건·정관 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>현금청산 사례, 현금청산 대상, 분양신청 미신청, 분양대상 제외, 매도청구</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-064" data-cat="07">
+  <summary><span class="mono faq-no">FAQ-064</span><span class="faq-title">현금청산 금액은 어떻게 정해지고 언제 받나요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 현금청산 대상이 되면 얼마를, 언제쯤 받을 수 있나요?</p>
+    <p class="faq-answer">도시정비법 제73조는 관리처분계획 인가·고시 다음 날부터 90일 이내에 손실보상 협의를 하도록 하고, 협의가 되지 않으면 그 기간 만료일 다음 날부터 60일 이내에 재개발은 수용재결 신청, 재건축은 매도청구소송을 제기하도록 정하고 있습니다. 기간을 넘기면 지연 기간에 따른 이자를 지급하도록 하고 있습니다. 보상금액은 감정평가를 거쳐 정해지며 매수가나 시세보다 낮을 수 있고, 매수가에 포함된 프리미엄은 보상되지 않는 것이 일반적입니다. 금액에 다툼이 있으면 이의신청이나 소송 절차를 거치므로 변호사 확인이 필요하며, 세부 기간은 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리산정기준일·현금청산·투자 위험</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>현금청산 금액, 손실보상 협의, 수용재결, 매도청구, 90일</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-065" data-cat="07">
+  <summary><span class="mono faq-no">FAQ-065</span><span class="faq-title">분양신청을 일부러 하지 않고 현금청산을 받는 것도 방법인가요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 분담금이 부담돼서 분양신청을 안 하고 현금청산을 받을까 고민 중이에요. 괜찮은 선택일까요?</p>
+    <p class="faq-answer">선택할 수는 있지만 신중해야 합니다. 현금청산을 받으면 분담금 부담과 사업 지연 위험에서 벗어나는 대신, 보상금이 감정평가 기준이라 시세나 기대 가격보다 낮을 수 있고 향후 새 아파트의 가치 상승분은 포기하게 됩니다. 협의가 안 되면 수용재결과 소송으로 이어져 시간이 걸릴 수 있고, 보상금에 대한 양도소득세 처리와 감면 해당 여부도 따로 따져야 합니다. 분양신청 기간이 지나면 되돌리기 어렵기 때문에 현금청산 예상액, 분담금, 세금을 함께 비교한 뒤 결정하시고, 세금은 세무사 확인이 필요합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리산정기준일·현금청산·투자 위험</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원, 재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">세무사·변호사 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>분양신청 포기, 자발적 현금청산, 분담금 부담, 현금청산 세금</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-066" data-cat="07">
+  <summary><span class="mono faq-no">FAQ-066</span><span class="faq-title">관리처분계획인가 이후 재개발 물건을 살 때 무엇을 주의해야 하나요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 관리처분인가가 난 재개발 물건을 매수하려는데, 이 시점 매매에서 특히 조심할 점이 있나요?</p>
+    <p class="faq-answer">①투기과열지구에서는 재개발 관리처분계획인가 후 산 사람은 매도인이 예외 사유에 해당하지 않으면 조합원이 될 수 없습니다(2025년 10월 16일부터 서울 전역 투기과열지구로 지정된 것으로 확인) ②건물이 멸실되었는지에 따라 취득세가 주택 기준인지 토지 기준인지 달라집니다 ③매도인의 이주비 대출과 분담금 납부 내역을 승계할 수 있는지 매수자의 주택 수와 대출 규제를 함께 확인해야 합니다 ④토지거래허가 대상인지 확인해야 합니다 ⑤조합원 분양계약과 명의변경 절차를 조합에 확인해야 합니다. 이 단계 물건은 조합 발급 확인서와 특약이 특히 중요하며, 규제 세부 사항은 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리산정기준일·현금청산·투자 위험</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석, 조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>관리처분 이후 매매, 조합원 지위 승계, 멸실 취득세, 이주비 승계, 명의변경</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-067" data-cat="07">
+  <summary><span class="mono faq-no">FAQ-067</span><span class="faq-title">재개발 사업이 지연되거나 취소되면 어떻게 되나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발이 늦어지거나 아예 무산되는 경우도 있나요? 그러면 투자자는 어떤 손해를 보나요?</p>
+    <p class="faq-answer">있습니다. 조합 내부 갈등, 소송, 공사비 분쟁, 시공사 교체, 경기 침체, 정책 변화로 사업이 몇 년씩 지연되는 경우가 흔하고, 이 기간의 대출 이자와 기회비용은 투자자가 부담하며 분담금도 늘어날 수 있습니다. 또 도시정비법은 일정 기간 안에 사업이 진척되지 않거나 토지등소유자가 요청하는 경우 등 정비구역을 해제할 수 있는 제도를 두고 있어, 해제되면 재개발 기대가 사라지면서 가격이 떨어지고 매도가 어려워질 수 있습니다. 조합이 해산되면 그동안 쓴 비용 정산 문제가 생길 수도 있습니다. 초기 단계일수록 이 위험을 크게 반영해야 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리산정기준일·현금청산·투자 위험</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 정비구역 분석, 투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">정비구역 해제 요건은 최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>사업 지연, 사업 취소, 정비구역 해제, 조합 해산, 매몰비용</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-068" data-cat="07">
+  <summary><span class="mono faq-no">FAQ-068</span><span class="faq-title">재개발 물건을 매수하기 전에 어떤 서류를 확인해야 하나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 빌라 계약 전에 꼭 떼어 봐야 할 서류 목록을 알려 주세요.</p>
+    <p class="faq-answer">기본 서류는 ①토지·건물 등기사항전부증명서(소유자, 근저당·가압류·신탁 여부) ②건축물대장(용도가 주택인지 근린생활시설인지, 사용승인일, 위반건축물 여부) ③토지대장과 지적도(면적, 지목, 분할 이력) ④토지이용계획확인원(정비구역, 토지거래허가구역 여부) ⑤정비구역 지정 고시와 권리산정기준일 고시 ⑥조합 발급 확인서(조합원 여부, 감정평가액, 분양신청 내역, 이주비·분담금 내역) ⑦임대차계약서 ⑧무허가 건축물이면 무허가건축물관리대장입니다. 또 매도인 세대가 구역 안에 다른 물건을 가졌는지, 재당첨 제한 대상인지도 확인하고 계약 특약에 반영하는 것이 좋습니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리산정기준일·현금청산·투자 위험</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석, 조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 물건 공적 장부·조합 자료 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>매수 전 확인 서류, 등기부등본, 건축물대장, 토지이용계획, 조합원 확인서</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-069" data-cat="07">
+  <summary><span class="mono faq-no">FAQ-069</span><span class="faq-title">조합 내부 갈등이나 소송은 투자에 어떤 위험이 있나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 관심 구역에 비상대책위원회가 있고 소송 중이라는데, 투자해도 괜찮을까요?</p>
+    <p class="faq-answer">조합 내부 갈등과 소송은 사업 지연의 대표적인 원인입니다. 조합장 해임 총회, 관리처분계획 취소 소송, 시공사 계약 해지, 공사비 증액 분쟁 등이 진행 중이면 다음 단계로 넘어가는 시점이 늦어지고, 그동안 금융비용과 사업비가 늘어 분담금 증가로 이어질 수 있습니다. 갈등이 있다고 사업이 반드시 멈추는 것은 아니지만, 쟁점과 진행 상황, 예상 영향을 확인해야 합니다. 정비사업 정보몽땅의 총회·회계 공개 자료, 조합 공지, 언론 보도를 함께 살피고, 소송 결과 전망은 법률 전문가 판단이 필요합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리산정기준일·현금청산·투자 위험</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 정비구역 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">소송 전망은 변호사 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>조합 갈등, 비상대책위원회, 조합 소송, 시공사 교체, 사업 지연</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-070" data-cat="07">
+  <summary><span class="mono faq-no">FAQ-070</span><span class="faq-title">규제지역·토지거래허가구역 지정은 재개발 투자에 어떤 영향을 주나요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 서울 전역이 규제지역이 됐다는데, 재개발 빌라를 살 때 어떤 제약이 생기나요?</p>
+    <p class="faq-answer">2025년 10월 15일 대책으로 같은 달 16일부터 서울 25개 구 전역이 투기과열지구·조정대상지역으로 지정된 것으로 확인됩니다. 이에 따라 재개발 조합원 지위 양도 제한(관리처분계획인가 후), 재당첨 제한, 대출 한도 축소, 취득세·양도세 중과 기준이 서울 전역에 적용됩니다. 토지거래허가구역은 서울 전역 아파트(아파트가 포함된 단지의 연립·다세대 포함)를 대상으로 2025년 10월 20일부터 2026년 12월 31일까지로 지정되어 일반 빌라·단독은 원칙적으로 제외되지만, 신속통합기획·공공재개발 후보지 등 별도로 지정된 구역이 있고 서울시가 도로 토지에 대한 허가구역 지정을 결정했다는 보도도 있습니다. 허가 대상이면 실거주 의무가 붙을 수 있어 <mark class="flag">최신 법령 확인 필요</mark>합니다(2026.10.11 기준).</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>권리산정기준일·현금청산·투자 위험</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석, 투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>규제지역, 투기과열지구, 조정대상지역, 토지거래허가구역, 10·15 대책</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-071" data-cat="08">
+  <summary><span class="mono faq-no">FAQ-071</span><span class="faq-title">재개발 물건을 살 때 취득세는 얼마나 나오나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 빌라를 사면 취득세가 주택 세율로 나오나요, 토지 세율로 나오나요?</p>
+    <p class="faq-answer">건물이 멸실되기 전인지 후인지에 따라 다릅니다. 멸실 전에 사면 주택 취득으로 보아 주택 취득세율(가격과 주택 수에 따라 1~3%)이 적용되고, 조정대상지역에서 2주택 이상이 되면 중과세율(2주택 8%, 3주택 이상 12%, 일시적 2주택 등 예외 있음)이 적용될 수 있습니다. 서울은 2025년 10월 16일부터 전역이 조정대상지역으로 지정된 것으로 확인됩니다. 멸실 후에 사면 토지 취득으로 보아 농어촌특별세·지방교육세를 포함해 약 4.6%가 적용되는 것으로 안내됩니다. 멸실 여부는 건축물대장과 실제 상태로 판단하므로 계약 전 확인이 필요하며, 세율과 중과 기준은 <mark class="flag">최신 법령 확인 필요</mark>합니다(2026.10.11 기준 일반 정보).</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 관련 세금 및 금융</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요, 세무사 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>재개발 취득세, 멸실 전 취득세, 멸실 후 취득세, 4.6%, 취득세 중과</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-072" data-cat="08">
+  <summary><span class="mono faq-no">FAQ-072</span><span class="faq-title">새 아파트가 완공되면 조합원도 취득세를 또 내나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 아파트가 준공되면 조합원도 취득세를 내야 한다던데, 얼마나 되나요?</p>
+    <p class="faq-answer">네, 조합원이 새 아파트를 받을 때 건축물 부분은 원시취득으로 보아 취득세를 냅니다. 일반적으로 원시취득 세율 2.8%에 지방교육세 등을 더해 약 2.96%, 전용 85㎡ 초과는 농어촌특별세를 더해 약 3.16%로 안내되며, 과세표준은 조합원이 부담한 건축비 상당액을 기준으로 합니다. 토지 부분은 이미 소유한 것으로 보아 원칙적으로 다시 과세하지 않습니다. 소형 주택 등에 대한 감면 규정이 현재도 적용되는지는 확인되지 않아 <mark class="flag">최신 법령 확인 필요</mark>하며, 실제 세액은 세무사 확인이 필요합니다(2026.10.11 기준 일반 정보).</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 관련 세금 및 금융</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석, 재개발 사업성 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요, 세무사 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>원시취득세, 준공 취득세, 2.8%, 조합원 취득세, 건축물분</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-073" data-cat="08">
+  <summary><span class="mono faq-no">FAQ-073</span><span class="faq-title">조합원 입주권도 주택 수에 포함되나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 입주권은 아직 집이 아닌데, 세금 계산할 때 주택 수에 들어가나요?</p>
+    <p class="faq-answer">세목마다 다릅니다. 양도소득세에서는 관리처분계획인가로 취득한 조합원입주권(소득세법 제88조)을 1세대 1주택 비과세 판단과 다주택 중과 판단의 주택 수에 포함합니다. 취득세에서는 2020년 8월 12일 이후 취득한 입주권을 주택 수에 포함하는 것으로 안내됩니다. 반면 종합부동산세는 주택을 기준으로 과세하므로 건물이 멸실된 입주권은 주택 수에서 제외되고 토지분으로 과세되는 것으로 이해되고 있습니다. 관리처분계획인가 전에는 기존 주택이 그대로 주택입니다. 세목별 판단은 <mark class="flag">최신 법령 확인 필요</mark>하며 세무사 확인을 권합니다(2026.10.11 기준 일반 정보).</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 관련 세금 및 금융</dd></div>
+      <div><dt>관련 서비스</dt><dd>투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요, 세무사 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>입주권 주택 수, 양도세 주택 수, 취득세 주택 수, 종부세, 조합원입주권</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-074" data-cat="08">
+  <summary><span class="mono faq-no">FAQ-074</span><span class="faq-title">조합원 입주권을 팔 때도 1세대 1주택 비과세를 받을 수 있나요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 원래 살던 집이 재개발되어 입주권이 됐는데, 이 입주권을 팔면 양도세 비과세가 되나요?</p>
+    <p class="faq-answer">요건을 갖추면 가능합니다. 소득세법 제89조는 관리처분계획인가일(그 전에 철거되면 철거일) 현재 1세대 1주택 비과세 요건을 갖춘 기존 주택이 전환된 입주권을 양도할 때, ①양도일 현재 다른 주택이나 분양권이 없거나 ②1주택을 가진 경우 그 주택을 취득한 날부터 3년 안에 입주권을 양도하면 비과세를 적용하도록 정하고 있습니다. 다만 양도가액 12억 원을 넘는 부분은 과세됩니다. 다른 사람에게서 사들인 승계 입주권은 이 특례의 대상이 아닌 것으로 안내됩니다. 보유·거주 요건 등 세부 판단은 <mark class="flag">최신 법령 확인 필요</mark>하며 세무사 확인이 필요합니다(2026.10.11 기준 일반 정보).</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 관련 세금 및 금융</dd></div>
+      <div><dt>관련 서비스</dt><dd>투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요, 세무사 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>입주권 비과세, 1세대 1주택, 입주권 양도세, 12억, 원조합원</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-075" data-cat="08">
+  <summary><span class="mono faq-no">FAQ-075</span><span class="faq-title">집이 있는 상태에서 입주권을 사거나 대체주택을 사면 양도세는 어떻게 되나요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 1주택자가 입주권을 추가로 사거나, 재개발 기간에 살 집을 따로 사면 기존 집 양도세 비과세가 가능한가요?</p>
+    <p class="faq-answer">소득세법 시행령 제156조의2에 특례가 있습니다. ①종전 주택을 취득하고 1년이 지난 뒤 입주권을 취득하고, 입주권 취득일부터 3년 안에 종전 주택을 팔면 비과세를 검토할 수 있습니다. ②3년이 지났더라도 새 아파트 완공 후 3년 안에 세대 전원이 이사해 1년 이상 살고, 완공 전 또는 완공 후 3년 안에 종전 주택을 팔면 비과세를 검토할 수 있습니다. ③재개발 사업시행인가일 이후 거주할 대체주택을 취득해 1년 이상 살고, 새 아파트 완공 후 요건을 갖추면 대체주택 비과세를 검토할 수 있습니다. 2026년 10월 1일부터 조정대상지역 일시적 2주택 처분 기한이 단축된 개정이 이 특례에도 영향을 주는지는 확인되지 않아 <mark class="flag">최신 법령 확인 필요</mark>하며, 세무사 확인이 필요합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 관련 세금 및 금융</dd></div>
+      <div><dt>관련 서비스</dt><dd>투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요, 세무사 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>입주권 일시적 2주택, 대체주택 비과세, 종전주택 비과세, 시행령 제156조의2</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-076" data-cat="08">
+  <summary><span class="mono faq-no">FAQ-076</span><span class="faq-title">입주권을 팔 때 양도소득세율과 다주택 중과는 어떻게 적용되나요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 입주권을 1년 만에 팔면 세금이 많이 나오나요? 다주택자 중과도 적용되나요?</p>
+    <p class="faq-answer">입주권은 주택·분양권과 같이 보유 1년 미만 70%, 1년 이상 2년 미만 60%의 단기 세율이 적용되는 것으로 안내되며, 2년 이상이면 기본세율이 적용됩니다. 장기보유특별공제는 원조합원의 경우 관리처분계획인가 전 기존 건물·토지 보유분에 대해서만 적용되는 구조입니다. 다주택자 양도세 중과는 한시 배제가 2026년 5월 9일 끝나 5월 10일 양도분부터 조정대상지역 주택에 다시 적용되는 것으로 확인되며, 일부 경과 규정이 있습니다. 입주권 양도 자체에는 주택 중과가 적용되지 않지만 입주권이 주택 수에 포함되어 다른 주택 양도 시 중과에 영향을 줄 수 있습니다. 2026년 8월 발표된 세제개편안의 중과 완화 내용은 국회 통과 전이므로 <mark class="flag">최신 법령 확인 필요</mark>하며, 세무사 확인이 필요합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 관련 세금 및 금융</dd></div>
+      <div><dt>관련 서비스</dt><dd>투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요, 세무사 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>입주권 양도세율, 단기 양도세, 다주택 중과, 장기보유특별공제, 중과 유예 종료</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-077" data-cat="08">
+  <summary><span class="mono faq-no">FAQ-077</span><span class="faq-title">재건축초과이익환수제는 무엇이고 재개발에도 적용되나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재건축 아파트를 사면 재건축 부담금이 나온다던데, 재개발도 내야 하나요?</p>
+    <p class="faq-answer">재건축초과이익환수제는 재건축 사업으로 생긴 집값 상승분 중 정상 상승분과 개발비용을 뺀 초과이익의 일부를 부담금으로 거두는 제도로, 재건축(소규모재건축 포함)에만 적용되고 재개발에는 적용되지 않습니다. 2024년 3월 27일 시행된 개정으로 조합원 1인당 평균 초과이익 8,000만 원까지는 면제하고, 초과분은 5,000만 원 구간별로 10~50%를 부과하며, 부담금 산정 개시 시점을 조합설립인가일로 바꾸고, 1세대 1주택 장기보유자 감면과 고령자 납부유예를 도입한 것으로 안내됩니다. 폐지·추가 개정 논의가 있어 <mark class="flag">최신 법령 확인 필요</mark>합니다(2026.10.11 기준 일반 정보).</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 관련 세금 및 금융</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 기초 상담, 재개발 사업성 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>재건축초과이익환수제, 재건축 부담금, 재초환, 8천만원 면제, 재개발 미적용</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-078" data-cat="08">
+  <summary><span class="mono faq-no">FAQ-078</span><span class="faq-title">재개발 이주비 대출은 얼마나, 누가 받을 수 있나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 관리처분인가 후 이주비 대출이 나온다는데, 한도와 조건이 어떻게 되나요?</p>
+    <p class="faq-answer">이주비는 보통 조합이 금융기관과 협약해 종전자산을 담보로 조합원에게 빌려주는 기본이주비와, 시공사 보증 등으로 추가로 조달하는 추가이주비로 나뉩니다. 2025년 6·27 대책과 10·15 대책 이후 규제지역 기본이주비에도 주택담보대출 규제가 적용되어 LTV 40%와 최대 6억 원 한도가 적용되고, 2주택 이상(1+1 포함) 조합원은 받기 어렵다는 것이 보도된 기준입니다. 다만 대책 이전에 관리처분계획인가를 받은 사업장은 종전 규정을 따르고, 2026년 8월 대책으로 종전·종후 자산 중 큰 금액을 기준으로 한도를 산정하는 방안이 시행된다는 보도가 있습니다. 자주 바뀌는 영역이라 <mark class="flag">최신 법령 확인 필요</mark>하며 실제 한도는 조합과 금융기관에 확인해야 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 관련 세금 및 금융</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석, 투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요(금융 규제 포함), 금융기관 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>이주비 대출, 기본이주비, 추가이주비, LTV 40%, 6억 한도, 이주비 승계</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-079" data-cat="08">
+  <summary><span class="mono faq-no">FAQ-079</span><span class="faq-title">분담금 중도금과 입주 잔금은 대출로 마련할 수 있나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 분담금이 수억 원인데, 중도금이나 잔금을 대출로 낼 수 있나요? 서울은 한도가 어떻게 되나요?</p>
+    <p class="faq-answer">분담금 중도금은 보통 HUG·HF 보증을 받은 집단대출로, 입주 잔금은 일반 주택담보대출로 마련합니다. 2025년 10·15 대책 이후 서울 등 규제지역 주택담보대출은 LTV 40%(무주택·처분조건부 1주택 기준, 다주택자는 사실상 불가)이고, 시가 15억 원 이하 6억 원, 15억~25억 원 4억 원, 25억 원 초과 2억 원의 한도와 스트레스 DSR이 적용되며, 대출로 산 주택에는 6개월 안에 전입해야 하는 조건이 붙는 것으로 확인됩니다. 조합원 중도금 대출에 어떤 기준이 적용되는지는 관리처분계획인가 시점 등에 따라 다르다고 보도되었습니다. <mark class="flag">최신 법령 확인 필요</mark>하며 금융기관 상담이 필요합니다(2026.10.11 기준).</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 관련 세금 및 금융</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석, 투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요(금융 규제 포함), 금융기관 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>중도금 대출, 잔금 대출, 집단대출, 주담대 한도, 스트레스 DSR, 전입 의무</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-080" data-cat="08">
+  <summary><span class="mono faq-no">FAQ-080</span><span class="faq-title">재개발 입주권을 보유하는 동안 재산세와 종부세는 어떻게 나오나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 집이 철거되고 공사 중인데도 재산세나 종합부동산세를 내야 하나요?</p>
+    <p class="faq-answer">보유세는 매년 6월 1일 현재 상태를 기준으로 과세합니다. 건물이 멸실되기 전에는 주택분 재산세와 종합부동산세가 과세되고, 멸실 후 준공 전까지는 주택이 아니라 토지로 보아 토지분 재산세가 과세되는 것으로 안내됩니다. 이 기간에는 종합부동산세 주택 수 계산에서 빠지지만, 종합합산 토지 공시가격 합계가 기준(5억 원)을 넘으면 토지분 종합부동산세가 나올 수 있습니다. 준공 후에는 다시 주택분으로 과세됩니다. 2026년 8월 세제개편안에 종부세 개편 내용이 포함되어 있어 <mark class="flag">최신 법령 확인 필요</mark>하며, 세무사 확인이 필요합니다(2026.10.11 기준 일반 정보).</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>재개발·재건축 관련 세금 및 금융</dd></div>
+      <div><dt>관련 서비스</dt><dd>투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요, 세무사 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>재산세, 종합부동산세, 멸실 후 보유세, 토지분 재산세, 6월 1일</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-081" data-cat="09">
+  <summary><span class="mono faq-no">FAQ-081</span><span class="faq-title">공인중개사 대상 재개발 실무교육에서는 무엇을 배우나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 공인중개사인데, 재개발 실무교육을 들으면 어떤 내용을 배울 수 있나요?</p>
+    <p class="faq-answer">재개발 실무교육(3시간 그룹교육, 1인 150,000원, 실습용 예시 가격)은 세 모듈로 구성됩니다. ①재개발·재건축 유형과 추진 절차, 단계별 거래 제한과 위험 ②조합원 입주권 상담 실무(분양대상 요건, 권리산정기준일, 현금청산 사례, 상담 때 확인할 질문) ③권리분석 및 투자비 계산(비례율·권리가액·분담금·초기투자금 실습)입니다. 교안과 계산 실습 시트를 제공하며, 교육 내용은 일반 정보로서 개별 물건 판단 기준으로 그대로 쓰지 않도록 안내합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>공인중개사 재개발 실무 및 AI 교육</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 실무교육</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">교육 일정은 공지 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>공인중개사 재개발 교육, 재개발 실무교육, 입주권 상담 실무, 권리분석 교육</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-082" data-cat="09">
+  <summary><span class="mono faq-no">FAQ-082</span><span class="faq-title">재개발 실무교육의 정원과 준비물은 어떻게 되나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 실무교육은 몇 명이 함께 듣고, 무엇을 준비해 가야 하나요?</p>
+    <p class="faq-answer">실습용 제안 기준으로 최소 5명, 최대 20명의 그룹교육입니다. 최소 인원이 모이지 않으면 폐강하고 전액 환불합니다. 신청서에는 성명, 연락처, 소속, 수강 목적을 적고, 계산 실습을 위해 노트북이나 계산기를 준비하시면 좋습니다. 교안(PDF)과 계산 실습 시트(엑셀)는 교육 1영업일 전까지 보내 드립니다. 교육에서는 개별 고객의 물건 자료를 받지 않습니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>공인중개사 재개발 실무 및 AI 교육</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 실무교육</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">교육 장소·일정은 공지 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>재개발 교육 정원, 교육 준비물, 교안, 폐강</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-083" data-cat="09">
+  <summary><span class="mono faq-no">FAQ-083</span><span class="faq-title">공인중개사 AI 실무교육은 어떤 내용인가요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 공인중개사 AI 교육에서는 AI를 어떻게 활용하는 법을 알려 주나요?</p>
+    <p class="faq-answer">공인중개사 AI 실무교육(2시간 그룹교육, 1인 99,000원, 실습용 예시 가격)은 생성형 AI로 공공자료를 요약하고, 상담 안내문과 매물 설명 초안을 만드는 방법을 실습합니다. 특히 AI가 만든 내용의 사실 확인 방법, 고객 개인정보를 AI에 입력하지 않는 원칙, 중개대상물 표시·광고 관련 유의사항을 함께 다룹니다. 교안, 프롬프트 예시 모음, 검수 체크리스트를 제공합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>공인중개사 재개발 실무 및 AI 교육</dd></div>
+      <div><dt>관련 서비스</dt><dd>공인중개사 AI 실무교육</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>공인중개사 AI 교육, 생성형 AI, 부동산 AI 활용, 프롬프트</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-084" data-cat="09">
+  <summary><span class="mono faq-no">FAQ-084</span><span class="faq-title">AI를 써 본 적이 없어도 AI 실무교육을 들을 수 있나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 컴퓨터나 AI에 익숙하지 않은데, 공인중개사 AI 실무교육을 따라갈 수 있을까요?</p>
+    <p class="faq-answer">기본 사용법부터 시작하므로 처음 쓰시는 분도 수강할 수 있습니다. 노트북과 실습에 쓸 AI 서비스 계정을 준비해 오시면 되고, 계정 만드는 방법은 사전에 안내해 드립니다. 다만 AI가 만든 글은 사실과 다르거나 법령이 바뀐 내용을 담을 수 있으므로, 교육에서는 결과물을 그대로 쓰지 않고 공적 자료와 대조해 검수하는 습관을 가장 중요하게 다룹니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>공인중개사 재개발 실무 및 AI 교육</dd></div>
+      <div><dt>관련 서비스</dt><dd>공인중개사 AI 실무교육</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>AI 초보, AI 교육 수강 조건, AI 결과물 검수, 노트북</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-085" data-cat="09">
+  <summary><span class="mono faq-no">FAQ-085</span><span class="faq-title">교육에서 배운 계산 방법을 고객 상담에 그대로 써도 되나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 교육에서 배운 비례율·분담금 계산을 고객에게 바로 설명해도 괜찮을까요?</p>
+    <p class="faq-answer">계산 구조를 설명하는 데는 활용하실 수 있지만, 특정 물건의 결과를 확정된 수치처럼 안내하면 안 됩니다. 관리처분계획 인가 전의 비례율과 분담금은 추정치이고, 분양대상 여부와 세금은 개별 사정에 따라 달라집니다. 고객에게는 기준일, 자료 출처, 가정 조건을 함께 알리고 법률·세무 사항은 해당 전문가 확인을 권하는 것이 안전합니다. 교안 자료를 고객 배포용으로 쓰려면 사전 동의가 필요합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>공인중개사 재개발 실무 및 AI 교육</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 실무교육</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">개별 물건은 관리처분계획 등 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>상담 활용, 분담금 설명, 중개사 설명 의무, 교안 이용 범위</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-086" data-cat="10">
+  <summary><span class="mono faq-no">FAQ-086</span><span class="faq-title">SNS 마케팅 실무교육에서는 무엇을 배우나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 부동산 SNS 마케팅 교육은 어떤 내용으로 진행되나요?</p>
+    <p class="faq-answer">SNS 마케팅 실무교육(4시간 그룹교육, 1인 220,000원, 실습용 예시 가격)은 네이버 블로그 글 기획과 작성, 인스타그램 카드뉴스·짧은 영상 기획, AI를 활용한 부동산 콘텐츠 제작 실습, 허위·과장 광고를 피하는 표현 기준으로 구성됩니다. 교안, 콘텐츠 기획 템플릿을 제공하고, 수업 중 본인 채널에 바로 올릴 수 있는 초안을 직접 만들어 봅니다. 이 교육은 쌤태리부동산컨설팅의 보조 서비스입니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>SNS 마케팅 교육</dd></div>
+      <div><dt>관련 서비스</dt><dd>SNS 마케팅 실무교육</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>SNS 마케팅 교육, 부동산 마케팅, 블로그 교육, 인스타그램 교육</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-087" data-cat="10">
+  <summary><span class="mono faq-no">FAQ-087</span><span class="faq-title">부동산 네이버 블로그는 어떻게 운영해야 하나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 부동산 블로그를 시작하려는데, 어떤 주제로 어떻게 글을 써야 하나요?</p>
+    <p class="faq-answer">고객이 실제로 검색하는 질문을 주제로 잡는 것이 출발점입니다. 예를 들어 &#x27;재개발 빌라 매수 전 확인할 서류&#x27;, &#x27;○○구역 사업 단계&#x27;처럼 질문형 주제를 정하고, 결론-근거-주의사항 순서로 쓰면 읽기 쉽습니다. 수치에는 출처와 기준일을 적고, 법령·세금 내용은 일반 정보임을 밝히세요. 검색 노출 방식은 플랫폼 정책에 따라 바뀌므로 특정 기법보다 꾸준한 발행과 정확한 정보가 기본입니다. 교육에서는 FAQ를 블로그 주제로 바꾸는 실습을 합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>SNS 마케팅 교육</dd></div>
+      <div><dt>관련 서비스</dt><dd>SNS 마케팅 실무교육</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">플랫폼 정책 변경 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>부동산 블로그, 네이버 블로그, 블로그 주제, 검색 키워드</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-088" data-cat="10">
+  <summary><span class="mono faq-no">FAQ-088</span><span class="faq-title">인스타그램 부동산 콘텐츠는 어떻게 만들면 좋나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 인스타그램에 재개발이나 부동산 정보를 올리고 싶은데, 어떤 형식이 좋나요?</p>
+    <p class="faq-answer">인스타그램은 한 장에 한 메시지를 담는 카드뉴스와 짧은 영상이 기본입니다. 재개발 용어 하나(예: 비례율, 권리산정기준일)를 5~10장으로 풀거나, 사업 절차를 단계별로 보여 주는 구성이 이해하기 쉽습니다. 마지막 장에는 자료 출처, 기준일, &#x27;개별 사안은 확인 필요&#x27; 문구를 넣으세요. 특정 구역의 가격 전망이나 수익을 단정하는 표현은 피해야 합니다. 교육에서는 템플릿을 활용해 카드뉴스 초안을 직접 만들어 봅니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>SNS 마케팅 교육</dd></div>
+      <div><dt>관련 서비스</dt><dd>SNS 마케팅 실무교육</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>인스타그램, 카드뉴스, 릴스, 부동산 콘텐츠</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-089" data-cat="10">
+  <summary><span class="mono faq-no">FAQ-089</span><span class="faq-title">부동산 블로그·SNS에 매물을 올릴 때 법적으로 주의할 점이 있나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 블로그나 인스타그램에 매물 홍보 글을 올릴 때 지켜야 할 규정이 있나요?</p>
+    <p class="faq-answer">공인중개사법은 중개대상물을 표시·광고할 때 중개사무소와 개업공인중개사 정보 등 명시사항을 적도록 하고, 존재하지 않는 매물이나 사실과 다른 가격·조건을 올리는 부당한 표시·광고를 금지합니다. 개업공인중개사가 아닌 사람의 중개대상물 표시·광고도 제한됩니다. 위반하면 과태료 등 제재 대상이 될 수 있습니다. 구체적인 명시 항목과 제재 기준은 개정될 수 있으니 게시 전 <mark class="flag">최신 법령 확인 필요</mark>합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>SNS 마케팅 교육</dd></div>
+      <div><dt>관련 서비스</dt><dd>SNS 마케팅 실무교육, 공인중개사 AI 실무교육</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">최신 법령 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>부동산 광고 규정, 표시광고, 허위매물, 공인중개사법, 명시사항</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-090" data-cat="10">
+  <summary><span class="mono faq-no">FAQ-090</span><span class="faq-title">1:1 맞춤형 SNS 실습교육도 받을 수 있나요?</span><span class="tag tag-review">상담 권장</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 그룹교육 말고 제 블로그나 인스타그램을 직접 봐 주는 1:1 교육도 가능한가요?</p>
+    <p class="faq-answer">가능합니다. 1:1 맞춤형 실습교육은 운영 중인 채널을 진단하고, 주제 기획과 글·카드뉴스 작성을 함께 실습하는 방식입니다. 시간과 내용이 사람마다 달라 실습용 가격표에는 포함하지 않았고 별도 견적으로 안내합니다. 신청 시 채널 주소와 원하는 목표를 알려 주시면 진행 범위를 제안해 드립니다. 그룹교육인 SNS 마케팅 실무교육을 먼저 듣고 1:1 실습으로 이어가는 방법도 있습니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>SNS 마케팅 교육</dd></div>
+      <div><dt>관련 서비스</dt><dd>SNS 마케팅 실무교육</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">가격은 별도 견적</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>1:1 교육, 맞춤형 실습교육, 블로그 코칭, 채널 진단</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-091" data-cat="11">
+  <summary><span class="mono faq-no">FAQ-091</span><span class="faq-title">재개발 컨설팅은 어떻게 신청하나요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 컨설팅을 받고 싶은데, 신청 절차가 어떻게 되나요?</p>
+    <p class="faq-answer">①홈페이지나 공식 채널로 문의 ②사전 질문지 작성(투자 목적, 예산, 보유 주택 수, 관심 구역) ③서비스 범위·기간·가격 안내 ④계약 조건 확인 후 결제 ⑤자료 제출과 분석 ⑥보고서 전달과 온라인 설명 순서로 진행됩니다. 서비스 범위와 환불 조건을 서면(이메일·문자 포함)으로 안내받고 동의 후 결제하면 계약이 성립합니다. 견적은 안내일부터 14일 동안 유효합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>컨설팅 신청·계약·결제·환불</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 기초 상담, 재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">공식 접수 채널 주소 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>컨설팅 신청, 상담 신청 방법, 계약 절차, 사전 질문지</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-092" data-cat="11">
+  <summary><span class="mono faq-no">FAQ-092</span><span class="faq-title">투자 물건 분석을 신청할 때 어떤 자료를 준비해야 하나요?</span><span class="tag tag-navy">상담 필수</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 투자 물건 분석을 맡기려면 어떤 서류를 미리 준비해야 하나요?</p>
+    <p class="faq-answer">필수 자료는 물건의 지번 주소, 매도 희망가, 임대차 현황(보증금·월세·만기)입니다. 3개월 이내 발급한 등기사항전부증명서, 중개사가 준 물건 자료, 조합 안내문, 본인 세대의 보유 주택 현황을 함께 주시면 더 정확하게 검토할 수 있습니다. 주민등록번호 뒷자리 등 불필요한 개인정보는 가리고 보내 주세요. 기간(5영업일)은 결제와 필수 자료 접수가 모두 끝난 다음 영업일부터 계산합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>컨설팅 신청·계약·결제·환불</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>제출 서류, 준비 자료, 등기사항전부증명서, 물건 분석 신청</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-093" data-cat="11">
+  <summary><span class="mono faq-no">FAQ-093</span><span class="faq-title">컨설팅 보고서에는 어떤 내용이 들어가나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 분석 서비스를 신청하면 보고서에 구체적으로 어떤 내용이 담기나요?</p>
+    <p class="faq-answer">서비스마다 다릅니다. 재개발 정비구역 분석은 구역 개요, 추진 단계, 정비계획, 입지, 경쟁단지 시세, 위험요인을 담은 15~25쪽 내외 보고서입니다. 재개발 투자 물건 분석은 공적 장부 대조, 분양대상 쟁점, 종전자산 추정 범위, 초기투자금·총투자비 계산표를 제공합니다. 모든 보고서 첫 장에는 작성 기준일, 자료 출처, 추정치와 확정치의 구분, 전문가 확인이 필요한 사항을 적습니다. 보고서는 본인 의사결정용이며 제3자 배포는 사전 서면 동의가 필요합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>컨설팅 신청·계약·결제·환불</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 정비구역 분석, 재개발 투자 물건 분석, 재개발 사업성 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>보고서 구성, 보고서 제공 범위, 산출물, 보고서 이용 범위</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-094" data-cat="11">
+  <summary><span class="mono faq-no">FAQ-094</span><span class="faq-title">보고서를 받기까지 얼마나 걸리나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 신청하고 나서 분석 보고서를 받기까지 보통 며칠 정도 걸리나요?</p>
+    <p class="faq-answer">실습용 제안 기준으로 재개발 투자 물건 분석 5영업일, 재개발 정비구역 분석 7영업일, 조합원 입주권 검토 지원 7영업일, 재개발 사업성 분석 12영업일, 투자자 맞춤 종합 컨설팅 15영업일입니다. 기간은 결제와 필수 자료 접수가 끝난 다음 영업일부터 계산합니다. 관공서 자료 발급이나 공개 자료 갱신이 늦어지면 기간이 늘어날 수 있으며, 이 경우 사유와 변경 일정을 미리 알려 드립니다. 급한 일정은 별도 협의합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>컨설팅 신청·계약·결제·환불</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 정비구역 분석, 재개발 투자 물건 분석, 조합원 입주권 검토 지원, 재개발 사업성 분석, 투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>소요기간, 보고서 기간, 영업일, 긴급 처리</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-095" data-cat="11">
+  <summary><span class="mono faq-no">FAQ-095</span><span class="faq-title">결제는 언제, 어떻게 하나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 컨설팅 비용은 한 번에 내야 하나요, 나눠서 낼 수 있나요?</p>
+    <p class="faq-answer">실습용 제안 기준으로 재개발 기초 상담은 상담일 2영업일 전까지 전액, 재개발 정비구역 분석·재개발 투자 물건 분석·조합원 입주권 검토 지원은 계약 시 전액을 결제합니다. 재개발 사업성 분석(800,000원)과 투자자 맞춤 종합 컨설팅(1,200,000원)은 착수금 50%와 초안 전달 전 잔금 50%로 나눠 냅니다. 교육은 신청 시 전액입니다. 결제 수단은 계좌이체이며, 카드 결제와 영수증 발행 범위는 확인 후 안내합니다. 기초 상담 후 14일 이내 같은 구역·물건으로 컨설팅을 계약하면 상담료의 50%(75,000원)를 차감합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>컨설팅 신청·계약·결제·환불</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 사업성 분석, 투자자 맞춤 종합 컨설팅, 재개발 기초 상담</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-review">카드 결제·영수증 발행 범위 확인 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>결제 방법, 분할 결제, 착수금, 잔금, 상담료 차감</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-096" data-cat="11">
+  <summary><span class="mono faq-no">FAQ-096</span><span class="faq-title">재개발 기초 상담 일정을 바꾸거나 취소할 수 있나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 기초 상담을 예약했는데 일정이 생겼어요. 변경이나 취소가 가능한가요?</p>
+    <p class="faq-answer">실습용 제안 기준으로 상담일 1영업일 전까지 한 번은 무료로 일정을 바꿀 수 있습니다. 취소하면 상담일 2영업일 전까지는 전액, 1영업일 전에는 50%를 환불하며, 당일 취소나 연락 없는 불참은 환불이 어렵습니다. 회사 사정으로 상담이 취소되면 전액 환불과 일정 변경 중 원하시는 방법을 선택하실 수 있습니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>컨설팅 신청·계약·결제·환불</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 기초 상담</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>상담 취소, 일정 변경, 상담 환불, 노쇼</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-097" data-cat="11">
+  <summary><span class="mono faq-no">FAQ-097</span><span class="faq-title">분석 보고서 서비스를 중간에 취소하면 환불되나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 투자 물건 분석을 결제했는데 매수를 포기했어요. 환불받을 수 있나요?</p>
+    <p class="faq-answer">보고서형 서비스는 진행 단계에 따라 정산합니다(실습용 제안). 결제 후 착수 전이면 전액 환불, 착수 후 초안 작성 전이면 서비스 금액의 50%를 공제하고 환불, 초안 전달 이후에는 환불이 어렵습니다. 착수일은 문자나 이메일로 미리 알려 드립니다. 회사 사정으로 제공하지 못하거나 안내 기간보다 5영업일 넘게 늦어지면 전액 환불과 기간 연장 중 선택하실 수 있습니다. 환불은 요청일부터 3영업일 이내에 처리합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>컨설팅 신청·계약·결제·환불</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 정비구역 분석, 재개발 투자 물건 분석, 조합원 입주권 검토 지원, 재개발 사업성 분석, 투자자 맞춤 종합 컨설팅</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>컨설팅 환불, 취소 수수료, 착수, 초안, 환불 기간</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-098" data-cat="11">
+  <summary><span class="mono faq-no">FAQ-098</span><span class="faq-title">교육 신청 후 취소하면 환불 기준은 어떻게 되나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 재개발 실무교육이나 AI·SNS 교육을 신청했다가 못 가게 되면 어떻게 하나요?</p>
+    <p class="faq-answer">실습용 제안 기준으로 교육일 3영업일 전까지 취소하면 전액, 2영업일 전부터 1영업일 전까지는 50%를 환불합니다. 교육 당일 취소나 불참은 환불이 어렵지만, 다음 회차로 한 번 옮기거나 같은 소속의 다른 분이 대신 들을 수 있습니다. 최소 인원 미달로 폐강되거나 회사 사정으로 취소되면 전액 환불합니다. 이 기준은 재개발 실무교육, 공인중개사 AI 실무교육, SNS 마케팅 실무교육에 똑같이 적용됩니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>컨설팅 신청·계약·결제·환불</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 실무교육, 공인중개사 AI 실무교육, SNS 마케팅 실무교육</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>교육 환불, 교육 취소, 대리 수강, 회차 이월</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-099" data-cat="11" data-featured>
+  <summary><span class="mono faq-no">FAQ-099</span><span class="faq-title">보고서를 받은 뒤 수정을 요청할 수 있나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 보고서를 받았는데 매수 조건이 바뀌었어요. 다시 계산해 주실 수 있나요?</p>
+    <p class="faq-answer">서비스별로 정한 횟수 안에서 가능합니다(실습용 제안). 재개발 투자 물건 분석은 매수가·대출·보증금 변경에 따른 재계산 1회, 재개발 사업성 분석은 가정 변경 재계산 2회, 투자자 맞춤 종합 컨설팅은 2회, 조합원 입주권 검토 지원은 추가 자료 반영 재검토 1회입니다. 회사의 조사·계산 오류는 전달 후 30일 이내 횟수와 관계없이 무상 정정합니다. 다른 물건 추가나 기준일 이후 변경 사항 반영은 별도 견적입니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>컨설팅 신청·계약·결제·환불</dd></div>
+      <div><dt>관련 서비스</dt><dd>재개발 투자 물건 분석, 재개발 사업성 분석, 투자자 맞춤 종합 컨설팅, 조합원 입주권 검토 지원</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">없음</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>보고서 수정, 재계산, 수정 횟수, 오류 정정</dd></div>
+    </dl>
+  </div>
+</details>
+<details class="faq-item" id="faq-100" data-cat="11">
+  <summary><span class="mono faq-no">FAQ-100</span><span class="faq-title">제출한 서류와 개인정보는 어떻게 관리되나요?</span><span class="tag tag-neutral">일반 안내</span><span class="ms faq-caret" aria-hidden="true">expand_more</span></summary>
+  <div class="faq-body">
+    <p class="faq-ask">고객 질문 · 등기부나 세대 정보를 보내야 하는데, 개인정보가 걱정돼요. 어떻게 관리하나요?</p>
+    <p class="faq-answer">서비스 수행에 필요한 정보만 받고, 주민등록번호 전체는 수집하지 않습니다. 제출 서류의 주민등록번호 뒷자리 등은 가리고 보내 주세요. 고객 동의 없이 제3자에게 제공하지 않으며, 고객의 개인정보와 식별 가능한 물건 정보는 외부 AI 서비스에 입력하지 않습니다. 법령상 보존 의무가 있는 거래 기록 외의 자료는 서비스 종료 후 정해진 기간 안에 파기하며, 구체적인 보관 기간은 개인정보 처리방침 확정 후 안내합니다.</p>
+    <dl class="faq-meta">
+      <div><dt>카테고리</dt><dd>컨설팅 신청·계약·결제·환불</dd></div>
+      <div><dt>관련 서비스</dt><dd>조합원 입주권 검토 지원, 재개발 투자 물건 분석</dd></div>
+      <div><dt>추가 확인</dt><dd><span class="tag tag-neutral">개인정보 보관 기간 확정 필요</span></dd></div>
+      <div><dt>핵심 키워드</dt><dd>개인정보, 자료 보안, 서류 파기, 개인정보 처리방침</dd></div>
+    </dl>
+  </div>
+</details>
+<!-- BUILD:FAQ-LIST:END -->
+    </div>
+    <p class="faq-empty" id="faq-empty" hidden>찾는 질문이 없습니다. 다른 단어로 검색하거나 기초 상담에서 물어봐 주세요.</p>
+  </div>
+</section>
+
+<!-- 8. CONSULTATION -->
+<section class="section section-card" id="contact" aria-labelledby="contact-title">
+  <div class="container contact-grid">
+    <div class="contact-side">
+      <div><span class="eyebrow">Request Preliminary Consultation</span><h2 class="h-lg" id="contact-title" style="margin-top:8px">재개발 기초 상담 신청</h2></div>
+      <p class="text-sub">관심 구역이나 물건 정보를 남겨 주시면 상담 신청서가 정리됩니다. 처음이라면 60분 기초 상담에서 상황에 맞는 서비스를 안내해 드립니다.</p>
+      <div class="memo">
+        <p class="memo-title"><span class="ms" aria-hidden="true">fact_check</span>상담 전에 준비하면 좋은 자료</p>
+        <ul class="prep-list">
+          <li><span class="ms" aria-hidden="true">check</span>물건 지번 주소, 매도 희망가, 임대차 현황</li>
+          <li><span class="ms" aria-hidden="true">check</span>3개월 이내 발급한 등기사항전부증명서</li>
+          <li><span class="ms" aria-hidden="true">check</span>조합 안내문, 분양신청 안내서(있는 경우)</li>
+          <li><span class="ms" aria-hidden="true">check</span>본인 세대의 보유 주택 현황</li>
+        </ul>
+      </div>
+      <p class="body-sm text-muted">주민등록번호 뒷자리 등 불필요한 개인정보는 가리고 보내 주세요.</p>
+    </div>
+
+    <div class="card form-card">
+      <form id="consult-form" novalidate>
+        <div class="form-grid">
+          <div class="field"><label for="f-name">성함 <span class="req">*</span></label><input id="f-name" name="name" autocomplete="name" required></div>
+          <div class="field"><label for="f-phone">연락처 <span class="req">*</span></label><input id="f-phone" name="phone" type="tel" autocomplete="tel" placeholder="010-0000-0000" required></div>
+          <div class="field full"><label for="f-area">관심 구역 또는 물건 주소 <span class="req">*</span></label><input id="f-area" name="area" placeholder="예: ○○재개발구역, ○○동 123-4" required></div>
+          <div class="field full"><label for="f-service">희망 서비스 <span class="req">*</span></label>
+            <select id="f-service" name="service" required>
+<!-- BUILD:FORM-OPTIONS:START -->
+<option value="">서비스를 선택하세요</option>
+<option value="재개발 기초 상담">재개발 기초 상담 (150,000원)</option>
+<option value="재개발 정비구역 분석">재개발 정비구역 분석 (350,000원)</option>
+<option value="재개발 투자 물건 분석">재개발 투자 물건 분석 (500,000원)</option>
+<option value="조합원 입주권 검토 지원">조합원 입주권 검토 지원 (400,000원)</option>
+<option value="재개발 사업성 분석">재개발 사업성 분석 (800,000원)</option>
+<option value="투자자 맞춤 종합 컨설팅">투자자 맞춤 종합 컨설팅 (1,200,000원)</option>
+<option value="재개발 실무교육">재개발 실무교육 (1인 150,000원)</option>
+<option value="공인중개사 AI 실무교육">공인중개사 AI 실무교육 (1인 99,000원)</option>
+<option value="SNS 마케팅 실무교육">SNS 마케팅 실무교육 (1인 220,000원)</option>
+<option value="아직 모르겠어요">아직 모르겠어요 (기초 상담에서 안내)</option>
+<!-- BUILD:FORM-OPTIONS:END -->
+            </select>
+          </div>
+          <div class="field"><label for="f-budget">투입 가능 자기자금</label>
+            <select id="f-budget" name="budget"><option value="">선택 안 함</option><option>3억 원 이하</option><option>3억 ~ 5억 원</option><option>5억 ~ 10억 원</option><option>10억 원 이상</option></select>
+          </div>
+          <div class="field"><label for="f-homes">세대 보유 주택 수</label>
+            <select id="f-homes" name="homes"><option value="">선택 안 함</option><option>무주택</option><option>1주택</option><option>2주택 이상</option><option>입주권·분양권 보유</option></select>
+          </div>
+          <div class="field full"><label for="f-purpose">투자 목적</label>
+            <select id="f-purpose" name="purpose"><option value="">선택 안 함</option><option>실거주</option><option>투자</option><option>실거주와 투자 모두</option><option>보유 중인 물건 점검</option></select>
+          </div>
+          <div class="field full"><label for="f-message">확인하고 싶은 내용</label><textarea id="f-message" name="message" placeholder="예: 이 빌라가 입주권이 나오는지, 총투자비가 얼마인지 알고 싶습니다."></textarea></div>
+          <label class="consent full" for="f-consent"><input id="f-consent" name="consent" type="checkbox" required><span>개인정보 수집·이용에 동의합니다. 서비스 수행에 필요한 정보만 받고, 동의 없이 제3자에게 제공하지 않습니다. 주민등록번호는 받지 않습니다.</span></label>
+          <p class="form-error full" id="form-error" hidden></p>
+          <button class="btn btn-primary btn-block full" type="submit"><span class="ms" aria-hidden="true">description</span>상담 신청서 정리하기</button>
+        </div>
+      </form>
+      <div class="trust-row">
+        <span><span class="ms" aria-hidden="true">lock</span>주민등록번호는 받지 않습니다</span>
+        <span><span class="ms" aria-hidden="true">hourglass_top</span>견적 유효기간 14일</span>
+        <span><span class="ms" aria-hidden="true">receipt_long</span>환불 조건 계약 전 안내</span>
+      </div>
+      <div class="result-panel" id="result-panel" hidden>
+        <div class="memo memo-caution">
+          <p class="memo-title"><span class="ms" aria-hidden="true">info</span>상담 신청서를 정리했습니다</p>
+          <p class="body-sm text-sub">온라인 접수 창구는 아직 연결되지 않았습니다. 아래 내용을 복사해 공식 상담 채널(<span class="tbd">[확인 필요]</span>)로 보내 주세요.</p>
+        </div>
+        <label class="visually-hidden" for="result-text">정리된 상담 신청서</label>
+        <textarea id="result-text" readonly></textarea>
+        <div class="result-actions">
+          <button class="btn btn-secondary" type="button" id="copy-btn"><span class="ms" aria-hidden="true">content_copy</span>신청서 복사</button>
+          <span class="copy-status" id="copy-status" aria-live="polite"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="#top" aria-label="쌤태리부동산컨설팅 처음으로">
+          <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+            <rect width="40" height="40" rx="4" fill="#0F2537"/>
+            <path d="M8 9h11v9H8zM21 9h11v13H21zM8 20h11v11H8zM21 24h11v7H21z" fill="none" stroke="#2E4963" stroke-width="1.5"/>
+            <path d="M21 24h11v7H21z" fill="rgba(197,155,39,0.35)" stroke="#C59B27" stroke-width="1.8"/>
+          </svg>
+          <span class="brand-text"><span class="brand-name">쌤태리부동산컨설팅</span><span class="brand-en">SSAEMTAERI REAL ESTATE CONSULTING</span></span>
+        </a>
+        <p class="body-sm text-sub" style="margin-top:12px">자료로 말하고, 위험부터 밝히며, 숫자로 설명합니다.</p>
+        <dl class="company-info">
+          <div><dt>설립</dt><dd>2026년 · 대표 1인</dd></div>
+          <div><dt>대표</dt><dd><span class="tbd">[확인 필요]</span></dd></div>
+          <div><dt>사업자등록번호</dt><dd><span class="tbd">[확인 필요]</span></dd></div>
+          <div><dt>소재지</dt><dd><span class="tbd">[확인 필요]</span></dd></div>
+          <div><dt>연락처·이메일</dt><dd><span class="tbd">[확인 필요]</span></dd></div>
+        </dl>
+      </div>
+      <div>
+        <h3>바로가기</h3>
+        <ul class="footer-links">
+          <li><a href="#services">재개발 정밀 분석 서비스</a></li>
+          <li><a href="#stress-test">비례율·분담금 계산</a></li>
+          <li><a href="#pricing">서비스 요금표</a></li>
+          <li><a href="#faq">재개발 지식센터 FAQ</a></li>
+          <li><a href="#education">공인중개사 실무교육</a></li>
+          <li><a href="#contact">기초 상담 신청</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>분석에 쓰는 공적 자료</h3>
+        <ul class="footer-links">
+          <li><a href="https://www.law.go.kr" target="_blank" rel="noopener">국가법령정보센터 <span class="mono">law.go.kr</span></a></li>
+          <li><a href="https://cleanup.seoul.go.kr" target="_blank" rel="noopener">정비사업 정보몽땅 <span class="mono">cleanup.seoul.go.kr</span></a></li>
+          <li><a href="https://www.eum.go.kr" target="_blank" rel="noopener">토지이음 <span class="mono">eum.go.kr</span></a></li>
+          <li><a href="https://cloud.eais.go.kr" target="_blank" rel="noopener">세움터 건축물대장 <span class="mono">cloud.eais.go.kr</span></a></li>
+          <li><a href="https://www.iros.go.kr" target="_blank" rel="noopener">대법원 인터넷등기소 <span class="mono">iros.go.kr</span></a></li>
+          <li><a href="https://rt.molit.go.kr" target="_blank" rel="noopener">국토교통부 실거래가 공개시스템 <span class="mono">rt.molit.go.kr</span></a></li>
+          <li><a href="https://www.realtyprice.kr" target="_blank" rel="noopener">부동산 공시가격 알리미 <span class="mono">realtyprice.kr</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="memo memo-alert legal">
+      <p class="memo-title"><span class="ms" aria-hidden="true">policy</span>법적 고지와 자문 범위</p>
+      <p>이 페이지의 법령·세금·금융 정보는 2026년 10월 11일 기준 일반 정보이며 개별 사안의 확정 판단이 아닙니다. 쌤태리부동산컨설팅의 보고서와 의견은 공적 자료에 근거한 검토 의견이며, 투자수익·프리미엄·조합원 입주권 취득·사업 일정을 보장하지 않습니다. 조합원 자격과 분양대상 여부는 조합 절차와 관리처분계획 인가로 정해지고, 법률·세무·감정평가의 최종 판단은 해당 자격을 가진 전문가의 업무입니다. 컨설팅 계약에서는 매물이나 대출을 알선하지 않습니다. 표시 가격과 기간은 실습용 예시입니다.</p>
+    </div>
+    <div class="footer-bottom"><span>© 2026 SSAEMTAERI REAL ESTATE CONSULTING</span><span>법령·정책 기준일 2026-10-11</span></div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- 지적도 예시 그림 ---------- */
+  var canvas = document.getElementById("parcel-map");
+  function rng(seed) {
+    return function () {
+      seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+      var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function drawMap() {
+    if (!canvas || !canvas.getContext) return;
+    var box = canvas.getBoundingClientRect();
+    if (!box.width || !box.height) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(box.width * dpr);
+    canvas.height = Math.round(box.height * dpr);
+    var ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, box.width, box.height);
+    var css = getComputedStyle(document.documentElement);
+    function tok(name) { return css.getPropertyValue(name).trim(); }
+    var W = box.width, H = box.height, cw = 62, rh = 50;
+    var cols = Math.ceil(W / cw) + 2, rows = Math.ceil(H / rh) + 2;
+    var rand = rng(20261011), P = [], i, j;
+    for (i = 0; i <= rows; i++) {
+      P[i] = [];
+      for (j = 0; j <= cols; j++) {
+        P[i][j] = [(j - 1) * cw + (rand() - 0.5) * cw * 0.36, (i - 1) * rh + (rand() - 0.5) * rh * 0.36];
+      }
+    }
+    function isRoad(r, c) { return r % 4 === 3 || c % 5 === 2; }
+    function cell(r, c) { return [P[r][c], P[r][c + 1], P[r + 1][c + 1], P[r + 1][c]]; }
+    function inset(poly, d) {
+      var cx = 0, cy = 0;
+      poly.forEach(function (p) { cx += p[0] / 4; cy += p[1] / 4; });
+      return poly.map(function (p) {
+        var dx = cx - p[0], dy = cy - p[1], l = Math.hypot(dx, dy) || 1;
+        return [p[0] + dx / l * d, p[1] + dy / l * d];
+      });
+    }
+    function trace(poly) {
+      ctx.beginPath();
+      poly.forEach(function (p, k) { if (k) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); });
+      ctx.closePath();
+    }
+    var zr0 = 1, zr1 = Math.min(rows - 2, 4);
+    var zc0 = Math.max(1, Math.floor(cols * 0.42)), zc1 = Math.min(cols - 2, zc0 + 5);
+    var hr = zr0 + 1, hc = zc0 + 1;
+    while (isRoad(hr, hc) && hc < zc1) hc++;
+    ctx.lineWidth = 1;
+    for (i = 0; i < rows; i++) {
+      for (j = 0; j < cols; j++) {
+        if (isRoad(i, j)) continue;
+        var poly = inset(cell(i, j), 2.5);
+        trace(poly);
+        var inZone = i >= zr0 && i <= zr1 && j >= zc0 && j <= zc1;
+        ctx.fillStyle = inZone ? tok("--muted-bg") : tok("--card");
+        ctx.fill();
+        ctx.strokeStyle = tok("--line-strong");
+        ctx.stroke();
+      }
+    }
+    var edge = [], c, r;
+    for (c = zc0; c <= zc1 + 1; c++) edge.push(P[zr0][c]);
+    for (r = zr0 + 1; r <= zr1 + 1; r++) edge.push(P[r][zc1 + 1]);
+    for (c = zc1; c >= zc0; c--) edge.push(P[zr1 + 1][c]);
+    for (r = zr1; r > zr0; r--) edge.push(P[r][zc0]);
+    trace(edge);
+    ctx.setLineDash([6, 5]);
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = tok("--slate");
+    ctx.stroke();
+    ctx.setLineDash([]);
+    var hp = inset(cell(hr, hc), 2.5);
+    trace(hp);
+    ctx.fillStyle = tok("--gold-wash");
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = tok("--gold");
+    ctx.stroke();
+    ctx.font = "500 11px " + tok("--font-mono");
+    ctx.fillStyle = tok("--navy");
+    var hx = (hp[0][0] + hp[2][0]) / 2, hy = (hp[0][1] + hp[2][1]) / 2;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText("123-4", hx, hy);
+    ctx.textAlign = "left"; ctx.textBaseline = "bottom";
+    ctx.fillStyle = tok("--slate");
+    var lx = Math.max(8, P[zr0][zc0][0] + 4), ly = Math.max(14, P[zr0][zc0][1] - 6);
+    ctx.fillText("정비구역 경계(예시)", lx, ly);
+  }
+  var pending = false;
+  function scheduleDraw() {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(function () { pending = false; drawMap(); });
+  }
+  if (canvas) {
+    drawMap();
+    if (window.ResizeObserver) new ResizeObserver(scheduleDraw).observe(canvas);
+    else window.addEventListener("resize", scheduleDraw);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleDraw);
+  }
+
+  /* ---------- 비례율 스트레스 테스트 ---------- */
+  function readNum(id) {
+    var el = document.getElementById(id);
+    var v = parseFloat(el && el.value);
+    return isFinite(v) && v >= 0 ? v : 0;
+  }
+  function won(manwon) {
+    return Math.round(manwon * 10000).toLocaleString("ko-KR") + "원";
+  }
+  function eok(manwon) {
+    var neg = manwon < 0, v = Math.round(Math.abs(manwon));
+    var e = Math.floor(v / 10000), m = v % 10000, s = "";
+    if (e) s += e.toLocaleString("ko-KR") + "억";
+    if (m) s += (s ? " " : "") + m.toLocaleString("ko-KR") + "만";
+    if (!s) s = "0";
+    return (neg ? "−" : "") + s + " 원";
+  }
+  function signed(manwon) {
+    if (Math.round(manwon) === 0) return "변동 없음";
+    return (manwon > 0 ? "+" : "−") + eok(Math.abs(manwon));
+  }
+  function shareText(d) { return d >= 0 ? won(d) : "환급 " + won(-d); }
+  function setText(id, text, cls) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text;
+    if (cls !== undefined) el.className = "num " + cls;
+  }
+  function updateCalc() {
+    var price = readNum("in-price"), asset = readNum("in-asset"), sale = readNum("in-sale");
+    var ratio = Math.min(readNum("in-ratio"), 200), loan = readNum("in-loan"), cost = readNum("in-cost");
+    var drop = readNum("in-drop");
+    var bad = Math.max(ratio - drop, 0);
+    var rightBase = asset * ratio / 100, rightBad = asset * bad / 100;
+    var shareBase = sale - rightBase, shareBad = sale - rightBad;
+    var totalBase = price + shareBase + cost, totalBad = price + shareBad + cost;
+    ["price", "asset", "sale", "loan", "cost"].forEach(function (k) {
+      var h = document.getElementById("hint-" + k);
+      if (h) h.textContent = "= " + eok(readNum("in-" + k));
+    });
+    setText("out-premium", eok(price - asset));
+    setText("out-initial", eok(price - loan + cost));
+    setText("out-share", shareBase >= 0 ? eok(shareBase) : "환급 " + eok(-shareBase));
+    setText("out-total", eok(totalBase));
+    setText("th-base", "기본 시나리오 (비례율 " + ratio + "%)");
+    setText("th-bad", "악화 시나리오 (비례율 " + bad + "%)");
+    setText("c-right-base", won(rightBase));
+    setText("c-right-bad", won(rightBad));
+    setText("c-right-diff", signed(rightBad - rightBase), rightBad < rightBase ? "cell-up" : "");
+    setText("c-share-base", shareText(shareBase));
+    setText("c-share-bad", shareText(shareBad));
+    setText("c-share-diff", signed(shareBad - shareBase), shareBad > shareBase ? "cell-up" : "");
+    setText("c-total-base", won(totalBase));
+    setText("c-total-bad", won(totalBad));
+    setText("c-total-diff", signed(totalBad - totalBase), totalBad > totalBase ? "cell-up" : "");
+  }
+  var calcForm = document.getElementById("calc-form");
+  if (calcForm) {
+    calcForm.addEventListener("input", updateCalc);
+    calcForm.addEventListener("change", updateCalc);
+    calcForm.addEventListener("submit", function (e) { e.preventDefault(); });
+    updateCalc();
+  }
+
+  /* ---------- 지식센터 FAQ ---------- */
+  var items = Array.prototype.slice.call(document.querySelectorAll(".faq-item"));
+  var chips = Array.prototype.slice.call(document.querySelectorAll(".chip"));
+  var search = document.getElementById("faq-search");
+  var countEl = document.getElementById("faq-count");
+  var emptyEl = document.getElementById("faq-empty");
+  var currentCat = "featured";
+  function norm(s) { return s.toLowerCase().replace(/\s+/g, " "); }
+  function applyFaq() {
+    var q = search ? norm(search.value.trim()) : "";
+    var shown = 0;
+    items.forEach(function (el) {
+      var show;
+      if (q) show = norm(el.textContent).indexOf(q) !== -1;
+      else if (currentCat === "featured") show = el.hasAttribute("data-featured");
+      else if (currentCat === "all") show = true;
+      else show = el.getAttribute("data-cat") === currentCat;
+      el.hidden = !show;
+      if (show) shown++;
+    });
+    chips.forEach(function (c) { c.setAttribute("aria-pressed", String(!q && c.getAttribute("data-cat") === currentCat)); });
+    if (countEl) countEl.textContent = q ? "검색 결과 " + shown + "개" : shown + "개 질문";
+    if (emptyEl) emptyEl.hidden = shown !== 0;
+  }
+  chips.forEach(function (c) {
+    c.addEventListener("click", function () {
+      currentCat = c.getAttribute("data-cat");
+      if (search) search.value = "";
+      applyFaq();
+    });
+  });
+  if (search) search.addEventListener("input", applyFaq);
+  function openFromHash() {
+    var m = /^#faq-(\d{3})$/.exec(location.hash);
+    if (!m) return;
+    var el = document.getElementById("faq-" + m[1]);
+    if (!el) return;
+    if (el.hidden) { currentCat = el.getAttribute("data-cat"); if (search) search.value = ""; applyFaq(); }
+    el.open = true;
+    el.scrollIntoView({ block: "start" });
+  }
+  applyFaq();
+  openFromHash();
+  window.addEventListener("hashchange", openFromHash);
+
+  /* ---------- 상담 신청서 ---------- */
+  var form = document.getElementById("consult-form");
+  var serviceSelect = document.getElementById("f-service");
+  Array.prototype.forEach.call(document.querySelectorAll("[data-service]"), function (a) {
+    a.addEventListener("click", function () {
+      if (!serviceSelect) return;
+      var want = a.getAttribute("data-service");
+      Array.prototype.forEach.call(serviceSelect.options, function (o) { if (o.value === want) serviceSelect.value = want; });
+    });
+  });
+  function val(id) { var el = document.getElementById(id); return el ? el.value.trim() : ""; }
+  if (form) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var err = document.getElementById("form-error");
+      var missing = [];
+      if (!val("f-name")) missing.push("성함");
+      if (!val("f-phone")) missing.push("연락처");
+      if (!val("f-area")) missing.push("관심 구역 또는 물건 주소");
+      if (!val("f-service")) missing.push("희망 서비스");
+      var consent = document.getElementById("f-consent");
+      if (missing.length || !consent.checked) {
+        var msg = missing.length ? missing.join(", ") + " 항목을 입력해 주세요." : "";
+        if (!consent.checked) msg += (msg ? " " : "") + "개인정보 수집·이용에 동의해 주세요.";
+        err.textContent = msg;
+        err.hidden = false;
+        return;
+      }
+      err.hidden = true;
+      var today = new Date();
+      var stamp = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0") + "-" + String(today.getDate()).padStart(2, "0");
+      var lines = [
+        "[쌤태리부동산컨설팅 상담 신청]",
+        "성함: " + val("f-name"),
+        "연락처: " + val("f-phone"),
+        "관심 구역·물건: " + val("f-area"),
+        "희망 서비스: " + val("f-service"),
+        "투입 가능 자기자금: " + (val("f-budget") || "선택 안 함"),
+        "세대 보유 주택 수: " + (val("f-homes") || "선택 안 함"),
+        "투자 목적: " + (val("f-purpose") || "선택 안 함"),
+        "확인하고 싶은 내용: " + (val("f-message") || "-"),
+        "개인정보 수집·이용 동의: 예",
+        "작성일: " + stamp
+      ];
+      var panel = document.getElementById("result-panel");
+      var out = document.getElementById("result-text");
+      out.value = lines.join("\n");
+      panel.hidden = false;
+      document.getElementById("copy-status").textContent = "";
+      panel.scrollIntoView({ block: "nearest" });
+    });
+  }
+  var copyBtn = document.getElementById("copy-btn");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", function () {
+      var out = document.getElementById("result-text");
+      var status = document.getElementById("copy-status");
+      function fallback() { out.focus(); out.select(); status.textContent = "내용을 선택했습니다. 복사해 주세요."; }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(out.value).then(function () { status.textContent = "복사했습니다."; }, fallback);
+      } else {
+        fallback();
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>
