@@ -549,27 +549,27 @@
       svg.appendChild(n); return n;
     };
     for (let v = 4; v <= 9; v++) {
-      add("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: v === 4 ? "#16181D" : "#DCD5C6", "stroke-width": v === 4 ? 2 : 1.5 });
-      add("text", { x: L - 16, y: y(v) + 9, "text-anchor": "end", "font-size": 25, "font-weight": 600, fill: "#6B7079" }, v + "억");
+      add("line", { class: "ax", x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: v === 4 ? "#16181D" : "#DCD5C6", "stroke-width": v === 4 ? 2 : 1.5 });
+      add("text", { class: "ax", x: L - 16, y: y(v) + 9, "text-anchor": "end", "font-size": 25, "font-weight": 600, fill: "#6B7079" }, v + "억");
     }
     for (let v = 0; v <= 35; v += 5) {
-      add("text", { x: x(v), y: H - B + 40, "text-anchor": "middle", "font-size": 25, "font-weight": 600, fill: "#6B7079" }, v);
+      add("text", { class: "ax", x: x(v), y: H - B + 40, "text-anchor": "middle", "font-size": 25, "font-weight": 600, fill: "#6B7079" }, v);
     }
-    add("text", { x: W - R, y: H - 6, "text-anchor": "end", "font-size": 24, "font-weight": 700, fill: "#3A3E47" }, "대지 면적 (평)");
+    add("text", { class: "ax", x: W - R, y: H - 6, "text-anchor": "end", "font-size": 24, "font-weight": 700, fill: "#3A3E47" }, "대지 면적 (평)");
 
     // 최저가 기준선
-    add("line", { x1: L, x2: W - R, y1: y(5.2), y2: y(5.2), stroke: "#16181D", "stroke-width": 2, "stroke-dasharray": "10 8" });
-    add("text", { x: W - R, y: y(5.2) - 14, "text-anchor": "end", "font-size": 25, "font-weight": 800, fill: "#16181D" }, "10건 최저 5억 2,000만");
+    add("line", { class: "ref", x1: L, x2: W - R, y1: y(5.2), y2: y(5.2), stroke: "#16181D", "stroke-width": 2, "stroke-dasharray": "10 8" });
+    add("text", { class: "ref-l", x: W - R, y: y(5.2) - 14, "text-anchor": "end", "font-size": 25, "font-weight": 800, fill: "#16181D" }, "10건 최저 5억 2,000만");
 
     for (const [, a, p] of deals) {
-      add("circle", { cx: x(a), cy: y(p), r: 15, fill: "#6B7079", stroke: "#F3EFE6", "stroke-width": 3 });
+      add("circle", { class: "deal", cx: x(a), cy: y(p), r: 15, fill: "#6B7079", stroke: "#F3EFE6", "stroke-width": 3 });
     }
     // 선택 라벨: 최고가
-    add("text", { x: x(30.9) - 26, y: y(8.67) + 9, "text-anchor": "end", "font-size": 24, "font-weight": 700, fill: "#3A3E47" }, "8억 6,700만 · 30.9평");
+    add("text", { class: "lbl", x: x(30.9) - 26, y: y(8.67) + 9, "text-anchor": "end", "font-size": 24, "font-weight": 700, fill: "#3A3E47" }, "8억 6,700만 · 30.9평");
 
     // 이 매물
-    add("circle", { cx: x(me[0]), cy: y(me[1]), r: 20, fill: "#D9452B", stroke: "#F3EFE6", "stroke-width": 4 });
-    add("text", { x: x(me[0]) + 34, y: y(me[1]) + 46, "font-size": 27, "font-weight": 800, fill: "#D9452B" }, "이 매물 · 대지 2.42평 · 5억");
+    add("circle", { class: "me", cx: x(me[0]), cy: y(me[1]), r: 20, fill: "#D9452B", stroke: "#F3EFE6", "stroke-width": 4 });
+    add("text", { class: "me-l", x: x(me[0]) + 34, y: y(me[1]) + 46, "font-size": 27, "font-weight": 800, fill: "#D9452B" }, "이 매물 · 대지 2.42평 · 5억");
   })();
 </script>
 </body>

@@ -1,0 +1,92 @@
+/* 카드뉴스(index.html)를 영상 프레임으로 찍을 때만 덧씌우는 스타일. render-video.js 가 주입한다. */
+
+body.video { padding: 0; gap: 0; display: block; background: #000; }
+body.video .swipe { display: none; }
+body.video .mark { background-repeat: no-repeat; background-size: 100% 100%; }
+.w-only { display: none; }
+
+/* ---------- 가로 16:9 ---------- */
+body.wide .card { position: absolute; left: 0; top: 0; visibility: hidden; width: 1920px; height: 1080px; padding: 60px 120px 50px; }
+body.wide .card.on { visibility: visible; }
+body.wide .w-only { display: block; }
+body.wide .body { flex-direction: row; gap: 100px; padding-top: 56px; padding-bottom: 34px; }
+body.wide .colL { width: var(--lw, 720px); flex: none; display: flex; flex-direction: column; }
+body.wide .colR { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+body.wide .colR > :first-child { margin-top: 0; }
+body.wide .lead.w-only { margin-top: 30px; }
+
+body.wide #c01 .body { flex-direction: row-reverse; align-items: center; padding-top: 40px; }
+body.wide #c01 .colL { justify-content: center; }
+body.wide #c01 h1 { margin-top: 0; font-size: 80px; }
+body.wide #c01 .ticket { height: 600px; }
+body.wide #c01 .ticket .price { font-size: 360px; }
+
+body.wide #c02 .spec dd { font-size: 38px; }
+body.wide #c02 .split { margin-top: 44px; }
+body.wide #c02 .say { font-size: 48px; }
+
+body.wide #c03 .receipt { padding-bottom: 70px; }
+body.wide #c03 .formula { margin-top: auto; }
+
+body.wide #c04 svg { width: 100%; height: auto; }
+
+body.wide #c05 .two { grid-template-columns: 1fr; }
+body.wide #c05 .bars { gap: 34px; }
+body.wide #c05 .bars .track { height: 54px; }
+
+body.wide #c06 .read .say { font-size: 40px; }
+
+body.wide #c07 .facts { grid-template-columns: 1fr 1fr; margin-top: auto; }
+body.wide #c07 .facts div:nth-child(3) { border-left: 0; }
+body.wide #c07 .facts div:nth-child(n+3) { border-top: 1px solid var(--line); }
+body.wide #c07 .facts-cap { text-align: left; }
+
+body.wide #c08 .pair { grid-template-columns: 1fr 130px 1fr; }
+
+body.wide #c09 { --lw: 560px; }
+body.wide #c09 .chk { gap: 10px; }
+body.wide #c09 .chk li { padding: 16px 24px 18px; grid-template-columns: 58px 1fr; }
+body.wide #c09 .chk .no { width: 58px; height: 58px; font-size: 30px; }
+body.wide #c09 .chk h4 { font-size: 31px; }
+body.wide #c09 .chk p { font-size: 25px; }
+body.wide #c09 .lead.w-only { margin-top: auto; font-size: 32px; }
+
+body.wide #c10 .quote { font-size: 44px; }
+body.wide #c10 .who > div { padding: 28px 34px; }
+
+body.wide #c11 .cta { margin-top: auto; }
+
+/* ---------- 세로 9:16 쇼츠 ---------- */
+body.short .sframe {
+  position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; visibility: hidden;
+  background: var(--ink); display: flex; flex-direction: column;
+}
+body.short .sframe.on { visibility: visible; }
+body.short .sband-top { height: 300px; padding: 88px 80px 0; color: var(--paper); }
+body.short .sband-top small { display: block; font-size: 32px; font-weight: 700; color: var(--hl); letter-spacing: -0.02em; }
+body.short .sband-top b { display: block; font-size: 62px; font-weight: 900; letter-spacing: -0.045em; margin-top: 10px; }
+body.short .sband-bot { flex: 1; display: flex; align-items: center; justify-content: center; gap: 14px; }
+body.short .sband-bot i { width: 14px; height: 14px; border-radius: 7px; background: #3A3E47; }
+body.short .sband-bot i.cur { width: 44px; background: var(--hl); }
+
+/* ---------- 썸네일 1280×720 ---------- */
+.thumb {
+  width: 1280px; height: 720px; background: var(--ink); color: var(--paper);
+  display: grid; grid-template-columns: 560px 1fr; gap: 56px; align-items: center; padding: 0 72px;
+  position: relative; overflow: hidden;
+}
+.thumb .ticket { height: 470px; grid-template-columns: 1fr 150px; }
+.thumb .ticket::before, .thumb .ticket::after { left: calc(100% - 150px - 26px); width: 52px; height: 52px; }
+.thumb .ticket::before { top: -26px; }
+.thumb .ticket::after { bottom: -26px; }
+.thumb .ticket .main { padding: 40px 36px; }
+.thumb .ticket .label { font-size: 22px; }
+.thumb .ticket .price { font-size: 250px; margin-top: 24px; }
+.thumb .ticket .meta { font-size: 22px; }
+.thumb .ticket .stub { margin: 34px 0; padding: 0 22px; }
+.thumb .ticket .stub .q { font-size: 150px; }
+.thumb .tx small { display: block; font-size: 34px; font-weight: 700; color: var(--hl); letter-spacing: -0.02em; }
+.thumb .tx .l1 { font-size: 66px; font-weight: 900; letter-spacing: -0.05em; line-height: 1.15; margin-top: 14px; }
+.thumb .tx .l2 { font-size: 150px; white-space: nowrap; font-weight: 900; letter-spacing: -0.065em; line-height: 1; color: var(--hl); margin-top: 6px; }
+.thumb .tx .l2 .ap { font-size: 64px; letter-spacing: -0.02em; margin-right: 14px; }
+.thumb .tx .n { font-size: 24px; font-weight: 600; color: #9A9EA6; margin-top: 18px; }
