@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>같은 11억 다른 결과</title>
+<!--
+  마천3구역 후킹 쇼츠 (9:16, 1080×1920, 약 37초). 기획과 숫자 근거는 plan.md.
+  쇼츠 화면의 아이콘·버튼·제목 줄에 가리지 않게 내용은 위 170px 아래, 좌우 110px 안, 1540px 위에만 둔다.
+  data-a="방식 시작 길이" / data-ac="방식 시작 길이 간격" 은 영상용 등장 순서(../tools/anim.js).
+  첫 장은 첫 프레임부터 질문이 보이도록 제목에는 애니메이션을 걸지 않는다.
+-->
+<style>
+  @font-face { font-family: "Pretendard"; font-weight: 500; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-Medium.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 600; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-SemiBold.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 700; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-Bold.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 800; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-ExtraBold.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 900; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-Black.woff2") format("woff2"); }
+
+  :root {
+    --ink: #16181D; --ink-2: #3A3E47; --muted: #6B7079;
+    --paper: #F3EFE6; --panel: #FBF9F4; --line: #DCD5C6;
+    --hl: #FFD84A; --accent: #D9452B; --accent-soft: #F6DDD5;
+    --night-2: #22252B; --night-line: #3A3E47; --night-muted: #9A9EA6; --night-text: #D5D7DC;
+    --appraisal: #8E9199;  /* 감정평가액 */
+    --price: #9A9EA6;      /* 조합원 분양가 (어두운 장) */
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #2A2C31; font-family: "Pretendard", system-ui, sans-serif; color: var(--ink);
+    padding: 40px 0; display: flex; flex-direction: column; align-items: center; gap: 40px;
+    -webkit-font-smoothing: antialiased; word-break: keep-all;
+  }
+
+  .card { width: 1080px; height: 1920px; background: var(--paper); position: relative; overflow: hidden; padding: 170px 110px 0; display: flex; flex-direction: column; }
+  .top { display: flex; justify-content: space-between; font-size: 28px; font-weight: 600; color: var(--muted); padding-bottom: 22px; border-bottom: 2px solid var(--ink); }
+  .top .pg { font-variant-numeric: tabular-nums; }
+  .body { height: 1150px; display: flex; flex-direction: column; padding-top: 50px; }
+  .src { position: absolute; left: 110px; right: 110px; top: 1420px; font-size: 23px; line-height: 1.5; font-weight: 500; color: var(--muted); padding-top: 16px; border-top: 1px solid var(--line); }
+
+  .eyebrow { font-size: 36px; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; margin-bottom: 16px; }
+  h2 { font-size: 88px; line-height: 1.16; font-weight: 800; letter-spacing: -0.05em; }
+  .say { font-size: 44px; line-height: 1.38; font-weight: 800; letter-spacing: -0.045em; }
+  .note { font-size: 31px; line-height: 1.5; font-weight: 500; color: var(--ink-2); letter-spacing: -0.02em; }
+  .mark { background: linear-gradient(transparent 52%, var(--hl) 52%, var(--hl) 94%, transparent 94%) no-repeat; background-size: 100% 100%; padding: 0 4px; }
+  .mt-auto { margin-top: auto; }
+
+  .ink { background: var(--ink); color: var(--paper); }
+  .ink .top { color: var(--night-muted); border-color: var(--night-line); }
+  .ink .src { color: var(--night-muted); border-color: var(--night-line); }
+  .ink .eyebrow { color: var(--hl); }
+  .ink .note { color: var(--night-text); }
+  .ink .mark { color: var(--ink); background-image: linear-gradient(transparent 8%, var(--hl) 8%, var(--hl) 96%, transparent 96%); }
+
+  /* 공통: A/B 꼬리표 */
+  .who { display: inline-flex; align-items: center; justify-content: center; width: 58px; height: 58px; border-radius: 14px; font-size: 34px; font-weight: 900; }
+  .who.a { background: var(--ink); color: var(--paper); }
+  .who.b { background: var(--accent); color: #fff; }
+  .ink .who.a { background: var(--paper); color: var(--ink); }
+  .ink .tag .who.a { background: var(--ink); color: var(--paper); }
+
+  /* ---------- 01 질문 ---------- */
+  #c01 h1 { font-size: 112px; line-height: 1.17; font-weight: 900; letter-spacing: -0.06em; margin-top: 10px; }
+  #c01 h1 .ok { color: var(--hl); }
+  #c01 h1 .no { color: var(--accent); }
+  .tags { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 72px; }
+  .tag { position: relative; background: var(--paper); color: var(--ink); border-radius: 26px; padding: 34px 34px 36px; }
+  .tag::after { content: ""; position: absolute; right: 30px; top: 30px; width: 26px; height: 26px; border-radius: 50%; background: var(--ink); }
+  .tag small { display: flex; align-items: center; gap: 14px; font-size: 30px; font-weight: 700; color: var(--muted); }
+  .tag b { display: block; font-size: 118px; font-weight: 900; letter-spacing: -0.06em; line-height: 1; margin-top: 22px; }
+  #c01 .sub { margin-top: auto; margin-bottom: 40px; font-size: 44px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.35; }
+  #c01 .sub span { color: var(--night-muted); font-weight: 600; font-size: 34px; display: block; margin-top: 10px; letter-spacing: -0.02em; }
+
+  /* ---------- 02 감정평가액 ---------- */
+  .def { margin-top: 36px; background: var(--ink); color: var(--paper); border-radius: 24px; padding: 30px 34px; }
+  .def b { font-size: 36px; font-weight: 800; letter-spacing: -0.035em; }
+  .def b em { font-style: normal; color: var(--hl); }
+  .def p { font-size: 30px; font-weight: 500; line-height: 1.5; color: var(--night-text); margin-top: 8px; letter-spacing: -0.02em; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 30px; }
+  .pair > div { background: var(--panel); border: 1px solid var(--line); border-radius: 24px; padding: 28px 30px 30px; }
+  .pair .row { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .pair .row:last-child { border-bottom: 0; }
+  .pair .row .k { font-size: 27px; font-weight: 600; color: var(--muted); }
+  .pair .row b { font-size: 46px; font-weight: 900; letter-spacing: -0.05em; }
+  .pair .row.diff b { font-size: 64px; }
+  .pair .b .row.diff b { color: var(--accent); }
+  .pair .ex { font-size: 23px; font-weight: 700; color: var(--muted); margin-top: 6px; text-align: right; }
+
+  /* ---------- 03 프리미엄 ---------- */
+  .eq { margin-top: 36px; font-size: 40px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.4; border: 2px solid var(--ink); border-radius: 22px; padding: 24px 30px; }
+  .eq em { font-style: normal; color: var(--accent); }
+  .stack { margin-top: 44px; display: flex; flex-direction: column; gap: 40px; }
+  .stack .h { display: flex; align-items: center; gap: 16px; font-size: 32px; font-weight: 800; margin-bottom: 14px; letter-spacing: -0.03em; }
+  .stack .h .aside { margin-left: auto; font-size: 27px; font-weight: 600; color: var(--muted); }
+  .track { position: relative; height: 84px; }
+  .seg { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; padding: 0 18px; font-size: 30px; font-weight: 800; white-space: nowrap; overflow: hidden; }
+  .seg.apr { left: 0; background: var(--appraisal); color: var(--ink); border-radius: 12px 0 0 12px; }
+  .seg.prm { background: var(--accent); color: #fff; border-radius: 0 12px 12px 0; border-left: 4px solid var(--paper); }
+  .stack .lab { display: flex; justify-content: space-between; margin-top: 12px; font-size: 26px; font-weight: 700; color: var(--muted); }
+  .stack .lab b { color: var(--accent); font-weight: 900; font-size: 34px; letter-spacing: -0.03em; }
+  .key { display: flex; gap: 28px; margin-top: 30px; font-size: 26px; font-weight: 700; color: var(--muted); }
+  .key i { display: inline-block; width: 22px; height: 22px; border-radius: 5px; margin-right: 10px; vertical-align: -3px; }
+
+  /* ---------- 04 총투자금 ---------- */
+  #c04 .eq { border-color: var(--night-line); font-size: 38px; }
+  #c04 .eq em { color: var(--accent); }
+  #c04 .eq span { color: var(--price); }
+  .total { position: relative; margin-top: 60px; display: flex; flex-direction: column; gap: 34px; }
+  .total .ref { position: absolute; left: 91.3%; top: -54px; bottom: -14px; border-left: 5px dashed var(--hl); }
+  .total .ref span { position: absolute; right: 14px; top: -6px; white-space: nowrap; font-size: 27px; font-weight: 800; color: var(--hl); }
+  .total .h { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
+  .total .h b { font-size: 50px; font-weight: 900; letter-spacing: -0.05em; }
+  .total .track { height: 76px; }
+  .total .seg.prm { left: 0; border-radius: 12px 0 0 12px; border-left: 0; }
+  .total .seg.pri { background: var(--price); color: var(--ink); border-radius: 0 12px 12px 0; border-left: 4px solid var(--ink); }
+  .verdict { margin-top: 14px; font-size: 30px; font-weight: 800; letter-spacing: -0.03em; }
+  .verdict.ok { color: var(--night-text); }
+  .verdict.no { color: var(--accent); }
+  #c04 .key { color: var(--night-muted); margin-top: 26px; }
+  #c04 .say { margin-top: auto; }
+
+  /* ---------- 05 먼저 물을 것 ---------- */
+  .asks { list-style: none; margin-top: 44px; display: flex; flex-direction: column; gap: 20px; }
+  .asks li { border-radius: 26px; padding: 34px 36px 36px; background: var(--panel); border: 1px solid var(--line); }
+  .asks li:first-child { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .asks .n { font-size: 30px; font-weight: 900; color: var(--accent); }
+  .asks li:first-child .n { color: var(--hl); }
+  .asks h3 { font-size: 54px; font-weight: 900; letter-spacing: -0.05em; margin-top: 6px; }
+  .asks p { font-size: 31px; font-weight: 500; line-height: 1.5; margin-top: 12px; color: var(--ink-2); letter-spacing: -0.02em; }
+  .asks li:first-child p { color: var(--night-text); }
+
+  .calc { margin-top: auto; border: 2px solid var(--ink); border-radius: 24px; padding: 28px 32px 30px; }
+  .calc small { display: block; font-size: 28px; font-weight: 700; color: var(--muted); margin-bottom: 10px; }
+  .calc p { font-size: 40px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.45; }
+  .calc em { font-style: normal; color: var(--accent); }
+
+  /* ---------- 06 기준선 ---------- */
+  #c06 h2 .hlt { color: var(--hl); }
+  .lines { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .lines > div { background: var(--night-2); border-radius: 22px; padding: 26px 28px 28px; }
+  .lines small { font-size: 27px; font-weight: 700; color: var(--night-muted); }
+  .lines b { display: block; font-size: 40px; font-weight: 900; letter-spacing: -0.045em; margin-top: 8px; line-height: 1.25; }
+  #c06 .note { margin-top: 36px; }
+  .cta { margin-top: auto; border-top: 1px solid var(--night-line); padding-top: 30px; font-size: 38px; font-weight: 800; line-height: 1.4; letter-spacing: -0.04em; }
+  .cta span { display: block; font-size: 29px; font-weight: 600; color: var(--night-muted); margin-top: 10px; letter-spacing: -0.02em; }
+</style>
+</head>
+<body>
+
+<!-- 01 질문 -->
+<section class="card ink" id="c01" data-hold="4.2">
+  <header class="top"><span>마천3구역 · 매수 전 30초</span><span class="pg">01 / 06</span></header>
+  <div class="body">
+    <h1>같은 11억 빌라,<br>한 집은 <span class="ok">괜찮고</span><br>한 집은 <span class="no">위험합니다</span></h1>
+    <div class="tags" data-ac="pop -0.3 0.5 0.18">
+      <div class="tag"><small><span class="who a">A</span>빌라</small><b>11억</b></div>
+      <div class="tag"><small><span class="who b">B</span>빌라</small><b>11억</b></div>
+    </div>
+    <p class="sub" data-a="up 0.6 0.5">차이는 가격표에 없습니다.<span>송파 마천3구역 · 전용 84㎡ 신청 기준</span></p>
+  </div>
+</section>
+
+<!-- 02 감정평가액 -->
+<section class="card" id="c02" data-hold="6.2">
+  <header class="top"><span>마천3구역 · 매수 전 30초</span><span class="pg">02 / 06</span></header>
+  <div class="body">
+    <div class="eyebrow" data-a="up 0 0.5">가격표는 같습니다</div>
+    <h2 data-a="up 0.15 0.6">차이를 만드는 건<br><span class="mark" data-a="mark 0.8 0.7">감정평가액</span></h2>
+    <div class="def" data-a="up 1.2 0.5">
+      <b>감정평가액 = <em>조합이 매긴 지금 내 집 값</em></b>
+      <p>새 아파트를 받을 때 이만큼은 이미 낸 돈으로 쳐 줍니다.</p>
+    </div>
+    <div class="pair" data-ac="up 1.8 0.5 0.25">
+      <div class="a">
+        <div class="row"><span class="who a">A</span></div>
+        <div class="row"><span class="k">매매가</span><b>11억</b></div>
+        <div class="row diff"><span class="k">감정평가액</span><b>4억</b></div>
+      </div>
+      <div class="b">
+        <div class="row"><span class="who b">B</span></div>
+        <div class="row"><span class="k">매매가</span><b>11억</b></div>
+        <div class="row diff"><span class="k">감정평가액</span><b>2.5억</b></div>
+      </div>
+    </div>
+  </div>
+  <footer class="src">A·B 감정평가액은 이해를 돕기 위한 예시입니다. 실제 값은 매물마다 감정평가 통지서로 확인해야 합니다.</footer>
+</section>
+
+<!-- 03 프리미엄 -->
+<section class="card" id="c03" data-hold="6.5">
+  <header class="top"><span>마천3구역 · 매수 전 30초</span><span class="pg">03 / 06</span></header>
+  <div class="body">
+    <div class="eyebrow" data-a="up 0 0.5">그래서 웃돈은</div>
+    <h2 data-a="up 0.15 0.6">B가 1억 5천만 원<br>더 얹고 삽니다</h2>
+    <div class="eq" data-a="up 0.7 0.5"><em>프리미엄</em> = 매매가 − 감정평가액</div>
+    <div class="stack">
+      <div class="r">
+        <div class="h" data-a="fade 1.1 0.3"><span class="who a">A</span>11억<span class="aside">감정 4억</span></div>
+        <div class="track">
+          <div class="seg apr" style="width:36.36%" data-a="growX 1.2 0.5">4억</div>
+          <div class="seg prm" style="left:36.36%; width:63.64%" data-a="growX 1.6 0.7">프리미엄 7억</div>
+        </div>
+      </div>
+      <div class="r">
+        <div class="h" data-a="fade 2.2 0.3"><span class="who b">B</span>11억<span class="aside">감정 2.5억</span></div>
+        <div class="track">
+          <div class="seg apr" style="width:22.73%" data-a="growX 2.3 0.5">2.5억</div>
+          <div class="seg prm" style="left:22.73%; width:77.27%" data-a="growX 2.7 0.7">프리미엄 8.5억</div>
+        </div>
+      </div>
+    </div>
+    <div class="key" data-a="fade 3.2 0.4"><span><i style="background:var(--appraisal)"></i>감정평가액</span><span><i style="background:var(--accent)"></i>프리미엄 (새집 받을 권리에 얹는 웃돈)</span></div>
+  </div>
+  <footer class="src">비례율이 확정되기 전이라 권리가액 대신 감정평가액으로 계산했습니다. A·B 감정평가액은 예시입니다.</footer>
+</section>
+
+<!-- 04 총투자금 -->
+<section class="card ink" id="c04" data-hold="8">
+  <header class="top"><span>마천3구역 · 매수 전 30초</span><span class="pg">04 / 06</span></header>
+  <div class="body">
+    <div class="eyebrow" data-a="up 0 0.5">84㎡를 받는다면, 실제로 드는 돈</div>
+    <h2 data-a="up 0.15 0.6">옆 신축과<br>견줘 보면</h2>
+    <div class="eq" data-a="up 0.7 0.5">총투자금 = <em>프리미엄</em> + <span>조합원 분양가 약 13.6억</span></div>
+    <div class="total">
+      <div class="ref" data-a="fade 1.2 0.4"><span>옆 신축 실거래 약 21억</span></div>
+      <div class="r">
+        <div class="h" data-a="fade 1.5 0.3"><span class="who a">A</span><b data-a="count 1.6 0.9" data-to="20.6" data-fmt="eok1">20.6억</b></div>
+        <div class="track">
+          <div class="seg prm" style="width:30.43%" data-a="growX 1.6 0.5">7억</div>
+          <div class="seg pri" style="left:30.43%; width:59.13%" data-a="growX 2.0 0.6">13.6억</div>
+        </div>
+        <div class="verdict ok" data-a="fade 2.6 0.4">신축보다 약 4천만 원 낮음</div>
+      </div>
+      <div class="r">
+        <div class="h" data-a="fade 2.9 0.3"><span class="who b">B</span><b data-a="count 3.0 0.9" data-to="22.1" data-fmt="eok1">22.1억</b></div>
+        <div class="track">
+          <div class="seg prm" style="width:36.96%" data-a="growX 3.0 0.5">8.5억</div>
+          <div class="seg pri" style="left:36.96%; width:59.13%" data-a="growX 3.4 0.6">13.6억</div>
+        </div>
+        <div class="verdict no" data-a="fade 4.0 0.4">신축보다 약 1억 1천만 원 높음</div>
+      </div>
+    </div>
+    <div class="key" data-a="fade 4.2 0.4"><span><i style="background:var(--accent)"></i>프리미엄</span><span><i style="background:var(--price)"></i>조합원 분양가 (추정)</span></div>
+    <p class="say" data-a="up 4.6 0.5">B는 몇 년 기다려 받는 새집에, <span class="mark" data-a="mark 5.1 0.8">지금 살 수 있는 신축보다 더 냅니다.</span></p>
+  </div>
+  <footer class="src">조합원 분양가 84㎡ 13억 4,100만~13억 7,500만(2026.9.23 보도, 조합 추정)의 중간값으로 계산. 옆 신축 = 송파시그니처롯데캐슬 84㎡ 2026.8~9 국토부 실거래.</footer>
+</section>
+
+<!-- 05 먼저 물을 것 -->
+<section class="card" id="c05" data-hold="7">
+  <header class="top"><span>마천3구역 · 매수 전 30초</span><span class="pg">05 / 06</span></header>
+  <div class="body">
+    <div class="eyebrow" data-a="up 0 0.5">그래서 매물을 볼 때는</div>
+    <h2 data-a="up 0.15 0.6">“얼마예요?” 대신<br>이 두 가지를 먼저</h2>
+    <ol class="asks" data-ac="up 0.7 0.5 0.6">
+      <li><div class="n">01</div><h3>감정평가 통지액</h3><p>이 숫자 없이 프리미엄을 말하는 매물은 판단할 수 없습니다.</p></li>
+      <li><div class="n">02</div><h3>분양신청 여부 · 평형</h3><p>마감은 10월 23일(보도 기준). 신청하지 않으면 새 아파트 대신 현금청산 대상이 됩니다.</p></li>
+    </ol>
+    <div class="calc" data-a="up 2.2 0.5">
+      <small>내 매물로 직접 계산하는 두 줄</small>
+      <p><em>프리미엄</em> = 매매가 − 감정평가액</p>
+      <p>총투자금 = <em>프리미엄</em> + 조합원 분양가</p>
+    </div>
+  </div>
+  <footer class="src">마감일은 2026.9.23 보도 기준이며 조합 공지로 다시 확인하세요.</footer>
+</section>
+
+<!-- 06 기준선 -->
+<section class="card ink" id="c06" data-hold="7">
+  <header class="top"><span>마천3구역 · 매수 전 30초</span><span class="pg">06 / 06</span></header>
+  <div class="body">
+    <div class="eyebrow" data-a="up 0 0.5">마천3구역 프리미엄 한계선</div>
+    <h2 data-a="up 0.15 0.6">옆 신축 − 분양가<br><span class="hlt">= 7억 원대 초중반</span></h2>
+    <div class="lines" data-ac="up 0.8 0.5 0.2">
+      <div><small>전용 84㎡</small><b>약 7억 2,500만<br>~7억 5,900만</b></div>
+      <div><small>전용 59㎡</small><b>약 7억<br>~7억 6,400만</b></div>
+    </div>
+    <p class="note" data-a="up 1.5 0.5">한계선은 넘지 말아야 할 상한일 뿐 목표가 아닙니다. 기다리는 동안의 이자·세금, 분양가 변동까지 생각하면 마음 편한 선은 이보다 아래에 있습니다.</p>
+    <p class="cta" data-a="up 2.3 0.5">감정평가 통지액과 신청 평형을 알려 주시면,<br>프리미엄과 총투자금을 같이 계산해 드립니다.<span>공개 자료를 바탕으로 한 분석이며 수익을 보장하지 않습니다.</span></p>
+  </div>
+  <footer class="src">옆 신축 = 송파시그니처롯데캐슬 2026.8~9 국토부 실거래, 분양가 = 2026.9.23 보도 기준 조합 추정치.</footer>
+</section>
+
+</body>
+</html>

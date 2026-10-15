@@ -2,7 +2,7 @@
 //   data-a="방식 시작 길이"          그 요소 하나
 //   data-ac="방식 시작 길이 간격"    자식마다 간격만큼 늦게
 //   data-hold="초" (.card)           그 장이 화면에 머무는 시간
-// 방식: up · fade · pop · growX · growY · mark(형광펜) · count(data-to, data-fmt)
+// 방식: up · fade · pop · growX · growY · mark(형광펜) · count(data-to, data-fmt: pct1·eok1·int·eok)
 // shorts.js 가 주입한 뒤 __setup() → __show(id) → __seek(id, t) 순으로 부른다.
 (() => {
   const LEAD = 0.5; // 앞 장과 겹쳐 넘어가는 동안은 비워 두고, 넘어간 뒤에 내용이 올라오게 한다
@@ -19,6 +19,7 @@
   const outBack = p => { const c = 1.6; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); };
   const FMT = {
     pct1: v => `${v.toFixed(1)}%`,
+    eok1: v => `${v.toFixed(1)}억`,
     int: v => Math.round(v).toLocaleString("ko-KR"),
     eok: v => { v = Math.round(v); const e = Math.floor(v / 10000), m = v % 10000; return `${e ? e + "억 " : ""}${m.toLocaleString("ko-KR")}만`; },
   };
