@@ -58,7 +58,7 @@ function assemble(mode, plan) {
   const [w] = SIZE[mode];
   const total = plan.reduce((s, c) => s + c.hold, 0) - XFADE * (plan.length - 1);
   const bgm = path.join(FRAMES, `bgm-${mode}.wav`);
-  execFileSync("python3", ["-I", path.join(DIR, "bgm.py"), String(total + 1), bgm], { stdio: "inherit" });
+  execFileSync("python3", ["-I", path.join(DIR, "..", "..", "tools", "bgm.py"), String(total + 1), bgm], { stdio: "inherit" });
 
   const args = ["-y", "-hide_banner", "-loglevel", "error"];
   for (const c of plan) args.push("-framerate", String(FPS), "-i", path.join(FRAMES, mode, c.id, "%04d.png"));

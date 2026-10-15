@@ -1,6 +1,6 @@
 """영상용 배경음악을 직접 합성한다. 외부 음원을 쓰지 않으니 저작권 걱정이 없다.
 
-    python3 bgm.py <길이(초)> <출력.wav>
+    python3 bgm.py <길이(초)> <출력.wav> [시드]
 
 76 BPM, Fmaj7 - Em7 - Dm7 - Cmaj7 를 한 마디씩 돈다. 패드 + 베이스 + 잔잔한 아르페지오에
 잔향을 얹고, 소리 크기는 RMS -20 dBFS 언저리로 맞춘다.
@@ -99,7 +99,7 @@ def band(x, low=40.0, high=5500.0):
 def main():
     seconds = float(sys.argv[1])
     path = sys.argv[2]
-    rng = np.random.default_rng(2026)
+    rng = np.random.default_rng(int(sys.argv[3]) if len(sys.argv) > 3 else 2026)  # 시드만 바꿔도 아르페지오가 달라진다
     buf = np.zeros((2, int((seconds + 3) * SR)))
     bars = int(np.ceil(seconds / BAR)) + 1
 
