@@ -11,7 +11,8 @@
   css.textContent = `
     body.video { padding: 0; gap: 0; display: block; background: #000; }
     body.video .card { position: absolute; left: 0; top: 0; visibility: hidden; }
-    body.video .card.on { visibility: visible; }`;
+    body.video .card.on { visibility: visible; }
+    body.video .thumb { display: none; }`;
   document.head.appendChild(css);
 
   const clamp = v => Math.max(0, Math.min(1, v));

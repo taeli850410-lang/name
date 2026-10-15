@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>마천3구역 총정리</title>
+<!--
+  마천3구역 총정리. 기획과 숫자 근거는 plan.md.
+  · 카드뉴스: 4:5 (1080×1350) 13장 — ../tools/cards.js
+  · 유튜브: 16:9 (1920×1080) — ../tools/youtube.js 가 body.wide 를 켜고 .body 를 두 단으로 나눈다.
+    class "L" 이 붙은 요소는 왼쪽 단(제목·한 줄 정리), 나머지는 오른쪽 단(그림·표)으로 간다.
+  · data-a / data-ac 는 영상 등장 순서(../tools/anim.js), data-hold 는 장마다 머무는 시간, data-chapter 는 챕터 이름.
+-->
+<style>
+  @font-face { font-family: "Pretendard"; font-weight: 500; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-Medium.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 600; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-SemiBold.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 700; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-Bold.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 800; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-ExtraBold.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 900; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-Black.woff2") format("woff2"); }
+
+  :root {
+    --ink: #16181D; --ink-2: #3A3E47; --muted: #6B7079;
+    --paper: #F3EFE6; --panel: #FBF9F4; --line: #DCD5C6;
+    --hl: #FFD84A; --accent: #D9452B; --accent-soft: #F6DDD5; --accent-line: #EBC3B7;
+    --night-2: #22252B; --night-line: #3A3E47; --night-muted: #9A9EA6; --night-text: #D5D7DC;
+    --bar-dark: #5A5E67; --bar-mid: #8E9199;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #2A2C31; font-family: "Pretendard", system-ui, sans-serif; color: var(--ink);
+    padding: 40px 0; display: flex; flex-direction: column; align-items: center; gap: 40px;
+    -webkit-font-smoothing: antialiased; word-break: keep-all;
+  }
+
+  /* ---------- 틀 (4:5) ---------- */
+  .card { width: 1080px; height: 1350px; background: var(--paper); position: relative; overflow: hidden; display: flex; flex-direction: column; padding: 64px 80px 56px; }
+  .top { display: flex; justify-content: space-between; font-size: 26px; font-weight: 600; color: var(--muted); padding-bottom: 22px; border-bottom: 2px solid var(--ink); }
+  .top .pg { font-variant-numeric: tabular-nums; }
+  .body { flex: 1; display: flex; flex-direction: column; padding-top: 46px; min-height: 0; }
+  .src { font-size: 21px; line-height: 1.5; color: var(--muted); font-weight: 500; padding-top: 18px; border-top: 1px solid var(--line); }
+
+  .eyebrow { font-size: 30px; font-weight: 700; color: var(--accent); letter-spacing: -0.01em; margin-bottom: 16px; }
+  h2 { font-size: 70px; line-height: 1.18; font-weight: 800; letter-spacing: -0.045em; }
+  .say { font-size: 40px; line-height: 1.38; font-weight: 800; letter-spacing: -0.04em; }
+  .note { font-size: 28px; line-height: 1.5; font-weight: 500; color: var(--ink-2); letter-spacing: -0.02em; }
+  .mark { background: linear-gradient(transparent 52%, var(--hl) 52%, var(--hl) 94%, transparent 94%) no-repeat; background-size: 100% 100%; padding: 0 4px; }
+  .mt-auto { margin-top: auto; }
+
+  .ink { background: var(--ink); color: var(--paper); }
+  .ink .top { color: var(--night-muted); border-color: var(--night-line); }
+  .ink .src { color: var(--night-muted); border-color: var(--night-line); }
+  .ink .eyebrow { color: var(--hl); }
+  .ink .note { color: var(--night-text); }
+  .ink .mark { color: var(--ink); background-image: linear-gradient(transparent 8%, var(--hl) 8%, var(--hl) 96%, transparent 96%); }
+
+  /* ---------- 01 질문 ---------- */
+  #c01 h1 { font-size: 92px; line-height: 1.16; font-weight: 900; letter-spacing: -0.06em; }
+  #c01 h1 em { font-style: normal; color: var(--hl); }
+  #c01 .sub { font-size: 34px; font-weight: 700; color: var(--night-text); margin-top: 34px; letter-spacing: -0.03em; line-height: 1.45; }
+  .three { list-style: none; margin-top: auto; display: flex; flex-direction: column; gap: 14px; }
+  .three li { display: grid; grid-template-columns: 76px 1fr; align-items: center; background: var(--night-2); border-radius: 22px; padding: 24px 30px; }
+  .three b { font-size: 40px; font-weight: 900; color: var(--hl); }
+  .three span { font-size: 40px; font-weight: 800; letter-spacing: -0.04em; }
+  .three small { display: block; font-size: 25px; font-weight: 600; color: var(--night-muted); margin-top: 4px; letter-spacing: -0.02em; }
+
+  /* ---------- 02 먼저 결론 ---------- */
+  .sum { list-style: none; margin-top: 40px; display: flex; flex-direction: column; gap: 14px; }
+  .sum li { display: grid; grid-template-columns: 150px 1fr; gap: 22px; align-items: start; background: var(--panel); border: 1px solid var(--line); border-radius: 22px; padding: 26px 30px; }
+  .sum li.key { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .sum .k { font-size: 28px; font-weight: 800; color: var(--accent); padding-top: 4px; }
+  .sum li.key .k { color: var(--hl); }
+  .sum p { font-size: 32px; font-weight: 700; line-height: 1.42; letter-spacing: -0.03em; }
+  .sum p small { display: block; font-size: 25px; font-weight: 600; color: var(--muted); margin-top: 4px; }
+  .sum li.key p small { color: var(--night-muted); }
+
+  /* ---------- 03 한눈에 ---------- */
+  .facts { margin-top: 34px; border-top: 2px solid var(--ink); }
+  .facts > div { display: grid; grid-template-columns: 150px 1fr; gap: 18px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid var(--line); }
+  .facts dt { font-size: 26px; font-weight: 600; color: var(--muted); }
+  .facts dd { font-size: 34px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.3; }
+  .facts dd small { display: block; font-size: 24px; font-weight: 600; color: var(--muted); letter-spacing: -0.02em; margin-top: 4px; }
+  .old { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: auto; }
+  .old > div { background: var(--ink); color: var(--paper); border-radius: 22px; padding: 24px 28px 26px; }
+  .old b { display: block; font-size: 62px; font-weight: 900; letter-spacing: -0.05em; color: var(--hl); line-height: 1.05; }
+  .old b span { font-size: 30px; }
+  .old small { display: block; font-size: 25px; font-weight: 600; color: var(--night-text); margin-top: 8px; line-height: 1.4; }
+
+  /* ---------- 04 입지 ---------- */
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 34px; }
+  .tiles > div { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 20px 22px 22px; }
+  .tiles small { display: block; font-size: 23px; font-weight: 700; color: var(--muted); }
+  .tiles b { display: block; font-size: 52px; font-weight: 900; letter-spacing: -0.05em; margin-top: 6px; }
+  .tiles b span { font-size: 26px; font-weight: 800; margin-left: 2px; }
+  .tram { margin-top: 14px; background: var(--ink); color: var(--paper); border-radius: 22px; padding: 26px 30px 28px; }
+  .tram h3 { font-size: 32px; font-weight: 800; letter-spacing: -0.035em; }
+  .tram h3 small { display: block; font-size: 24px; font-weight: 700; color: var(--hl); margin-bottom: 4px; }
+  .tram svg { display: block; width: 100%; height: auto; margin-top: 18px; }
+  .tram .meta { font-size: 24px; font-weight: 600; color: var(--night-text); margin-top: 12px; line-height: 1.45; }
+  .rows { margin-top: 14px; display: flex; flex-direction: column; gap: 12px; }
+  .rows > div { display: grid; grid-template-columns: 140px 1fr; gap: 16px; align-items: baseline; padding: 18px 24px; border-radius: 18px; background: var(--panel); border: 1px solid var(--line); }
+  .rows b { font-size: 26px; font-weight: 800; }
+  .rows p { font-size: 25px; font-weight: 600; line-height: 1.42; color: var(--ink-2); letter-spacing: -0.02em; }
+  .rows .warn { background: var(--accent-soft); border-color: var(--accent-line); }
+  .rows .warn b { color: var(--accent); }
+
+  /* ---------- 05 뉴타운 ---------- */
+  .zones { margin-top: 34px; border-top: 2px solid var(--ink); }
+  .zones > div { display: grid; grid-template-columns: 170px 1fr; gap: 18px; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--line); }
+  .zones b { font-size: 32px; font-weight: 900; letter-spacing: -0.03em; }
+  .zones p { font-size: 26px; font-weight: 600; line-height: 1.4; color: var(--ink-2); letter-spacing: -0.02em; }
+  .zones .st { display: inline-block; font-size: 23px; font-weight: 800; border-radius: 8px; padding: 3px 12px; margin-right: 10px; background: var(--line); color: var(--ink); }
+  .zones .done .st { background: var(--ink); color: var(--paper); }
+  .zones .me { background: var(--hl); margin: 0 -16px; padding: 20px 16px; border-radius: 14px; border-bottom: 0; }
+  .zones .me .st { background: var(--accent); color: #fff; }
+  #c05 .say { margin-top: auto; }
+
+  /* ---------- 06 현재 상황 ---------- */
+  .steps { list-style: none; margin-top: 34px; position: relative; padding-left: 54px; }
+  .steps::before { content: ""; position: absolute; left: 13px; top: 16px; bottom: 16px; width: 4px; background: var(--line); }
+  .steps li { position: relative; padding: 6px 0 10px; }
+  .steps li::before { content: ""; position: absolute; left: -54px; top: 12px; width: 30px; height: 30px; border-radius: 50%; background: var(--ink); border: 4px solid var(--ink); }
+  .steps li.next::before { background: var(--paper); border: 4px dashed var(--muted); }
+  .steps li.now::before { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 9px rgba(217, 69, 43, 0.18); }
+  .steps .d { font-size: 23px; font-weight: 800; color: var(--muted); }
+  .steps .t { font-size: 31px; font-weight: 800; letter-spacing: -0.035em; margin-top: 1px; }
+  .steps li.now .d, .steps li.now .t { color: var(--accent); }
+  .steps li.next .t { color: var(--ink-2); font-weight: 700; }
+  .steps .tag { display: inline-block; vertical-align: 4px; margin-left: 10px; font-size: 21px; font-weight: 800; color: #fff; background: var(--accent); border-radius: 7px; padding: 3px 10px; }
+  #c06 .say { margin-top: auto; }
+
+  /* ---------- 07 두 숫자 ---------- */
+  .grp { margin-top: 36px; display: flex; flex-direction: column; gap: 30px; }
+  .grp h4 { font-size: 30px; font-weight: 900; letter-spacing: -0.03em; margin-bottom: 12px; }
+  .grp .r { margin-bottom: 10px; }
+  .grp .h { display: flex; justify-content: space-between; align-items: baseline; font-size: 24px; font-weight: 700; color: var(--ink-2); margin-bottom: 6px; }
+  .grp .h b { font-size: 27px; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+  .track { position: relative; height: 40px; }
+  .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 7px 7px 0; }
+  .ext { position: absolute; top: 0; bottom: 0; border-radius: 0 7px 7px 0; }
+  .lg { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 4px; font-size: 24px; font-weight: 700; color: var(--muted); }
+  .lg i { display: inline-block; width: 20px; height: 20px; border-radius: 5px; margin-right: 8px; vertical-align: -2px; }
+  #c07 .note { margin-top: auto; font-size: 25px; }
+
+  /* ---------- 08 한계선 ---------- */
+  #c08 h2 .hlt { color: var(--hl); }
+  .formula { margin-top: 28px; border: 2px solid var(--night-line); border-radius: 20px; padding: 20px 26px; font-size: 29px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.5; }
+  .formula span { color: var(--hl); }
+  .lim { margin-top: 30px; display: flex; flex-direction: column; gap: 24px; }
+  .lim .h { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .lim .h b { font-size: 32px; font-weight: 900; letter-spacing: -0.04em; }
+  .lim .h span { font-size: 24px; font-weight: 600; color: var(--night-muted); }
+  .lim .bar { display: flex; height: 54px; }
+  .lim .bar span { display: block; height: 100%; }
+  .lim .bar .m { background: var(--bar-dark); border-radius: 10px 0 0 10px; }
+  .lim .bar .p { background: var(--hl); border-radius: 0 10px 10px 0; border-left: 4px solid var(--ink); }
+  .lim .lb { display: flex; margin-top: 10px; font-size: 23px; font-weight: 700; white-space: nowrap; }
+  .lim .lb span:first-child { color: var(--night-muted); }
+  .lim .lb span:last-child { color: var(--hl); }
+  .key { display: flex; gap: 26px; margin-top: 18px; font-size: 24px; font-weight: 700; color: var(--night-muted); }
+  .key i { display: inline-block; width: 20px; height: 20px; border-radius: 5px; margin-right: 8px; vertical-align: -2px; }
+  .rev { margin-top: auto; border-top: 1px solid var(--night-line); padding-top: 22px; }
+  .rev .say { font-size: 36px; }
+  .rev .note { margin-top: 10px; font-size: 25px; }
+
+  /* ---------- 09 실거래 ---------- */
+  #c09 svg { display: block; width: 100%; height: auto; margin-top: 22px; }
+  svg text { font-family: "Pretendard", sans-serif; }
+  .med { margin-top: auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; }
+  .med > div { border-radius: 20px; padding: 20px 22px 22px; }
+  .med .a { background: var(--panel); border: 1px solid var(--line); }
+  .med .b { background: var(--ink); color: var(--paper); }
+  .med small { display: block; font-size: 22px; font-weight: 700; color: var(--muted); }
+  .med .b small { color: var(--night-muted); }
+  .med b { display: block; font-size: 36px; font-weight: 900; letter-spacing: -0.045em; margin-top: 4px; }
+  .med .arr { text-align: center; font-size: 22px; font-weight: 800; color: var(--accent); line-height: 1.3; }
+  .med .arr i { display: block; font-style: normal; font-size: 34px; }
+
+  /* ---------- 10 투자 가능성 ---------- */
+  .pc { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 34px; }
+  .pc > div { border-radius: 22px; padding: 24px 24px 26px; }
+  .pc .plus { background: var(--panel); border: 2px solid var(--ink); }
+  .pc .minus { background: var(--accent-soft); border: 2px solid var(--accent); }
+  .pc h3 { font-size: 30px; font-weight: 900; letter-spacing: -0.03em; margin-bottom: 8px; }
+  .pc .minus h3 { color: var(--accent); }
+  .pc ul { list-style: none; }
+  .pc li { padding: 11px 0; border-top: 1px solid var(--line); }
+  .pc .minus li { border-color: var(--accent-line); }
+  .pc li b { display: block; font-size: 25px; font-weight: 800; letter-spacing: -0.02em; }
+  .pc li span { display: block; font-size: 22px; font-weight: 600; color: var(--ink-2); line-height: 1.4; margin-top: 2px; letter-spacing: -0.02em; }
+  #c10 .say { margin-top: auto; }
+
+  /* ---------- 11 맞는 분 ---------- */
+  .fit { display: flex; flex-direction: column; gap: 16px; margin-top: 36px; }
+  .fit > div { border-radius: 22px; padding: 28px 32px; }
+  .fit .yes { background: var(--panel); border: 2px solid var(--ink); }
+  .fit .wait { background: var(--accent-soft); border: 2px solid var(--accent); }
+  .fit h3 { font-size: 36px; font-weight: 900; letter-spacing: -0.04em; display: flex; align-items: center; gap: 12px; }
+  .fit .wait h3 { color: var(--accent); }
+  .fit .ic { width: 46px; height: 46px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 26px; font-weight: 900; }
+  .fit .yes .ic { background: var(--ink); }
+  .fit .wait .ic { background: var(--accent); }
+  .fit ul { list-style: none; margin-top: 12px; }
+  .fit li { font-size: 29px; font-weight: 600; line-height: 1.45; letter-spacing: -0.025em; padding-left: 26px; position: relative; margin-top: 4px; }
+  .fit li::before { content: ""; position: absolute; left: 4px; top: 18px; width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+  .fit .so { margin-top: 14px; padding-top: 14px; font-size: 26px; font-weight: 700; line-height: 1.45; border-top: 1px solid var(--line); }
+  .fit .wait .so { border-color: var(--accent-line); }
+  .quote { margin-top: auto; font-size: 38px; font-weight: 800; letter-spacing: -0.045em; line-height: 1.3; padding-left: 24px; border-left: 8px solid var(--accent); }
+
+  /* ---------- 12 체크리스트 ---------- */
+  .chk { list-style: none; margin-top: 34px; display: flex; flex-direction: column; gap: 12px; }
+  .chk li { display: grid; grid-template-columns: 62px 1fr; gap: 20px; padding: 20px 24px 22px; border-radius: 20px; background: var(--panel); border: 1px solid var(--line); }
+  .chk li.first { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .chk .no { width: 62px; height: 62px; border-radius: 15px; border: 3px solid var(--ink); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; }
+  .chk li.first .no { background: var(--hl); border-color: var(--hl); color: var(--ink); }
+  .chk h4 { font-size: 32px; font-weight: 800; letter-spacing: -0.035em; }
+  .chk p { font-size: 25px; line-height: 1.45; font-weight: 500; margin-top: 4px; color: var(--ink-2); letter-spacing: -0.02em; }
+  .chk li.first p { color: var(--night-text); }
+  .chk li.first p b { color: var(--hl); }
+
+  /* ---------- 13 정리 ---------- */
+  .pts { list-style: none; margin-top: 40px; display: flex; flex-direction: column; gap: 16px; counter-reset: p; }
+  .pts li { counter-increment: p; display: grid; grid-template-columns: 64px 1fr; gap: 12px; font-size: 38px; font-weight: 800; line-height: 1.38; letter-spacing: -0.04em; padding: 28px 30px; background: var(--night-2); border-radius: 22px; }
+  .pts li::before { content: counter(p, decimal-leading-zero); font-size: 28px; font-weight: 900; color: var(--hl); padding-top: 8px; }
+  .pts em { font-style: normal; color: var(--hl); }
+  .cta { margin-top: auto; font-size: 31px; line-height: 1.5; font-weight: 700; letter-spacing: -0.025em; }
+  .cta span { display: block; font-size: 24px; font-weight: 600; color: var(--night-muted); margin-top: 12px; }
+
+  /* ---------- 썸네일 1280×720 (카드뉴스 PNG 에는 들어가지 않는다) ---------- */
+  .thumb { width: 1280px; height: 720px; background: var(--ink); color: var(--paper); position: relative; overflow: hidden; padding: 70px 80px; display: grid; grid-template-columns: 1fr 430px; gap: 50px; align-items: center; }
+  .thumb small { display: block; font-size: 36px; font-weight: 800; color: var(--hl); letter-spacing: -0.02em; }
+  .thumb h1 { font-size: 104px; font-weight: 900; letter-spacing: -0.065em; line-height: 1.08; margin-top: 14px; }
+  .thumb h1 em { font-style: normal; color: var(--hl); }
+  .thumb ul { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+  .thumb li { background: var(--paper); color: var(--ink); border-radius: 22px; padding: 22px 28px; }
+  .thumb li span { display: block; font-size: 26px; font-weight: 700; color: var(--muted); }
+  .thumb li b { display: block; font-size: 54px; font-weight: 900; letter-spacing: -0.05em; line-height: 1.1; margin-top: 4px; }
+  .thumb li.hot { background: var(--accent); color: #fff; }
+  .thumb li.hot span { color: #FFE3DC; }
+
+  /* ================= 가로 16:9 (유튜브) ================= */
+  body.wide .card { width: 1920px; height: 1080px; padding: 60px 120px 50px; }
+  body.wide .body { flex-direction: row; gap: 100px; padding-top: 52px; padding-bottom: 30px; }
+  body.wide .colL { width: var(--lw, 700px); flex: none; display: flex; flex-direction: column; }
+  body.wide .colR { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+  body.wide .colR > :first-child { margin-top: 0; }
+  body.wide h2 { font-size: 74px; }
+
+  body.wide #c01 { --lw: 860px; }
+  body.wide #c01 .three { margin-top: 0; }
+  body.wide #c01 .colL { justify-content: center; }
+  body.wide #c01 h1 { font-size: 104px; }
+  body.wide #c02 .sum { margin-top: 0; }
+  body.wide #c03 .old { margin-top: auto; }
+  body.wide #c03 .facts { margin-top: 0; }
+  body.wide #c04 .tiles { margin-top: auto; }
+  body.wide #c05 .zones { margin-top: 0; }
+  body.wide #c06 .steps { margin-top: 0; }
+  body.wide #c07 .grp { margin-top: 0; gap: 34px; }
+  body.wide #c07 .track { height: 44px; }
+  body.wide #c08 .lim { margin-top: 0; gap: 40px; }
+  body.wide #c08 .lim .bar { height: 70px; }
+  body.wide #c08 .rev { margin-top: auto; }
+  body.wide #c09 .med { margin-top: auto; grid-template-columns: 1fr; gap: 10px; }
+  body.wide #c09 .med .arr { text-align: left; }
+  body.wide #c09 .med .arr i { display: inline; margin-right: 10px; }
+  body.wide #c09 .med .arr br { display: none; }
+  body.wide #c10 { --lw: 600px; }
+  body.wide #c10 .pc { margin-top: 0; }
+  body.wide #c10 .pc li b { font-size: 26px; }
+  body.wide #c10 .pc li span { font-size: 23px; }
+  body.wide #c11 .fit { margin-top: 0; }
+  body.wide #c12 { --lw: 560px; }
+  body.wide #c12 .chk { margin-top: 0; }
+  body.wide #c13 .pts { margin-top: 0; }
+  body.wide #c13 .cta { margin-top: auto; }
+</style>
+</head>
+<body>
+
+<!-- 01 질문 -->
+<section class="card ink" id="c01" data-hold="7" data-chapter="11억 빌라, 지금 들어가도 늦지 않았을까">
+  <header class="top"><span>마천3구역 재개발 총정리</span><span class="pg">01 / 13</span></header>
+  <div class="body">
+    <div class="eyebrow L" data-a="up 0 0.5">송파 자이 아스트라 · 2,364세대</div>
+    <h1 class="L" data-a="up 0.15 0.6">11억 빌라,<br>지금 들어가도<br><em>늦지 않았을까?</em></h1>
+    <p class="sub L" data-a="up 0.7 0.5">답은 가격표가 아니라<br>이 세 숫자에 있습니다.</p>
+    <ol class="three" data-ac="up 1.2 0.5 0.3">
+      <li><b>1</b><span>프리미엄 한계선<small>옆 신축 − 조합원 분양가</small></span></li>
+      <li><b>2</b><span>감정평가 통지액<small>조합이 매긴 지금 내 집 값</small></span></li>
+      <li><b>3</b><span>분양신청 여부<small>새 아파트를 받을 자격</small></span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- 02 먼저 결론 -->
+<section class="card" id="c02" data-hold="12" data-chapter="먼저 결론부터">
+  <header class="top"><span>마천3구역 재개발 총정리</span><span class="pg">02 / 13</span></header>
+  <div class="body">
+    <div class="eyebrow L" data-a="up 0 0.5">먼저 결론부터</div>
+    <h2 class="L" data-a="up 0.15 0.6">구역은 앞으로 가고,<br>성패는 <span class="mark" data-a="mark 0.8 0.7">매물에서</span><br>갈립니다</h2>
+    <ol class="sum" data-ac="up 1.1 0.5 0.35">
+      <li><span class="k">입지</span><p>마천역 직선 약 300m<small>위례선 트램 출발역 (2026.12 개통 목표)</small></p></li>
+      <li><span class="k">현재</span><p>사업시행인가 → 분양신청 중<small>~10.23 마감, 연내 관리처분 인가 신청 목표 (보도 기준)</small></p></li>
+      <li><span class="k">가격 기준</span><p>프리미엄 한계선 7억 원대 초중반<small>59㎡·84㎡ 모두</small></p></li>
+      <li class="key"><span class="k">판단</span><p>매물별 프리미엄 + 분양신청 여부·감정평가 통지액<small>같은 구역 안에서도 결과가 갈립니다</small></p></li>
+    </ol>
+  </div>
+  <footer class="src">일정은 2026.9.23 보도 기준이며 조합 사정에 따라 바뀔 수 있습니다.</footer>
+</section>
+
+<!-- 03 한눈에 -->
+<section class="card" id="c03" data-hold="11" data-chapter="한눈에 보는 마천3구역">
+  <header class="top"><span>마천3구역 재개발 총정리</span><span class="pg">03 / 13</span></header>
+  <div class="body">
+    <div class="eyebrow L" data-a="up 0 0.5">한눈에 보는 마천3구역</div>
+    <h2 class="L" data-a="up 0.15 0.6">낡은 동네가<br>2,300여 세대 단지로</h2>
+    <dl class="facts" data-ac="up 0.7 0.45 0.12">
+      <div><dt>위치</dt><dd>송파구 마천동 283-1 일대<small>거여·마천 재정비촉진지구</small></dd></div>
+      <div><dt>규모</dt><dd>지하 5층~지상 25층 · 25개 동<small>정비구역 134,930.2㎡ · 최고 높이 72.10m</small></dd></div>
+      <div><dt>세대수</dt><dd>2,364세대 (임대 395 포함)<small>조합, 2,882가구로 늘리는 방안 마련 (미확정)</small></dd></div>
+      <div><dt>시공</dt><dd>GS건설 ‘송파 자이 아스트라’<small>공사비 약 1조142억 원 (2024.11 선정 당시)</small></dd></div>
+      <div><dt>밀도</dt><dd>용적률 266.43% · 건폐율 22.74%</dd></div>
+    </dl>
+    <div class="old L" data-ac="up 1.6 0.5 0.2">
+      <div><b>84.7<span>%</span></b><small>30년 넘은 건물</small></div>
+      <div><b>10채 중 6</b><small>주거용 건물 중<br>반지하가 있는 비율</small></div>
+    </div>
+  </div>
+  <footer class="src">송파구 고시 제2026-45호(사업시행계획인가, 2026.4.2) 기준. 2,882가구 방안은 2026.9 보도, 미확정. 노후도는 건축물대장 구역 집계.</footer>
+</section>
+
+<!-- 04 입지 -->
+<section class="card" id="c04" data-hold="13" data-chapter="입지·교통: 마천역 300m와 트램">
+  <header class="top"><span>마천3구역 재개발 총정리</span><span class="pg">04 / 13</span></header>
+  <div class="body">
+    <div class="eyebrow L" data-a="up 0 0.5">입지 · 교통</div>
+    <h2 class="L" data-a="up 0.15 0.6">마천역 300m에<br>트램이 더해진다</h2>
+    <div class="tiles L" data-ac="up 0.6 0.45 0.15">
+      <div><small>5호선 마천역</small><b>300<span>m</span></b></div>
+      <div><small>잠실역까지</small><b>28<span>분</span></b></div>
+      <div><small>강남역까지</small><b>33<span>분</span></b></div>
+    </div>
+    <div class="tram" data-a="up 1.3 0.5">
+      <h3><small>위례선 트램 · 2026.12 개통 목표</small>마천역 출발 → 복정역(본선) · 남위례역(지선)</h3>
+      <svg viewBox="0 0 800 92" aria-hidden="true">
+        <line x1="18" y1="30" x2="782" y2="30" stroke="#FFD84A" stroke-width="7" stroke-linecap="round" data-a="growX 1.6 0.9"/>
+        <g data-ac="pop 1.8 0.3 0.05">
+          <circle cx="18" cy="30" r="15" fill="#FFD84A"/><circle cx="87" cy="30" r="8" fill="#16181D" stroke="#FFD84A" stroke-width="4"/>
+          <circle cx="157" cy="30" r="8" fill="#16181D" stroke="#FFD84A" stroke-width="4"/><circle cx="226" cy="30" r="8" fill="#16181D" stroke="#FFD84A" stroke-width="4"/>
+          <circle cx="296" cy="30" r="8" fill="#16181D" stroke="#FFD84A" stroke-width="4"/><circle cx="365" cy="30" r="8" fill="#16181D" stroke="#FFD84A" stroke-width="4"/>
+          <circle cx="435" cy="30" r="8" fill="#16181D" stroke="#FFD84A" stroke-width="4"/><circle cx="504" cy="30" r="8" fill="#16181D" stroke="#FFD84A" stroke-width="4"/>
+          <circle cx="574" cy="30" r="8" fill="#16181D" stroke="#FFD84A" stroke-width="4"/><circle cx="643" cy="30" r="8" fill="#16181D" stroke="#FFD84A" stroke-width="4"/>
+          <circle cx="713" cy="30" r="8" fill="#16181D" stroke="#FFD84A" stroke-width="4"/><circle cx="782" cy="30" r="15" fill="#FFD84A"/>
+        </g>
+        <text x="18" y="84" font-size="25" font-weight="800" fill="#F3EFE6">마천역</text>
+        <text x="782" y="84" font-size="25" font-weight="800" fill="#F3EFE6" text-anchor="end">복정역 · 남위례역</text>
+      </svg>
+      <div class="meta">5.4km · 12개 정거장 · 마천→복정 약 14분(보도). 시험운행 결과에 따라 개통일은 늦어질 수 있습니다.</div>
+    </div>
+    <div class="rows" data-ac="up 2.3 0.5 0.25">
+      <div class="warn"><b>위례신사선</b><p>2026.2 재정사업 전환 확정, 착공 전. 지금 가격 판단엔 넣지 말고 장기 변수로만.</p></div>
+      <div><b>학교</b><p>마천초 직선 약 360m(배정은 교육청 기준 확인). 동성중·고는 이전 추진, 2030년 이후(보도).</p></div>
+    </div>
+  </div>
+  <footer class="src">직선거리는 마천동 283-1 기준이라 구역 안 위치에 따라 다릅니다. 소요시간은 카카오맵 대중교통(2026.10.14 조회).</footer>
+</section>
+
+<!-- 05 뉴타운 -->
+<section class="card" id="c05" data-hold="11" data-chapter="거여·마천 뉴타운, 마천3은 어디쯤">
+  <header class="top"><span>마천3구역 재개발 총정리</span><span class="pg">05 / 13</span></header>
+  <div class="body">
+    <div class="eyebrow L" data-a="up 0 0.5">거여·마천 뉴타운</div>
+    <h2 class="L" data-a="up 0.15 0.6">강남3구 유일 뉴타운,<br>마천3은 어디쯤?</h2>
+    <div class="zones" data-ac="up 0.7 0.4 0.18">
+      <div class="done"><b>거여2-1·2-2</b><p><span class="st">입주 완료</span>송파시그니처롯데캐슬 · e편한세상송파파크센트럴 (3,144세대)</p></div>
+      <div class="done"><b>마천4</b><p><span class="st">철거 중</span>현대건설 ‘디에이치’ · 연말 착공 목표</p></div>
+      <div class="me"><b>마천3</b><p><span class="st">분양신청</span>GS건설 ‘송파 자이 아스트라’ · 사업시행인가 후</p></div>
+      <div><b>마천5</b><p><span class="st">시공사</span>입찰 유찰 뒤 현대건설 수의계약 추진</p></div>
+      <div><b>마천1</b><p><span class="st">시공사</span>최고 49층 대단지 계획 · 시공자 선정 추진</p></div>
+      <div><b>마천2</b><p><span class="st">재지정</span>재정비촉진구역 재지정</p></div>
+    </div>
+    <p class="say L" data-a="up 2.0 0.5">사업 중인 마천 구역 가운데 <span class="mark" data-a="mark 2.5 0.7">철거에 들어간 마천4 다음 순서</span>입니다.</p>
+  </div>
+  <footer class="src">2026년 보도 기준이며 게시 시점에 바뀌었을 수 있습니다. 뉴타운이 모두 완성되면 약 1만5,000가구 규모로 전망됩니다(보도).</footer>
+</section>
+
+<!-- 06 현재 상황 -->
+<section class="card" id="c06" data-hold="12" data-chapter="현재 상황: 분양신청과 관리처분 사이">
+  <header class="top"><span>마천3구역 재개발 총정리</span><span class="pg">06 / 13</span></header>
+  <div class="body">
+    <div class="eyebrow L" data-a="up 0 0.5">현재 상황</div>
+    <h2 class="L" data-a="up 0.15 0.6">지금은 분양신청과<br>관리처분 사이</h2>
+    <ul class="steps" data-ac="up 0.6 0.4 0.2">
+      <li><div class="d">구역 해제 뒤 주민 재추진</div><div class="t">2020 조합설립인가</div></li>
+      <li><div class="d">2024.11</div><div class="t">시공사 GS건설 선정</div></li>
+      <li><div class="d">2025</div><div class="t">교육환경영향평가 재심의 만장일치 통과</div></li>
+      <li><div class="d">2026.4.2</div><div class="t">사업시행계획인가 고시</div></li>
+      <li class="now"><div class="d">~2026.10.23</div><div class="t">조합원 분양신청<span class="tag">지금</span></div></li>
+      <li class="next"><div class="d">2026년 안 (목표)</div><div class="t">관리처분계획 총회 · 인가 신청</div></li>
+      <li class="next"><div class="d">2027 하반기 (계획)</div><div class="t">이주</div></li>
+    </ul>
+    <p class="say L" data-a="up 2.3 0.5">이 시점의 매수는 ‘언제 살까’보다 <span class="mark" data-a="mark 2.8 0.8">‘무엇을 확인하고 살까’</span>가 훨씬 중요합니다.</p>
+  </div>
+  <footer class="src">분양신청 마감·관리처분 목표·이주 계획은 2026.9.23 보도 기준이며 바뀔 수 있습니다. 사업시행기간은 인가일부터 120개월.</footer>
+</section>
+
+<!-- 07 두 숫자 -->
+<section class="card" id="c07" data-hold="12" data-chapter="기준이 되는 두 숫자">
+  <header class="top"><span>마천3구역 재개발 총정리</span><span class="pg">07 / 13</span></header>
+  <div class="body">
+    <div class="eyebrow L" data-a="up 0 0.5">가격 판단에 필요한 두 숫자</div>
+    <h2 class="L" data-a="up 0.15 0.6">새집을 받는 값,<br>지금 신축을 사는 값</h2>
+    <div class="grp">
+      <div>
+        <h4 data-a="fade 0.7 0.3">전용 59㎡</h4>
+        <div class="r">
+          <div class="h" data-a="fade 0.8 0.3"><span>조합원 분양가 (조합 추정)</span><b>10억 9,300만~11억</b></div>
+          <div class="track"><div class="fill" style="width:49.68%; background:var(--bar-mid)" data-a="growX 0.9 0.6"></div><div class="ext" style="left:49.68%; width:0.32%; background:#C4C6CB" data-a="fade 1.4 0.3"></div></div>
+        </div>
+        <div class="r">
+          <div class="h" data-a="fade 1.1 0.3"><span>옆 신축 실거래</span><b>18억~18억 5,700만</b></div>
+          <div class="track"><div class="fill" style="width:81.82%; background:var(--ink)" data-a="growX 1.2 0.7"></div><div class="ext" style="left:81.82%; width:2.59%; background:#8E9199" data-a="fade 1.8 0.3"></div></div>
+        </div>
+      </div>
+      <div>
+        <h4 data-a="fade 1.9 0.3">전용 84㎡</h4>
+        <div class="r">
+          <div class="h" data-a="fade 2.0 0.3"><span>조합원 분양가 (조합 추정)</span><b>13억 4,100만~13억 7,500만</b></div>
+          <div class="track"><div class="fill" style="width:60.95%; background:var(--bar-mid)" data-a="growX 2.1 0.6"></div><div class="ext" style="left:60.95%; width:1.55%; background:#C4C6CB" data-a="fade 2.6 0.3"></div></div>
+        </div>
+        <div class="r">
+          <div class="h" data-a="fade 2.3 0.3"><span>일반분양가 (조합 추정)</span><b>16억 7,300만~17억 500만</b></div>
+          <div class="track"><div class="fill" style="width:76.05%; background:var(--accent)" data-a="growX 2.4 0.6"></div><div class="ext" style="left:76.05%; width:1.45%; background:#EBA393" data-a="fade 2.9 0.3"></div></div>
+        </div>
+        <div class="r">
+          <div class="h" data-a="fade 2.6 0.3"><span>옆 신축 실거래</span><b>20억 4,000만~21억 4,000만</b></div>
+          <div class="track"><div class="fill" style="width:92.73%; background:var(--ink)" data-a="growX 2.7 0.7"></div><div class="ext" style="left:92.73%; width:4.55%; background:#8E9199" data-a="fade 3.3 0.3"></div></div>
+        </div>
+      </div>
+      <div class="lg" data-a="fade 3.3 0.4"><span><i style="background:var(--bar-mid)"></i>조합원 분양가</span><span><i style="background:var(--accent)"></i>일반분양가</span><span><i style="background:var(--ink)"></i>옆 신축</span><span>진한 부분은 최저, 옅은 부분은 최고까지</span></div>
+    </div>
+    <p class="note L" data-a="up 3.6 0.5">84㎡ 조합원 분양가와 일반분양가 차이는 약 3억~3억 6천만 원. 조합원 자리에 웃돈이 붙는 출발점입니다.</p>
+  </div>
+  <footer class="src">분양가 = 2026.9.23 MTN 보도 조합 추정치(74㎡ 12억 7,500만~12억 8,200만은 비교할 신축 거래가 없어 뺌). 옆 신축 = 송파시그니처롯데캐슬 2026.8~9 국토부 실거래.</footer>
+</section>
+
+<!-- 08 한계선 -->
+<section class="card ink" id="c08" data-hold="13" data-chapter="프리미엄 한계선 7억 원대 초중반">
+  <header class="top"><span>마천3구역 재개발 총정리</span><span class="pg">08 / 13</span></header>
+  <div class="body">
+    <div class="eyebrow L" data-a="up 0 0.5">프리미엄 한계선 계산</div>
+    <h2 class="L" data-a="up 0.15 0.6">59㎡도 84㎡도<br><span class="hlt">7억 원대 초중반</span></h2>
+    <div class="formula L" data-a="up 0.7 0.5">총투자금 = 프리미엄 + <span>조합원 분양가</span><br>한계선 = 옆 신축 거래가 − <span>조합원 분양가</span></div>
+    <div class="lim">
+      <div class="r">
+        <div class="h" data-a="fade 1.2 0.3"><b>전용 59㎡</b><span>옆 신축 18억~18억 5,700만</span></div>
+        <div class="bar"><span class="m" style="width:52.21%" data-a="growX 1.3 0.6"></span><span class="p" style="width:34.86%" data-a="growX 1.9 0.6"></span></div>
+        <div class="lb"><span style="width:52.21%">10억 9,300만~11억</span><span>7억~7억 6,400만</span></div>
+      </div>
+      <div class="r">
+        <div class="h" data-a="fade 2.4 0.3"><b>전용 84㎡</b><span>옆 신축 약 21억</span></div>
+        <div class="bar"><span class="m" style="width:64.67%" data-a="growX 2.5 0.6"></span><span class="p" style="width:35.33%" data-a="growX 3.1 0.6"></span></div>
+        <div class="lb"><span style="width:64.67%">13억 4,100만~13억 7,500만</span><span>7억 2,500만~7억 5,900만</span></div>
+      </div>
+      <div class="key" data-a="fade 3.5 0.4"><span><i style="background:var(--bar-dark)"></i>조합원 분양가</span><span><i style="background:var(--hl)"></i>프리미엄 한계선</span></div>
+    </div>
+    <div class="rev L" data-a="up 3.8 0.5">
+      <p class="say">거꾸로 보면, 11억 빌라는 <span class="mark" data-a="mark 4.3 0.8">권리가액이 4억 원 가까이</span> 나와야 이 선 안쪽입니다.</p>
+      <p class="note">한계선은 상한이지 목표가 아닙니다. 입주까지의 이자·세금·분양가 변동을 생각하면 편안한 선은 이보다 아래입니다.</p>
+    </div>
+  </div>
+  <footer class="src">권리가액 = 감정평가액 × 비례율. 옆 신축 84㎡ 약 21억은 6건 중 4건 기준. 막대는 범위의 중간값. 연식·층·동 차이와 입주까지의 비용은 반영하지 않은 단순 비교입니다.</footer>
+</section>
+
+<!-- 09 실거래 -->
+<section class="card" id="c09" data-hold="12" data-chapter="최근 실거래 10건">
+  <header class="top"><span>마천3구역 재개발 총정리</span><span class="pg">09 / 13</span></header>
+  <div class="body">
+    <div class="eyebrow L" data-a="up 0 0.5">최근 빌라 실거래 10건</div>
+    <h2 class="L" data-a="up 0.15 0.6">땅값보다<br>‘새집 1채 받을 자리’ 값</h2>
+    <svg id="scatter" viewBox="0 0 920 520" aria-label="대지지분과 거래가 산점도"></svg>
+    <div class="med L" data-a="up 3.0 0.5">
+      <div class="a"><small>2026년 1~5월 중위 · 16건</small><b>10억 7,750만</b></div>
+      <div class="arr"><i>→</i>1억 원<br>안팎 상승</div>
+      <div class="b"><small>6월 이후 중위 · 13건</small><b>11억 9,000만</b></div>
+    </div>
+  </div>
+  <footer class="src">국토부 실거래 공개자료, 마천동 270~280번대 빌라 중개거래(직거래·해제 제외). 구역 안 물건인지는 지번별 확인 필요. 표본이 작아 단정할 수는 없습니다.</footer>
+</section>
+
+<!-- 10 투자 가능성 -->
+<section class="card" id="c10" data-hold="15" data-chapter="투자 가능성: 기대 요인과 위험">
+  <header class="top"><span>마천3구역 재개발 총정리</span><span class="pg">10 / 13</span></header>
+  <div class="body">
+    <div class="eyebrow L" data-a="up 0 0.5">투자 가능성</div>
+    <h2 class="L" data-a="up 0.15 0.6">기대 요인과<br>따져 볼 위험</h2>
+    <div class="pc" data-ac="up 0.6 0.5 0.3">
+      <div class="plus">
+        <h3>기대 요인</h3>
+        <ul>
+          <li><b>사업 단계</b><span>인가 후 분양신청. 단계를 넘을 때 가격이 반응해 왔습니다</span></li>
+          <li><b>교통</b><span>마천역 역세권에 트램(12월 개통 목표)</span></li>
+          <li><b>가격 차이</b><span>84㎡ 조합원가와 일반분양가 약 3억~3.6억</span></li>
+          <li><b>뉴타운</b><span>완성 시 약 1만5,000가구 주거벨트(전망)</span></li>
+          <li><b>세대수</b><span>2,882가구 방안이 확정되면 사업성에 보탬(미확정)</span></li>
+        </ul>
+      </div>
+      <div class="minus">
+        <h3>따져 볼 위험</h3>
+        <ul>
+          <li><b>프리미엄 상한</b><span>7억 원대 초중반을 넘으면 신축보다 비쌈</span></li>
+          <li><b>분담금 변동</b><span>분양가 1억 오르면 분담금도 1억</span></li>
+          <li><b>시간</b><span>이주 2027 하반기 계획, 일정이 늦어질 수 있음</span></li>
+          <li><b>규제</b><span>토지거래허가 · 조합원 지위 제한 · 대출 제약</span></li>
+          <li><b>미확정 변수</b><span>세대수 · 트램 개통일 · 위례신사선 착공</span></li>
+        </ul>
+      </div>
+    </div>
+    <p class="say L" data-a="up 2.0 0.5">구역은 앞으로 가고 있습니다. 성패는 <span class="mark" data-a="mark 2.5 0.8">어느 매물을 얼마의 프리미엄에 사느냐</span>에서 갈립니다.</p>
+  </div>
+  <footer class="src">공개 자료를 바탕으로 한 분석이며 수익을 보장하지 않습니다.</footer>
+</section>
+
+<!-- 11 맞는 분 -->
+<section class="card" id="c11" data-hold="12" data-chapter="이런 분께 맞고, 이런 경우는 기다리세요">
+  <header class="top"><span>마천3구역 재개발 총정리</span><span class="pg">11 / 13</span></header>
+  <div class="body">
+    <div class="eyebrow L" data-a="up 0 0.5">누구에게 맞을까</div>
+    <h2 class="L" data-a="up 0.15 0.6">이런 분께 맞고,<br>이런 경우는 기다리세요</h2>
+    <div class="fit" data-ac="up 0.7 0.5 0.6">
+      <div class="yes">
+        <h3><span class="ic">✓</span>이런 분께 맞습니다</h3>
+        <ul><li>송파 신축에 실제로 살 계획이 있는 분</li><li>입주까지 몇 년을 기다릴 수 있는 분</li><li>프리미엄을 한계선보다 충분히 아래로 잡을 매물을 찾은 분</li></ul>
+        <div class="so">→ 분양신청 결과로 숫자가 가장 선명해지는 지금이 검토하기 좋은 시기입니다.</div>
+      </div>
+      <div class="wait">
+        <h3><span class="ic">!</span>서두를 이유가 적습니다</h3>
+        <ul><li>대출 비중이 크거나 짧은 기간 차익을 보려는 경우</li><li>감정평가 통지액을 확인할 수 없는 매물</li><li>관리처분 인가 뒤 조합원 지위가 불분명한 매물</li></ul>
+      </div>
+    </div>
+    <p class="quote L" data-a="up 2.1 0.6">조급한 돈은 재개발에서<br>가장 먼저 지칩니다.</p>
+  </div>
+</section>
+
+<!-- 12 체크리스트 -->
+<section class="card" id="c12" data-hold="15" data-chapter="계약 전 꼭 챙길 5가지">
+  <header class="top"><span>마천3구역 재개발 총정리</span><span class="pg">12 / 13</span></header>
+  <div class="body">
+    <div class="eyebrow L" data-a="up 0 0.5">이 시점 매수자가 꼭 챙길</div>
+    <h2 class="L" data-a="up 0.15 0.6">계약 전<br>5가지</h2>
+    <ol class="chk" data-ac="up 0.6 0.45 0.3">
+      <li class="first"><span class="no">1</span><div><h4>분양신청 여부</h4><p>신청 안 한 물건은 새 아파트 대신 현금청산 대상. <b>마감(10.23) 전후 계약이면 누가 언제 신청하는지 계약서에.</b></p></div></li>
+      <li><span class="no">2</span><div><h4>감정평가 통지액</h4><p>통지서 금액을 한계선 공식에 넣어 보세요. 이 숫자 없이 프리미엄을 말하는 매물은 판단할 수 없습니다.</p></div></li>
+      <li><span class="no">3</span><div><h4>토지거래허가</h4><p>구역 전체가 허가구역. 실거주 의무 등 요건을 계약 전 구청에 확인.</p></div></li>
+      <li><span class="no">4</span><div><h4>조합원 지위</h4><p>투기과열지구라 관리처분인가 뒤 매수자는 원칙적으로 조합원 불가. 최근 5년 분양대상자 선정 이력도 확인.</p></div></li>
+      <li><span class="no">5</span><div><h4>자금 계획</h4><p>분담금, 이주(2027 하반기 계획) 대출, 세금까지. 분양가가 1억 오르면 분담금도 1억 늘어납니다.</p></div></li>
+    </ol>
+  </div>
+  <footer class="src">조합원 지위 제한에는 상속·장기보유 등 예외가 있으니 개별 매물은 조합·전문가와 확인하세요.</footer>
+</section>
+
+<!-- 13 정리 -->
+<section class="card ink" id="c13" data-hold="11" data-chapter="정리">
+  <header class="top"><span>마천3구역 재개발 총정리</span><span class="pg">13 / 13</span></header>
+  <div class="body">
+    <div class="eyebrow L" data-a="up 0 0.5">정리하면</div>
+    <h2 class="L" data-a="up 0.15 0.6">11억이냐 12억이냐가<br>아니라 한계선 안쪽이냐</h2>
+    <ol class="pts" data-ac="up 0.7 0.5 0.4">
+      <li><div>프리미엄이 <em>7억 원대 초중반</em> 안에 들어오는지</div></li>
+      <li><div>지금은 <em>분양신청 여부·감정평가 통지액</em>이 가격보다 먼저</div></li>
+    </ol>
+    <p class="cta L" data-a="up 1.8 0.5">매물별 프리미엄과 총투자금은 감정평가 통지액을 넣어야 정확히 나옵니다. 관심 있는 매물이 있다면 그 매물 기준으로 함께 계산해 드리겠습니다.<span>공개 자료를 바탕으로 한 분석이며 수익을 보장하지 않습니다.</span></p>
+  </div>
+</section>
+
+<!-- 유튜브 썸네일 -->
+<section class="thumb" id="thumb">
+  <div>
+    <small>송파 자이 아스트라 · 마천3구역</small>
+    <h1>지금 들어가도<br><em>늦지 않았을까?</em></h1>
+  </div>
+  <ul>
+    <li><span>마천역까지</span><b>300m</b></li>
+    <li><span>사업 단계</span><b>분양신청</b></li>
+    <li class="hot"><span>프리미엄 한계선</span><b>7억대 초중반</b></li>
+  </ul>
+</section>
+
+<script>
+  // 09장 산점도: 대지지분(평) × 거래가(억). 마천동 270~280번대 빌라 중개거래 10건.
+  (function scatter() {
+    const deals = [
+      [5.48, 11.0], [7.33, 11.47], [7.83, 11.5], [7.98, 11.9], [8.00, 12.2],
+      [8.23, 11.0], [9.79, 13.4], [10.07, 11.9], [10.32, 12.1], [20.27, 14.5],
+    ];
+    const svg = document.getElementById("scatter");
+    const W = 920, H = 520, L = 84, R = 20, T = 20, B = 70;
+    const x = v => L + (v / 22) * (W - L - R);
+    const y = v => T + (1 - (v - 10) / 5) * (H - T - B);
+    const NS = "http://www.w3.org/2000/svg";
+    const add = (tag, attrs, text) => {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs) n.setAttribute(k, attrs[k]);
+      if (text != null) n.textContent = text;
+      svg.appendChild(n); return n;
+    };
+    add("rect", { x: L, y: y(12.2), width: W - L - R, height: y(11.0) - y(12.2), fill: "#FFD84A", opacity: 0.45, "data-a": "growX 0.8 0.7" });
+    for (let v = 10; v <= 15; v++) {
+      add("line", { "data-a": "fade 0.6 0.5", x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: v === 10 ? "#16181D" : "#DCD5C6", "stroke-width": v === 10 ? 2 : 1.5 });
+      add("text", { "data-a": "fade 0.6 0.5", x: L - 14, y: y(v) + 9, "text-anchor": "end", "font-size": 25, "font-weight": 600, fill: "#6B7079" }, v + "억");
+    }
+    for (let v = 0; v <= 20; v += 5) {
+      add("text", { "data-a": "fade 0.6 0.5", x: x(v), y: H - B + 38, "text-anchor": "middle", "font-size": 25, "font-weight": 600, fill: "#6B7079" }, v);
+    }
+    add("text", { "data-a": "fade 0.6 0.5", x: W - R, y: H - 4, "text-anchor": "end", "font-size": 24, "font-weight": 700, fill: "#3A3E47" }, "대지지분 (평)");
+    add("text", { "data-a": "fade 1.4 0.4", x: x(15), y: y(11.6) + 10, "text-anchor": "middle", "font-size": 27, "font-weight": 800, fill: "#16181D" }, "11억~12.2억 · 10건 중 8건");
+    deals.forEach(([a, p], i) => {
+      add("circle", { "data-a": `pop ${(1.0 + i * 0.1).toFixed(2)} 0.4`, cx: x(a), cy: y(p), r: 14, fill: "#6B7079", stroke: "#F3EFE6", "stroke-width": 3 });
+    });
+    add("text", { "data-a": "fade 2.2 0.4", x: x(5.48) + 4, y: y(11.0) + 50, "text-anchor": "middle", "font-size": 23, "font-weight": 700, fill: "#3A3E47" }, "5.48평 · 평당 2억 68만");
+    add("text", { "data-a": "fade 2.2 0.4", x: x(20.27) - 24, y: y(14.5) + 8, "text-anchor": "end", "font-size": 23, "font-weight": 700, fill: "#3A3E47" }, "14억 5,000만 · 20.3평");
+  })();
+</script>
+</body>
+</html>

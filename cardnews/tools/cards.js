@@ -1,4 +1,5 @@
 // 카드뉴스 폴더의 index.html 에서 카드(.card)를 한 장씩 PNG 로 찍는다. 크기는 카드 크기 그대로.
+// 유튜브 썸네일(.thumb)이 있으면 thumbnail.png 로 함께 찍는다.
 //   node cards.js ../macheon3
 // 폰트(Pretendard)는 jsDelivr 에서 받는다. 막힌 환경이면 woff2 폴더를 FONT_DIR 로 넘긴다.
 const path = require("path");
@@ -31,10 +32,16 @@ if (require.main === module) {
   (async () => {
     const dir = path.resolve(process.argv[2] || ".");
     const browser = await chromium.launch();
-    const page = await openDeck(browser, dir, { width: 1200, height: 2000 });
+    const page = await openDeck(browser, dir, { width: 1400, height: 2000 });
     for (const card of await page.$$(".card")) {
       const out = path.join(dir, `card-${(await card.getAttribute("id")).slice(1)}.png`);
       await card.screenshot({ path: out });
+      console.log(path.relative(process.cwd(), out));
+    }
+    const thumb = await page.$(".thumb");
+    if (thumb) {
+      const out = path.join(dir, "thumbnail.png");
+      await thumb.screenshot({ path: out });
       console.log(path.relative(process.cwd(), out));
     }
     await browser.close();
