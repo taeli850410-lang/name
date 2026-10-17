@@ -2,7 +2,7 @@
 //   data-a="방식 시작 길이"          그 요소 하나
 //   data-ac="방식 시작 길이 간격"    자식마다 간격만큼 늦게
 //   data-hold="초" (.card)           그 장이 화면에 머무는 시간
-// 방식: up · fade · pop · growX · growY · mark(형광펜) · count(data-to, data-fmt: pct1·eok1·int·eok)
+// 방식: up · fade · out(사라짐) · pop · growX · growY · mark(형광펜) · count(data-to, data-fmt: pct1·eok1·int·eok)
 // shorts.js 가 주입한 뒤 __setup() → __show(id) → __seek(id, t) 순으로 부른다.
 (() => {
   const LEAD = 0.5; // 앞 장과 겹쳐 넘어가는 동안은 비워 두고, 넘어간 뒤에 내용이 올라오게 한다
@@ -30,6 +30,7 @@
     switch (kind) {
       case "up":    el.style.opacity = e; el.style.transform = `translateY(${(1 - e) * 30}px)`; break;
       case "fade":  el.style.opacity = e; break;
+      case "out":   el.style.opacity = 1 - e; break;
       case "pop":   el.style.opacity = clamp(p * 2.5); el.style.transform = `scale(${0.4 + 0.6 * outBack(p)})`; break;
       case "growX": el.style.transform = `scaleX(${e})`; break;
       case "growY": el.style.transform = `scaleY(${e})`; break;

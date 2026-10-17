@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>동후암1구역 40초 체크</title>
+<!--
+  동후암1구역 후킹 쇼츠 (9:16, 1080×1920, 약 40초). 기획과 숫자 근거는 plan.md.
+  쇼츠 화면의 아이콘·버튼·제목 줄에 가리지 않게 내용은 위 170px 아래, 좌우 110px 안, 1540px 위에만 둔다.
+  data-a="방식 시작 길이" / data-ac="방식 시작 길이 간격" 은 영상용 등장 순서(../tools/anim.js).
+  첫 장 제목은 첫 프레임부터 보이도록 애니메이션을 걸지 않는다.
+-->
+<style>
+  @font-face { font-family: "Pretendard"; font-weight: 500; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-Medium.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 600; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-SemiBold.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 700; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-Bold.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 800; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-ExtraBold.woff2") format("woff2"); }
+  @font-face { font-family: "Pretendard"; font-weight: 900; src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-Black.woff2") format("woff2"); }
+
+  :root {
+    --ink: #16181D; --ink-2: #3A3E47; --muted: #6B7079;
+    --paper: #F3EFE6; --panel: #FBF9F4; --line: #DCD5C6;
+    --hl: #FFD84A; --accent: #D9452B; --accent-soft: #F6DDD5; --accent-line: #EBC3B7;
+    --night-2: #22252B; --night-line: #3A3E47; --night-muted: #9A9EA6; --night-text: #D5D7DC;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #2A2C31; font-family: "Pretendard", system-ui, sans-serif; color: var(--ink);
+    padding: 40px 0; display: flex; flex-direction: column; align-items: center; gap: 40px;
+    -webkit-font-smoothing: antialiased; word-break: keep-all;
+  }
+
+  .card { width: 1080px; height: 1920px; background: var(--paper); position: relative; overflow: hidden; padding: 170px 110px 0; display: flex; flex-direction: column; }
+  .top { display: flex; justify-content: space-between; font-size: 28px; font-weight: 600; color: var(--muted); padding-bottom: 22px; border-bottom: 2px solid var(--ink); }
+  .top .pg { font-variant-numeric: tabular-nums; }
+  .body { height: 1150px; display: flex; flex-direction: column; padding-top: 50px; }
+  .src { position: absolute; left: 110px; right: 110px; top: 1420px; font-size: 23px; line-height: 1.5; font-weight: 500; color: var(--muted); padding-top: 16px; border-top: 1px solid var(--line); }
+
+  .eyebrow { font-size: 36px; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; margin-bottom: 16px; }
+  h2 { font-size: 86px; line-height: 1.16; font-weight: 800; letter-spacing: -0.05em; }
+  .say { font-size: 44px; line-height: 1.38; font-weight: 800; letter-spacing: -0.045em; }
+  .note { font-size: 31px; line-height: 1.5; font-weight: 500; color: var(--ink-2); letter-spacing: -0.02em; }
+  .mark { background: linear-gradient(transparent 52%, var(--hl) 52%, var(--hl) 94%, transparent 94%) no-repeat; background-size: 100% 100%; padding: 0 4px; }
+  .mt-auto { margin-top: auto; }
+
+  .ink { background: var(--ink); color: var(--paper); }
+  .ink .top { color: var(--night-muted); border-color: var(--night-line); }
+  .ink .src { color: var(--night-muted); border-color: var(--night-line); }
+  .ink .eyebrow { color: var(--hl); }
+  .ink .note { color: var(--night-text); }
+  .ink .mark { color: var(--ink); background-image: linear-gradient(transparent 8%, var(--hl) 8%, var(--hl) 96%, transparent 96%); }
+
+  /* 가려진 날짜 칩 (01·05장) */
+  .lock { display: grid; grid-template-columns: 96px 1fr; align-items: center; gap: 26px; border: 4px dashed var(--hl); border-radius: 28px; padding: 30px 36px; background: var(--night-2); }
+  .lock svg { width: 96px; height: 96px; }
+  .lock .masked { font-size: 82px; font-weight: 900; letter-spacing: 0.04em; color: var(--hl); line-height: 1; }
+  .lock small { display: block; font-size: 28px; font-weight: 700; color: var(--night-muted); margin-top: 10px; letter-spacing: -0.01em; }
+
+  /* ---------- 01 ---------- */
+  #c01 h1 { font-size: 96px; line-height: 1.12; font-weight: 900; letter-spacing: -0.06em; margin-top: 10px; }
+  #c01 h1 .price { display: block; white-space: nowrap; font-size: 128px; color: var(--hl); letter-spacing: -0.065em; margin-top: 6px; }
+  #c01 .twist { margin-top: 56px; font-size: 56px; font-weight: 900; line-height: 1.25; letter-spacing: -0.05em; }
+  #c01 .twist em { font-style: normal; color: var(--accent); }
+  #c01 .lock { margin-top: auto; margin-bottom: 30px; }
+
+  /* ---------- 02 높이 ---------- */
+  #c02 svg { display: block; width: 100%; height: auto; margin-top: 36px; }
+  svg text { font-family: "Pretendard", sans-serif; }
+
+  /* ---------- 03 보드게임 ---------- */
+  .board { list-style: none; margin-top: 34px; display: flex; flex-direction: column; gap: 8px; position: relative; }
+  .board li { display: grid; grid-template-columns: 60px 1fr auto; align-items: center; gap: 20px; padding: 10px 20px; border-radius: 20px; background: var(--panel); border: 1px solid var(--line); }
+  .board .sq { width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 900; background: var(--paper); border: 3px solid var(--ink); }
+  .board .t { font-size: 31px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.2; }
+  .board .t small { display: block; font-size: 22px; font-weight: 600; color: var(--muted); margin-top: 3px; letter-spacing: -0.01em; }
+  .board .tg { font-size: 23px; font-weight: 800; border-radius: 10px; padding: 6px 14px; white-space: nowrap; }
+  .board li.done .sq { background: var(--ink); color: var(--paper); }
+  .board li.done .tg { background: var(--line); color: var(--ink-2); }
+  .board li.now { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .board li.now .sq { background: #fff; border-color: #fff; color: var(--accent); }
+  .board li.now .t small { color: #FFE3DC; }
+  .board li.now .tg { background: var(--hl); color: var(--ink); }
+  .board li.gate .sq { border-style: dashed; color: var(--ink-2); }
+  .board li.gate .tg { background: var(--ink); color: var(--hl); }
+  .board li.end { opacity: 0.6; }
+  #c03 .say { margin-top: auto; }
+
+  /* ---------- 04 펀딩 ---------- */
+  .fund { margin-top: 70px; }
+  .fund .gauge { position: relative; height: 110px; border-radius: 22px; background: var(--line); }
+  .fund .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 55.05%; border-radius: 22px 0 0 22px; background: var(--ink); }
+  .fund .pct { position: absolute; left: 0; top: 0; bottom: 0; width: 55.05%; display: flex; align-items: center; justify-content: flex-end; padding-right: 22px; color: var(--hl); font-size: 46px; font-weight: 900; letter-spacing: -0.04em; }
+  .fund .goal { position: absolute; left: 75%; top: -70px; bottom: -16px; border-left: 6px dashed var(--accent); }
+  .fund .goal span { position: absolute; left: 14px; top: -4px; white-space: nowrap; font-size: 30px; font-weight: 900; color: var(--accent); }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 40px; }
+  .stats > div { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; padding: 24px 22px 26px; }
+  .stats small { display: block; font-size: 25px; font-weight: 700; color: var(--muted); }
+  .stats b { display: block; font-size: 54px; font-weight: 900; letter-spacing: -0.05em; margin-top: 6px; }
+  .stats b span { font-size: 28px; margin-left: 2px; }
+  .stats .need { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .stats .need small { color: #FFE3DC; }
+  #c04 .note { margin-top: auto; }
+
+  /* ---------- 05 공개 ---------- */
+  .reveal { display: grid; margin-top: 30px; }
+  .reveal > * { grid-area: 1 / 1; }
+  .reveal .date { border: 4px solid var(--hl); border-radius: 28px; padding: 30px 36px; background: var(--hl); color: var(--ink); }
+  .reveal .date b { display: block; font-size: 150px; font-weight: 900; letter-spacing: -0.06em; line-height: 1; }
+  .reveal .date small { display: block; font-size: 34px; font-weight: 800; margin-top: 12px; letter-spacing: -0.02em; }
+  #c05 .say { margin-top: 50px; font-size: 46px; }
+  .checks { list-style: none; margin-top: auto; display: flex; flex-direction: column; gap: 12px; }
+  .checks li { display: grid; grid-template-columns: 48px 1fr; gap: 18px; align-items: center; background: var(--night-2); border-radius: 20px; padding: 22px 26px; font-size: 32px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.35; }
+  .checks i { width: 48px; height: 48px; border-radius: 50%; background: var(--hl); color: var(--ink); display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 28px; font-weight: 900; }
+
+  /* ---------- 06 이름 ---------- */
+  .twins { margin-top: 44px; display: flex; flex-direction: column; align-items: stretch; }
+  .twins .z { border-radius: 26px; padding: 30px 34px 32px; }
+  .twins .z.me { background: var(--hl); }
+  .twins .z.other { background: var(--panel); border: 2px solid var(--line); }
+  .twins .z small { font-size: 28px; font-weight: 800; color: var(--ink-2); }
+  .twins .z b { display: block; font-size: 64px; font-weight: 900; letter-spacing: -0.05em; margin-top: 6px; }
+  .twins .z b span { font-size: 34px; font-weight: 800; margin-left: 8px; letter-spacing: -0.02em; }
+  .twins .z p { font-size: 29px; font-weight: 600; margin-top: 8px; color: var(--ink-2); letter-spacing: -0.02em; }
+  .twins .ne { text-align: center; font-size: 96px; font-weight: 900; color: var(--accent); line-height: 1; margin: 6px 0; }
+  .more { margin-top: 24px; font-size: 28px; font-weight: 600; color: var(--muted); line-height: 1.5; letter-spacing: -0.02em; }
+  .more b { color: var(--ink); }
+  #c06 .say { margin-top: auto; }
+
+  /* ---------- 07 정리 ---------- */
+  #c07 h2 .hlt { color: var(--hl); }
+  #c07 .note { margin-top: 44px; font-size: 34px; font-weight: 600; }
+  .cta { margin-top: auto; border-top: 1px solid var(--night-line); padding-top: 30px; font-size: 38px; font-weight: 800; line-height: 1.4; letter-spacing: -0.04em; }
+  .cta span { display: block; font-size: 28px; font-weight: 600; color: var(--night-muted); margin-top: 12px; letter-spacing: -0.02em; }
+</style>
+</head>
+<body>
+
+<!-- 01 후킹 -->
+<section class="card ink" id="c01" data-hold="4.5">
+  <header class="top"><span>동후암1구역 · 40초 체크</span><span class="pg">01 / 07</span></header>
+  <div class="body">
+    <h1>후암동 6평 빌라,<span class="price">5억 9,500만 원</span></h1>
+    <p class="twist" data-a="up -0.2 0.5">그런데 이 날짜 모르고 사면<br><em>입주권이 안 나올 수도</em></p>
+    <div class="lock" data-a="pop 0.4 0.5">
+      <svg viewBox="0 0 96 96" aria-hidden="true"><rect x="16" y="42" width="64" height="46" rx="10" fill="#FFD84A"/><path d="M30 42V30a18 18 0 0 1 36 0v12" fill="none" stroke="#FFD84A" stroke-width="9"/><circle cx="48" cy="62" r="7" fill="#16181D"/><rect x="45" y="64" width="6" height="12" rx="3" fill="#16181D"/></svg>
+      <div><div class="masked">●●●●.●.●</div><small>이 날짜, 잠시 뒤 공개합니다</small></div>
+    </div>
+  </div>
+  <footer class="src">2026.8 국토부 실거래 · 후암동 30-40 전용 19.79㎡(약 6평), 2013년 준공.</footer>
+</section>
+
+<!-- 02 높이 -->
+<section class="card" id="c02" data-hold="6">
+  <header class="top"><span>동후암1구역 · 40초 체크</span><span class="pg">02 / 07</span></header>
+  <div class="body">
+    <div class="eyebrow" data-a="up 0 0.5">왜 갑자기 들썩일까</div>
+    <h2 data-a="up 0.15 0.6">남산이 허락한 높이,<br><span class="mark" data-a="mark 0.8 0.7">20m → 45m</span></h2>
+    <svg viewBox="0 0 860 600" aria-label="고도지구 높이 20m에서 최대 45m로 완화">
+      <path d="M0 330 C 120 250, 230 150, 380 120 C 520 92, 640 180, 860 300 L 860 520 L 0 520 Z" fill="#E6DFD0" data-a="fade 0.5 0.6"/>
+      <text x="420" y="104" text-anchor="middle" font-size="28" font-weight="800" fill="#8E9199" data-a="fade 0.7 0.5">남산</text>
+      <line x1="0" y1="520" x2="860" y2="520" stroke="#16181D" stroke-width="4"/>
+      <g data-a="growY 1.0 0.6">
+        <rect x="120" y="342" width="220" height="178" rx="8" fill="#8E9199"/>
+        <g fill="#F3EFE6" opacity="0.7">
+          <rect x="146" y="372" width="40" height="30" rx="4"/><rect x="210" y="372" width="40" height="30" rx="4"/><rect x="274" y="372" width="40" height="30" rx="4"/>
+          <rect x="146" y="426" width="40" height="30" rx="4"/><rect x="210" y="426" width="40" height="30" rx="4"/><rect x="274" y="426" width="40" height="30" rx="4"/>
+        </g>
+      </g>
+      <g data-a="growY 1.7 0.9">
+        <rect x="500" y="120" width="240" height="400" rx="8" fill="#16181D"/>
+        <g fill="#FFD84A">
+          <rect x="528" y="150" width="44" height="28" rx="4"/><rect x="598" y="150" width="44" height="28" rx="4"/><rect x="668" y="150" width="44" height="28" rx="4"/>
+          <rect x="528" y="206" width="44" height="28" rx="4"/><rect x="598" y="206" width="44" height="28" rx="4"/><rect x="668" y="206" width="44" height="28" rx="4"/>
+          <rect x="528" y="262" width="44" height="28" rx="4"/><rect x="598" y="262" width="44" height="28" rx="4"/><rect x="668" y="262" width="44" height="28" rx="4"/>
+          <rect x="528" y="318" width="44" height="28" rx="4"/><rect x="598" y="318" width="44" height="28" rx="4"/><rect x="668" y="318" width="44" height="28" rx="4"/>
+          <rect x="528" y="374" width="44" height="28" rx="4"/><rect x="598" y="374" width="44" height="28" rx="4"/><rect x="668" y="374" width="44" height="28" rx="4"/>
+          <rect x="528" y="430" width="44" height="28" rx="4"/><rect x="598" y="430" width="44" height="28" rx="4"/><rect x="668" y="430" width="44" height="28" rx="4"/>
+        </g>
+      </g>
+      <text x="230" y="320" text-anchor="middle" font-size="44" font-weight="900" fill="#3A3E47" data-a="fade 1.4 0.4">20m</text>
+      <text x="230" y="566" text-anchor="middle" font-size="27" font-weight="700" fill="#6B7079" data-a="fade 1.4 0.4">기존 고도지구</text>
+      <text x="620" y="96" text-anchor="middle" font-size="48" font-weight="900" fill="#D9452B" data-a="fade 2.4 0.4">최대 45m</text>
+      <text x="620" y="566" text-anchor="middle" font-size="27" font-weight="700" fill="#6B7079" data-a="fade 2.4 0.4">2024 완화 · 약 15층 수준</text>
+    </svg>
+    <p class="note mt-auto" data-a="up 2.8 0.5">높이에 묶여 사업성이 안 나오던 동네. 2024년 6월 고도가 풀리고, 같은 달 신속통합기획 후보지로 뽑혔습니다.</p>
+  </div>
+  <footer class="src">실제 층수와 세대수는 남산 경관 조건 아래 신통기획 정비계획에서 정해집니다. 그림은 비례가 아닌 개념도입니다.</footer>
+</section>
+
+<!-- 03 보드게임 -->
+<section class="card" id="c03" data-hold="7">
+  <header class="top"><span>동후암1구역 · 40초 체크</span><span class="pg">03 / 07</span></header>
+  <div class="body">
+    <div class="eyebrow" data-a="up 0 0.5">재개발 보드게임</div>
+    <h2 data-a="up 0.15 0.6">지금은 2번째 칸,<br>남은 관문 4개</h2>
+    <ol class="board" data-ac="up 0.6 0.35 0.16">
+      <li class="done"><span class="sq">1</span><span class="t">신통기획 후보지 선정<small>2024.6.27</small></span><span class="tg">통과</span></li>
+      <li class="now"><span class="sq">2</span><span class="t">조합설립추진위 승인<small>2026.6.5 · 후암동 일대 첫 승인</small></span><span class="tg">지금 여기</span></li>
+      <li class="gate"><span class="sq">3</span><span class="t">정비구역 지정<small>2027 목표</small></span><span class="tg">관문 1</span></li>
+      <li class="gate"><span class="sq">4</span><span class="t">조합설립인가<small>2028 목표</small></span><span class="tg">관문 2</span></li>
+      <li class="gate"><span class="sq">5</span><span class="t">사업시행인가</span><span class="tg">관문 3</span></li>
+      <li class="gate"><span class="sq">6</span><span class="t">관리처분인가</span><span class="tg">관문 4</span></li>
+      <li class="end"><span class="sq">7</span><span class="t">이주 · 착공 → 입주</span><span class="tg"></span></li>
+    </ol>
+    <p class="say" data-a="up 2.0 0.5">제일 먼저 타면 제일 싸게,<br><span class="mark" data-a="mark 2.5 0.7">대신 제일 오래 탑니다.</span></p>
+  </div>
+  <footer class="src">일정은 2026.6 보도 기준 추진위 목표이며, 기사에 따라 '2027년 말 결정고시 목표'로 소개되기도 합니다.</footer>
+</section>
+
+<!-- 04 펀딩 -->
+<section class="card" id="c04" data-hold="6.5">
+  <header class="top"><span>동후암1구역 · 40초 체크</span><span class="pg">04 / 07</span></header>
+  <div class="body">
+    <div class="eyebrow" data-a="up 0 0.5">동의율</div>
+    <h2 data-a="up 0.15 0.6">조합 ‘펀딩’ 진행 중<br>55% → 목표 75%</h2>
+    <div class="fund">
+      <div class="gauge" data-a="fade 0.6 0.3">
+        <div class="fill" data-a="growX 0.7 0.9"></div>
+        <div class="pct" data-a="fade 1.5 0.3">55.05%</div>
+        <div class="goal" data-a="fade 1.5 0.4"><span>조합설립 75%</span></div>
+      </div>
+    </div>
+    <div class="stats" data-ac="pop 1.8 0.45 0.25">
+      <div><small>동의</small><b>774<span>명</span></b></div>
+      <div><small>목표 (75%)</small><b>1,055<span>명</span></b></div>
+      <div class="need"><small>더 필요</small><b>+281<span>명</span></b></div>
+    </div>
+    <p class="note" data-a="up 2.8 0.5">2024년 신통기획 신청 땐 75% 안팎을 모았던 동네입니다(보도·추진위 설명). 다만 동의서는 단계마다 새로 받습니다.</p>
+  </div>
+  <footer class="src">2026.6 추진위 승인 기준 토지등소유자 1,406명 중 774명(55.05%). 조합설립 요건은 토지등소유자 3/4 이상 + 토지면적 1/2 이상.</footer>
+</section>
+
+<!-- 05 날짜 공개 -->
+<section class="card ink" id="c05" data-hold="7.5">
+  <header class="top"><span>동후암1구역 · 40초 체크</span><span class="pg">05 / 07</span></header>
+  <div class="body">
+    <div class="eyebrow" data-a="up 0 0.5">아까 그 날짜, 공개합니다</div>
+    <div class="reveal">
+      <div class="lock" data-a="out 0.7 0.3">
+        <svg viewBox="0 0 96 96" aria-hidden="true"><rect x="16" y="42" width="64" height="46" rx="10" fill="#FFD84A"/><path d="M30 42V30a18 18 0 0 1 36 0v12" fill="none" stroke="#FFD84A" stroke-width="9"/><circle cx="48" cy="62" r="7" fill="#16181D"/><rect x="45" y="64" width="6" height="12" rx="3" fill="#16181D"/></svg>
+        <div><div class="masked">●●●●.●.●</div><small>이 날짜, 잠시 뒤 공개합니다</small></div>
+      </div>
+      <div class="date" data-a="pop 0.8 0.6"><b>2024. 6. 3</b><small>권리산정기준일</small></div>
+    </div>
+    <p class="say" data-a="up 1.6 0.5">이날 이후 지었거나, 땅을 쪼갰거나, 다세대로 바꾼 집은 <span class="mark" data-a="mark 2.2 0.8">입주권이 안 나오거나 제한될 수 있습니다.</span></p>
+    <ul class="checks" data-ac="up 3.0 0.45 0.3">
+      <li><i>✓</i>준공일 확인 — 건축물대장</li>
+      <li><i>✓</i>토지 분할·다세대 전환 시점 — 등기</li>
+    </ul>
+  </div>
+  <footer class="src">권리산정기준일은 구청장 후보지 추천일 기준으로 고시됐습니다. 개별 물건의 권리는 계약 전 전문가와 확인하세요.</footer>
+</section>
+
+<!-- 06 이름 -->
+<section class="card" id="c06" data-hold="6">
+  <header class="top"><span>동후암1구역 · 40초 체크</span><span class="pg">06 / 07</span></header>
+  <div class="body">
+    <div class="eyebrow" data-a="up 0 0.5">이름도 함정입니다</div>
+    <h2 data-a="up 0.15 0.6">쌍둥이 아닙니다,<br>동후암1 ≠ 후암1</h2>
+    <div class="twins">
+      <div class="z me" data-a="up 0.6 0.5"><small>재개발</small><b>동후암1<span>후암동 30-2 일대</span></b><p>추진위 승인 · 정비계획 수립 중 · 약 1,800세대(보도)</p></div>
+      <div class="ne" data-a="pop 1.1 0.5">≠</div>
+      <div class="z other" data-a="up 1.4 0.5"><small>단독주택 재건축</small><b>후암1<span>후암동 142-4 일원</span></b><p>동후암1과 별개 사업</p></div>
+    </div>
+    <p class="more" data-a="fade 2.0 0.4">옆에는 <b>동후암2</b>(정비계획 입안 요청, 2026.8)와 <b>동후암3</b>(신통기획 후보지, 연말 구역 지정 목표)도 따로 움직입니다.</p>
+    <p class="say" data-a="up 2.5 0.5">매물이 어느 구역 안인지, <span class="mark" data-a="mark 3.0 0.7">지번으로 확인하세요.</span></p>
+  </div>
+  <footer class="src">구역 경계는 정비계획에서 확정되므로 후보지 경계와 달라질 수 있습니다. 2026년 보도 기준.</footer>
+</section>
+
+<!-- 07 정리 -->
+<section class="card ink" id="c07" data-hold="5">
+  <header class="top"><span>동후암1구역 · 40초 체크</span><span class="pg">07 / 07</span></header>
+  <div class="body">
+    <div class="eyebrow" data-a="up 0 0.5">서울역 700m · 약 1,800세대의 꿈</div>
+    <h2 data-a="up 0.15 0.6">‘얼마나 오를까’보다<br><span class="hlt">‘권리가 확실한가’</span></h2>
+    <p class="note" data-a="up 0.8 0.5">그 긴 기다림을 버티게 해 주는 건 기대가 아니라 확인입니다.</p>
+    <p class="cta" data-a="up 1.4 0.5">관심 매물이 있다면, 권리산정기준일과 구역 경계부터 같이 확인해 드립니다.<span>공개 자료를 바탕으로 한 분석이며 수익을 보장하지 않습니다.</span></p>
+  </div>
+  <footer class="src">서울역 승강장까지 구역 대표 지번(후암동 30-2) 기준 직선 약 700m. 세대수는 정비계획 수립 전 보도 기준.</footer>
+</section>
+
+</body>
+</html>
