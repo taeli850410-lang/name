@@ -1,0 +1,13 @@
+{
+  "name": "ssaemtari-blog-kit",
+  "private": true,
+  "description": "쌤태리 블로그 원고 Word(docx) 생성 코드",
+  "scripts": {
+    "guide": "node make_guide.js ../02_작성기준_및_샘플.docx",
+    "plan": "node make_plan.js ../01_기획서.docx",
+    "readme": "node make_readme.js ../00_먼저_읽어주세요.docx"
+  },
+  "dependencies": {
+    "docx": "9.5.1"
+  }
+}
