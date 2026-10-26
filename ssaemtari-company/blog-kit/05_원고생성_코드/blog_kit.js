@@ -38,7 +38,8 @@ const label = (text) => new Paragraph({
 const thin = { style: BorderStyle.SINGLE, size: 4, color: "BFC8D6" };
 const borders = { top: thin, bottom: thin, left: thin, right: thin };
 
-function table(widths, rows, { header = true, emphasizeLast = false, alignLeft = false } = {}) {
+// keep: true 면 표 전체를 한 페이지에 모은다 (행이 페이지 사이에서 갈리지 않게)
+function table(widths, rows, { header = true, emphasizeLast = false, alignLeft = false, keep = false } = {}) {
   return new Table({
     width: { size: W, type: WidthType.DXA },
     columnWidths: widths,
@@ -48,6 +49,7 @@ function table(widths, rows, { header = true, emphasizeLast = false, alignLeft =
       const fill = isHead ? "E8EEF6" : isEmph ? "FFF4C2" : "FFFFFF";
       return new TableRow({
         tableHeader: isHead,
+        cantSplit: keep,
         children: cells.map((c, i) => new TableCell({
           width: { size: widths[i], type: WidthType.DXA },
           borders,
@@ -55,6 +57,7 @@ function table(widths, rows, { header = true, emphasizeLast = false, alignLeft =
           margins: { top: 80, bottom: 80, left: 140, right: 140 },
           children: c.split("\n").map((t) => new Paragraph({
             alignment: i === 0 || (alignLeft && !isHead) ? AlignmentType.LEFT : AlignmentType.CENTER,
+            keepNext: keep && r < rows.length - 1,
             children: runs(t, { bold: isHead || isEmph, size: 20 }),
           })),
         })),
