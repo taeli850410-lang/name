@@ -5,7 +5,7 @@
 - blog_kit.js: 공통 블록 모음. require("./blog_kit.js") 후 children 배열만 작성하고 buildDoc(children, 제목, 출력경로)로 저장한다.
   · 문장 마크업: **굵게**, ==노란 형광==, ^^파란 굵은 키워드^^
   · 블록: legend() 표시 기준 / thumb() 썸네일 카드 문구 / title() 제목 / date("YYYY.MM.DD") 날짜 줄 /
-          p() 문단 / quote([두 줄], 설명) 가운데 인용구 / h2() 소제목 / table(열너비[], 행[], {emphasizeLast, alignLeft}) /
+          p() 문단 / quote([두 줄], 설명) 가운데 인용구 / h2() 소제목 / table(열너비[], 행[], {emphasizeLast, alignLeft, keep}) — keep: true 면 짧은 표가 페이지 사이에서 갈리지 않음 /
           tip() 중개사 한 줄 / box() 요약 박스 / info(n, 제목, [내용], 하단배너, 캡션) 인포그래픽 문구 /
           photo(n, 무엇, 캡션) 사진 자리 / video() 영상 / linkcard() 이전 글 링크 / exp() 직접 경험 자리 /
           contact(구역, 서비스, 문구) 상담 안내 카드 / hashtags([태그]) 해시태그 / authorPage() 작성자 참고용 페이지 시작 /

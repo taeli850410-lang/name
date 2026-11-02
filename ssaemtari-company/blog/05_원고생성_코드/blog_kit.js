@@ -38,7 +38,8 @@ const label = (text) => new Paragraph({
 const thin = { style: BorderStyle.SINGLE, size: 4, color: "BFC8D6" };
 const borders = { top: thin, bottom: thin, left: thin, right: thin };
 
-function table(widths, rows, { header = true, emphasizeLast = false, alignLeft = false } = {}) {
+// keep: 짧은 표가 페이지 끝에서 갈리지 않게 행을 다음 행과 붙여 둔다
+function table(widths, rows, { header = true, emphasizeLast = false, alignLeft = false, keep = false } = {}) {
   return new Table({
     width: { size: W, type: WidthType.DXA },
     columnWidths: widths,
@@ -48,12 +49,14 @@ function table(widths, rows, { header = true, emphasizeLast = false, alignLeft =
       const fill = isHead ? "E8EEF6" : isEmph ? "FFF4C2" : "FFFFFF";
       return new TableRow({
         tableHeader: isHead,
+        cantSplit: keep,
         children: cells.map((c, i) => new TableCell({
           width: { size: widths[i], type: WidthType.DXA },
           borders,
           shading: { type: ShadingType.CLEAR, fill, color: "auto" },
           margins: { top: 80, bottom: 80, left: 140, right: 140 },
           children: c.split("\n").map((t) => new Paragraph({
+            keepNext: keep && r < rows.length - 1,
             alignment: i === 0 || (alignLeft && !isHead) ? AlignmentType.LEFT : AlignmentType.CENTER,
             children: runs(t, { bold: isHead || isEmph, size: 20 }),
           })),
