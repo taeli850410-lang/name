@@ -22,6 +22,7 @@ from PIL import Image, ImageDraw, ImageFilter
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import render as R  # noqa: E402  (v1 효과 라이브러리 재사용)
+import bg2  # noqa: E402
 from render import (ACC, CTX, FPS, H, NAVY, PAD, SOFT, W, WHITE, back_out, badge, blit,  # noqa: E402
                     blit_at, check_icon, clamp, counter, ease_in_out, ease_out, fade_up, font,
                     line_mask, pop, prog, ring, rrect, snap_line, sparkles, text_sprite, tlen,
@@ -35,15 +36,15 @@ LEAD, TAIL, END_TAIL = 0.3, 0.45, 2.6
 
 # ───────────────────────── 대본 (말풍선 단위) ─────────────────────────
 SCRIPT = [
-    ['안녕하세요,\n쌤태리부동산컨설팅입니다!', '서울 도심에서 새집을\n5억으로 시작할 수 있을까요?'],
-    ['오늘 소개할 매물은\n성북2구역 무허가주택이에요.', '땅은 2.42평이지만,\n사는 건 ‘새집을 받을 권리’입니다.'],
-    ['분양가 15억을 가정하면\n총투자금은 약 19억 6천만 원.', '그래서 프리미엄 4억 6천이\n적정한지가 핵심이에요.'],
-    ['최근 실거래 10건은\n모두 5억 2천만 원 이상.', '지역 집값은 올랐는데,\n이 일대는 아직 제자리예요.'],
-    ['추천 포인트 첫째!\n구역 전체가 전면 철거형으로 바뀌어,', '496세대 공동주택으로\n사업이 하나로 정리됐어요.'],
-    ['둘째! 결합 상대인\n신월곡1구역은', '최고 47층, 약 2,200세대로\n이주까지 마무리 단계예요.'],
-    ['다만 계약 전엔\n분양자격, 분양가, 대출,', '사업기간, 세금.', '이 다섯 가지를\n꼭 확인하세요.'],
-    ['성북동에 살 계획이 있고,\n분담금을 나눠 마련하며', '기다릴 수 있는 분께\n추천합니다!'],
-    ['분양자격 확인이 먼저!', '궁금한 점은\n편하게 문의주세요.'],
+    ['안녕하십니까,\n쌤태리부동산컨설팅입니다.', '서울 도심에서 새집을\n5억으로 시작할 수 있을까요?'],
+    ['오늘 소개할 매물은\n성북2구역 무허가주택입니다.', '땅은 2.42평이지만, 사는 것은\n‘새집을 받을 권리’입니다.'],
+    ['분양가 15억을 가정하면\n총투자금은 약 19억 6천만 원.', '따라서 프리미엄 4억 6천만 원이\n적정한지가 핵심입니다.'],
+    ['최근 실거래 10건은 모두\n5억 2천만 원 이상이었습니다.', '지역 집값은 올랐지만,\n이 일대는 아직 제자리입니다.'],
+    ['추천 포인트 첫째,\n구역 전체가 전면 철거형으로 바뀌어', '496세대 공동주택으로\n사업이 정리됐습니다.'],
+    ['둘째, 결합 상대인\n신월곡1구역은', '최고 47층, 약 2,200세대 규모로\n이주가 마무리 단계입니다.'],
+    ['다만 계약 전에는\n분양자격, 분양가, 대출,', '사업기간, 세금.', '이 다섯 가지를\n반드시 확인하셔야 합니다.'],
+    ['성북동 실거주 계획이 있고,\n분담금을 나눠 마련하며', '기다릴 수 있는 분께\n추천합니다.'],
+    ['분양자격 확인이 먼저입니다.', '궁금한 점은 언제든\n문의해 주십시오.'],
 ]
 
 
@@ -264,6 +265,22 @@ MOUTH_SRC = (157, 290)
 @lru_cache(maxsize=1)
 def rabbit_base():
     im = Image.open(os.path.join(ASSET, 'rabbit_closeup_cut.png')).convert('RGBA').crop((0, 0, 329, CROP_H))
+    # 가장자리 흰 테두리 제거: 반투명 픽셀에 섞인 원래 배경색(밝은 회색)을 빼낸다
+    arr = np.asarray(im).astype(np.float64)
+    al = arr[..., 3:] / 255.0
+    bgc = arr[arr[..., 3] == 0][:, :3].mean(0) if np.any(arr[..., 3] == 0) else np.array([238, 240, 245.0])
+    edge = (al > 0.03) & (al < 0.97)
+    fixed = np.clip((arr[..., :3] - (1 - al) * bgc) / np.maximum(al, 0.03), 0, 255)
+    arr[..., :3] = np.where(edge, fixed, arr[..., :3])
+    # 가장자리 띠(투명 영역에서 ~5px 안) 안에서 배경색과 거의 같은 픽셀은 투명하게
+    a_img = Image.fromarray(arr[..., 3].astype(np.uint8))
+    band = (np.asarray(a_img.filter(ImageFilter.MinFilter(11))) < 128) & (arr[..., 3] > 0)
+    band[:, :3] = False
+    band[-3:, :] = False  # 잘린 왼쪽·아래 가장자리는 건드리지 않는다
+    dist = np.sqrt(((arr[..., :3] - bgc) ** 2).sum(-1))
+    keep = np.clip((dist - 16) / 22, 0, 1)
+    arr[..., 3] = np.where(band, arr[..., 3] * keep, arr[..., 3])
+    im = Image.fromarray(arr.astype(np.uint8), 'RGBA')
     w, h = im.size
     a0 = im.getchannel('A')
     a = a0.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(0.7))
@@ -351,10 +368,10 @@ def draw_rabbit(base, T):
         return
     e_in = back_out(p_in, 1.4)
     talk = env_at(T)
-    im = rabbit_mouth(talk)
+    im = rabbit_base()
     bob = 5 * math.sin(2 * math.pi * T / 2.6)
-    dy = (1 - e_in) * 760 + bob - 7 * talk
-    ang = 1.1 * math.sin(2 * math.pi * T / 3.4) + 1.2 * talk * math.sin(2 * math.pi * T * 1.9)
+    dy = (1 - e_in) * 760 + bob - 6 * talk
+    ang = 1.0 * math.sin(2 * math.pi * T / 3.4) + 1.6 * talk * math.sin(2 * math.pi * T * 2.2)
     pivot = ((EXT_L + 165) * RAB_S, (MARG + CROP_H) * RAB_S)
     if abs(ang) > 0.05:
         im = im.rotate(ang, resample=Image.BICUBIC, center=pivot)
@@ -606,7 +623,7 @@ def s5(base, t, ch):
                       CX, 1115, t, 0.9)
     if t >= tb:
         im = kb_frame(src('compare.webp'), 960, 720, 1.0 + 0.04 * clamp((t - tb) / 5), 0.5, 0.5)
-        draw_card(base, im, CX, 735, 960, 720, t, tb + 0.15, label='이해를 돕기 위한 그림', label_pos='br')
+        draw_card(base, im, CX, 735, 960, 720, t, tb + 0.15)
         counter(base, '496', 84, 'X', ACC, CX, 1150, t, tb + 0.7, suffix=('세대 공동주택으로 정리', 50, 'B', WHITE), gap=12)
 
 
@@ -778,19 +795,21 @@ def stamp_time():
 def render_frame(idx, t):
     dur, chunks, lead, sp = TIMING[idx]
     T = STARTS[idx] + t
-    base = R.BG.copy()
-    R.draw_ambient(base, T)
+    base = bg2.draw_bg(T)
     last = idx == len(TIMING) - 1
     if not last and t > dur - R.EXIT:
         e = ease_in_out(prog(t, dur - R.EXIT, R.EXIT))
         CTX.alpha, CTX.dy = 1 - e, -36 * e
     else:
         CTX.alpha, CTX.dy = 1.0, 0.0
+    bg2.draw_ghost(base, idx + 1, t)
     SCENE_FN[idx](base, t, chunks)
     CTX.alpha, CTX.dy = 1.0, 0.0
     draw_rabbit(base, T)
     draw_bubble(base, T)
+    bg2.draw_onair(base, BUB[0] + 28, BUB[1] - 24, T, env_at(T), alpha=ease_out(prog(T, 0.9, 0.4)))
     R.draw_ui(base, T)
+    bg2.draw_index(base, idx + 1, len(TIMING))
     return base
 
 
@@ -805,6 +824,7 @@ def ensure_drone_frames():
 
 def init_all():
     R.init_assets()
+    bg2.init()
     load_env()
 
 

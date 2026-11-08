@@ -17,9 +17,9 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 API = 'https://generativelanguage.googleapis.com/v1beta'
-VOICE = os.environ.get('TTS_VOICE', 'Leda')
-STYLE = ('밝고 친근한 20대 여성 진행자가 부동산 정보를 소개하듯, 또렷한 발음으로 경쾌하고 자연스럽게 읽어 주세요. '
-         '쉼표와 마침표에서는 짧게 쉬어 주세요:')
+VOICE = os.environ.get('TTS_VOICE', 'Kore')
+STYLE = ('방송 뉴스의 여성 아나운서처럼 신뢰감 있고 차분한 톤으로, 표준어 발음을 또렷하게 지키며 '
+         '적당히 빠른 속도로 읽어 주세요. 숫자는 자연스러운 한국어로 읽고, 쉼표와 마침표에서는 짧게 쉬어 주세요:')
 VOICE_DIR = os.path.join(HERE, 'voice')
 
 
