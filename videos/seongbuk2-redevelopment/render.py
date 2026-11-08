@@ -894,8 +894,8 @@ STAMP_TXT = '재개발 추천'
 
 
 def s11(base, t):  # 55–60  엔딩
-    drop0 = 0.15
-    land = drop0 + 0.09 * 4 + 0.9  # 마지막 글자 착지 (도장이 먼저, 위 문구는 착지 뒤)
+    drop0 = 0.24
+    land = drop0 + 0.09 * 4 + 0.9  # 마지막 글자 착지 = 56.5초, 음악 임팩트와 맞춤 (위 문구는 착지 뒤)
     line_mask(base, text_sprite('분양자격 확인이 먼저', 62, 'M', SOFT), CX, 340, t, land + 0.05)
     line_mask(base, text_sprite('성북동 새집의 기회', 96, 'B', WHITE), CX, 460, t, land + 0.2)
     pb = prog(t, land - 0.1, 0.5)
@@ -1036,12 +1036,35 @@ def main():
             for i in range(len(SCENES)):
                 f.write(f"file 'scene_{i + 1:02d}.mp4'\n")
         final = os.path.join(out_dir, 'seongbuk2_redevelopment_60s.mp4')
-        tmp = final + '.tmp.mp4'
+        silent = os.path.join(out_dir, 'video_only.mp4')
+        tmp = silent + '.tmp.mp4'
         subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', lst,
                         '-c', 'copy', '-movflags', '+faststart', tmp], check=True)
+        os.replace(tmp, silent)
+        music = os.path.join(HERE, 'music.wav')
+        tmp = final + '.tmp.mp4'
+        if os.path.exists(music):
+            gain = music_gain(music)
+            subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', silent, '-i', music,
+                            '-map', '0:v', '-map', '1:a', '-c:v', 'copy',
+                            '-af', f'volume={gain:.2f}dB', '-c:a', 'aac', '-b:a', '192k', '-ar', '48000',
+                            '-shortest', '-movflags', '+faststart', tmp], check=True)
+        else:
+            subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', silent, '-c', 'copy', tmp], check=True)
         os.replace(tmp, final)
         write_srt(os.path.join(out_dir, 'seongbuk2_redevelopment_60s.srt'))
         print('final', final)
+
+
+def music_gain(path, target=-16.0, tp_max=-1.5):
+    """배경음악을 -16 LUFS(소셜 플랫폼 기준)에 맞추는 선형 게인(dB)."""
+    import json
+    r = subprocess.run(['ffmpeg', '-hide_banner', '-i', path, '-af',
+                        f'loudnorm=I={target}:TP={tp_max}:print_format=json', '-f', 'null', '-'],
+                       capture_output=True, text=True)
+    js = json.loads(r.stderr[r.stderr.rindex('{'):r.stderr.rindex('}') + 1])
+    gain = target - float(js['input_i'])
+    return min(gain, tp_max - float(js['input_tp']))
 
 
 if __name__ == '__main__':
