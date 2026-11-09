@@ -1,3 +1,4 @@
+<!-- 템플릿: 이중 중괄호 자리는 tools/build.py 가 말소리 단어 시각으로 채운다. compositions/ 쪽은 생성물이다. -->
 <template>
   <style>
     @font-face { font-family: "Pretendard"; font-weight: 900; src: url("assets/fonts/Pretendard-Black.woff2") format("woff2"); }
@@ -31,7 +32,7 @@
   <div id="root" data-composition-id="s01" data-width="1080" data-height="1920">
     <div class="bg"></div>
 
-    <div id="s01-a" class="clip" data-start="0" data-duration="1.52">
+    <div id="s01-a" class="clip" data-start="0" data-duration="1.37">
       <div class="cam" id="s01-a-cam">
         <div class="line" id="s01-a-tag">서울 용산구 한강로2가</div>
         <div class="line" id="s01-a-big">용산</div>
@@ -39,7 +40,7 @@
       </div>
     </div>
 
-    <div id="s01-b" class="clip" data-start="1.52" data-duration="1.74">
+    <div id="s01-b" class="clip" data-start="1.37" data-duration="2.14">
       <div class="cam" id="s01-b-cam">
         <div class="line" id="s01-b-label">대지 12.56㎡</div>
         <div class="line" id="s01-b-big">3.8<span class="y">평</span></div>
@@ -47,7 +48,7 @@
       </div>
     </div>
 
-    <div id="s01-c" class="clip" data-start="3.26" data-duration="1.856">
+    <div id="s01-c" class="clip" data-start="3.51" data-duration="1.904">
       <div id="s01-c-bg"></div>
       <div class="cam" id="s01-c-cam">
         <div class="line" id="s01-c-label">매매가</div>
@@ -61,17 +62,20 @@
       var tl = gsap.timeline({ paused: true });
       var K = window.KIT;
       // A — 첫 프레임이 썸네일: "용산" 이 이미 서 있다. 말하는 단어를 따라 아래 줄이 걷힌다.
-      K.words(tl, document.querySelectorAll("#s01-a-sub span"), 0.22, 0.32);
+      var sub = document.querySelectorAll("#s01-a-sub span");
+      K.words(tl, [sub[0]], 0.07);
+      K.words(tl, [sub[1]], 0.99);
+      K.words(tl, [sub[2]], 1.25);
       // B — "삼 점 팔 평" 에 착지
-      K.pop(tl, document.getElementById("s01-b-label"), 1.52);
-      K.slam(tl, document.getElementById("s01-b-big"), 1.8);
-      K.shake(tl, document.getElementById("s01-b-cam"), 1.86, 16);
-      K.words(tl, document.querySelectorAll("#s01-b-sub span"), 2.05, 0.1);
+      K.pop(tl, document.getElementById("s01-b-label"), 1.37);
+      K.slam(tl, document.getElementById("s01-b-big"), 1.51);
+      K.shake(tl, document.getElementById("s01-b-cam"), 1.51 + 0.06, 16);
+      K.words(tl, document.querySelectorAll("#s01-b-sub span"), 1.94, 0.1);
       // C — 노란 바탕 하드컷, "십구억" "오천만" 두 번 박힌다
-      K.pop(tl, document.getElementById("s01-c-label"), 3.26);
-      K.slam(tl, document.getElementById("s01-c-eok"), 3.34, 1.9);
-      K.shake(tl, document.getElementById("s01-c-cam"), 3.4, 22);
-      K.slam(tl, document.getElementById("s01-c-man"), 3.78, 1.5);
+      K.pop(tl, document.getElementById("s01-c-label"), 3.51);
+      K.slam(tl, document.getElementById("s01-c-eok"), 3.61, 1.9);
+      K.shake(tl, document.getElementById("s01-c-cam"), 3.61 + 0.06, 22);
+      K.slam(tl, document.getElementById("s01-c-man"), 4.01, 1.5);
       window.__timelines["s01"] = tl;
     })();
   </script>

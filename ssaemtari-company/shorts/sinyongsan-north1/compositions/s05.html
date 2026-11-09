@@ -1,3 +1,4 @@
+<!-- 템플릿: 이중 중괄호 자리는 tools/build.py 가 말소리 단어 시각으로 채운다. compositions/ 쪽은 생성물이다. -->
 <template>
   <style>
     @font-face { font-family: "Pretendard"; font-weight: 900; src: url("assets/fonts/Pretendard-Black.woff2") format("woff2"); }
@@ -46,11 +47,11 @@
       var tl = gsap.timeline({ paused: true });
       var K = window.KIT;
       K.slam(tl, document.getElementById("s05-k"), 0.12, 1.4);
-      K.words(tl, [document.getElementById("s05-cmp")], 0.62);
+      K.words(tl, [document.getElementById("s05-cmp")], 0.45);
       // "그 문턱을 넘습니다" — 도장이 찍힌다
-      tl.fromTo("#s05-stamp", { scale: 2.3, opacity: 0, filter: "blur(10px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "expo.out" }, 1.48);
-      K.shake(tl, document.getElementById("s05-cam"), 1.52, 26);
-      K.words(tl, [document.getElementById("s05-note")], 0.7);
+      tl.fromTo("#s05-stamp", { scale: 2.3, opacity: 0, filter: "blur(10px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "expo.out" }, 1.22);
+      K.shake(tl, document.getElementById("s05-cam"), 1.22 + 0.04, 26);
+      K.words(tl, [document.getElementById("s05-note")], 0.6);
       window.__timelines["s05"] = tl;
     })();
   </script>

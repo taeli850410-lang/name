@@ -1,3 +1,4 @@
+<!-- 템플릿: 이중 중괄호 자리는 tools/build.py 가 말소리 단어 시각으로 채운다. compositions/ 쪽은 생성물이다. -->
 <template>
   <style>
     @font-face { font-family: "Pretendard"; font-weight: 900; src: url("assets/fonts/Pretendard-Black.woff2") format("woff2"); }
@@ -53,18 +54,18 @@
       var K = window.KIT;
       K.odo(document.getElementById("s06-cam"));
       var tl = gsap.timeline({ paused: true });
-      K.words(tl, [document.getElementById("s06-l")], 0.1);
-      K.slam(tl, document.getElementById("s06-big"), 0.72, 1.6);
-      K.words(tl, [document.getElementById("s06-sub")], 1.12);
+      K.words(tl, [document.getElementById("s06-l")], 0.08);
+      K.slam(tl, document.getElementById("s06-big"), 1.46, 1.6);
+      K.words(tl, [document.getElementById("s06-sub")], 1.46 + 0.35);
       // 막대가 아래에서 쌓인다: 매매가, 그 위에 분담금
-      tl.fromTo("#s06-seg1", { scaleY: 0 }, { scaleY: 1, duration: 0.45, ease: "power3.out" }, 1.25);
-      K.words(tl, document.querySelectorAll("#s06-k1, #s06-v1"), 1.4);
-      tl.fromTo("#s06-seg2", { scaleY: 0 }, { scaleY: 1, duration: 0.45, ease: "power3.out" }, 1.75);
-      K.words(tl, document.querySelectorAll("#s06-k2, #s06-v2, #s06-v2s"), 1.9);
+      tl.fromTo("#s06-seg1", { scaleY: 0 }, { scaleY: 1, duration: 0.45, ease: "power3.out" }, 1.91);
+      K.words(tl, document.querySelectorAll("#s06-k1, #s06-v1"), 1.91 + 0.15);
+      tl.fromTo("#s06-seg2", { scaleY: 0 }, { scaleY: 1, duration: 0.45, ease: "power3.out" }, 1.91 + 0.45);
+      K.words(tl, document.querySelectorAll("#s06-k2, #s06-v2, #s06-v2s"), 1.91 + 0.6);
       // "총투자금은 삼십삼억…" — 굴러서 멈춘다
-      K.words(tl, [document.getElementById("s06-tl")], 3.0);
-      K.roll(tl, document.getElementById("s06-tv"), 3.25, 1.35);
-      K.shake(tl, document.getElementById("s06-cam"), 4.62, 12);
+      K.words(tl, [document.getElementById("s06-tl")], 2.8);
+      K.roll(tl, document.getElementById("s06-tv"), 3, 1.35);
+      K.shake(tl, document.getElementById("s06-cam"), 3 + 1.35, 12);
       window.__timelines["s06"] = tl;
     })();
   </script>

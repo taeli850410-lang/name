@@ -75,6 +75,11 @@ class Clock:
         w = self.line["words"][k]
         return w["s"] + (w["e"] - w["s"]) * j / max(1, n)
 
+    def at_index(self, pos: int) -> float:
+        """자막 원문 pos 번째 글자를 말하는 순간."""
+        i = next((k for k, s in enumerate(self.cap_src) if s >= pos), len(self.cap_n))
+        return self.at_norm(i)
+
     def at(self, sub: str, occ: int = 1) -> float:
         """자막에서 sub 가 (occ 번째로) 시작하는 순간."""
         pos = -1
@@ -115,7 +120,7 @@ A["s06"] = dict(big=T("l07", "115A"), seg1=T("l07", "115A") + 0.45, tl=T("l07", 
 A["s07"] = dict(n=T("l08", "용산센트럴파크"), n2=T("l08", "용산센트럴파크") + 0.7, band=T("l08", "37억"),
                 b_start=L["l09"]["start"] - 0.12, k2=T("l09", "한계선보다"), gap=T("l09", "3억"))
 A["s08"] = dict(r1=T("l10", "삼각지역"), r2=T("l10", "신용산역"), r3=T("l10", "용산역", 2),
-                b_start=T("l10", "남쪽엔") - 0.12, b_big=T("l10", "국제업무지구가"), b_chip=T("l10", "첫"))
+                b_start=T("l10", "남쪽엔") - 0.12, b_big=T("l10", "국제업무지구가"), b_chip=T("l10", "국제업무지구가") + 0.5)
 A["s09"] = dict(big=T("l11", "조합원"), b_start=T("l11", "금액은") - 0.12, bk=T("l11", "금액은"), bbig=T("l11", "추산서"))
 A["s10"] = dict(k1=T("l12", "자세한"), k2=T("l12", "상담은"), big=T("l12", "쌤태리"), b_start=L["l12"]["end"] + 0.12)
 
@@ -173,7 +178,7 @@ SFX = [
 def groups_of(line):
     cap = line["cap"]
     pieces, start = [], 0
-    for m in re.finditer(r"[,.?]\s*", cap):
+    for m in re.finditer(r"[,.?](?=\s|$)\s*", cap):
         pieces.append((start, m.end()))
         start = m.end()
     if start < len(cap):
@@ -185,15 +190,25 @@ def groups_of(line):
             continue
         if len(text.replace(" ", "")) > 14 and " " in text:
             spaces = [a + m.start() for m in re.finditer(" ", cap[a:b].rstrip())]
+            # "19억 5천만", "6억 521만" 처럼 숫자끼리 이어진 금액 사이에서는 자르지 않는다
+            def splits_number(s):
+                left = cap[:s].split(" ")[-1]
+                right = cap[s + 1:].split(" ")[0]
+                return bool(re.search(r"\d", left)) and bool(re.search(r"\d", right))
+            spaces = [s for s in spaces if not splits_number(s)] or spaces
             mid = (a + b) / 2
-            cut = min(spaces, key=lambda s: abs(s - mid))
+            # 가운데에 가깝되, 한쪽이 5글자도 안 되게 남기지 않는다
+            n_chars = lambda x: len(re.sub(r"[\s,.?]", "", x))
+            short = lambda s: min(n_chars(cap[a:s]), n_chars(cap[s + 1:b])) < 5
+            cut = min(spaces, key=lambda s: abs(s - mid) + (100 if short(s) else 0))
             out += [(a, cut), (cut + 1, b)]
         else:
             out.append((a, b))
     clk = CLK[line["id"]]
     res = []
     for i, (a, b) in enumerate(out):
-        st = clk.at(cap[a:b].strip()[:2]) if i else line["start"]
+        lead = len(cap[a:b]) - len(cap[a:b].lstrip())
+        st = clk.at_index(a + lead) if i else line["start"]
         res.append([cap[a:b].strip(), st])
     for i in range(len(res)):
         en = res[i + 1][1] if i + 1 < len(res) else line["end"]

@@ -1,3 +1,4 @@
+<!-- 템플릿: 이중 중괄호 자리는 tools/build.py 가 말소리 단어 시각으로 채운다. compositions/ 쪽은 생성물이다. -->
 <template>
   <style>
     @font-face { font-family: "Pretendard"; font-weight: 900; src: url("assets/fonts/Pretendard-Black.woff2") format("woff2"); }
@@ -36,7 +37,7 @@
   <div id="root" data-composition-id="s09" data-width="1080" data-height="1920">
     <div class="bg"></div>
 
-    <div id="s09-a" class="clip" data-start="0" data-duration="3.2">
+    <div id="s09-a" class="clip" data-start="0" data-duration="3.7">
       <div class="cam" id="s09-a-cam">
         <div id="s09-rail"></div>
         <div class="ev" id="s09-e1" style="top: 248px"><span class="dot"></span><span class="yr">2015.07</span><span class="tx">정비구역 지정</span></div>
@@ -50,7 +51,7 @@
       </div>
     </div>
 
-    <div id="s09-b" class="clip" data-start="3.2" data-duration="2.763">
+    <div id="s09-b" class="clip" data-start="3.7" data-duration="1.846">
       <div class="cam" id="s09-b-cam">
         <svg id="s09-b-icon" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 8 L94 88 L6 88 Z" fill="#ffd400" stroke="#ffd400" stroke-width="6" stroke-linejoin="round" /><rect x="45" y="34" width="10" height="30" rx="4" fill="#0b0b0e" /><circle cx="50" cy="75" r="6" fill="#0b0b0e" /></svg>
         <div class="line" id="s09-b-k">금액은</div>
@@ -67,15 +68,15 @@
       tl.fromTo("#s09-rail", { scaleY: 0 }, { scaleY: 1, duration: 0.6, ease: "power2.inOut" }, 0.08);
       var evs = ["s09-e1", "s09-e2", "s09-e3", "s09-e4", "s09-e5", "s09-e6"];
       for (var i = 0; i < evs.length; i++) K.words(tl, [document.getElementById(evs[i])], 0.1 + i * 0.09);
-      K.pop(tl, document.querySelector("#s09-e5 .tx"), 0.95, 1.18);
-      K.slam(tl, document.getElementById("s09-big"), 1.45, 1.5);
-      K.shake(tl, document.getElementById("s09-a-cam"), 1.5, 10);
-      K.words(tl, [document.getElementById("s09-sub")], 1.47);
+      K.pop(tl, document.querySelector("#s09-e5 .tx"), 0.75, 1.18);
+      K.slam(tl, document.getElementById("s09-big"), 1.64, 1.5);
+      K.shake(tl, document.getElementById("s09-a-cam"), 1.64 + 0.05, 10);
+      K.words(tl, [document.getElementById("s09-sub")], 1.64 + 0.02);
       // B — 다만, 금액은 추산서 기준
-      K.pop(tl, document.getElementById("s09-b-icon"), 3.24, 1.4);
-      K.words(tl, [document.getElementById("s09-b-k")], 3.42);
-      K.slam(tl, document.getElementById("s09-b-big"), 3.9, 1.4);
-      K.words(tl, [document.getElementById("s09-b-s")], 4.1);
+      K.pop(tl, document.getElementById("s09-b-icon"), 3.7 + 0.04, 1.4);
+      K.words(tl, [document.getElementById("s09-b-k")], 3.82);
+      K.slam(tl, document.getElementById("s09-b-big"), 4.3, 1.4);
+      K.words(tl, [document.getElementById("s09-b-s")], 3.82 + 0.1);
       window.__timelines["s09"] = tl;
     })();
   </script>

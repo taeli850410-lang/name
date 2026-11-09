@@ -1,3 +1,4 @@
+<!-- 템플릿: 이중 중괄호 자리는 tools/build.py 가 말소리 단어 시각으로 채운다. compositions/ 쪽은 생성물이다. -->
 <template>
   <style>
     @font-face { font-family: "Pretendard"; font-weight: 900; src: url("assets/fonts/Pretendard-Black.woff2") format("woff2"); }
@@ -64,18 +65,18 @@
     (function () {
       var tl = gsap.timeline({ paused: true });
       var K = window.KIT;
-      K.words(tl, document.querySelectorAll("#s04-h span"), 0.1, 0.16);
-      K.words(tl, [document.getElementById("s04-hs")], 0.9);
+      K.words(tl, document.querySelectorAll("#s04-h span"), 0.05, 0.12);
+      K.words(tl, [document.getElementById("s04-hs")], 0.45);
       // ① 토지 90㎡ — 이 매물은 12.56㎡, 미달
-      K.pop(tl, document.getElementById("s04-c1"), 1.65, 1.06);
-      tl.fromTo("#s04-x", { scale: 2.4, opacity: 0, rotation: -20 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.22, ease: "expo.out" }, 2.9);
-      K.words(tl, [document.getElementById("s04-xl")], 3.05);
+      K.pop(tl, document.getElementById("s04-c1"), 0.55, 1.06);
+      tl.fromTo("#s04-x", { scale: 2.4, opacity: 0, rotation: -20 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.22, ease: "expo.out" }, 0.98);
+      K.words(tl, [document.getElementById("s04-xl")], 0.98 + 0.15);
       // ② 권리가액 ≥ 가장 작은 아파트 분양가 — 막대로 견준다
-      K.pop(tl, document.getElementById("s04-c2"), 3.58, 1.06);
-      tl.fromTo("#s04-b1", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 4.35);
-      K.words(tl, [document.getElementById("s04-b1v")], 4.75);
-      tl.fromTo("#s04-b2", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power3.out" }, 5.0);
-      K.words(tl, [document.getElementById("s04-b2v")], 5.35);
+      K.pop(tl, document.getElementById("s04-c2"), 1.86, 1.06);
+      tl.fromTo("#s04-b1", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 2.21);
+      K.words(tl, [document.getElementById("s04-b1v")], 2.21 + 0.4);
+      tl.fromTo("#s04-b2", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power3.out" }, 2.96);
+      K.words(tl, [document.getElementById("s04-b2v")], 2.96 + 0.35);
       window.__timelines["s04"] = tl;
     })();
   </script>
