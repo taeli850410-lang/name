@@ -69,14 +69,14 @@
       K.words(tl, [document.getElementById("s04-hs")], 0.45);
       // ① 토지 90㎡ — 이 매물은 12.56㎡, 미달
       K.pop(tl, document.getElementById("s04-c1"), 0.55, 1.06);
-      tl.fromTo("#s04-x", { scale: 2.4, opacity: 0, rotation: -20 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.22, ease: "expo.out" }, 0.98);
-      K.words(tl, [document.getElementById("s04-xl")], 0.98 + 0.15);
+      tl.fromTo("#s04-x", { scale: 2.4, opacity: 0, rotation: -20 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.22, ease: "expo.out" }, 0.92);
+      K.words(tl, [document.getElementById("s04-xl")], 0.92 + 0.15);
       // ② 권리가액 ≥ 가장 작은 아파트 분양가 — 막대로 견준다
       K.pop(tl, document.getElementById("s04-c2"), 1.86, 1.06);
       tl.fromTo("#s04-b1", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 2.21);
       K.words(tl, [document.getElementById("s04-b1v")], 2.21 + 0.4);
-      tl.fromTo("#s04-b2", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power3.out" }, 2.96);
-      K.words(tl, [document.getElementById("s04-b2v")], 2.96 + 0.35);
+      tl.fromTo("#s04-b2", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power3.out" }, 3.04);
+      K.words(tl, [document.getElementById("s04-b2v")], 3.04 + 0.35);
       window.__timelines["s04"] = tl;
     })();
   </script>
