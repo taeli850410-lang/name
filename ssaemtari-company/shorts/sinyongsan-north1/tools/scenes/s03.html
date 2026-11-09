@@ -1,0 +1,62 @@
+<!-- 템플릿: 이중 중괄호 자리는 tools/build.py 가 말소리 단어 시각으로 채운다. compositions/ 쪽은 생성물이다. -->
+<template>
+  <style>
+    @font-face { font-family: "Pretendard"; font-weight: 900; src: url("assets/fonts/Pretendard-Black.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 800; src: url("assets/fonts/Pretendard-ExtraBold.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 700; src: url("assets/fonts/Pretendard-Bold.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 500; src: url("assets/fonts/Pretendard-Medium.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: "Pretendard", sans-serif; color: #f7f7f2; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; word-break: keep-all; }
+    #root .bg { position: absolute; inset: 0; background: #0b0b0e; }
+    #root .cam { position: absolute; inset: 0; }
+    #root .line { position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; }
+    #root .y { color: #ffd400; }
+    #root .muted { color: #9a9aa3; }
+    #root .odo { display: inline-block; line-height: 1; white-space: nowrap; }
+    #root .odo-win { display: inline-block; height: 1em; overflow: hidden; vertical-align: top; }
+    #root .odo-strip { display: inline-flex; flex-direction: column; }
+    #root .odo-strip span, #root .odo-ch { display: block; height: 1em; line-height: 1em; }
+    #root .odo-ch { display: inline-block; vertical-align: top; }
+    #s03-cam .lab { position: absolute; left: 110px; font-size: 54px; font-weight: 800; color: #9a9aa3; white-space: nowrap; }
+    #s03-cam .val { position: absolute; left: 104px; font-weight: 900; white-space: nowrap; }
+    #s03-l1 { top: 250px; }
+    #s03-v1 { top: 318px; font-size: 150px; }
+    #s03-n1 { position: absolute; left: 112px; top: 482px; font-size: 34px; font-weight: 700; color: #9a9aa3; }
+    #s03-l2 { top: 562px; }
+    #s03-v2 { top: 630px; font-size: 150px; }
+    #s03-rule { position: absolute; left: 110px; right: 110px; top: 812px; height: 8px; background: #f7f7f2; transform-origin: 0 50%; }
+    #s03-l3 { top: 846px; color: #ffd400 !important; }
+    #s03-v3 { top: 912px; font-size: 186px; color: #ffd400; }
+  </style>
+  <div id="root" data-composition-id="s03" data-width="1080" data-height="1920">
+    <div class="bg"></div>
+    <div class="cam" id="s03-cam">
+      <div class="lab" id="s03-l1">종전자산 평가액</div>
+      <div class="val odo" id="s03-v1" data-odo="5억 7,650만" data-layout-allow-overflow>5억 7,650만</div>
+      <div id="s03-n1">감정평가법인 2곳 산술평균 · 조합 통지</div>
+      <div class="lab" id="s03-l2">× 추정 비례율</div>
+      <div class="val odo" id="s03-v2" data-odo="104.98%" data-layout-allow-overflow>104.98%</div>
+      <div id="s03-rule"></div>
+      <div class="lab" id="s03-l3">= 권리가액</div>
+      <div class="val" id="s03-v3">6억 521만</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var K = window.KIT;
+      K.odo(document.getElementById("s03-cam"));
+      var tl = gsap.timeline({ paused: true });
+      // 말이 숫자를 부를 때 굴러서 멈춘다
+      K.words(tl, [document.getElementById("s03-l1")], {{l1}});
+      K.roll(tl, document.getElementById("s03-v1"), {{v1}}, {{v1_dur}});
+      K.words(tl, [document.getElementById("s03-n1")], {{n1}});
+      K.words(tl, [document.getElementById("s03-l2")], {{l2}});
+      K.roll(tl, document.getElementById("s03-v2"), {{v2}}, {{v2_dur}});
+      tl.fromTo("#s03-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.32, ease: "power3.out" }, {{rule}});
+      K.words(tl, [document.getElementById("s03-l3")], {{l3}});
+      // 한 박자 쉬고(말 사이 0.38 s) 권리가액이 박힌다 — 라이저 끝, 임팩트
+      K.slam(tl, document.getElementById("s03-v3"), {{v3}}, 1.8);
+      K.shake(tl, document.getElementById("s03-cam"), {{v3}} + 0.05, 22);
+      window.__timelines["s03"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,58 @@
+<!-- 템플릿: 이중 중괄호 자리는 tools/build.py 가 말소리 단어 시각으로 채운다. compositions/ 쪽은 생성물이다. -->
+<template>
+  <style>
+    @font-face { font-family: "Pretendard"; font-weight: 900; src: url("assets/fonts/Pretendard-Black.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 800; src: url("assets/fonts/Pretendard-ExtraBold.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 700; src: url("assets/fonts/Pretendard-Bold.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 500; src: url("assets/fonts/Pretendard-Medium.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: "Pretendard", sans-serif; color: #f7f7f2; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; word-break: keep-all; }
+    #root .bg { position: absolute; inset: 0; background: #0b0b0e; }
+    #root .cam { position: absolute; inset: 0; }
+    #root .line { position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; }
+    #root .y { color: #ffd400; }
+    #root .muted { color: #9a9aa3; }
+    #root .odo { display: inline-block; line-height: 1; white-space: nowrap; }
+    #root .odo-win { display: inline-block; height: 1em; overflow: hidden; vertical-align: top; }
+    #root .odo-strip { display: inline-flex; flex-direction: column; }
+    #root .odo-strip span, #root .odo-ch { display: block; height: 1em; line-height: 1em; }
+    #root .odo-ch { display: inline-block; vertical-align: top; }
+    #s05-bg { position: absolute; inset: 0; background: #ffd400; }
+    #s05-cam { color: #0b0b0e; }
+    #s05-k { top: 320px; font-size: 150px; font-weight: 900; line-height: 1; }
+    #s05-cmp { top: 500px; font-size: 58px; font-weight: 800; }
+    #s05-stamp { position: absolute; left: 140px; right: 140px; top: 650px; height: 360px; }
+    #s05-stamp-in { position: absolute; inset: 0; border: 12px solid #0b0b0e; border-radius: 26px; transform: rotate(-5deg);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    #s05-stamp-in .a { font-size: 112px; font-weight: 900; line-height: 1.05; }
+    #s05-stamp-in .b { display: flex; align-items: center; gap: 16px; margin-top: 10px; font-size: 64px; font-weight: 900; }
+    #s05-stamp-in svg { width: 72px; height: 72px; }
+    #s05-note { top: 1060px; font-size: 34px; font-weight: 700; }
+  </style>
+  <div id="root" data-composition-id="s05" data-width="1080" data-height="1920">
+    <div id="s05-bg"></div>
+    <div class="cam" id="s05-cam">
+      <div class="line" id="s05-k">권리가액으로</div>
+      <div class="line" id="s05-cmp">6억 521만 ≥ 3억 2,265만</div>
+      <div id="s05-stamp">
+        <div id="s05-stamp-in">
+          <div class="a">아파트 자격</div>
+          <div class="b"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M14 54 L40 78 L88 22" fill="none" stroke="#0b0b0e" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" /></svg>서류상 통과</div>
+        </div>
+      </div>
+      <div class="line" id="s05-note">※ 조합 추산서 기준</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      var K = window.KIT;
+      K.slam(tl, document.getElementById("s05-k"), 0.12, 1.4);
+      K.words(tl, [document.getElementById("s05-cmp")], 0.45);
+      // "그 문턱을 넘습니다" — 도장이 찍힌다
+      tl.fromTo("#s05-stamp", { scale: 2.3, opacity: 0, filter: "blur(10px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "expo.out" }, {{stamp}});
+      K.shake(tl, document.getElementById("s05-cam"), {{stamp}} + 0.04, 26);
+      K.words(tl, [document.getElementById("s05-note")], 0.6);
+      window.__timelines["s05"] = tl;
+    })();
+  </script>
+</template>
