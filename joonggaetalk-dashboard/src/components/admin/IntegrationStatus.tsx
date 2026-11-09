@@ -34,6 +34,7 @@ export const INTEGRATIONS: Integration[] = [
   { key: "telegram", label: "운영자 알림 (텔레그램)", endpoint: "/api/telegram", env: "TELEGRAM_BOT_TOKEN · TELEGRAM_CHAT_ID", check: "/api/telegram?check=1" },
   { key: "billing", label: "정기결제", endpoint: "/api/billing", env: "PORTONE_API_SECRET 또는 TOSS_SECRET_KEY" },
   { key: "files", label: "첨부 파일 저장소", endpoint: "/api/files", env: "S3_ENDPOINT · S3_BUCKET · S3_ACCESS_KEY_ID · S3_SECRET_ACCESS_KEY", check: "/api/files?check=1" },
+  { key: "heygen", label: "AI 소개 영상 (HeyGen)", endpoint: "/api/heygen", env: "HEYGEN_API_KEY", check: "/api/heygen?check=1" },
 ];
 
 /** 확인 전 · 설정됨 · 미설정 · 확인 실패를 구분한다. "모름"을 "정상"으로 뭉개지 않는다. */
@@ -60,6 +61,11 @@ function summarize(key: string, data: Record<string, unknown>): string {
     // 무엇을 해 봤는지 그대로 적는다. "성공"만으로는 뭘 확인했는지 알 수 없다.
     const bucket = typeof data.bucket === "string" ? data.bucket : "";
     return `${bucket ? `${bucket} 에 ` : ""}올렸다 되읽고 지웠습니다 · 브라우저 업로드 허용됨`;
+  }
+  if (key === "heygen") {
+    // 계정 조회만 한다. 영상을 만들어 보는 확인은 크레딧이 들어서 하지 않는다.
+    const a = (data.account ?? {}) as { name?: string; remaining?: string };
+    return `${a.name ? `${a.name} 계정` : "계정"} 확인${a.remaining ? ` · 잔액 ${a.remaining}` : ""} · 영상 생성은 시험하지 않았습니다`;
   }
   if (key === "files-skipped") return "";
   return "호출 성공";

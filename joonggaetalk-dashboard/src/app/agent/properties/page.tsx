@@ -9,6 +9,7 @@ import { Drawer } from "@/components/ui/Drawer";
 import { useToast } from "@/components/ui/Toast";
 import { ParcelLookup } from "@/components/property/ParcelLookup";
 import { RegisterLookup, RegisterSummary } from "@/components/property/RegisterLookup";
+import { VideoBrief } from "@/components/property/VideoBrief";
 import { properties as seed, type Property, type PropertyType } from "@/data/properties";
 import { customers } from "@/data/customers";
 import type { RegisterSnapshot } from "@/lib/bldrgst";
@@ -234,6 +235,20 @@ function Properties() {
                   }}
                 />
               </div>
+            </div>
+
+            <div>
+              <div className="section-label">AI 소개 영상</div>
+              <VideoBrief
+                key={detail.id}
+                property={detail}
+                saved={detail.video}
+                onSaved={(ref) => {
+                  const next = { ...detail, video: ref };
+                  setList((xs) => xs.map((p) => (p.id === detail.id ? next : p)));
+                  setDetail(next);
+                }}
+              />
             </div>
 
             <div className="card" style={{ boxShadow: "none" }}>

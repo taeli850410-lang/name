@@ -1,6 +1,7 @@
 import type { Keyword } from "./customers";
 import type { RegisterSnapshot } from "@/lib/bldrgst";
 import type { VworldSnapshot } from "@/lib/vworld";
+import type { VideoRef } from "@/lib/heygen";
 
 export type PropertyType = "아파트" | "오피스텔" | "빌라·다세대" | "상가" | "토지" | "단독주택";
 
@@ -31,6 +32,8 @@ export type Property = {
   register?: RegisterSnapshot;
   /** VWorld 좌표·필지 스냅샷 (조회했을 때만) */
   parcel?: VworldSnapshot;
+  /** AI 소개 영상 (HeyGen) — 만들었을 때만. 영상 주소는 만료되므로 번호만 둔다 */
+  video?: VideoRef;
   /** 주소 검색으로 받은 법정동코드 — 대장 재조회에 쓴다 */
   bcode?: string;
   jibunAddress?: string;

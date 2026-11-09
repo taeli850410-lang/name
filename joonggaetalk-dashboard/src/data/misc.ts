@@ -48,6 +48,11 @@ export const profile = {
   homepageUrl: "https://m.land.naver.com/r/example",
   naverUrl: "https://m.land.naver.com/r/example",
   officePhone: "",
+  /**
+   * 중개사무소 등록번호. 영상·블로그 등 인터넷 광고에 반드시 적어야 한다
+   * (공인중개사법 제18조의2). 비워 두면 AI 소개 영상 카드가 빠졌다고 알린다.
+   */
+  registrationNo: "",
   balsongkingId: "seoyeon_bk",
   kakaoChannelId: "@서연부동산",
   kakaoChannelUrl: "http://pf.kakao.com/_example",

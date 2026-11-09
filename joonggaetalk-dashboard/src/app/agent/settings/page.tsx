@@ -111,9 +111,16 @@ function Settings() {
                     </div>
                   ))}
                 </div>
-                <div className="field" style={{ maxWidth: 320 }}>
-                  <label className="label" htmlFor="s-tel">사무실 전화 <span className="opt">선택</span></label>
-                  <input id="s-tel" className="input" type="tel" placeholder="예: 032-000-1234" defaultValue={profile.officePhone} onChange={mark} />
+                <div className="form-grid-2">
+                  <div className="field">
+                    <label className="label" htmlFor="s-tel">사무실 전화 <span className="opt">선택</span></label>
+                    <input id="s-tel" className="input" type="tel" placeholder="예: 032-000-1234" defaultValue={profile.officePhone} onChange={mark} />
+                  </div>
+                  <div className="field">
+                    <label className="label" htmlFor="s-regno">중개사무소 등록번호 <span className="opt">광고 시 필수</span></label>
+                    <input id="s-regno" className="input" placeholder="예: 28237-2026-00000" defaultValue={profile.registrationNo} onChange={mark} />
+                    <div className="help">AI 소개 영상 등 인터넷 광고의 마지막 장면에 표시됩니다.</div>
+                  </div>
                 </div>
               </div>
             </section>
