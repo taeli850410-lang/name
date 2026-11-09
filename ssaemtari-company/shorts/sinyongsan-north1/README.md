@@ -1,8 +1,9 @@
-# 신용산역 북측1구역 근생 — 60초 쇼츠
+# 신용산역 북측1구역 근생 — 쇼츠 (64초)
 
 블로그 글 「[신용산역 북측1구역 근생] 조합 추산서로 따져본 아파트 자격」(blog.naver.com/christy0410/224470889461)을
-60초 세로 영상(1080×1920, 30fps)으로 옮긴 [HyperFrames](https://github.com/heygen-com/hyperframes) 프로젝트입니다.
+64초 세로 영상(1080×1920, 30fps)으로 옮긴 [HyperFrames](https://github.com/heygen-com/hyperframes) 프로젝트입니다.
 
+- 길이: 내레이션 약 55초 + 끝 화면(중개사무소·매물 표시) 약 8초 = 64초. 처음엔 60초였으나 끝 화면을 오래 보여 달라는 요청으로 늘렸습니다
 - 스타일: 키네틱 타이포그래피 + 하드컷 플래시. 장면 10개, 컷마다 4프레임 플래시(초당 3회를 넘지 않음)
 - 내레이션: 의뢰인 본인 목소리 10초를 참고해 Chatterbox Multilingual(MIT)로 합성한 "또렷한 아나운서" 톤.
   **AI 합성 음성**이며 영상 안에 그렇게 표시합니다. 참고 녹음은 개인 음성이라 저장소에 넣지 않습니다
@@ -20,7 +21,7 @@
 | `tools/voice_chatterbox.py` | 줄마다 3번 합성 → Whisper 로 숫자·문장 확인, 본인 목소리와 가장 닮은 것 선택 → 문장 끝 군소리 제거 → 이어 붙여 방송용 처리 → `assets/voice/narration.wav` + `timing.json`(단어별 시각) |
 | `tools/master_voice.sh` | 방송용 음성 처리: 저역 잡음·웅웅거림 제거, 명료도, 치찰음, 압축, 템포, −16 LUFS |
 | `tools/bgm.py` | 배경음악 작곡·합성 → `assets/bgm/bgm.mp3` (numpy, scipy, ffmpeg). 박자를 `timing.json` 의 두 순간에 맞추고 내레이션 자리를 덕킹 |
-| `office.json` | 끝 화면 중개사무소 표시 사항(명칭·이름·연락처·주소, 등록번호·대표자 성명은 아직 비어 있음) |
+| `office.json` | 끝 화면 중개사무소 표시 사항(명칭·소재지·연락처·등록번호·대표 공인중개사·소속 공인중개사) |
 | `tools/build.py` | `timing.json` → 장면 컷, 자막, 플래시, 효과음, 배경음악, `index.html`. `tools/scenes/` 템플릿에 "그 단어를 말하는 순간"을 채워 `compositions/` 에 쓴다 |
 | `tools/scenes/s01~s10.html` | 장면 템플릿(손으로 쓴 키네틱 타이포). 이중 중괄호 자리가 시각 |
 | `compositions/` | 생성물. 직접 고치지 말고 템플릿을 고친다 |

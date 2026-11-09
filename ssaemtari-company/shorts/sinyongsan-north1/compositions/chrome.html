@@ -24,13 +24,13 @@
     <div id="ghost-07" class="ghost clip" data-start="30.96" data-duration="9.083" data-layout-ignore><span class="gin">07</span></div>
     <div id="ghost-08" class="ghost clip" data-start="40.043" data-duration="7.13" data-layout-ignore><span class="gin">08</span></div>
     <div id="ghost-09" class="ghost clip" data-start="47.173" data-duration="5.642" data-layout-ignore><span class="gin">09</span></div>
-    <div id="ghost-10" class="ghost clip" data-start="52.815" data-duration="7.185" data-layout-ignore><span class="gin">10</span></div>
+    <div id="ghost-10" class="ghost clip" data-start="52.815" data-duration="11.185" data-layout-ignore><span class="gin">10</span></div>
     <div id="chrome-bar" data-layout-ignore><div id="chrome-fill"></div></div>
   </div>
   <script>
     (function () {
       var tl = gsap.timeline({ paused: true });
-      tl.fromTo("#chrome-fill", { scaleX: 0 }, { scaleX: 1, duration: 60, ease: "none" }, 0);
+      tl.fromTo("#chrome-fill", { scaleX: 0 }, { scaleX: 1, duration: 64, ease: "none" }, 0);
       tl.fromTo("#ghost-01 .gin", { y: 90, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: "expo.out" }, 0);
       tl.fromTo("#ghost-02 .gin", { y: 90, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: "expo.out" }, 5.432);
       tl.fromTo("#ghost-03 .gin", { y: 90, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: "expo.out" }, 9.425);

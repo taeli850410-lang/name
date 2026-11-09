@@ -14,7 +14,7 @@ import os
 import re
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-W, H, TOTAL = 1080, 1920, 60.0
+W, H, TOTAL = 1080, 1920, 64.0  # 끝 화면(명함·매물 표시)을 약 8초 세워 두려고 60초에서 늘림
 FRAME = 1 / 30
 
 timing = json.load(open(os.path.join(HERE, "timing.json"), encoding="utf-8"))
@@ -385,7 +385,7 @@ index = f"""<!doctype html>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width={W}, height={H}" />
-    <title>신용산역 북측1구역 근생 — 60초 쇼츠</title>
+    <title>신용산역 북측1구역 근생 — 쇼츠</title>
     <script src="assets/vendor/gsap.min.js"></script>
     <script src="assets/kit.js"></script>
     <style>
@@ -410,7 +410,7 @@ index = f"""<!doctype html>
 # ------------------------------------------------------------------ 중개사무소 표시 사항 (office.json → 끝 화면 [[자리]])
 OFFICE = json.load(open(os.path.join(HERE, "office.json"), encoding="utf-8"))
 OFFICE_TEXT = {k: html.escape(v) for k, v in OFFICE.items() if not k.startswith("_")}
-reg = " · ".join(x for x in [OFFICE["reg_no"] and f"등록번호 {OFFICE['reg_no']}", OFFICE["ceo"] and f"대표 {OFFICE['ceo']}"] if x)
+reg = " · ".join(x for x in [OFFICE["reg_no"] and f"등록번호 {OFFICE['reg_no']}", OFFICE["ceo"] and f"대표 공인중개사 {OFFICE['ceo']}"] if x)
 OFFICE_TEXT["reg_html"] = f'          <div id="s10-b-reg">{html.escape(reg)}</div>' if reg else ""
 missing_office = [k for k in ("reg_no", "ceo") if not OFFICE[k]]
 

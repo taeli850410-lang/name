@@ -18,7 +18,7 @@ from scipy import signal
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SR = 48000
-TOTAL = 60.0
+TOTAL = 64.0  # build.py 의 TOTAL 과 같아야 한다
 N = int(SR * TOTAL)
 rng = np.random.default_rng(11)
 
@@ -193,17 +193,22 @@ CHORDS = {  # (베이스, 패드 화음, 아르페지오 음)
     "G": (31, [55, 59, 62, 69], [67, 71, 74, 78]),
 }
 CYCLE = ["Am", "F", "C", "G"]
-LAST_BAR = 27  # 끝 화면
-chord_of = {b: CYCLE[b % 4] for b in range(LAST_BAR + 1)}
-chord_of[25], chord_of[26], chord_of[27] = "F", "G", "C"  # 끝 화면 마디는 C 로 풀린다
+LAST_BAR = 27  # 끝 화면으로 컷되는 마디
+# 끝 화면 동안 C–F–G 로 몇 마디 더 가다가, 영상 끝 약 2초 전 마디 첫 박에 C(add9)로 닫는다
+OUTRO = max(1, int((TOTAL - at(LAST_BAR) - 1.8) // BAR))
+FINAL_BAR = LAST_BAR + OUTRO
+chord_of = {b: CYCLE[b % 4] for b in range(FINAL_BAR)}
+chord_of[25], chord_of[26] = "F", "G"
+for k in range(OUTRO):
+    chord_of[LAST_BAR + k] = ["C", "F", "G"][k % 3]
 
 BREAK = {11}  # 도장 직전 한 마디: 킥·베이스를 빼고 라이저
 BUILD = {26}  # 끝 화면 직전 한 마디: 스네어 롤 + 라이저
 INTRO = {0, 1}
-LIFT = set(range(12, 20)) | {LAST_BAR}  # 판정 뒤와 끝 화면 — 오픈 하이햇, 16분 아르페지오로 조금 더 힘 있게
+LIFT = set(range(12, 20)) | set(range(LAST_BAR, FINAL_BAR))  # 판정 뒤와 끝 화면 — 오픈 하이햇, 16분 아르페지오로 조금 더 힘 있게
 kicks = []
 
-for b in range(LAST_BAR + 1):
+for b in range(FINAL_BAR):
     ch = chord_of[b]
     root, padn, arpn = CHORDS[ch]
     # 패드
@@ -253,9 +258,9 @@ for b in range(LAST_BAR + 1):
             if s >= 8 or s % 2 == 0:
                 place(drums, snare_roll_hit(0.2 + 0.6 * s / 15), at(b, s), 0.6)
 
-# 끝 화면으로 컷되는 순간 한 방, 다음 마디 첫 박에 C(add9) 화음으로 닫고 울림을 남긴다
+# 끝 화면으로 컷되는 순간 한 방, 마지막 마디 첫 박에 C(add9) 화음으로 닫고 울림을 남긴다
 place(fx, impact(), at(LAST_BAR), 0.55)
-t_end = at(LAST_BAR + 1)
+t_end = at(FINAL_BAR)
 place(drums, kick(1.0), t_end)
 place(drums, hat(0.3, open_=True), t_end, pan=0.3)
 final = pad_chord([48, 55, 60, 64, 67, 74], TOTAL - t_end + 0.2) * 1.5
