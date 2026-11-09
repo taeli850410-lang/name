@@ -1,0 +1,71 @@
+<template>
+  <style>
+    @font-face { font-family: "Pretendard"; font-weight: 900; src: url("assets/fonts/Pretendard-Black.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 800; src: url("assets/fonts/Pretendard-ExtraBold.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 700; src: url("assets/fonts/Pretendard-Bold.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 500; src: url("assets/fonts/Pretendard-Medium.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: "Pretendard", sans-serif; color: #f7f7f2; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; word-break: keep-all; }
+    #root .bg { position: absolute; inset: 0; background: #0b0b0e; }
+    #root .cam { position: absolute; inset: 0; }
+    #root .line { position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; }
+    #root .y { color: #ffd400; }
+    #root .muted { color: #9a9aa3; }
+    #root .odo { display: inline-block; line-height: 1; white-space: nowrap; }
+    #root .odo-win { display: inline-block; height: 1em; overflow: hidden; vertical-align: top; }
+    #root .odo-strip { display: inline-flex; flex-direction: column; }
+    #root .odo-strip span, #root .odo-ch { display: block; height: 1em; line-height: 1em; }
+    #root .odo-ch { display: inline-block; vertical-align: top; }
+    #s06-cam .abs { position: absolute; white-space: nowrap; }
+    #s06-l { left: 110px; top: 230px; font-size: 52px; font-weight: 800; color: #9a9aa3; }
+    #s06-big { left: 102px; top: 286px; font-size: 180px; font-weight: 900; line-height: 1; color: #ffd400; }
+    #s06-sub { left: 112px; top: 476px; font-size: 38px; font-weight: 700; color: #9a9aa3; }
+    #s06-tl { left: 110px; top: 548px; font-size: 46px; font-weight: 800; color: #9a9aa3; }
+    #s06-tv { left: 104px; top: 606px; font-size: 124px; font-weight: 900; }
+    #s06-seg1 { position: absolute; left: 120px; top: 898px; width: 230px; height: 192px; background: #e9e9e4; transform-origin: 50% 100%; }
+    #s06-seg2 { position: absolute; left: 120px; top: 760px; width: 230px; height: 138px; background: #ffd400; transform-origin: 50% 100%; }
+    #s06-k1 { left: 390px; top: 952px; font-size: 38px; font-weight: 700; color: #9a9aa3; }
+    #s06-v1 { left: 390px; top: 998px; font-size: 56px; font-weight: 900; }
+    #s06-k2 { left: 390px; top: 764px; font-size: 38px; font-weight: 700; color: #9a9aa3; }
+    #s06-v2 { left: 390px; top: 808px; font-size: 64px; font-weight: 900; color: #ffd400; }
+    #s06-v2s { left: 650px; top: 832px; font-size: 34px; font-weight: 700; color: #9a9aa3; }
+  </style>
+  <div id="root" data-composition-id="s06" data-width="1080" data-height="1920">
+    <div class="bg"></div>
+    <div class="cam" id="s06-cam">
+      <div class="abs" id="s06-l">신청 평형</div>
+      <div class="abs" id="s06-big">115A</div>
+      <div class="abs" id="s06-sub">공급 164.19㎡ · 49.66평</div>
+
+      <div class="abs" id="s06-tl">총투자금 = 매매가 + 분담금</div>
+      <div class="abs odo" id="s06-tv" data-odo="33억 5,595만" data-layout-allow-overflow>33억 5,595만</div>
+
+      <div id="s06-seg1"></div>
+      <div id="s06-seg2"></div>
+      <div class="abs" id="s06-k1">매매가</div>
+      <div class="abs" id="s06-v1">19억 5,000만</div>
+      <div class="abs" id="s06-k2">분담금 · 조합 추산</div>
+      <div class="abs" id="s06-v2">약 14억</div>
+      <div class="abs" id="s06-v2s">14억 595만</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var K = window.KIT;
+      K.odo(document.getElementById("s06-cam"));
+      var tl = gsap.timeline({ paused: true });
+      K.words(tl, [document.getElementById("s06-l")], 0.1);
+      K.slam(tl, document.getElementById("s06-big"), 0.72, 1.6);
+      K.words(tl, [document.getElementById("s06-sub")], 1.12);
+      // 막대가 아래에서 쌓인다: 매매가, 그 위에 분담금
+      tl.fromTo("#s06-seg1", { scaleY: 0 }, { scaleY: 1, duration: 0.45, ease: "power3.out" }, 1.25);
+      K.words(tl, document.querySelectorAll("#s06-k1, #s06-v1"), 1.4);
+      tl.fromTo("#s06-seg2", { scaleY: 0 }, { scaleY: 1, duration: 0.45, ease: "power3.out" }, 1.75);
+      K.words(tl, document.querySelectorAll("#s06-k2, #s06-v2, #s06-v2s"), 1.9);
+      // "총투자금은 삼십삼억…" — 굴러서 멈춘다
+      K.words(tl, [document.getElementById("s06-tl")], 3.0);
+      K.roll(tl, document.getElementById("s06-tv"), 3.25, 1.35);
+      K.shake(tl, document.getElementById("s06-cam"), 4.62, 12);
+      window.__timelines["s06"] = tl;
+    })();
+  </script>
+</template>

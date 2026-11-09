@@ -1,0 +1,82 @@
+<template>
+  <style>
+    @font-face { font-family: "Pretendard"; font-weight: 900; src: url("assets/fonts/Pretendard-Black.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 800; src: url("assets/fonts/Pretendard-ExtraBold.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 700; src: url("assets/fonts/Pretendard-Bold.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 500; src: url("assets/fonts/Pretendard-Medium.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: "Pretendard", sans-serif; color: #f7f7f2; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; word-break: keep-all; }
+    #root .bg { position: absolute; inset: 0; background: #0b0b0e; }
+    #root .cam { position: absolute; inset: 0; }
+    #root .line { position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; }
+    #root .y { color: #ffd400; }
+    #root .muted { color: #9a9aa3; }
+    #root .odo { display: inline-block; line-height: 1; white-space: nowrap; }
+    #root .odo-win { display: inline-block; height: 1em; overflow: hidden; vertical-align: top; }
+    #root .odo-strip { display: inline-flex; flex-direction: column; }
+    #root .odo-strip span, #root .odo-ch { display: block; height: 1em; line-height: 1em; }
+    #root .odo-ch { display: inline-block; vertical-align: top; }
+    #s09-rail { position: absolute; left: 148px; top: 282px; width: 4px; height: 470px; background: #3a3a42; transform-origin: 50% 0; }
+    #root .ev { position: absolute; left: 136px; right: 60px; height: 70px; display: flex; align-items: center; }
+    #root .ev .dot { width: 28px; height: 28px; border-radius: 50%; background: #6f6f78; flex: none; }
+    #root .ev .yr { width: 170px; margin-left: 34px; font-size: 34px; font-weight: 700; color: #9a9aa3; flex: none; }
+    #root .ev .tx { font-size: 40px; font-weight: 800; white-space: nowrap; }
+    #root .ev.now .dot { background: #ffd400; box-shadow: 0 0 0 8px rgba(255, 212, 0, 0.25); }
+    #root .ev.now .yr { color: #ffd400; font-weight: 900; }
+    #root .ev.now .tx { color: #ffd400; }
+    #root .ev.next .dot { background: transparent; border: 4px dashed #6f6f78; }
+    #root .ev.next .tx { color: #9a9aa3; }
+    #s09-big { top: 830px; font-size: 76px; font-weight: 900; color: #3ddc84; }
+    #s09-sub { position: absolute; left: 90px; right: 90px; top: 944px; text-align: center; font-size: 36px; font-weight: 700; color: #9a9aa3; line-height: 1.45; }
+
+    #s09-b-icon { position: absolute; left: 470px; top: 270px; width: 140px; height: 140px; }
+    #s09-b-k { top: 450px; font-size: 80px; font-weight: 900; }
+    #s09-b-big { top: 556px; font-size: 112px; font-weight: 900; color: #ffd400; line-height: 1.05; }
+    #s09-b-s { top: 720px; font-size: 48px; font-weight: 800; }
+  </style>
+  <div id="root" data-composition-id="s09" data-width="1080" data-height="1920">
+    <div class="bg"></div>
+
+    <div id="s09-a" class="clip" data-start="0" data-duration="3.2">
+      <div class="cam" id="s09-a-cam">
+        <div id="s09-rail"></div>
+        <div class="ev" id="s09-e1" style="top: 248px"><span class="dot"></span><span class="yr">2015.07</span><span class="tx">정비구역 지정</span></div>
+        <div class="ev" id="s09-e2" style="top: 340px"><span class="dot"></span><span class="yr">2017.07</span><span class="tx">조합설립인가</span></div>
+        <div class="ev" id="s09-e3" style="top: 432px"><span class="dot"></span><span class="yr">2023.12</span><span class="tx">사업시행계획인가</span></div>
+        <div class="ev" id="s09-e4" style="top: 524px"><span class="dot"></span><span class="yr">2025.01</span><span class="tx">시공사 롯데건설 선정</span></div>
+        <div class="ev now" id="s09-e5" style="top: 616px"><span class="dot"></span><span class="yr">지금</span><span class="tx">분양신청 · 추산액 통지</span></div>
+        <div class="ev next" id="s09-e6" style="top: 708px"><span class="dot"></span><span class="yr">다음</span><span class="tx">관리처분계획인가 · 미정</span></div>
+        <div class="line" id="s09-big">조합원 지위 승계 가능</div>
+        <div id="s09-sub">관리처분인가 뒤 매수는 원칙적으로 승계 불가</div>
+      </div>
+    </div>
+
+    <div id="s09-b" class="clip" data-start="3.2" data-duration="2.763">
+      <div class="cam" id="s09-b-cam">
+        <svg id="s09-b-icon" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 8 L94 88 L6 88 Z" fill="#ffd400" stroke="#ffd400" stroke-width="6" stroke-linejoin="round" /><rect x="45" y="34" width="10" height="30" rx="4" fill="#0b0b0e" /><circle cx="50" cy="75" r="6" fill="#0b0b0e" /></svg>
+        <div class="line" id="s09-b-k">금액은</div>
+        <div class="line" id="s09-b-big">조합 추산서 기준</div>
+        <div class="line" id="s09-b-s">관리처분 과정에서 달라질 수 있습니다</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      var K = window.KIT;
+      // A — 지나온 단계가 빠르게 깔리고, '지금'은 관리처분인가 바로 앞
+      tl.fromTo("#s09-rail", { scaleY: 0 }, { scaleY: 1, duration: 0.6, ease: "power2.inOut" }, 0.08);
+      var evs = ["s09-e1", "s09-e2", "s09-e3", "s09-e4", "s09-e5", "s09-e6"];
+      for (var i = 0; i < evs.length; i++) K.words(tl, [document.getElementById(evs[i])], 0.1 + i * 0.09);
+      K.pop(tl, document.querySelector("#s09-e5 .tx"), 0.95, 1.18);
+      K.slam(tl, document.getElementById("s09-big"), 1.45, 1.5);
+      K.shake(tl, document.getElementById("s09-a-cam"), 1.5, 10);
+      K.words(tl, [document.getElementById("s09-sub")], 1.47);
+      // B — 다만, 금액은 추산서 기준
+      K.pop(tl, document.getElementById("s09-b-icon"), 3.24, 1.4);
+      K.words(tl, [document.getElementById("s09-b-k")], 3.42);
+      K.slam(tl, document.getElementById("s09-b-big"), 3.9, 1.4);
+      K.words(tl, [document.getElementById("s09-b-s")], 4.1);
+      window.__timelines["s09"] = tl;
+    })();
+  </script>
+</template>

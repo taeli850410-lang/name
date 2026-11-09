@@ -1,0 +1,82 @@
+<template>
+  <style>
+    @font-face { font-family: "Pretendard"; font-weight: 900; src: url("assets/fonts/Pretendard-Black.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 800; src: url("assets/fonts/Pretendard-ExtraBold.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 700; src: url("assets/fonts/Pretendard-Bold.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 500; src: url("assets/fonts/Pretendard-Medium.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: "Pretendard", sans-serif; color: #f7f7f2; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; word-break: keep-all; }
+    #root .bg { position: absolute; inset: 0; background: #0b0b0e; }
+    #root .cam { position: absolute; inset: 0; }
+    #root .line { position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; }
+    #root .y { color: #ffd400; }
+    #root .muted { color: #9a9aa3; }
+    #root .odo { display: inline-block; line-height: 1; white-space: nowrap; }
+    #root .odo-win { display: inline-block; height: 1em; overflow: hidden; vertical-align: top; }
+    #root .odo-strip { display: inline-flex; flex-direction: column; }
+    #root .odo-strip span, #root .odo-ch { display: block; height: 1em; line-height: 1em; }
+    #root .odo-ch { display: inline-block; vertical-align: top; }
+    #s04-h { top: 240px; font-size: 112px; font-weight: 900; line-height: 1; }
+    #s04-h span { display: inline-block; margin: 0 0.1em; }
+    #s04-hs { top: 380px; font-size: 42px; font-weight: 700; color: #9a9aa3; }
+    #s04-cam .card { position: absolute; left: 80px; right: 80px; border-radius: 22px; background: #17171c; border: 2px solid #2a2a31; padding: 30px 36px; }
+    #s04-c1 { top: 470px; height: 236px; }
+    #s04-c2 { top: 740px; height: 350px; }
+    #s04-cam .ct { font-size: 50px; font-weight: 900; line-height: 1.2; }
+    #s04-cam .cs { margin-top: 12px; font-size: 40px; font-weight: 700; color: #9a9aa3; }
+    #s04-x { position: absolute; right: 54px; top: 26px; width: 130px; height: 130px; }
+    #s04-xl { position: absolute; right: 44px; top: 166px; width: 150px; text-align: center; font-size: 34px; font-weight: 800; color: #ff4d3d; }
+    #s04-cam .bars { margin-top: 26px; }
+    #s04-cam .brow { display: flex; align-items: center; height: 92px; }
+    #s04-cam .bname { width: 300px; font-size: 32px; font-weight: 700; color: #c9c9cf; line-height: 1.2; }
+    #s04-cam .btrack { position: relative; flex: 1; height: 56px; }
+    #s04-cam .bfill { position: absolute; left: 0; top: 0; height: 56px; border-radius: 8px; transform-origin: 0 50%; }
+    #s04-cam .bval { position: absolute; top: 6px; font-size: 38px; font-weight: 900; white-space: nowrap; }
+  </style>
+  <div id="root" data-composition-id="s04" data-width="1080" data-height="1920">
+    <div class="bg"></div>
+    <div class="cam" id="s04-cam">
+      <div class="line" id="s04-h"><span>근생</span><span class="muted">→</span><span class="y">아파트</span></div>
+      <div class="line" id="s04-hs">서울시 조례 · 둘 중 하나면 된다</div>
+
+      <div class="card" id="s04-c1">
+        <div class="ct">① 종전 토지 90㎡ 이상</div>
+        <div class="cs">이 매물 대지 12.56㎡</div>
+        <svg id="s04-x" viewBox="0 0 100 100" aria-label="미달"><circle cx="50" cy="50" r="44" fill="none" stroke="#ff4d3d" stroke-width="8" /><path d="M32 32 L68 68 M68 32 L32 68" stroke="#ff4d3d" stroke-width="10" stroke-linecap="round" /></svg>
+        <div id="s04-xl">미달</div>
+      </div>
+
+      <div class="card" id="s04-c2">
+        <div class="ct">② 권리가액 ≥ 가장 작은<br />아파트 분양가</div>
+        <div class="bars">
+          <div class="brow">
+            <div class="bname">권리가액</div>
+            <div class="btrack"><div class="bfill" id="s04-b1" style="width: 330px; background: #ffd400"></div><div class="bval y" id="s04-b1v" style="left: 346px">6억 521만</div></div>
+          </div>
+          <div class="brow">
+            <div class="bname">21A 분양가<br />(조합원·추정)</div>
+            <div class="btrack"><div class="bfill" id="s04-b2" style="width: 176px; background: #6b6b75"></div><div class="bval" id="s04-b2v" style="left: 192px">3억 2,265만</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      var K = window.KIT;
+      K.words(tl, document.querySelectorAll("#s04-h span"), 0.1, 0.16);
+      K.words(tl, [document.getElementById("s04-hs")], 0.9);
+      // ① 토지 90㎡ — 이 매물은 12.56㎡, 미달
+      K.pop(tl, document.getElementById("s04-c1"), 1.65, 1.06);
+      tl.fromTo("#s04-x", { scale: 2.4, opacity: 0, rotation: -20 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.22, ease: "expo.out" }, 2.9);
+      K.words(tl, [document.getElementById("s04-xl")], 3.05);
+      // ② 권리가액 ≥ 가장 작은 아파트 분양가 — 막대로 견준다
+      K.pop(tl, document.getElementById("s04-c2"), 3.58, 1.06);
+      tl.fromTo("#s04-b1", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 4.35);
+      K.words(tl, [document.getElementById("s04-b1v")], 4.75);
+      tl.fromTo("#s04-b2", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power3.out" }, 5.0);
+      K.words(tl, [document.getElementById("s04-b2v")], 5.35);
+      window.__timelines["s04"] = tl;
+    })();
+  </script>
+</template>
