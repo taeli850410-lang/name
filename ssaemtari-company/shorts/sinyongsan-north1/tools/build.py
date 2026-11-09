@@ -226,9 +226,12 @@ def highlight(text: str) -> str:
     return " ".join(out)
 
 
+# 화면 글자가 내레이션과 똑같은 줄은 자막을 달지 않는다 (마지막 "자세한 정보를 알고 싶으시면 연락주세요"가 두 번 보이지 않게)
+NO_CAPTION = {"l12"}
 groups = []
 for line in timing["lines"]:
-    groups += groups_of(line)
+    if line["id"] not in NO_CAPTION:
+        groups += groups_of(line)
 cap_items = []
 for i, (text, st, en) in enumerate(groups):
     open_at = max(0.12, st - 0.04)
