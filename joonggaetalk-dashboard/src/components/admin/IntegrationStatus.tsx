@@ -92,6 +92,12 @@ export function useIntegrationProbe() {
     setCheckedAt(new Date().toTimeString().slice(0, 5));
   }, []);
 
+  // 화면을 열면 한 번 확인한다. 이게 없으면 첫 상태 "확인 중"이 풀리지 않고,
+  // [전체 다시 확인] 도 확인 중에는 잠겨 있어 영영 누를 수 없다.
+  useEffect(() => {
+    void probe();
+  }, [probe]);
+
   /** 키가 설정된 연동만 실제로 불러 본다. 없는 키로 부르면 한도만 버린다. */
   const runLive = useCallback(async () => {
     const targets = INTEGRATIONS.filter((i) => i.check && state[i.key] === "on");
