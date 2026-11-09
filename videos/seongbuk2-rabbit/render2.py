@@ -780,7 +780,7 @@ def s9(base, t, ch):
         CTX.alpha = sa * a
         wave_text(base, '쌤태리부동산컨설팅', 60, 'B', WHITE, CX, 1095, t, land + 0.55)
         CTX.alpha = sa
-    fade_up(base, text_sprite('※ 일부 이미지는 이해를 돕기 위한 예시입니다', 26, 'M', SOFT), CX, 1170, t, land + 0.8, dist=12)
+    fade_up(base, text_sprite('※ AI 음성 · 일부 이미지는 이해를 돕기 위한 예시입니다', 26, 'M', SOFT), CX, 1170, t, land + 0.8, dist=12)
 
 
 SCENE_FN = [s1, s2, s3, s4, s5, s6, s7, s8, s9]
@@ -808,6 +808,9 @@ def render_frame(idx, t):
     draw_rabbit(base, T)
     draw_bubble(base, T)
     bg2.draw_onair(base, BUB[0] + 28, BUB[1] - 24, T, env_at(T), alpha=ease_out(prog(T, 0.9, 0.4)))
+    a_on = ease_out(prog(T, 0.9, 0.4))
+    if a_on > 0:  # 라이선스 조건: AI 생성 음성임을 표시
+        blit_at(base, label_pill('AI 음성', 22), BUB[0] + 28 + bg2.onair_pill().width + 10, BUB[1] - 20, a_on, use_ctx=False)
     R.draw_ui(base, T)
     bg2.draw_index(base, idx + 1, len(TIMING))
     return base
