@@ -347,7 +347,9 @@ def groups_of(line):
             # 가운데에 가깝되, 한쪽이 5글자도 안 되게 남기지 않는다
             n_chars = lambda x: len(re.sub(r"[\s,.?]", "", x))
             short = lambda s: min(n_chars(cap[a:s]), n_chars(cap[s + 1:b])) < 5
-            cut = min(spaces, key=lambda s: abs(s - mid) + (100 if short(s) else 0))
+            # "~면" 으로 끝나는 어절 뒤가 있으면 거기서 (조건절과 결론을 나눈다: "알고 싶으시면 / 연락주세요")
+            cond = [s for s in spaces if cap[:s].endswith("면") and not short(s)]
+            cut = cond[0] if cond else min(spaces, key=lambda s: abs(s - mid) + (100 if short(s) else 0))
             out += [(a, cut), (cut + 1, b)]
         else:
             out.append((a, b))
