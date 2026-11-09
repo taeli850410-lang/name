@@ -7,6 +7,9 @@
 - 내레이션: 의뢰인 본인 목소리 10초를 참고해 Chatterbox Multilingual(MIT)로 합성한 "또렷한 아나운서" 톤.
   **AI 합성 음성**이며 영상 안에 그렇게 표시합니다. 참고 녹음은 개인 음성이라 저장소에 넣지 않습니다
 - 자막과 화면 등장 시각: 완성된 음성을 Whisper 로 다시 읽어 얻은 단어별 시각에서 계산합니다
+- 토끼 아나운서: 의뢰인이 준 캐릭터 이미지를 왼쪽 아래 작은 원에 넣고, 내레이션 소리 크기로 입을 움직이고
+  고개를 흔들며, 효과음 순간에 끄덕이고, 정해진 간격으로 눈을 깜빡입니다(`compositions/avatar.html`, build.py 생성).
+  입 모양을 만드는 AI 모델이 아니라 소리 크기에 맞춘 2D 움직임입니다
 - 숫자: 블로그 본문(조합 추산서 · 국토교통부 실거래 공개자료)에 있는 것만 씁니다
 
 ## 파일
@@ -19,6 +22,7 @@
 | `tools/build.py` | `timing.json` → 장면 컷, 자막, 플래시, 효과음, `index.html`. `tools/scenes/` 템플릿에 "그 단어를 말하는 순간"을 채워 `compositions/` 에 쓴다 |
 | `tools/scenes/s01~s10.html` | 장면 템플릿(손으로 쓴 키네틱 타이포). 이중 중괄호 자리가 시각 |
 | `compositions/` | 생성물. 직접 고치지 말고 템플릿을 고친다 |
+| `assets/avatar/rabbit.jpg` | 토끼 아나운서 얼굴(의뢰인 제공 캐릭터 이미지의 상반신 800×800) |
 | `assets/kit.js` | 장면 공용 움직임 — 착지(slam), 흔들림, 단어 블러 인, 숫자 오도미터 |
 | `assets/fonts/` | Pretendard (SIL OFL 1.1) |
 | `assets/sfx/` | HyperFrames 에 들어 있는 효과음 (Pixabay Content License, `CREDITS.md`) |
