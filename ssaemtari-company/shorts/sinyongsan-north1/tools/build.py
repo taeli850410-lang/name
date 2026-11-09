@@ -346,9 +346,11 @@ hosts.append(host("chrome", 0, TOTAL, 40, "graphics", 2))
 hosts.append(host("flash", 0, TOTAL, 50, "graphics", 3))
 hosts.append(host("captions", 0, TOTAL, 60, "captions", 4))
 
+# 전체 믹스 음량. 1.0 이면 -12.4 LUFS 로 나와 쇼츠 권장(-16~-14)보다 커서 -2.6 dB 낮춘다 → 약 -15 LUFS
+MIX = 0.74
 audio = [
     f'      <audio id="voice" class="clip" src="assets/voice/narration.wav" data-start="0" '
-    f'data-duration="{fmt(speech_end + 0.05)}" data-track-index="5" data-volume="1"></audio>'
+    f'data-duration="{fmt(speech_end + 0.05)}" data-track-index="5" data-volume="{fmt(MIX)}"></audio>'
 ]
 # 파일 길이(초). 라이저는 정점 뒤 꼬리를 잘라 임팩트에 넘긴다.
 LENGTH = {"whoosh": 0.575, "whoosh-short": 0.575, "impact-bass-1": 2.116, "impact-bass-2": 2.592,
@@ -362,7 +364,7 @@ for n, (name, sid, t, vol) in sorted(enumerate(SFX), key=lambda x: S[x[1][1]] + 
     fade = ' data-fade-out="0.15"' if name == "riser" else ""
     audio.append(
         f'      <audio id="sfx-{n + 1:02d}" class="clip" src="assets/sfx/{name}.mp3" data-start="{fmt(at)}" '
-        f'data-duration="{fmt(dur)}" data-track-index="{track}" data-volume="{vol}"{fade}></audio>'
+        f'data-duration="{fmt(dur)}" data-track-index="{track}" data-volume="{fmt(vol * MIX)}"{fade}></audio>'
     )
 
 index = f"""<!doctype html>
