@@ -108,7 +108,7 @@ DUR = {sid: du for sid, _, du in scenes}
 A = {}
 A["s01"] = dict(a_w1=T("l01", "신용산역"), a_w2=T("l01", "바로"), a_w3=T("l01", "앞"),
                 b_start=T("l01", "3.8평") - 0.12, b_slam=T("l01", "3.8평") + 0.02, b_sub=T("l01", "3.8평") + 0.45,
-                c_start=T("l01", "19억") - 0.1, c_eok=T("l01", "19억"), c_man=T("l01", "5천만"))
+                c_start=T("l01", "19억") - 0.1, c_eok=T("l01", "19억"), c_man=min(T("l01", "5천만"), T("l01", "19억") + 0.3))
 A["s02"] = dict(w1=T("l02", "상가로도"), w2=T("l02", "아파트가"), w3=T("l02", "나올까요"),
                 b_start=T("l02", "답은") - 0.1, k2=T("l02", "조합"), hilite=T("l02", "추산서에"))
 A["s03"] = dict(l1=L["l03"]["start"], v1=T("l03", "5억") - 0.2, l2=T("l03", "비례율"), v2=T("l03", "104.98%") - 0.15,
@@ -121,8 +121,8 @@ A["s07"] = dict(n=T("l08", "용산센트럴파크"), n2=T("l08", "용산센트�
                 b_start=L["l09"]["start"] - 0.12, k2=T("l09", "한계선보다"), gap=T("l09", "3억"))
 A["s08"] = dict(r1=T("l10", "삼각지역"), r2=T("l10", "신용산역"), r3=T("l10", "용산역", 2),
                 b_start=T("l10", "남쪽엔") - 0.12, b_big=T("l10", "국제업무지구가"), b_chip=T("l10", "국제업무지구가") + 0.5)
-A["s09"] = dict(big=T("l11", "조합원"), b_start=T("l11", "금액은") - 0.12, bk=T("l11", "금액은"), bbig=T("l11", "추산서"))
-A["s10"] = dict(k1=T("l12", "자세한"), k2=T("l12", "알고"), big=T("l12", "연락주세요"), b_start=L["l12"]["end"] + 0.12)
+A["s09"] = dict(big=T("l11", "조합원"), b_start=T("l11", "금액은") - 0.12, bk=T("l11", "금액은"), bbig=T("l11", "금액은") + 0.25)
+A["s10"] = dict(k1=T("l12", "자세한"), k2=T("l12", "알고"), big=T("l12", "연락주세요"), b_start=L["l12"]["end"] + 0.55)
 
 CUES = {}
 for sid, cues in A.items():
@@ -248,16 +248,22 @@ avatar = f"""<template>
     #root #av-ring {{ position: absolute; left: -14px; top: -14px; width: 268px; height: 268px; border-radius: 50%;
       border: 5px solid #ffd400; opacity: 0.2; }}
     #root #av-disc {{ position: absolute; inset: 0; border-radius: 50%; overflow: hidden; background: #ffffff;
-      border: 6px solid #ffd400; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5); }}
+      border: 6px solid #ffd400; box-shadow: 0 0 0 3px #0b0b0e, 0 12px 30px rgba(0, 0, 0, 0.5); }}
     #root #av-scaler {{ position: absolute; left: 0; top: 0; width: 800px; height: 800px;
       transform: scale({AV_SCALE:.4f}); transform-origin: 0 0; }}
     #root #av-head {{ position: absolute; inset: 0; transform-origin: 400px 760px; }}
     #root #av-img {{ position: absolute; left: 0; top: 0; width: 800px; height: 800px; }}
     #root .lid-wrap {{ position: absolute; }}
-    #root .lid {{ position: absolute; inset: 0; border-radius: 50%; transform-origin: 50% 0;
-      background: linear-gradient(180deg, #efe1db 0%, #f4dcd4 100%); border-bottom: 8px solid #2a1a17; }}
-    #root #av-lidL {{ left: 194px; top: 293px; width: 140px; height: 124px; transform: rotate(-17deg); }}
-    #root #av-lidR {{ left: 418px; top: 226px; width: 138px; height: 128px; transform: rotate(-17deg); }}
+    /* 깜빡임: 눈 부분 그림을 잘라 겹쳐 두고 세로로 누른다 → 눈동자·속눈썹이 감은 눈의 선이 된다.
+       뒤에는 가장자리를 흐린 털 색을 깔아 원래 눈을 가린다(깜빡일 때만 보인다). */
+    #root .eye-blob {{ position: absolute; opacity: 0;
+      background: radial-gradient(ellipse at 50% 50%, #f2e5df 0%, #eedcd5 52%, rgba(238, 220, 213, 0) 74%); }}
+    #root .eye-patch {{ position: absolute; border-radius: 50%; transform-origin: 50% 62%;
+      background-image: url("assets/avatar/rabbit.jpg"); background-size: 800px 800px; }}
+    #root #av-blobL {{ left: 170px; top: 278px; width: 168px; height: 150px; }}
+    #root #av-blobR {{ left: 402px; top: 198px; width: 172px; height: 165px; }}
+    #root #av-eyeL {{ left: 183px; top: 290px; width: 142px; height: 125px; background-position: -183px -290px; }}
+    #root #av-eyeR {{ left: 415px; top: 210px; width: 145px; height: 140px; background-position: -415px -210px; }}
     #root #av-mouth-wrap {{ position: absolute; left: 364px; top: 438px; width: 54px; height: 30px; transform: rotate(-15deg); }}
     #root #av-mouth {{ position: absolute; inset: 0; transform-origin: 50% 0; border-radius: 40% 40% 50% 50% / 25% 25% 75% 75%;
       background: radial-gradient(ellipse at 50% 92%, #e07a88 0 34%, #5a1f2a 36% 100%); }}
@@ -269,8 +275,10 @@ avatar = f"""<template>
         <div id="av-scaler">
           <div id="av-head">
             <img id="av-img" src="assets/avatar/rabbit.jpg" alt="토끼 아나운서" />
-            <div class="lid-wrap" id="av-lidL"><div class="lid"></div></div>
-            <div class="lid-wrap" id="av-lidR"><div class="lid"></div></div>
+            <div class="eye-blob" id="av-blobL"></div>
+            <div class="eye-blob" id="av-blobR"></div>
+            <div class="eye-patch" id="av-eyeL"></div>
+            <div class="eye-patch" id="av-eyeR"></div>
             <div id="av-mouth-wrap"><div id="av-mouth"></div></div>
           </div>
         </div>
@@ -299,10 +307,13 @@ avatar = f"""<template>
       tl.set("#av-head", {{ rotation: HEAD[0][0], y: HEAD[0][1] }}, 0);
       tl.to("#av-head", {{ keyframes: HEAD.slice(1).map(function (k) {{ return {{ rotation: k[0], y: k[1], duration: STEP, ease: "none" }}; }}) }}, 0);
       // 깜빡임
-      tl.set("#av .lid", {{ scaleY: 0 }}, 0);
+      tl.set("#av .eye-patch", {{ scaleY: 1 }}, 0);
+      tl.set("#av .eye-blob", {{ opacity: 0 }}, 0);
       for (var b = 0; b < BL.length; b++) {{
-        tl.to("#av .lid", {{ scaleY: 1, duration: 0.06, ease: "power2.in" }}, BL[b]);
-        tl.to("#av .lid", {{ scaleY: 0, duration: 0.09, ease: "power2.out" }}, BL[b] + 0.1);
+        tl.to("#av .eye-blob", {{ opacity: 1, duration: 0.04, ease: "none" }}, BL[b]);
+        tl.to("#av .eye-patch", {{ scaleY: 0.1, duration: 0.07, ease: "power2.in" }}, BL[b]);
+        tl.to("#av .eye-patch", {{ scaleY: 1, duration: 0.1, ease: "power2.out" }}, BL[b] + 0.11);
+        tl.to("#av .eye-blob", {{ opacity: 0, duration: 0.06, ease: "none" }}, BL[b] + 0.16);
       }}
       window.__timelines["avatar"] = tl;
     }})();

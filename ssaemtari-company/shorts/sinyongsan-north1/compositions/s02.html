@@ -33,7 +33,7 @@
   <div id="root" data-composition-id="s02" data-width="1080" data-height="1920">
     <div class="bg"></div>
 
-    <div id="s02-a" class="clip" data-start="0" data-duration="2.32">
+    <div id="s02-a" class="clip" data-start="0" data-duration="2.28">
       <div class="cam" id="s02-a-cam">
         <div class="line" id="s02-w1">상가로도</div>
         <div class="line" id="s02-w2">아파트가</div>
@@ -41,7 +41,7 @@
       </div>
     </div>
 
-    <div id="s02-b" class="clip" data-start="2.32" data-duration="1.673">
+    <div id="s02-b" class="clip" data-start="2.28" data-duration="1.713">
       <div class="cam">
         <div class="line" id="s02-b-k1">답은</div>
         <div class="line" id="s02-b-k2">조합 <span class="y">추산서</span></div>
@@ -63,13 +63,13 @@
       var K = window.KIT;
       // A — 질문을 한 단어씩 하드컷으로 쌓는다
       K.pop(tl, document.getElementById("s02-w1"), 0.1, 1.18);
-      K.pop(tl, document.getElementById("s02-w2"), 0.82, 1.22);
+      K.pop(tl, document.getElementById("s02-w2"), 0.8, 1.22);
       K.pop(tl, document.getElementById("s02-w3"), 1.28, 1.22);
       K.shake(tl, document.getElementById("s02-a-cam"), 1.28 + 0.02, 10);
       // B — 답: 조합 추산서. 문서가 휙 들어와 선다
-      K.pop(tl, document.getElementById("s02-b-k1"), 2.32);
+      K.pop(tl, document.getElementById("s02-b-k1"), 2.28);
       K.words(tl, document.querySelectorAll("#s02-b-k2"), 2.7);
-      tl.fromTo("#s02-doc", { x: 520, opacity: 0, filter: "blur(16px)" }, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.32, ease: "expo.out" }, 2.32 + 0.08);
+      tl.fromTo("#s02-doc", { x: 520, opacity: 0, filter: "blur(16px)" }, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.32, ease: "expo.out" }, 2.28 + 0.08);
       tl.fromTo("#s02-hilite", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 3);
       window.__timelines["s02"] = tl;
     })();
