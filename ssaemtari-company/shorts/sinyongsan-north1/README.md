@@ -7,9 +7,9 @@
 - 내레이션: 의뢰인 본인 목소리 10초를 참고해 Chatterbox Multilingual(MIT)로 합성한 "또렷한 아나운서" 톤.
   **AI 합성 음성**이며 영상 안에 그렇게 표시합니다. 참고 녹음은 개인 음성이라 저장소에 넣지 않습니다
 - 자막과 화면 등장 시각: 완성된 음성을 Whisper 로 다시 읽어 얻은 단어별 시각에서 계산합니다
-- 토끼 아나운서: 의뢰인이 준 캐릭터 이미지를 오른쪽 맨 위(앱 상단 UI 바로 아래) 작은 원에 넣고, 내레이션 소리 크기로 입을 움직이고
-  고개를 흔들며, 효과음 순간에 끄덕이고, 정해진 간격으로 눈을 깜빡입니다(`compositions/avatar.html`, build.py 생성).
-  입 모양을 만드는 AI 모델이 아니라 소리 크기에 맞춘 2D 움직임입니다
+- 배경음악: `tools/bgm.py` 가 코드로 작곡·합성합니다(외부 음원·생성 모델 없음). 장면 5의 판정과 끝 화면 컷에 마디를 맞추고,
+  내레이션이 나오는 동안은 낮춥니다
+- 끝 화면: 의뢰인 명함의 중개사무소 표시 사항(`office.json`) + 매물 표시 사항 + 추산서 고지
 - 숫자: 블로그 본문(조합 추산서 · 국토교통부 실거래 공개자료)에 있는 것만 씁니다
 
 ## 파일
@@ -19,10 +19,11 @@
 | `narration.json` | 대본. `say` 는 TTS 가 읽는 문장(숫자를 한글로 풀어 씀), `cap` 은 자막, `seed` 는 고른 합성 회차, `settings` 는 톤 설정 |
 | `tools/voice_chatterbox.py` | 줄마다 3번 합성 → Whisper 로 숫자·문장 확인, 본인 목소리와 가장 닮은 것 선택 → 문장 끝 군소리 제거 → 이어 붙여 방송용 처리 → `assets/voice/narration.wav` + `timing.json`(단어별 시각) |
 | `tools/master_voice.sh` | 방송용 음성 처리: 저역 잡음·웅웅거림 제거, 명료도, 치찰음, 압축, 템포, −16 LUFS |
-| `tools/build.py` | `timing.json` → 장면 컷, 자막, 플래시, 효과음, `index.html`. `tools/scenes/` 템플릿에 "그 단어를 말하는 순간"을 채워 `compositions/` 에 쓴다 |
+| `tools/bgm.py` | 배경음악 작곡·합성 → `assets/bgm/bgm.mp3` (numpy, scipy, ffmpeg). 박자를 `timing.json` 의 두 순간에 맞추고 내레이션 자리를 덕킹 |
+| `office.json` | 끝 화면 중개사무소 표시 사항(명칭·이름·연락처·주소, 등록번호·대표자 성명은 아직 비어 있음) |
+| `tools/build.py` | `timing.json` → 장면 컷, 자막, 플래시, 효과음, 배경음악, `index.html`. `tools/scenes/` 템플릿에 "그 단어를 말하는 순간"을 채워 `compositions/` 에 쓴다 |
 | `tools/scenes/s01~s10.html` | 장면 템플릿(손으로 쓴 키네틱 타이포). 이중 중괄호 자리가 시각 |
 | `compositions/` | 생성물. 직접 고치지 말고 템플릿을 고친다 |
-| `assets/avatar/rabbit.jpg` | 토끼 아나운서 얼굴(의뢰인 제공 캐릭터 이미지의 상반신 800×800) |
 | `assets/kit.js` | 장면 공용 움직임 — 착지(slam), 흔들림, 단어 블러 인, 숫자 오도미터 |
 | `assets/fonts/` | Pretendard (SIL OFL 1.1) |
 | `assets/sfx/` | HyperFrames 에 들어 있는 효과음 (Pixabay Content License, `CREDITS.md`) |
@@ -35,10 +36,13 @@
 # 1) 목소리 — chatterbox-tts, faster-whisper 가 설치된 Python. 모델은 HuggingFace 에서 받는다
 python tools/voice_chatterbox.py --ref <참고 목소리 10초.wav> --heldout <같은 사람 다른 녹음.wav>
 
-# 2) 장면·자막·효과음을 새 시각으로
+# 2) 배경음악 — 목소리를 바꿨으면 다시 (박자·덕킹이 내레이션 시각을 따른다)
+python tools/bgm.py
+
+# 3) 장면·자막·효과음을 새 시각으로
 python3 tools/build.py
 
-# 3) 검사와 렌더
+# 4) 검사와 렌더
 npx hyperframes@0.9.26 check
 npx hyperframes@0.9.26 render -o renders/sinyongsan-north1-shorts.mp4
 ```

@@ -174,153 +174,6 @@ SFX = [
 ]
 
 
-# ------------------------------------------------------------------ 토끼 아나운서 (오른쪽 맨 위 작은 원 — 위 168px 은 앱 상단 UI 자리라 그 아래)
-# 내레이션 소리 크기 → 입 벌림·말하는 테두리, 느린 흔들림 + 효과음 순간의 끄덕임 → 고개, 정해진 간격의 깜빡임.
-# 모두 미리 계산해 타임라인에 박으므로 몇 번을 렌더해도 같은 프레임이 나온다.
-import array
-import math
-import subprocess
-
-AV_FPS = 30
-pcm = subprocess.run(["ffmpeg", "-v", "error", "-i", os.path.join(HERE, "assets/voice/narration.wav"),
-                      "-ac", "1", "-ar", "8000", "-f", "s16le", "-"], capture_output=True, check=True).stdout
-samples = array.array("h")
-samples.frombytes(pcm)
-per = 8000 // AV_FPS
-levels = []
-for f in range(len(samples) // per):
-    win = samples[f * per:(f + 1) * per]
-    rms = math.sqrt(sum(s * s for s in win) / len(win)) or 1e-9
-    db = 20 * math.log10(rms / 32768)
-    levels.append(min(1.0, max(0.0, (db + 42) / 24)))
-smooth, prev = [], 0.0
-for v in levels:  # 열릴 땐 바로, 닫힐 땐 조금 천천히
-    prev = v if v > prev else 0.45 * v + 0.55 * prev
-    smooth.append(prev)
-mouth = []
-last = None
-for f, v in enumerate(smooth):
-    q = 0.0 if v < 0.14 else round(v * 4) / 4
-    if q != last:
-        mouth.append((round(f / AV_FPS, 3), q))
-        last = q
-mouth.append((round(len(smooth) / AV_FPS, 3), 0.0))
-
-end_card = S["s10"] + CUES["s10"]["b_start"]
-hits = [S[sid] + t for name, sid, t, _ in SFX if name.startswith(("impact", "pop"))] + [s for s in S.values() if s > 0]
-
-
-def energy(tt):
-    f = int(tt * AV_FPS)
-    win = smooth[max(0, f - 6): f + 7]
-    return sum(win) / len(win) if win else 0.0
-
-
-head = []
-step = 1 / 12
-tt = 0.0
-while tt <= end_card + 0.4:
-    e = energy(tt)
-    rot = (1.6 * math.sin(2 * math.pi * tt / 2.9) + 0.9 * math.sin(2 * math.pi * tt / 1.37 + 0.7)) * (0.4 + 0.8 * e)
-    y = -10 * e + 5 * math.sin(2 * math.pi * tt / 2.1 + 0.3)
-    for h in hits:  # 강조 순간: 살짝 끄덕
-        u = tt - h
-        if -0.05 < u < 0.5:
-            g = math.exp(-((u - 0.1) / 0.1) ** 2)
-            rot += 3.2 * g
-            y += 14 * g
-    head.append((round(rot, 2), round(y, 1)))
-    tt += step
-
-blinks, seedv, bt = [], 7, 1.1
-while bt < end_card - 0.5:
-    blinks.append(round(bt, 2))
-    seedv = (seedv * 1103515245 + 12345) % 2 ** 31
-    if seedv % 7 == 0:  # 가끔 두 번 연달아
-        blinks.append(round(bt + 0.32, 2))
-    bt += 2.6 + 2.0 * (seedv % 1000) / 1000
-
-AV_SCALE = 188 / 800  # 원 안쪽 지름(테두리 6px 제외) / 원본 이미지
-avatar = f"""<template>
-  <style>
-    #root {{ position: absolute; inset: 0; pointer-events: none; }}
-    #root #av {{ position: absolute; left: 848px; top: 176px; width: 200px; height: 200px; }}
-    #root #av-ring {{ position: absolute; left: -12px; top: -12px; width: 224px; height: 224px; border-radius: 50%;
-      border: 5px solid #ffd400; opacity: 0.2; }}
-    #root #av-disc {{ position: absolute; inset: 0; border-radius: 50%; overflow: hidden; background: #ffffff;
-      border: 6px solid #ffd400; box-shadow: 0 0 0 3px #0b0b0e, 0 12px 30px rgba(0, 0, 0, 0.5); }}
-    #root #av-scaler {{ position: absolute; left: 0; top: 0; width: 800px; height: 800px;
-      transform: scale({AV_SCALE:.4f}); transform-origin: 0 0; }}
-    #root #av-head {{ position: absolute; inset: 0; transform-origin: 400px 760px; }}
-    #root #av-img {{ position: absolute; left: 0; top: 0; width: 800px; height: 800px; }}
-    #root .lid-wrap {{ position: absolute; }}
-    /* 깜빡임: 눈 부분 그림을 잘라 겹쳐 두고 세로로 누른다 → 눈동자·속눈썹이 감은 눈의 선이 된다.
-       뒤에는 가장자리를 흐린 털 색을 깔아 원래 눈을 가린다(깜빡일 때만 보인다). */
-    #root .eye-blob {{ position: absolute; opacity: 0;
-      background: radial-gradient(ellipse at 50% 50%, #f2e5df 0%, #eedcd5 52%, rgba(238, 220, 213, 0) 74%); }}
-    #root .eye-patch {{ position: absolute; border-radius: 50%; transform-origin: 50% 62%;
-      background-image: url("assets/avatar/rabbit.jpg"); background-size: 800px 800px; }}
-    #root #av-blobL {{ left: 170px; top: 278px; width: 168px; height: 150px; }}
-    #root #av-blobR {{ left: 402px; top: 198px; width: 172px; height: 165px; }}
-    #root #av-eyeL {{ left: 183px; top: 290px; width: 142px; height: 125px; background-position: -183px -290px; }}
-    #root #av-eyeR {{ left: 415px; top: 210px; width: 145px; height: 140px; background-position: -415px -210px; }}
-    #root #av-mouth-wrap {{ position: absolute; left: 364px; top: 438px; width: 54px; height: 30px; transform: rotate(-15deg); }}
-    #root #av-mouth {{ position: absolute; inset: 0; transform-origin: 50% 0; border-radius: 40% 40% 50% 50% / 25% 25% 75% 75%;
-      background: radial-gradient(ellipse at 50% 92%, #e07a88 0 34%, #5a1f2a 36% 100%); }}
-  </style>
-  <div id="root" data-composition-id="avatar" data-width="{W}" data-height="{H}">
-    <div id="av">
-      <div id="av-ring"></div>
-      <div id="av-disc">
-        <div id="av-scaler">
-          <div id="av-head">
-            <img id="av-img" src="assets/avatar/rabbit.jpg" alt="토끼 아나운서" />
-            <div class="eye-blob" id="av-blobL"></div>
-            <div class="eye-blob" id="av-blobR"></div>
-            <div class="eye-patch" id="av-eyeL"></div>
-            <div class="eye-patch" id="av-eyeR"></div>
-            <div id="av-mouth-wrap"><div id="av-mouth"></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <script>
-    (function () {{
-      var tl = gsap.timeline({{ paused: true }});
-      var M = {json.dumps(mouth)};
-      var HEAD = {json.dumps(head)};
-      var BL = {json.dumps(blinks)};
-      var STEP = {step:.6f};
-      // 등장 · 퇴장 (끝 화면 전에 빠진다)
-      tl.fromTo("#av", {{ scale: 0.5, opacity: 0 }}, {{ scale: 1, opacity: 1, duration: 0.45, ease: "back.out(1.6)" }}, 0.25);
-      tl.to("#av", {{ scale: 0.6, opacity: 0, duration: 0.3, ease: "power3.in" }}, {fmt(end_card)});
-      // 입과 테두리: 소리 크기 단계가 바뀔 때만
-      tl.set("#av-mouth", {{ scaleY: 0, scaleX: 0.75, opacity: 0 }}, 0);
-      tl.set("#av-ring", {{ scale: 1, opacity: 0.2 }}, 0);
-      for (var i = 0; i < M.length; i++) {{
-        var v = M[i][1];
-        tl.set("#av-mouth", {{ scaleY: v, scaleX: 0.75 + 0.25 * v, opacity: v > 0 ? 1 : 0 }}, M[i][0]);
-        tl.set("#av-ring", {{ scale: 1 + 0.05 * v, opacity: 0.2 + 0.6 * v }}, M[i][0]);
-      }}
-      // 고개: 1/12 초마다 미리 계산한 값
-      tl.set("#av-head", {{ rotation: HEAD[0][0], y: HEAD[0][1] }}, 0);
-      tl.to("#av-head", {{ keyframes: HEAD.slice(1).map(function (k) {{ return {{ rotation: k[0], y: k[1], duration: STEP, ease: "none" }}; }}) }}, 0);
-      // 깜빡임
-      tl.set("#av .eye-patch", {{ scaleY: 1 }}, 0);
-      tl.set("#av .eye-blob", {{ opacity: 0 }}, 0);
-      for (var b = 0; b < BL.length; b++) {{
-        tl.to("#av .eye-blob", {{ opacity: 1, duration: 0.04, ease: "none" }}, BL[b]);
-        tl.to("#av .eye-patch", {{ scaleY: 0.1, duration: 0.07, ease: "power2.in" }}, BL[b]);
-        tl.to("#av .eye-patch", {{ scaleY: 1, duration: 0.1, ease: "power2.out" }}, BL[b] + 0.11);
-        tl.to("#av .eye-blob", {{ opacity: 0, duration: 0.06, ease: "none" }}, BL[b] + 0.16);
-      }}
-      window.__timelines["avatar"] = tl;
-    }})();
-  </script>
-</template>
-"""
-
 # ------------------------------------------------------------------ 자막: 줄을 쉼표·마침표에서 나누고, 길면 가운데 띄어쓰기에서 한 번 더
 def groups_of(line):
     cap = line["cap"]
@@ -459,7 +312,7 @@ chrome = f"""<template>
     #root {{ position: absolute; inset: 0; font-family: "Pretendard", sans-serif; pointer-events: none; }}
     #root #chrome-tag {{ position: absolute; left: 56px; top: 172px; font-size: 28px; font-weight: 700; color: #ffd400;
       background: rgba(11, 11, 14, 0.9); border: 2px solid #ffd400; padding: 6px 16px; border-radius: 10px; letter-spacing: -0.01em; }}
-    #root #chrome-ai {{ position: absolute; right: 252px; top: 184px; font-size: 28px; font-weight: 700; color: #f7f7f2;
+    #root #chrome-ai {{ position: absolute; right: 56px; top: 172px; font-size: 28px; font-weight: 700; color: #f7f7f2;
       background: rgba(11, 11, 14, 0.9); border: 2px solid #6f6f78; padding: 6px 14px; border-radius: 10px; }}
     #root .ghost {{ position: absolute; left: 0; right: 0; top: 1400px; text-align: center; font-size: 400px; font-weight: 700; line-height: 1;
       color: transparent; -webkit-text-stroke: 3px rgba(150, 150, 160, 0.22); letter-spacing: -0.04em; }}
@@ -492,7 +345,6 @@ host = lambda cid, st, du, z, kind, track: (
 )
 hosts = [host(sid, st, du, 1, "graphics", 1) for sid, st, du in scenes]
 hosts.append(host("chrome", 0, TOTAL, 40, "graphics", 2))
-hosts.append(host("avatar", 0, TOTAL, 45, "graphics", 10))
 hosts.append(host("flash", 0, TOTAL, 50, "graphics", 3))
 hosts.append(host("captions", 0, TOTAL, 60, "captions", 4))
 
@@ -502,6 +354,14 @@ audio = [
     f'      <audio id="voice" class="clip" src="assets/voice/narration.wav" data-start="0" '
     f'data-duration="{fmt(speech_end + 0.05)}" data-track-index="5" data-volume="{fmt(MIX)}"></audio>'
 ]
+# 배경음악(tools/bgm.py 가 코드로 작곡). 내레이션 자리는 파일 안에서 이미 -9 dB 덕킹돼 있다.
+# 0.3 ≈ -10.5 dB → 말하는 동안 음악이 목소리보다 약 13 dB 아래(렌더러가 모노 내레이션을 +3 dB 로 올리는 것까지 따짐),
+# 끝 화면에서는 덕킹이 풀려 음악이 올라온다.
+BGM_VOL = 0.3
+audio.append(
+    f'      <audio id="bgm" class="clip" src="assets/bgm/bgm.mp3" data-start="0" '
+    f'data-duration="{fmt(TOTAL)}" data-track-index="10" data-volume="{fmt(BGM_VOL)}"></audio>'
+)
 # 파일 길이(초). 라이저는 정점 뒤 꼬리를 잘라 임팩트에 넘긴다.
 LENGTH = {"whoosh": 0.575, "whoosh-short": 0.575, "impact-bass-1": 2.116, "impact-bass-2": 2.592,
           "pop": 0.72, "glitch-1": 2.638, "riser": 3.62}
@@ -544,6 +404,13 @@ index = f"""<!doctype html>
 </html>
 """
 
+# ------------------------------------------------------------------ 중개사무소 표시 사항 (office.json → 끝 화면 [[자리]])
+OFFICE = json.load(open(os.path.join(HERE, "office.json"), encoding="utf-8"))
+OFFICE_TEXT = {k: html.escape(v) for k, v in OFFICE.items() if not k.startswith("_")}
+reg = " · ".join(x for x in [OFFICE["reg_no"] and f"등록번호 {OFFICE['reg_no']}", OFFICE["ceo"] and f"대표 {OFFICE['ceo']}"] if x)
+OFFICE_TEXT["reg_html"] = f'          <div id="s10-b-reg">{html.escape(reg)}</div>' if reg else ""
+missing_office = [k for k in ("reg_no", "ceo") if not OFFICE[k]]
+
 os.makedirs(os.path.join(HERE, "compositions"), exist_ok=True)
 for sid, _, _ in scenes:
     tpl = open(os.path.join(HERE, "tools/scenes", f"{sid}.html"), encoding="utf-8").read()
@@ -552,14 +419,15 @@ for sid, _, _ in scenes:
     neg = {k: v for k, v in CUES[sid].items() if v < 0}
     assert not neg, f"{sid}: 장면 시작보다 이른 시각 {neg}"
     body = re.sub(r"\{\{(\w+)\}\}", lambda m: fmt(CUES[sid][m.group(1)]), tpl)
+    body = re.sub(r"\[\[(\w+)\]\]", lambda m: OFFICE_TEXT[m.group(1)], body)
     open(os.path.join(HERE, "compositions", f"{sid}.html"), "w", encoding="utf-8").write(body)
 for name, text in [("index.html", index), ("compositions/captions.html", captions),
-                   ("compositions/flash.html", flash), ("compositions/chrome.html", chrome),
-                   ("compositions/avatar.html", avatar)]:
+                   ("compositions/flash.html", flash), ("compositions/chrome.html", chrome)]:
     open(os.path.join(HERE, name), "w", encoding="utf-8").write(text)
 
 print("scenes:", ", ".join(f"{sid} {st}+{du}" for sid, st, du in scenes))
-print("flashes:", len(flashes), "· captions:", len(cap_items), "· sfx:", len(SFX),
-      "· avatar: mouth changes", len(mouth), "blinks", len(blinks), "head keys", len(head))
+print("flashes:", len(flashes), "· captions:", len(cap_items), "· sfx:", len(SFX))
+if missing_office:
+    print("! office.json 에 비어 있는 광고 표시 사항:", ", ".join(missing_office))
 for sid in CUES:
     print(" ", sid, " ".join(f"{k}={v}" for k, v in sorted(CUES[sid].items(), key=lambda kv: kv[1])))
