@@ -45,7 +45,14 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--ref", required=True)
     ap.add_argument("--heldout")
+    ap.add_argument("--try", dest="retry", action="append", default=[],
+                    help="이 줄만 여러 회차를 다시 시도: l05=1-8 (저장된 seed 는 무시)")
     args = ap.parse_args()
+    retry = {}
+    for spec in args.retry:
+        lid, rng = spec.split("=")
+        a, b = (int(x) for x in rng.split("-"))
+        retry[lid] = range(a, b + 1)
 
     path = os.path.join(HERE, "narration.json")
     cfg = json.load(open(path, encoding="utf-8"))
@@ -67,7 +74,10 @@ def main() -> None:
     chosen = []
     for line in cfg["lines"]:
         best = None
-        seeds = [line["seed"]] if "seed" in line else range(1, int(st["takes"]) + 1)
+        if line["id"] in retry:
+            seeds = retry[line["id"]]
+        else:
+            seeds = [line["seed"]] if "seed" in line else range(1, int(st["takes"]) + 1)
         for seed in seeds:
             torch.manual_seed(seed)
             w = model.generate(line["say"], language_id="ko", exaggeration=st["exaggeration"],
