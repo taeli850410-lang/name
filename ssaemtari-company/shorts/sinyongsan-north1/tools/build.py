@@ -121,7 +121,7 @@ A["s07"] = dict(n=T("l08", "용산센트럴파크"), n2=T("l08", "용산센트�
                 b_start=L["l09"]["start"] - 0.12, k2=T("l09", "한계선보다"), gap=T("l09", "3억"))
 A["s08"] = dict(r1=T("l10", "삼각지역"), r2=T("l10", "신용산역"), r3=T("l10", "용산역", 2),
                 b_start=T("l10", "남쪽엔") - 0.12, b_big=T("l10", "국제업무지구가"), b_chip=T("l10", "국제업무지구가") + 0.5)
-A["s09"] = dict(big=T("l11", "조합원"), b_start=T("l11", "금액은") - 0.12, bk=T("l11", "금액은"), bbig=T("l11", "금액은") + 0.25)
+A["s09"] = dict(big=T("l11", "조합원"), b_start=T("l11", "금액은") - 0.12, bk=T("l11", "금액은"), bbig=T("l11", "금액은") + 0.1)
 A["s10"] = dict(k1=T("l12", "자세한"), k2=T("l12", "알고"), big=T("l12", "연락주세요"), b_start=L["l12"]["end"] + 0.55)
 
 CUES = {}
@@ -174,7 +174,7 @@ SFX = [
 ]
 
 
-# ------------------------------------------------------------------ 토끼 아나운서 (왼쪽 아래 작은 원)
+# ------------------------------------------------------------------ 토끼 아나운서 (오른쪽 맨 위 작은 원 — 위 168px 은 앱 상단 UI 자리라 그 아래)
 # 내레이션 소리 크기 → 입 벌림·말하는 테두리, 느린 흔들림 + 효과음 순간의 끄덕임 → 고개, 정해진 간격의 깜빡임.
 # 모두 미리 계산해 타임라인에 박으므로 몇 번을 렌더해도 같은 프레임이 나온다.
 import array
@@ -240,12 +240,12 @@ while bt < end_card - 0.5:
         blinks.append(round(bt + 0.32, 2))
     bt += 2.6 + 2.0 * (seedv % 1000) / 1000
 
-AV_SCALE = 228 / 800  # 원 안쪽 지름(테두리 6px 제외) / 원본 이미지
+AV_SCALE = 188 / 800  # 원 안쪽 지름(테두리 6px 제외) / 원본 이미지
 avatar = f"""<template>
   <style>
     #root {{ position: absolute; inset: 0; pointer-events: none; }}
-    #root #av {{ position: absolute; left: 50px; top: 1100px; width: 240px; height: 240px; }}
-    #root #av-ring {{ position: absolute; left: -14px; top: -14px; width: 268px; height: 268px; border-radius: 50%;
+    #root #av {{ position: absolute; left: 848px; top: 176px; width: 200px; height: 200px; }}
+    #root #av-ring {{ position: absolute; left: -12px; top: -12px; width: 224px; height: 224px; border-radius: 50%;
       border: 5px solid #ffd400; opacity: 0.2; }}
     #root #av-disc {{ position: absolute; inset: 0; border-radius: 50%; overflow: hidden; background: #ffffff;
       border: 6px solid #ffd400; box-shadow: 0 0 0 3px #0b0b0e, 0 12px 30px rgba(0, 0, 0, 0.5); }}
@@ -397,7 +397,7 @@ captions = f"""<template>
   <style>
     @font-face {{ font-family: "Pretendard"; font-weight: 800; src: url("assets/fonts/Pretendard-ExtraBold.woff2") format("woff2"); }}
     #root {{ position: absolute; inset: 0; font-family: "Pretendard", sans-serif; }}
-    #root .cap {{ position: absolute; left: 310px; right: 56px; top: 1150px; text-align: center; word-break: keep-all; }}
+    #root .cap {{ position: absolute; left: 70px; right: 70px; top: 1150px; text-align: center; word-break: keep-all; }}
     #root .cap-in {{ display: inline; font-size: 50px; font-weight: 800; line-height: 1.42; color: #ffffff; letter-spacing: -0.02em;
       background: #141418; padding: 8px 22px; border-radius: 14px;
       -webkit-box-decoration-break: clone; box-decoration-break: clone; }}
@@ -459,7 +459,7 @@ chrome = f"""<template>
     #root {{ position: absolute; inset: 0; font-family: "Pretendard", sans-serif; pointer-events: none; }}
     #root #chrome-tag {{ position: absolute; left: 56px; top: 172px; font-size: 28px; font-weight: 700; color: #ffd400;
       background: rgba(11, 11, 14, 0.9); border: 2px solid #ffd400; padding: 6px 16px; border-radius: 10px; letter-spacing: -0.01em; }}
-    #root #chrome-ai {{ position: absolute; right: 56px; top: 172px; font-size: 28px; font-weight: 700; color: #f7f7f2;
+    #root #chrome-ai {{ position: absolute; right: 252px; top: 184px; font-size: 28px; font-weight: 700; color: #f7f7f2;
       background: rgba(11, 11, 14, 0.9); border: 2px solid #6f6f78; padding: 6px 14px; border-radius: 10px; }}
     #root .ghost {{ position: absolute; left: 0; right: 0; top: 1400px; text-align: center; font-size: 400px; font-weight: 700; line-height: 1;
       color: transparent; -webkit-text-stroke: 3px rgba(150, 150, 160, 0.22); letter-spacing: -0.04em; }}
