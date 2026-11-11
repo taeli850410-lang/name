@@ -315,8 +315,6 @@ chrome = f"""<template>
     #root {{ position: absolute; inset: 0; font-family: "Pretendard", sans-serif; pointer-events: none; }}
     #root #chrome-tag {{ position: absolute; left: 56px; top: 172px; font-size: 28px; font-weight: 700; color: #ffd400;
       background: rgba(11, 11, 14, 0.9); border: 2px solid #ffd400; padding: 6px 16px; border-radius: 10px; letter-spacing: -0.01em; }}
-    #root #chrome-ai {{ position: absolute; right: 56px; top: 172px; font-size: 28px; font-weight: 700; color: #f7f7f2;
-      background: rgba(11, 11, 14, 0.9); border: 2px solid #6f6f78; padding: 6px 14px; border-radius: 10px; }}
     #root .ghost {{ position: absolute; left: 0; right: 0; top: 1400px; text-align: center; font-size: 400px; font-weight: 700; line-height: 1;
       color: transparent; -webkit-text-stroke: 3px rgba(150, 150, 160, 0.22); letter-spacing: -0.04em; }}
     #root .gin {{ display: inline-block; }}
@@ -325,7 +323,6 @@ chrome = f"""<template>
   </style>
   <div id="root" data-composition-id="chrome" data-width="{W}" data-height="{H}">
     <div id="chrome-tag">신용산역 북측1구역 · 근생 매물</div>
-    <div id="chrome-ai">AI 음성</div>
 {ghosts}
     <div id="chrome-bar" data-layout-ignore><div id="chrome-fill"></div></div>
   </div>
