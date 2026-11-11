@@ -30,6 +30,7 @@
 | `assets/sfx/` | HyperFrames 에 들어 있는 효과음 (Pixabay Content License, `CREDITS.md`) |
 | `assets/vendor/gsap.min.js` | GSAP 3.15.0 (GreenSock Standard License) |
 | `renders/` | 렌더 결과 |
+| `planning/` | 영상 기획서(HTML) · 프롬프트 모음 · 내레이션 대본 · 장면별 스토리보드 그림. 다음 매물 영상을 만들 때 쓰는 묶음 |
 
 ## 다시 만들기
 
