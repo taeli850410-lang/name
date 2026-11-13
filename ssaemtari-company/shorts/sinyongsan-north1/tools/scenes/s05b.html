@@ -1,0 +1,66 @@
+<!-- 템플릿: 이중 중괄호 자리는 tools/build.py 가 말소리 단어 시각으로 채운다. compositions/ 쪽은 생성물이다. -->
+<template>
+  <style>
+    @font-face { font-family: "Pretendard"; font-weight: 900; src: url("assets/fonts/Pretendard-Black.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 800; src: url("assets/fonts/Pretendard-ExtraBold.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 700; src: url("assets/fonts/Pretendard-Bold.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 500; src: url("assets/fonts/Pretendard-Medium.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: "Pretendard", sans-serif; color: #f7f7f2; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; word-break: keep-all; }
+    #root .bg { position: absolute; inset: 0; background: #0b0b0e; }
+    #root .cam { position: absolute; inset: 0; }
+    #root .line { position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; }
+    #root .y { color: #ffd400; }
+    #root .muted { color: #9a9aa3; }
+    #root .odo { display: inline-block; line-height: 1; white-space: nowrap; }
+    #root .odo-win { display: inline-block; height: 1em; overflow: hidden; vertical-align: top; }
+    #root .odo-strip { display: inline-flex; flex-direction: column; }
+    #root .odo-strip span, #root .odo-ch { display: block; height: 1em; line-height: 1em; }
+    #root .odo-ch { display: inline-block; vertical-align: top; }
+    /* 조감도 사진(위) + 사업 개요(아래). 사진은 천천히 다가간다 */
+    #s05b-photo { position: absolute; left: 0; top: 232px; width: 1080px; height: 540px; overflow: hidden; background: #17171c; }
+    #s05b-img { position: absolute; left: 0; top: -34px; width: 1080px; height: 608px; transform-origin: 50% 52%; }
+    #s05b-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 120px; background: linear-gradient(transparent, rgba(11, 11, 14, 0.85)); }
+    #s05b-note { position: absolute; left: 32px; bottom: 16px; font-size: 28px; font-weight: 700; color: #e4e4e8; }
+    #s05b-kick { left: 90px; top: 800px; font-size: 40px; font-weight: 800; color: #9a9aa3; }
+    #s05b-name { left: 84px; top: 852px; font-size: 104px; font-weight: 900; line-height: 1; color: #ffd400; letter-spacing: -0.03em; }
+    #s05b-name small { font-size: 34px; font-weight: 700; color: #9a9aa3; margin-left: 18px; letter-spacing: 0; }
+    #s05b-stats { position: absolute; left: 90px; right: 90px; top: 984px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    #s05b-stats .s { border-left: 5px solid #ffd400; padding-left: 16px; }
+    #s05b-stats b { display: block; font-size: 46px; font-weight: 900; line-height: 1.15; white-space: nowrap; }
+    #s05b-stats span { display: block; font-size: 28px; font-weight: 700; color: #9a9aa3; white-space: nowrap; }
+    #root .abs { position: absolute; white-space: nowrap; }
+  </style>
+  <div id="root" data-composition-id="s05b" data-width="1080" data-height="1920">
+    <div class="bg"></div>
+    <div class="cam" id="s05b-cam">
+      <div id="s05b-photo">
+        <img id="s05b-img" src="assets/photos/rendering.jpg" alt="신용산 르엘 조감도" />
+        <div id="s05b-shade"></div>
+        <div id="s05b-note">조감도 · 참고용 이미지로 실제와 다를 수 있습니다</div>
+      </div>
+      <div class="abs" id="s05b-kick">롯데건설 제안</div>
+      <div class="abs" id="s05b-name">신용산 르엘<small>제안명</small></div>
+      <div id="s05b-stats">
+        <div class="s" id="s05b-s1"><b>지상 38층</b><span>지하 7층 ~</span></div>
+        <div class="s" id="s05b-s2"><b>324세대</b><span>분양 295 · 임대 29</span></div>
+        <div class="s" id="s05b-s3"><b>업무동</b><span>저층 판매시설</span></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      var K = window.KIT;
+      // 사진: 전체에서 탑 쪽으로 천천히 다가간다 (장면 내내)
+      tl.fromTo("#s05b-img", { scale: 1.0 }, { scale: 1.2, duration: {{dur}}, ease: "none" }, 0);
+      tl.fromTo("#s05b-photo", { opacity: 0 }, { opacity: 1, duration: 0.18, ease: "power2.out" }, 0);
+      K.words(tl, [document.getElementById("s05b-note")], 0.3);
+      K.words(tl, [document.getElementById("s05b-kick")], {{co}});
+      K.slam(tl, document.getElementById("s05b-name"), {{name}}, 1.4);
+      K.words(tl, [document.getElementById("s05b-s1")], {{f38}});
+      K.words(tl, [document.getElementById("s05b-s2")], {{hh}});
+      K.words(tl, [document.getElementById("s05b-s3")], {{hh}} + 0.35);
+      window.__timelines["s05b"] = tl;
+    })();
+  </script>
+</template>

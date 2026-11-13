@@ -10,15 +10,19 @@
 import difflib
 import html
 import json
+import math
 import os
 import re
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-W, H, TOTAL = 1080, 1920, 64.0  # 끝 화면(명함·매물 표시)을 약 8초 세워 두려고 60초에서 늘림
+W, H = 1080, 1920
 FRAME = 1 / 30
 
 timing = json.load(open(os.path.join(HERE, "timing.json"), encoding="utf-8"))
 L = {line["id"]: line for line in timing["lines"]}
+# 끝 화면(명함·매물 표시)은 마지막 말이 끝나고 0.55 s 뒤에 컷되어 약 8초 선다. bgm.py 도 같은 식을 쓴다.
+END_CARD_AT = L["l12"]["end"] + 0.55
+TOTAL = float(math.ceil(END_CARD_AT + 8.0))
 
 
 def fmt(x: float) -> str:
@@ -94,8 +98,8 @@ T = lambda lid, sub, occ=1: CLK[lid].at(sub, occ)  # noqa: E731
 
 # ------------------------------------------------------------------ 장면 컷
 # 장면은 그 장면 첫 말소리보다 0.1 s 먼저 컷된다 (그림이 말을 살짝 앞선다).
-SCENE_FIRST_LINE = [("s01", None), ("s02", "l02"), ("s03", "l03"), ("s04", "l05"), ("s05", "l06"),
-                    ("s06", "l07"), ("s07", "l08"), ("s08", "l10"), ("s09", "l11"), ("s10", "l12")]
+SCENE_FIRST_LINE = [("s01", None), ("s02", "l02"), ("s03", "l03"), ("s04", "l05"), ("s05", "l06"), ("s05b", "l06b"),
+                    ("s06", "l07"), ("s06b", "l07b"), ("s07", "l08"), ("s08", "l10"), ("s09", "l11"), ("s10", "l12")]
 starts = [0.0 if lid is None else round(L[lid]["start"] - 0.1, 3) for _, lid in SCENE_FIRST_LINE]
 scenes = []
 for i, (sid, _) in enumerate(SCENE_FIRST_LINE):
@@ -116,6 +120,9 @@ A["s03"] = dict(l1=L["l03"]["start"], v1=T("l03", "5억") - 0.2, l2=T("l03", "�
 A["s04"] = dict(h=S["s04"] + 0.05, hs=S["s04"] + 0.45, c1=max(S["s04"] + 0.55, T("l05", "토지가")), x=T("l05", "근생은"),
                 c2=T("l05", "권리가액이"), b1=T("l05", "권리가액이") + 0.35, b2=T("l05", "최소"))
 A["s05"] = dict(stamp=T("l06", "문턱을"))
+# 사진 장면: 조감도 + 사업 개요, 주변 매물 비교(의뢰인 인포그래픽)
+A["s05b"] = dict(co=T("l06b", "롯데건설이"), name=T("l06b", "신용산"), f38=T("l06b", "38층"), hh=T("l06b", "324세대"))
+A["s06b"] = dict(zoom=min(S["s06b"] + 0.75, T("l07b", "호가는") - 0.85), ho=T("l07b", "호가는"), tot=T("l07b", "총투자금은"))
 A["s06"] = dict(big=T("l07", "115A"), seg1=T("l07", "115A") + 0.45, tl=T("l07", "총투자금은"), tv=T("l07", "총투자금은") + 0.2)
 A["s07"] = dict(n=T("l08", "용산센트럴파크"), n2=T("l08", "용산센트럴파크") + 0.7, band=T("l08", "37억"),
                 b_start=L["l09"]["start"] - 0.12, k2=T("l09", "한계선보다"), gap=T("l09", "3억"))
@@ -138,6 +145,7 @@ c3 = CUES["s03"]
 c3["v1_dur"] = round(min(1.4, c3["l2"] - c3["v1"] - 0.05), 3)
 c3["n1"] = round(c3["v1"] + c3["v1_dur"] - 0.1, 3)
 c3["v2_dur"] = round(min(1.35, c3["rule"] - c3["v2"]), 3)
+CUES["s05b"]["dur"] = DUR["s05b"]
 c6 = CUES["s06"]
 c6["tv_dur"] = round(max(0.8, min(1.35, DUR["s06"] - 0.45 - c6["tv"])), 3)
 
@@ -145,7 +153,7 @@ c6["tv_dur"] = round(max(0.8, min(1.35, DUR["s06"] - 0.45 - c6["tv"])), 3)
 INNER_CUTS = {"s01": [("b_start", "#ffffff"), ("c_start", "#ffd400")], "s02": [("b_start", "#ffffff")],
               "s07": [("b_start", "#ffd400")], "s08": [("b_start", "#ffffff")], "s09": [("b_start", "#ffffff")],
               "s10": [("b_start", "#ffffff")]}
-SCENE_FLASH = {"s02": "#ffffff", "s03": "#ffd400", "s04": "#ffffff", "s05": "#ffd400", "s06": "#ffffff",
+SCENE_FLASH = {"s02": "#ffffff", "s03": "#ffd400", "s04": "#ffffff", "s05": "#ffd400", "s05b": "#ffffff", "s06": "#ffffff", "s06b": "#ffd400",
                "s07": "#ffffff", "s08": "#ffffff", "s09": "#ffd400", "s10": "#ffd400"}
 flashes = [(S[sid], color) for sid, color in SCENE_FLASH.items()]
 for sid, cuts in INNER_CUTS.items():
@@ -165,6 +173,8 @@ SFX = [
     ("whoosh-short", "s03", 0.0, 0.3), ("riser", "s03", C["s03"]["v3"], 0.2), ("impact-bass-1", "s03", C["s03"]["v3"], 0.55),
     ("whoosh", "s04", 0.0, 0.3), ("pop", "s04", C["s04"]["x"], 0.42),
     ("whoosh-short", "s05", 0.0, 0.3), ("impact-bass-1", "s05", C["s05"]["stamp"], 0.5),
+    ("whoosh", "s05b", 0.0, 0.3), ("pop", "s05b", C["s05b"]["name"], 0.36),
+    ("whoosh-short", "s06b", 0.0, 0.3), ("pop", "s06b", C["s06b"]["ho"], 0.32), ("pop", "s06b", C["s06b"]["tot"], 0.36),
     ("whoosh", "s06", 0.0, 0.3), ("pop", "s06", C["s06"]["big"], 0.38), ("pop", "s06", C["s06"]["tv"] + C["s06"]["tv_dur"], 0.45),
     ("whoosh-short", "s07", 0.0, 0.3), ("whoosh", "s07", C["s07"]["b_start"], 0.3), ("pop", "s07", C["s07"]["gap"], 0.42),
     ("whoosh-short", "s08", 0.0, 0.3), ("pop", "s08", C["s08"]["r1"] + 0.3, 0.34), ("pop", "s08", C["s08"]["r2"] + 0.3, 0.3),
@@ -365,7 +375,7 @@ audio.append(
 # 파일 길이(초). 라이저는 정점 뒤 꼬리를 잘라 임팩트에 넘긴다.
 LENGTH = {"whoosh": 0.575, "whoosh-short": 0.575, "impact-bass-1": 2.116, "impact-bass-2": 2.592,
           "pop": 0.72, "glitch-1": 2.638, "riser": 3.62}
-track_free = {6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0}
+track_free = {6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 11: 0.0, 12: 0.0}
 for n, (name, sid, t, vol) in sorted(enumerate(SFX), key=lambda x: S[x[1][1]] + x[1][2] - PEAK[x[1][0]]):
     at = max(0.0, S[sid] + t - PEAK[name] + FRAME)
     dur = min(LENGTH[name], TOTAL - at)

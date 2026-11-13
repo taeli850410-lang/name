@@ -16,6 +16,11 @@
     #root .odo-strip { display: inline-flex; flex-direction: column; }
     #root .odo-strip span, #root .odo-ch { display: block; height: 1em; line-height: 1em; }
     #root .odo-ch { display: inline-block; vertical-align: top; }
+    /* A 배경: 조감도 사진. 탑 쪽을 세로로 잘라 천천히 다가간다, 글자가 읽히게 어둡게 덮는다 */
+    #s01-a-photo { position: absolute; inset: 0; overflow: hidden; }
+    #s01-a-img { position: absolute; left: -1174px; top: 0; width: 3412px; height: 1920px; transform-origin: 1714px 980px; }
+    #s01-a-dim { position: absolute; inset: 0; background: linear-gradient(rgba(11, 11, 14, 0.78), rgba(11, 11, 14, 0.5) 45%, rgba(11, 11, 14, 0.85) 75%); }
+    #s01-a-note { top: 1296px; font-size: 28px; font-weight: 700; color: #c9c9cf; letter-spacing: 0; }
     #s01-a-tag { top: 330px; font-size: 46px; font-weight: 700; color: #9a9aa3; letter-spacing: 0; }
     #s01-a-big { top: 430px; font-size: 400px; font-weight: 900; line-height: 1; color: #ffd400; letter-spacing: -0.06em; }
     #s01-a-sub { top: 900px; font-size: 104px; font-weight: 900; line-height: 1; }
@@ -33,6 +38,8 @@
     <div class="bg"></div>
 
     <div id="s01-a" class="clip" data-start="0" data-duration="{{b_start}}">
+      <div id="s01-a-photo"><img id="s01-a-img" src="assets/photos/rendering.jpg" alt="신용산 르엘 조감도" /><div id="s01-a-dim"></div></div>
+      <div class="line" id="s01-a-note">신용산 르엘(제안) 조감도 · 참고용 이미지</div>
       <div class="cam" id="s01-a-cam">
         <div class="line" id="s01-a-tag">서울 용산구 한강로2가</div>
         <div class="line" id="s01-a-big">용산</div>
@@ -62,6 +69,7 @@
       var tl = gsap.timeline({ paused: true });
       var K = window.KIT;
       // A — 첫 프레임이 썸네일: "용산" 이 이미 서 있다. 말하는 단어를 따라 아래 줄이 걷힌다.
+      tl.fromTo("#s01-a-img", { scale: 1.0 }, { scale: 1.07, duration: {{b_start}}, ease: "none" }, 0);
       var sub = document.querySelectorAll("#s01-a-sub span");
       K.words(tl, [sub[0]], {{a_w1}});
       K.words(tl, [sub[1]], {{a_w2}});

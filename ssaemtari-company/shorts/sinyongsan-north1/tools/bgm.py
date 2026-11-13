@@ -10,6 +10,7 @@
 - 내레이션이 나오는 동안은 음악을 낮춘다(덕킹). 말소리 대역(1~4 kHz)은 음악에서 조금 비워 둔다
 """
 import json
+import math
 import os
 import subprocess
 
@@ -18,8 +19,7 @@ from scipy import signal
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SR = 48000
-TOTAL = 64.0  # build.py 의 TOTAL 과 같아야 한다
-N = int(SR * TOTAL)
+N = None  # 아래에서 끝 화면 시각으로 정한다
 rng = np.random.default_rng(11)
 
 timing = json.load(open(os.path.join(HERE, "timing.json"), encoding="utf-8"))
@@ -29,7 +29,10 @@ L = {line["id"]: line for line in timing["lines"]}
 # s05 도장 = "문턱을" 단어 시작, 끝 화면 = 마지막 줄 끝 + 0.55 s
 stamp_t = next(w["s"] for w in L["l06"]["words"] if "문턱" in w["w"])
 end_card = L["l12"]["end"] + 0.55
-BAR = (end_card - stamp_t) / 15  # 12마디 → 27마디
+BETWEEN = max(1, round((end_card - stamp_t) / 2.07))  # 도장 → 끝 화면 사이 마디 수 (약 116 BPM 이 되게)
+BAR = (end_card - stamp_t) / BETWEEN  # 12마디 → 끝 화면 마디
+TOTAL = float(math.ceil(end_card + 8.0))  # build.py 와 같은 식: 끝 화면을 약 8초 세운다
+N = int(SR * TOTAL)
 T0 = stamp_t - 12 * BAR  # 0마디 시작(0보다 조금 이르다)
 BEAT = BAR / 4
 STEP = BAR / 16
@@ -193,17 +196,17 @@ CHORDS = {  # (베이스, 패드 화음, 아르페지오 음)
     "G": (31, [55, 59, 62, 69], [67, 71, 74, 78]),
 }
 CYCLE = ["Am", "F", "C", "G"]
-LAST_BAR = 27  # 끝 화면으로 컷되는 마디
+LAST_BAR = 12 + BETWEEN  # 끝 화면으로 컷되는 마디
 # 끝 화면 동안 C–F–G 로 몇 마디 더 가다가, 영상 끝 약 2초 전 마디 첫 박에 C(add9)로 닫는다
 OUTRO = max(1, int((TOTAL - at(LAST_BAR) - 1.8) // BAR))
 FINAL_BAR = LAST_BAR + OUTRO
 chord_of = {b: CYCLE[b % 4] for b in range(FINAL_BAR)}
-chord_of[25], chord_of[26] = "F", "G"
+chord_of[LAST_BAR - 2], chord_of[LAST_BAR - 1] = "F", "G"
 for k in range(OUTRO):
     chord_of[LAST_BAR + k] = ["C", "F", "G"][k % 3]
 
 BREAK = {11}  # 도장 직전 한 마디: 킥·베이스를 빼고 라이저
-BUILD = {26}  # 끝 화면 직전 한 마디: 스네어 롤 + 라이저
+BUILD = {LAST_BAR - 1}  # 끝 화면 직전 한 마디: 스네어 롤 + 라이저
 INTRO = {0, 1}
 LIFT = set(range(12, 20)) | set(range(LAST_BAR, FINAL_BAR))  # 판정 뒤와 끝 화면 — 오픈 하이햇, 16분 아르페지오로 조금 더 힘 있게
 kicks = []
