@@ -1,9 +1,10 @@
-# 신용산역 북측1구역 근생 — 쇼츠 (64초)
+# 신용산역 북측1구역 근생 — 쇼츠 (76초)
 
 블로그 글 「[신용산역 북측1구역 근생] 조합 추산서로 따져본 아파트 자격」(blog.naver.com/christy0410/224470889461)을
-64초 세로 영상(1080×1920, 30fps)으로 옮긴 [HyperFrames](https://github.com/heygen-com/hyperframes) 프로젝트입니다.
+76초 세로 영상(1080×1920, 30fps)으로 옮긴 [HyperFrames](https://github.com/heygen-com/hyperframes) 프로젝트입니다.
 
-- 길이: 내레이션 약 55초 + 끝 화면(중개사무소·매물 표시) 약 8초 = 64초. 처음엔 60초였으나 끝 화면을 오래 보여 달라는 요청으로 늘렸습니다
+- 길이: 내레이션 약 67초(14문장) + 끝 화면(중개사무소·매물 표시) 약 8.8초 = 76초. 처음엔 60초였고, 끝 화면을 늘리고(64초) 사진 장면 두 개와 문장 두 개를 더해 76초가 됐습니다
+- 사진: 의뢰인이 준 조감도(첫 장면 배경 · 사업 개요 장면), 매물 비교 인포그래픽(주변 매물 비교 장면), 위치도(입지 장면 지도). 조감도에는 "참고용 이미지" 문구를 붙입니다
 - 스타일: 키네틱 타이포그래피 + 하드컷 플래시. 장면 10개, 컷마다 4프레임 플래시(초당 3회를 넘지 않음)
 - 내레이션: 의뢰인 본인 목소리 10초를 참고해 Chatterbox Multilingual(MIT)로 합성한 "또렷한 아나운서" 톤.
   **AI 합성 음성**이며 끝 화면 고지에 그렇게 적습니다(오른쪽 위 "AI 음성" 꼬리표는 의뢰인 요청으로 뺐습니다). 참고 녹음은 개인 음성이라 저장소에 넣지 않습니다
@@ -26,6 +27,7 @@
 | `tools/scenes/s01~s10.html` | 장면 템플릿(손으로 쓴 키네틱 타이포). 이중 중괄호 자리가 시각 |
 | `compositions/` | 생성물. 직접 고치지 말고 템플릿을 고친다 |
 | `assets/kit.js` | 장면 공용 움직임 — 착지(slam), 흔들림, 단어 블러 인, 숫자 오도미터 |
+| `assets/photos/` | 의뢰인 제공 사진: 조감도(rendering), 매물 비교 인포그래픽(listings), 위치도의 지도 부분(location_map) |
 | `assets/fonts/` | Pretendard (SIL OFL 1.1) |
 | `assets/sfx/` | HyperFrames 에 들어 있는 효과음 (Pixabay Content License, `CREDITS.md`) |
 | `assets/vendor/gsap.min.js` | GSAP 3.15.0 (GreenSock Standard License) |

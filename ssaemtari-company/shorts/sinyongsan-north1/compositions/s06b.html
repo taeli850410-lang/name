@@ -1,0 +1,66 @@
+<!-- 템플릿: 이중 중괄호 자리는 tools/build.py 가 말소리 단어 시각으로 채운다. compositions/ 쪽은 생성물이다. -->
+<template>
+  <style>
+    @font-face { font-family: "Pretendard"; font-weight: 900; src: url("assets/fonts/Pretendard-Black.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 800; src: url("assets/fonts/Pretendard-ExtraBold.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 700; src: url("assets/fonts/Pretendard-Bold.woff2") format("woff2"); }
+    @font-face { font-family: "Pretendard"; font-weight: 500; src: url("assets/fonts/Pretendard-Medium.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: "Pretendard", sans-serif; color: #f7f7f2; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; word-break: keep-all; }
+    #root .bg { position: absolute; inset: 0; background: #0b0b0e; }
+    #root .cam { position: absolute; inset: 0; }
+    #root .line { position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; }
+    #root .y { color: #ffd400; }
+    #root .muted { color: #9a9aa3; }
+    #root .odo { display: inline-block; line-height: 1; white-space: nowrap; }
+    #root .odo-win { display: inline-block; height: 1em; overflow: hidden; vertical-align: top; }
+    #root .odo-strip { display: inline-flex; flex-direction: column; }
+    #root .odo-strip span, #root .odo-ch { display: block; height: 1em; line-height: 1em; }
+    #root .odo-ch { display: inline-block; vertical-align: top; }
+    /* 의뢰인 인포그래픽(1672×941): 전체를 먼저 보이고, 오른쪽 "매물별 호가 · 84A 기준 총투자금" 표로 다가간다 */
+    #s06b-t { top: 226px; font-size: 68px; font-weight: 900; }
+    #s06b-s { top: 314px; font-size: 38px; font-weight: 700; color: #9a9aa3; }
+    #s06b-s em { font-style: normal; color: #ffd400; }
+    #s06b-view { position: absolute; left: 0; top: 380px; width: 1080px; height: 740px; overflow: hidden; background: #0b0b0e; }
+    #s06b-layer { position: absolute; left: 0; top: 0; width: 1672px; height: 941px; transform-origin: 0 0; }
+    #s06b-img { position: absolute; left: 0; top: 0; width: 1672px; height: 941px; }
+    #root .hl { position: absolute; border: 7px solid #ffd400; border-radius: 14px; box-shadow: 0 0 0 4px rgba(11, 11, 14, 0.55); }
+    #s06b-h1 { left: 1238px; top: 262px; width: 210px; height: 290px; }
+    #s06b-h2 { left: 1440px; top: 190px; width: 212px; height: 362px; }
+    #root .edge { position: absolute; top: 0; bottom: 0; width: 62px; background: #0b0b0e; opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="s06b" data-width="1080" data-height="1920">
+    <div class="bg"></div>
+    <div class="cam" id="s06b-cam">
+      <div class="line" id="s06b-t">주변 매물 비교</div>
+      <div class="line" id="s06b-s">호가 vs <em>84A 기준</em> 총투자금</div>
+      <div id="s06b-view">
+        <div id="s06b-layer">
+          <img id="s06b-img" src="assets/photos/listings.jpg" alt="신용산역 북측1구역 일대 실거래 · 매물별 호가 비교" />
+          <div class="hl" id="s06b-h1"></div>
+          <div class="hl" id="s06b-h2"></div>
+        </div>
+        <div class="edge" style="left: 0"></div>
+        <div class="edge" style="right: 0"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      var K = window.KIT;
+      K.slam(tl, document.getElementById("s06b-t"), 0.06, 1.3);
+      K.words(tl, [document.getElementById("s06b-s")], 0.3);
+      // 전체 그림 (폭 1080 에 맞춤, 세로 가운데) → 오른쪽 표로 확대
+      var s1 = 1080 / 1672, s2 = 1.069;
+      tl.set("#s06b-layer", { x: 0, y: (740 - 941 * s1) / 2, scale: s1 }, 0);
+      tl.fromTo("#s06b-view", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 0.05);
+      tl.to("#s06b-layer", { x: (1080 - 898 * s2) / 2 - 762 * s2, y: -108 * s2, scale: s2, duration: 0.8, ease: "power2.inOut" }, 0.75);
+      tl.to("#s06b-view .edge", { opacity: 1, duration: 0.4, ease: "power1.in" }, 0.75 + 0.4);  // 옆 패널 가장자리를 가린다
+      // "호가는" → 호가 열, "총투자금은" → 84A 총투자금 열
+      tl.fromTo("#s06b-h1", { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 0.18, ease: "back.out(2)" }, 1.68);
+      tl.to("#s06b-h1", { opacity: 0.35, duration: 0.2 }, 4.26);
+      tl.fromTo("#s06b-h2", { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 0.18, ease: "back.out(2)" }, 4.26);
+      window.__timelines["s06b"] = tl;
+    })();
+  </script>
+</template>
