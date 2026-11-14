@@ -482,7 +482,7 @@ def s2(base, t, ch):
     if t < tb + 0.7:
         imA = kb_frame(src('map.webp'), CARD_W, CARD_H, 1.15 + 0.08 * clamp(t / 6), 0.45, 0.53)
     if t < tb:
-        draw_card(base, imA, CX, CARD_CY, CARD_W, CARD_H, t, 0.1, label='위치 이해를 돕기 위한 그림')
+        draw_card(base, imA, CX, CARD_CY, CARD_W, CARD_H, t, 0.1)
     else:
         zb = 1.0 + 0.06 * clamp((t - tb) / 5)
         imB = kb_frame(src('alley.webp'), CARD_W, CARD_H, zb, 0.5, 0.55)
@@ -494,7 +494,6 @@ def s2(base, t, ch):
         if t > tb + 0.6:
             a = ease_out(prog(t, tb + 0.6, 0.4))
             blit_at(base, scrim(CARD_W, 260), left, top + CARD_H - 260, a)
-            blit_at(base, label_pill('노후 저층 주거지 · 예시 이미지'), left + CARD_W - 420, top + 18, a)
             counter(base, '2.42', 130, 'X', ACC, left + 44, top + CARD_H - 90, t, tb + 0.7,
                     prefix=('땅은 단', 56, 'B', WHITE), suffix=('평', 80, 'B', WHITE), anchor='l', gap=14)
     with phase_out(t, tb)[0]:
@@ -752,7 +751,7 @@ def s8(base, t, ch):
     if t >= st:
         idx = 1 + int((t - st) * 24)
         im = drone_frame(idx).resize((vw, vh), Image.BILINEAR)
-        draw_card(base, im, CX, 990, vw, vh, t, st, reveal='fade', label='조감도 기반 예시 영상')
+        draw_card(base, im, CX, 990, vw, vh, t, st, reveal='fade')
 
 
 STAMP_Y = 930
