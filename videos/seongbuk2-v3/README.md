@@ -1,11 +1,11 @@
-# 성북2구역 재개발 추천 v3 — 첨부 음성 복제 내레이션 (9:16, 71초)
+# 성북2구역 재개발 추천 v3 — 첨부 음성 복제 내레이션 (9:16, 73초)
 
-v2(토끼 캐릭터)에서 캐릭터를 빼고, 자막은 뉴스 자막 스타일 상자로 바꿨습니다.
+v2(토끼 캐릭터)에서 캐릭터를 빼고, 자막은 뉴스 자막 스타일 상자로 바꿨습니다. 자막 위 ON AIR·AI 음성 표시는 뺐습니다(`SHOW_ONAIR=1`이면 다시 표시).
 내레이션은 사용자가 보낸 음성 샘플(현재: `ref/reference_voice3.mp3`, 이전: `reference_voice2.wav`, `reference_voice.mp3`)의 목소리를 복제해 새로 읽힌 것입니다.
 
 | 파일 | 내용 |
 |---|---|
-| `seongbuk2_v3_voice.mp4` / `.srt` | 완성 영상 (1080×1920, 30fps, 71.4초, -16 LUFS) / 자막 |
+| `seongbuk2_v3_voice.mp4` / `.srt` | 완성 영상 (1080×1920, 30fps, 72.7초, -16 LUFS) / 자막 |
 | `gen_voice.py` | 전체 장면을 기준 음성으로 만들고, 장면마다 받아쓰기로 핵심 단어·숫자가 맞는 후보를 자동 선택 |
 | `tts_chatterbox.py` | Chatterbox Multilingual ONNX(Resemble AI, MIT)로 기준 음성 복제 → `voice/` |
 | `regen_best.py` | 잘못 들린 장면을 여러 번 다시 만들고, Whisper 받아쓰기로 핵심 단어(숫자 포함)가 모두 맞는 후보를 고름 |
@@ -15,7 +15,8 @@ v2(토끼 캐릭터)에서 캐릭터를 빼고, 자막은 뉴스 자막 스타�
 ## 음성
 
 - 기준 음성: `ref/reference_voice3.mp3` 앞 9.76초(세 문장). 생성 음성 평균 음높이 약 224Hz (기준 파일 전체 약 222Hz).
-- 말투: "안녕하세요~"로 시작해 "~요"로 끝나는 친근한 해요체 (화면 자막 `render2.SCRIPT`, 낭독 `tts_local.READ`).
+- 말투: "안녕하세요~"로 시작하는 자연스러운 구어체 해요체 (화면 자막 `render2.SCRIPT`, 낭독 `tts_local.READ`).
+  표현력(exaggeration) 0.55. 대지 면적은 말로는 "두 평 남짓", 화면에는 정확한 "2.42평".
 - 숫자는 한글로 풀어 쓴 낭독용 대본(`tts_local.READ`) 사용.
 - 받아쓰기 확인: 19억 6천만 원·4억 6천만 원·47층·2,200세대 등 숫자 모두 정확.
   "무허가"는 ㅎ이 약해진 자연 발음("무어가")으로 인식됨.
@@ -32,7 +33,7 @@ v2(토끼 캐릭터)에서 캐릭터를 빼고, 자막은 뉴스 자막 스타�
 pip install numpy scipy pillow onnxruntime tokenizers faster-whisper supertonic==1.3.1
 # 모델: huggingface.co/onnx-community/chatterbox-multilingual-ONNX → /root/cbx/model (MODEL_DIR)
 ffmpeg -i ref/reference_voice3.mp3 -ac 1 -ar 24000 -c:a pcm_s16le ref3/ref24k.wav
-REF=ref3/ref24k.wav REF_DUR=9.76 python3 gen_voice.py      # 전체 장면 (받아쓰기 검증 포함)
-REF=ref3/ref24k.wav REF_DUR=9.76 python3 gen_voice.py 3    # 일부 장면만 다시
+EXAG=0.55 REF=ref3/ref24k.wav REF_DUR=9.76 python3 gen_voice.py      # 전체 장면 (받아쓰기 검증 포함)
+EXAG=0.55 REF=ref3/ref24k.wav REF_DUR=9.76 python3 gen_voice.py 2    # 일부 장면만 다시
 python3 render2.py mix out && python3 render2.py render out
 ```
