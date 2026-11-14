@@ -792,7 +792,7 @@ def s9(base, t, ch):
         CTX.alpha = sa * a
         wave_text(base, '쌤태리부동산컨설팅', 60, 'B', WHITE, CX, 1095, t, land + 0.55)
         CTX.alpha = sa
-    fade_up(base, text_sprite('※ AI 음성 · 일부 이미지는 이해를 돕기 위한 예시입니다', 26, 'M', SOFT), CX, 1170, t, land + 0.8, dist=12)
+    fade_up(base, text_sprite('※ 일부 이미지는 이해를 돕기 위한 예시입니다', 26, 'M', SOFT), CX, 1170, t, land + 0.8, dist=12)
 
 
 SCENE_FN = [s1, s2, s3, s4, s5, s6, s7, s8, s9]
