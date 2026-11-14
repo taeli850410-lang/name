@@ -23,6 +23,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import render as R  # noqa: E402  (v1 효과 라이브러리 재사용)
 import bg2  # noqa: E402
+import endcard  # noqa: E402
 from render import (ACC, CTX, FPS, H, NAVY, PAD, SOFT, W, WHITE, back_out, badge, blit,  # noqa: E402
                     blit_at, check_icon, clamp, counter, ease_in_out, ease_out, fade_up, font,
                     line_mask, pop, prog, ring, rrect, snap_line, sparkles, text_sprite, tlen,
@@ -33,12 +34,13 @@ ASSET = os.environ.get('ASSET_DIR') or (os.path.join(HERE, 'assets') if os.path.
 VOICE_DIR = os.path.join(HERE, 'voice')
 CX = W / 2
 LEAD, TAIL, END_TAIL = 0.3, 0.45, 2.6
+END_CARD = float(os.environ.get('END_CARD', '7.0'))  # 마지막 정보 화면 길이(초), 0이면 없음
 
 
 # ───────────────────────── 대본 (말풍선 단위) ─────────────────────────
 SCRIPT = [
     ['안녕하세요,\n쌤태리부동산컨설팅입니다.', '서울 도심에서 5억으로\n새집 마련, 가능할까요?'],
-    ['오늘 소개해 드릴 매물은\n성북2구역 무허가주택입니다.', '땅은 2평 남짓밖에 안 되지만,\n사실 사는 건 ‘새집 받을 권리’입니다.'],
+    ['오늘 소개해 드릴 매물은\n성북2구역 무허가주택입니다.', '땅은 2평 남짓밖에 안 되지만,\n사실 사는 건 ‘새집을 받을 권리’입니다.'],
     ['분양가를 15억으로 잡으면\n총투자금은 19억 6천만 원 정도입니다.', '그래서 프리미엄 4억 6천만 원이\n적당한지 따져보는 게 핵심입니다.'],
     ['최근 실거래 10건을 보면\n모두 5억 2천만 원 이상에 거래됐습니다.', '주변 집값은 꾸준히 올랐는데,\n이 일대는 아직 그대로입니다.'],
     ['추천 포인트 첫 번째,\n구역 전체가 전면 철거형으로 바뀌면서', '496세대 공동주택으로\n사업이 하나로 정리됐습니다.'],
@@ -81,6 +83,8 @@ def load_timing():
         tail = END_TAIL if i == len(SCRIPT) - 1 else TAIL
         dur = LEAD + sp + tail
         scenes.append((dur, [(LEAD + a, LEAD + b) for a, b in bounds], LEAD, sp))
+    if END_CARD > 0:
+        scenes.append((END_CARD, [], 0.0, 0.0))  # 마지막 중개사·매물 정보 화면 (내레이션 없음)
     return scenes, man is not None
 
 
@@ -94,7 +98,7 @@ TOTAL = _acc
 R.TOTAL = TOTAL
 
 CHUNKS = []  # (T0, T1, text) 전역 시각
-for _i, (_d, _b, _l, _s) in enumerate(TIMING):
+for _i, (_d, _b, _l, _s) in enumerate(TIMING[:len(SCRIPT)]):
     for (_a, _e), _txt in zip(_b, SCRIPT[_i]):
         CHUNKS.append((STARTS[_i] + _a, STARTS[_i] + _e, _txt))
 
@@ -798,7 +802,7 @@ STAMP_T = None  # 전역 도장 시각(음악 임팩트용)
 
 
 def stamp_time():
-    return STARTS[-1] + 1.05
+    return STARTS[len(SCRIPT) - 1] + 1.05
 
 
 # ───────────────────────── 프레임·인코딩 ─────────────────────────
@@ -812,19 +816,24 @@ def render_frame(idx, t):
         CTX.alpha, CTX.dy = 1 - e, -36 * e
     else:
         CTX.alpha, CTX.dy = 1.0, 0.0
-    bg2.draw_ghost(base, idx + 1, t)
-    SCENE_FN[idx](base, t, chunks)
+    is_card = idx >= len(SCRIPT)
+    if not is_card:
+        bg2.draw_ghost(base, idx + 1, t)
+        SCENE_FN[idx](base, t, chunks)
     CTX.alpha, CTX.dy = 1.0, 0.0
     if SHOW_RABBIT:
         draw_rabbit(base, T)
-    draw_bubble(base, T)
+    if not is_card:
+        draw_bubble(base, T)
     if os.environ.get('SHOW_ONAIR') == '1':  # v3: 자막 상자 위 ON AIR·AI 음성 표시는 기본으로 숨김
         bg2.draw_onair(base, BUB[0] + 28, BUB[1] - 24, T, env_at(T), alpha=ease_out(prog(T, 0.9, 0.4)))
         a_on = ease_out(prog(T, 0.9, 0.4))
         if a_on > 0:  # 라이선스 조건: AI 생성 음성임을 표시
             blit_at(base, label_pill('AI 음성', 22), BUB[0] + 28 + bg2.onair_pill().width + 10, BUB[1] - 20, a_on, use_ctx=False)
     R.draw_ui(base, T)
-    bg2.draw_index(base, idx + 1, len(TIMING))
+    bg2.draw_index(base, min(idx + 1, len(SCRIPT)), len(SCRIPT))
+    if is_card:
+        endcard.draw(base, t)
     return base
 
 
