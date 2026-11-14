@@ -15,7 +15,8 @@ const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&
 const inline = s => esc(s)
   .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
   .replace(/==(.+?)==/g, `<span style="background-color: ${MARK}; color: ${INK};">$1</span>`)
-  .replace(/\{\{(.+?)\}\}/g, `<span style="color: ${ORG}; font-weight: bold;">$1</span>`);
+  .replace(/\{\{(.+?)\}\}/g, `<span style="color: ${ORG}; font-weight: bold;">$1</span>`)
+  .replace(/!!(.+?)!!/g, '<span style="color: #d32f2f; font-weight: bold;">$1</span>');
 
 const P = (html, style = '') => `<p data-ke-size="size16"${style ? ` style="${style}"` : ''}>${html}</p>`;
 

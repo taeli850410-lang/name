@@ -15,13 +15,14 @@ const NAVY = '1F3A5F', BLUE = '2B6CB0', ORG = 'C05621', GRAY = '666666', LINE = 
 
 function runs(text, base = {}) {
   const out = [];
-  const re = /(\*\*(.+?)\*\*|==(.+?)==|\{\{(.+?)\}\})/g;
+  const re = /(\*\*(.+?)\*\*|==(.+?)==|\{\{(.+?)\}\}|!!(.+?)!!)/g;
   let last = 0, m;
   while ((m = re.exec(text))) {
     if (m.index > last) out.push(new TextRun({ text: text.slice(last, m.index), ...base }));
     if (m[2] !== undefined) out.push(new TextRun({ text: m[2], ...base, bold: true }));
     else if (m[3] !== undefined) out.push(new TextRun({ text: m[3], ...base, highlight: 'yellow' }));
-    else out.push(new TextRun({ text: m[4], ...base, bold: true, color: ORG }));
+    else if (m[4] !== undefined) out.push(new TextRun({ text: m[4], ...base, bold: true, color: ORG }));
+    else out.push(new TextRun({ text: m[5], ...base, bold: true, color: 'D32F2F' }));
     last = re.lastIndex;
   }
   if (last < text.length) out.push(new TextRun({ text: text.slice(last), ...base }));
@@ -65,7 +66,7 @@ function dataTable(b) {
   const rows = [new TableRow({ tableHeader: true, children: b.head.map((h, i) => mk(h, b.widths[i], { head: true, first: i === 0 })) })];
   b.rows.forEach((r, ri) => {
     const emph = (b.emph || []).includes(ri);
-    rows.push(new TableRow({ children: r.map((c, i) => mk(c, b.widths[i], { emph, first: i === 0 })) }));
+    rows.push(new TableRow({ cantSplit: true, children: r.map((c, i) => mk(c, b.widths[i], { emph, first: i === 0 })) }));
   });
   const out = [];
   if (b.caption) out.push(para(b.caption, { spacing: { before: 120, after: 80 } }, { bold: true, color: NAVY }));
