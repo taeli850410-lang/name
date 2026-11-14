@@ -88,6 +88,10 @@ function render(b) {
         s.items.map(i => `<li style="margin: 3px 0;">${inline(i)}</li>`).join('\n') + `\n</ul>\n<p style="margin: 0; font-size: 14px; color: ${SUB};">${inline(s.footer)}</p>`, ' margin: 14px 0;');
       return side(b.left, '#9fb6d6', SKY, NAVY) + '\n' + side(b.right, '#e8b48f', ORG_BG, ORG);
     }
+    case 'quote': return `<blockquote data-ke-style="style2" style="border-left: 4px solid #c8cdd3; margin: 24px 0; padding: 4px 0 4px 14px; color: ${SUB}; font-weight: bold;">${inline(b.text)}</blockquote>`;
+    case 'fit': return `<h3 data-ke-size="size23" style="margin: 36px 0 12px; color: ${BLUE};">${esc(b.title)}</h3>\n` + box(`1px solid ${LINE}`, SKY, INK,
+      `<ul style="margin: 0 0 10px; padding-left: 20px;">\n` + b.items.map(i => `<li style="margin: 3px 0;">${inline(i)}</li>`).join('\n') + '\n</ul>\n' +
+      `<p style="margin: 0; font-weight: bold; color: #d32f2f;">${inline(b.footer)}</p>`, ' margin: 12px 0 24px;');
     case 'faq': return b.items.map(([q, a]) =>
       `<div style="background-color: ${SOFT}; color: ${INK}; border-radius: 10px; padding: 14px 18px; margin: 12px 0; line-height: 1.7;">\n` +
       `<p style="margin: 0 0 6px; font-weight: bold; color: ${NAVY};">Q. ${esc(q)}</p>\n<p style="margin: 0;">A. ${inline(a)}</p>\n</div>`).join('\n');

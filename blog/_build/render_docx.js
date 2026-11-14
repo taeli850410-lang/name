@@ -154,6 +154,13 @@ function render(b) {
       return [new Table({ width: { size: W, type: WidthType.DXA }, columnWidths: [half, half],
         rows: [new TableRow({ children: [side(b.left, 'EEF4FB', NAVY), side(b.right, 'FDF1E7', ORG)] })] }), gap()];
     }
+    case 'quote': return [new Paragraph({ spacing: { before: 200, after: 200 },
+      border: { left: { style: BorderStyle.SINGLE, size: 24, color: 'C8CDD3', space: 10 } },
+      children: runs(b.text, { bold: true, color: '4A5568' }) })];
+    case 'fit': return [h3(b.title), boxTable([
+      ...b.items.map(i => new Paragraph({ numbering: { reference: 'bul', level: 0 }, spacing: { after: 40 }, children: runs(i) })),
+      para(b.footer, { spacing: { before: 100, after: 0 } }, { bold: true, color: 'D32F2F' }),
+    ], { fill: 'EEF4FB' }), gap()];
     case 'faq': return b.items.flatMap(([q, a]) => [boxTable([
       para(`Q. ${q}`, { spacing: { after: 60 } }, { bold: true, color: NAVY }),
       para(`A. ${a}`, { spacing: { after: 0, line: 300 } }),
