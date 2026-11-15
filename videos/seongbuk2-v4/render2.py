@@ -913,7 +913,7 @@ def build_mix(out_dir):
     """내레이션을 장면 시각에 배치하고, 길이에 맞춘 배경음악을 목소리 아래로 깔아 mix.wav를 만든다."""
     from scipy.signal import resample_poly
     import importlib
-    music2 = importlib.import_module(os.environ.get('MUSIC', 'music3'))  # v4: 피아노 곡
+    music2 = importlib.import_module(os.environ.get('MUSIC', 'music4'))  # v4: 밝은 피아노 팝
     SRM = 48000
     N = int(round(TOTAL * SRM))
     voice = np.zeros(N)
