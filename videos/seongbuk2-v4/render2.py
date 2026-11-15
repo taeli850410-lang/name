@@ -912,7 +912,8 @@ def read_wav(path):
 def build_mix(out_dir):
     """내레이션을 장면 시각에 배치하고, 길이에 맞춘 배경음악을 목소리 아래로 깔아 mix.wav를 만든다."""
     from scipy.signal import resample_poly
-    import music2
+    import importlib
+    music2 = importlib.import_module(os.environ.get('MUSIC', 'music3'))  # v4: 피아노 곡
     SRM = 48000
     N = int(round(TOTAL * SRM))
     voice = np.zeros(N)
@@ -931,7 +932,7 @@ def build_mix(out_dir):
         rms = np.sqrt(np.mean(act ** 2)) if act.size else 1
         voice *= 10 ** (-19 / 20) / rms              # 말하는 구간 RMS ≈ -19 dBFS
         write_wav(os.path.join(VOICE_DIR, 'narration.wav'), voice, SRM)
-    marks = {'drop': STARTS[1], 'break': (STARTS[6], STARTS[7]), 'final': STARTS[7], 'impact': stamp_time()}
+    marks = {'drop': STARTS[1], 'groove': STARTS[3], 'break': (STARTS[6], STARTS[7]), 'final': STARTS[7], 'impact': stamp_time()}
     music = music2.compose(TOTAL, marks)[:, :N]
     if music.shape[1] < N:
         music = np.pad(music, ((0, 0), (0, N - music.shape[1])))
@@ -1233,17 +1234,127 @@ def timeline_row(date, text):
     return im
 
 
+ZONE_POLY = [(120, 90), (380, 58), (560, 112), (760, 86), (826, 240), (760, 402), (520, 432), (300, 410), (140, 360), (88, 222)]
+ZP_W, ZP_H, ZP_CY, ZP_SPLIT = 920, 500, 610, 470
+
+
+@lru_cache(maxsize=None)
+def zone_masks():
+    S = 2
+    full = Image.new('L', (ZP_W * S, ZP_H * S), 0)
+    ImageDraw.Draw(full).polygon([(x * S, y * S) for x, y in ZONE_POLY], fill=255)
+    full = full.resize((ZP_W, ZP_H), Image.LANCZOS)
+    left = Image.new('L', (ZP_W, ZP_H), 0)
+    ImageDraw.Draw(left).rectangle([0, 0, ZP_SPLIT, ZP_H], fill=255)
+    a = np.asarray(full, np.uint16)
+    lm = (a * (np.asarray(left, np.uint16) // 255)).astype(np.uint8)
+    rm = (a - lm).astype(np.uint8)
+    return full, Image.fromarray(lm), Image.fromarray(rm)
+
+
+@lru_cache(maxsize=1)
+def zone_houses():
+    """낡은 저층 주택(작은 점) 위치 — 구역 안에만."""
+    full = np.asarray(zone_masks()[0])
+    rnd = __import__('random').Random(5)
+    pts = []
+    while len(pts) < 70:
+        x, y = rnd.uniform(110, 810), rnd.uniform(80, 420)
+        if full[int(y), int(x)] > 200:
+            pts.append((x, y, rnd.uniform(9, 15)))
+    return pts
+
+
+@lru_cache(maxsize=None)
+def block_sprite(w, h):
+    im = Image.new('RGBA', (w, h + 8), (0, 0, 0, 0))
+    im.alpha_composite(rrect(w, h, 8, (240, 248, 255, 235), tuple(ACC) + (255,), 2), (0, 8))
+    d = ImageDraw.Draw(im)
+    for yy in range(16, h, 16):
+        for xx in range(10, w - 8, 14):
+            d.rectangle([xx, yy, xx + 6, yy + 7], fill=(47, 111, 224, 200))
+    im.info['pad'] = 0
+    return im
+
+
+BLOCKS = [(230, 170, 120, 70), (420, 150, 110, 64), (620, 170, 120, 70), (300, 300, 130, 72), (520, 300, 140, 76), (700, 300, 90, 60)]
+
+
+def zone_change_panel(t, tc):
+    """t: 장면 시각, tc: 전면 철거형으로 바뀌는 시각."""
+    full, lm, rm = zone_masks()
+    out = Image.new('RGBA', (ZP_W, ZP_H), (0, 0, 0, 0))
+    out.alpha_composite(rrect(ZP_W, ZP_H, 30, (6, 20, 52, 235), (127, 227, 255, 110), 2))
+    e = ease_in_out(prog(t, tc, 0.9))
+    colA = np.array(ACC, np.float64)
+    colB = np.array((214, 168, 92), np.float64) * (1 - e) + colA * e
+    for m, col in ((lm, colA), (rm, colB)):
+        layer = Image.new('RGBA', (ZP_W, ZP_H), tuple(int(c) for c in col) + (0,))
+        layer.putalpha(m.point(lambda v: v * 120 // 255))
+        out.alpha_composite(layer)
+    if 0 < e < 1:  # 수복형 영역을 쓸고 지나가는 밝은 띠
+        bx = int(ZP_SPLIT + (826 - ZP_SPLIT) * e)
+        band = Image.new('L', (ZP_W, ZP_H), 0)
+        ImageDraw.Draw(band).rectangle([bx - 18, 0, bx + 18, ZP_H], fill=180)
+        band = Image.fromarray((np.asarray(band, np.uint16) * np.asarray(rm, np.uint16) // 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(8))
+        glow = Image.new('RGBA', (ZP_W, ZP_H), (255, 255, 255, 0))
+        glow.putalpha(band)
+        out.alpha_composite(glow)
+    # 구역 경계(점선)
+    d = ImageDraw.Draw(out)
+    pts = ZONE_POLY + [ZONE_POLY[0]]
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        L = math.hypot(x1 - x0, y1 - y0)
+        n = int(L // 22)
+        for k in range(n):
+            a0, a1 = k / n, (k + 0.55) / n
+            d.line([x0 + (x1 - x0) * a0, y0 + (y1 - y0) * a0, x0 + (x1 - x0) * a1, y0 + (y1 - y0) * a1], fill=(255, 255, 255, 220), width=3)
+    if e < 1:  # 가운데 경계선(혼합 방식)
+        a = int(200 * (1 - e))
+        d.line([ZP_SPLIT, 60, ZP_SPLIT, 440], fill=(255, 255, 255, a), width=3)
+    # 낡은 집 → 새 단지 블록
+    hv = 1 - ease_out(prog(t, tc + 0.4, 0.6))
+    if hv > 0:
+        for (x, y, s) in zone_houses():
+            d.rectangle([x - s / 2, y - s / 2, x + s / 2, y + s / 2], fill=(235, 225, 210, int(200 * hv)))
+    for i, (bx, by, bw, bh) in enumerate(BLOCKS):
+        p = prog(t, tc + 0.7 + i * 0.12, 0.5)
+        if p > 0:
+            b = block_sprite(bw, bh)
+            hh = int((bh + 8) * back_out(p))
+            if hh > 2:
+                part = b.crop((0, max(0, b.height - hh), bw, b.height))
+                out.alpha_composite(part, (int(bx - bw / 2), int(by + bh / 2 + 8 - part.height)))
+    out.info['pad'] = 0
+    return out, e
+
+
 def n4(base, t, ch):
     pop(base, badge('사업 진행 상황'), CX, 285, t, 0.05)
-    im = kb_frame(src('banner.webp'), 960, 540, 1.0 + 0.06 * clamp(t / 6), 0.5, 0.5)
-    draw_card(base, im, CX, 620, 960, 540, t, 0.2, label='성북2구역 현장')
-    fade_up(base, timeline_row('2025.11', '도시계획위원회 전면 철거형 수정가결'), CX, 950, t, 0.9)
-    pl = prog(t, 1.15, 0.4)
+    tc = ch[0][0] + 1.3
+    p = prog(t, 0.2, 0.6)
+    if p > 0:
+        panel, e = zone_change_panel(t, tc)
+        blit(base, panel, CX, ZP_CY + (1 - ease_out(p)) * 40, 'c', alpha=ease_out(p))
+        top = ZP_CY - ZP_H / 2
+        a0 = ease_out(prog(t, 0.7, 0.4)) * (1 - e)
+        if a0 > 0.01:
+            blit(base, chip('철거형', 30, tuple(ACC) + (255,), NAVY), CX - ZP_W / 2 + 290, top + 250, 'c', alpha=a0)
+            blit(base, chip('수복형', 30, (214, 168, 92, 255), NAVY), CX - ZP_W / 2 + 640, top + 250, 'c', alpha=a0)
+            blit(base, chip('변경 전 · 혼합 방식', 28, (6, 20, 52, 220), WHITE), CX - ZP_W / 2 + 150, top + 40, 'c', alpha=a0)
+        if e > 0.5:
+            pa = prog(t, tc + 0.5, 0.5)
+            blit(base, chip('전면 철거형', 46, tuple(ACC) + (255,), NAVY), CX, top + ZP_H - 40, 'c',
+                 alpha=clamp(pa / 0.3), scale=1.3 - 0.3 * back_out(pa))
+            blit(base, chip('변경 후 · 단일 방식', 28, (6, 20, 52, 220), WHITE), CX - ZP_W / 2 + 150, top + 40, 'c', alpha=ease_out(pa))
+            ring(base, CX, ZP_CY, t, tc + 0.55, dur=0.9, r0=120, r1=560, w0=10)
+    tb = ch[1][0] if len(ch) > 1 else 3.0
+    fade_up(base, timeline_row('2025.11', '도시계획위원회 전면 철거형 수정가결'), CX, 950, t, tb - 0.2)
+    pl = prog(t, tb + 0.05, 0.4)
     if pl > 0:
         blit(base, rrect(4, max(2, int(36 * ease_out(pl))), 2, tuple(ACC) + (200,)), CX - 450 + 70, 990, 'c')
-    fade_up(base, timeline_row('2026.03', '정비구역 변경 결정고시'), CX, 1035, t, 1.25)
-    tb = ch[1][0] if len(ch) > 1 else 2.5
-    counter(base, '496', 84, 'X', ACC, CX, 1140, t, tb, prefix=('공동주택', 50, 'B', WHITE), suffix=('세대', 50, 'B', WHITE), gap=14)
+    fade_up(base, timeline_row('2026.03', '정비구역 변경 결정고시'), CX, 1035, t, tb + 0.15)
+    counter(base, '496', 84, 'X', ACC, CX, 1140, t, tb + 0.6, prefix=('공동주택', 50, 'B', WHITE), suffix=('세대', 50, 'B', WHITE), gap=14)
 
 
 def n5(base, t, ch):
