@@ -28,7 +28,8 @@ LISTING = [('소재지', '서울 성북구 성북동 (성북2구역)'),
            ('면적', '대지 8㎡(2.42평) · 연면적 39.67㎡'),
            ('거래', '매매 5억 원'),
            ('사업', '전면 철거형 · 공동주택 496세대 계획')]
-BLD_Y = 760  # 빌딩 라인아트 바닥선 (이름·연락처 옆)
+OY = 90  # 정보 화면 전체를 세로 가운데로 내리는 양
+BLD_Y = 760 + OY  # 빌딩 라인아트 바닥선 (이름·연락처 옆)
 NOTE = ['※ 감정평가액·조합원 분양가·분담금은 관리처분 전 추정·가정치이며,',
         '사업 진행 과정에서 바뀔 수 있습니다. 이자·이주비·취득세 미포함.',
         '실거래: 국토교통부 공개자료. 내레이션: 실제 목소리 기반 AI 합성 음성.']
@@ -195,7 +196,7 @@ def _fade(base, spr, x, y, t, st, anchor='l', dist=24):
     if p <= 0:
         return
     e = ease_out(p)
-    blit(base, spr, x, y + (1 - e) * dist, anchor, alpha=e, use_ctx=False)
+    blit(base, spr, x, y + OY + (1 - e) * dist, anchor, alpha=e, use_ctx=False)
 
 
 def draw(base, t):
@@ -213,7 +214,7 @@ def draw(base, t):
     if pl > 0:
         ln = Image.new('RGBA', (max(2, int(920 * ease_out(pl))), 3), GOLD + (230,))
         ln.info['pad'] = 0
-        blit_at(base, ln, 80, 410, use_ctx=False)
+        blit_at(base, ln, 80, 410 + OY, use_ctx=False)
     _fade(base, text_sprite(NAME, 140, 'X', WHITE), 80, 545, t, s0 + 0.18)
     nx = 80 + tlen(NAME, 140, 'X') + 36
     _fade(base, text_sprite('|', 62, 'M', (200, 210, 230), shadow=False), nx, 550, t, s0 + 0.24)
@@ -231,14 +232,6 @@ def draw(base, t):
     _fade(base, icon('doc', 40), 93, 1146, t, st + 0.06)
     _fade(base, text_sprite(REGNO, 35, 'B', WHITE), 152, 1146, t, st + 0.06)
     _fade(base, text_sprite(FRANCHISE, 32, 'M', LBLUE, shadow=False), 92, 1208, t, st + 0.12)
-    st = s0 + 1.0
-    pl = prog(t, st, 0.6)
-    if pl > 0:
-        ln = Image.new('RGBA', (max(2, int(920 * ease_out(pl))), 2), GOLD + (150,))
-        ln.info['pad'] = 0
-        blit_at(base, ln, 80, 1300, use_ctx=False)
-    for i, line in enumerate(NOTE):
-        _fade(base, text_sprite(line, 29, 'M', (215, 222, 240), shadow=False), 92 if i == 0 else 128, 1380 + i * 50, t, st + 0.1 + i * 0.05)
     st = s0 + 1.35
     pl = prog(t, st, 0.6)
     if pl > 0:
@@ -246,10 +239,10 @@ def draw(base, t):
         for x0, x1 in ((90, 250), (830, 990)):
             ln = Image.new('RGBA', (max(2, int((x1 - x0) * e2)), 2), GOLD + (200,))
             ln.info['pad'] = 0
-            blit_at(base, ln, x0, 1640, use_ctx=False)
-    _fade(base, icon('link', 42), 296, 1640, t, st)
-    _fade(base, gold_text(BLOG[0], 42, 'B', shadow=False), 350, 1640, t, st)
-    _fade(base, text_sprite(BLOG[1], 40, 'B', WHITE), W / 2, 1706, t, st + 0.08, anchor='c')
+            blit_at(base, ln, x0, 1420 + OY, use_ctx=False)
+    _fade(base, icon("link", 42), 296, 1420, t, st)
+    _fade(base, gold_text(BLOG[0], 42, "B", shadow=False), 350, 1420, t, st)
+    _fade(base, text_sprite(BLOG[1], 40, 'B', WHITE), W / 2, 1486, t, st + 0.08, anchor='c')
     # 회사명 위를 지나가는 금빛 반짝임
     ps = prog(t, 1.6, 0.9)
     if 0 < ps < 1:
@@ -259,4 +252,4 @@ def draw(base, t):
         ImageDraw.Draw(m).polygon([(40, 0), (80, 0), (60, 100), (20, 100)], fill=150)
         sh.putalpha(m.filter(ImageFilter.GaussianBlur(10)))
         sh.info['pad'] = 0
-        blit_at(base, sh, sx, 282, use_ctx=False)
+        blit_at(base, sh, sx, 282 + OY, use_ctx=False)
